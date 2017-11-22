@@ -1,0 +1,35 @@
+class data_extraction {
+  ArrayList<Nhd> nhds;
+  ArrayList<Bead> points;
+  //ArrayList<Nhd> cross;
+  //ArrayList<Nhd> spring;
+  PImage image;
+
+  thinning thng;
+  //square_extraction sqr;
+  
+
+  int img_wid,img_hei;
+  int[][] d;
+  int[][] d_new;
+  int[][] e;
+
+  data_extraction(int _w, int _h, PImage _img) {
+    e=new int[40][40];
+    image = _img;
+    img_wid = _img.width;
+    img_hei = _img.height;
+
+    d=new int[img_hei][img_wid];
+    d_new=new int[img_hei][img_wid];
+    
+    println("begin data_extracxtion");
+    
+    nhds=new ArrayList<Nhd>();
+    points=new ArrayList<Bead>();
+    //cross=new ArrayList<Nhd>();
+
+    thng = new thinning(this);
+    //sqr = new square_extraction(this);
+  }
+}

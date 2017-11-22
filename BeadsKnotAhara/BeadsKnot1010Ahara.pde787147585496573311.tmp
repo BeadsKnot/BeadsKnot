@@ -1,0 +1,16 @@
+
+//data_extraction dataExt;
+//data_graph dataGraph;
+int disp_w,disp_h;
+
+
+void setup(){
+    size(800, 800);
+  int offset=50;
+  disp_w=800-2*offset;//画面のサイズ
+  disp_h=800-2*offset;//画面のサイズ
+  PImage img = loadImage("K11a1.gif");
+//  dataExt = new data_extraction(disp_w,disp_h,img);
+//  dataGraph = new data_graph(dataExt);
+
+}
