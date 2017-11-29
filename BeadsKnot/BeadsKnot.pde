@@ -14,7 +14,7 @@ void setup() {
   //size(600, 600);//初期のサイズ
   size(1000, 1000);//初期のサイズ
   //size(1500, 1500);
-  data = new data_extract(1000, 1000, null);
+  data = new data_extract(950, 950, null);
 }
 
 void draw() {
