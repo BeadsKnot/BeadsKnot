@@ -1,21 +1,28 @@
 class data_extract {
 
+  int w , h;// 解析画面の大きさ
+  int d[][];// 画像の2値化データ
+  int n,s;//解析メッシュのサイズ
+
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
   ArrayList<Beads> points=new ArrayList<Beads>();//点を登録
   transform tf;
+
+  //コンストラクタ
   data_extract(int _h, int _w, PImage _img) {
-    //make_data_extraction(_img)
+    w = _w;
+    h = _h;
     tf=new transform(this);
   }
+
+  // imageデータの解析
   void make_data_extraction(PImage image) {
     ofutarisama_flag=false;
-    // String path = f.getAbsolutePath();
-    // image = loadImage(path);
-    //image.resize(1000, 1000);//500から変更
-    image.resize(800, 800);
+    //もと画像が横長の場合，縦長の場合に応じて変える。
+    // オフセットを50 に取っている。
+    image.resize(w - 100, h - 100);
+
     image.loadPixels();
-    w=image.width+100;
-    h=image.height+100;
     d=new int [w][h];
     loadPixels();
     for (int y=0; y<h; y++) {

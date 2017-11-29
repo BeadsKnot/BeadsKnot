@@ -15,29 +15,31 @@ import java.io.IOException;
 public class BeadsKnot extends PApplet {
 
 //s\u30dc\u30bf\u30f3\u3092\u62bc\u3059\u3068\u753b\u50cf\u3092\u4fdd\u5b58
-PImage image;
-int w, h;
-int d[][];
-int s;
-int n = s;
-boolean ofutarisama_flag=false;//\u304a\u4e8c\u4eba\u69d8\u304b\u3069\u3046\u304b\u306e\u30d5\u30e9\u30b0
+// PImage image;// ->data_extraction
+// int w, h;// ->data_extraction
+// int d[][];// ->data_extraction
+// int s;// ->data_extraction
+// int n = s;// ->data_extraction
+boolean ofutarisama_flag=false;//\u304a\u4e8c\u4eba\u69d8\u304b\u3069\u3046\u304b\u306e\u30d5\u30e9\u30b0// ->data_extraction
 PImage pastedImage;
 PImage output;
 
 data_extract data;
 
 public void setup() {
-  //size(600, 600);//\u521d\u671f\u306e\u30b5\u30a4\u30ba
+  int extractSize=1500;
+
+  //size(1500, 1500);//\u521d\u671f\u306e\u30b5\u30a4\u30ba
   //\u521d\u671f\u306e\u30b5\u30a4\u30ba
-  //size(1500, 1500);
-  data = new data_extract(950, 1000, null);
+  // size(600, 600);//\u521d\u671f\u306e\u30b5\u30a4\u30ba
+
+  data = new data_extract(extractSize, extractSize, null);
 }
 
 public void draw() {
   background(255);
   data.drawPoints();
   data.drawNbhs();
-  // if ((keyPressed==true)&&(key=='t')) {
   if ( ofutarisama_flag) {
     data.tf.spring();
   }
@@ -63,8 +65,7 @@ public void fileSelected(File selection) {
     println("Window was closed or the user hit cancel.");
   } else {
     println("User selected " + selection.getAbsolutePath());
-    image = loadImage(selection.getAbsolutePath());
-    //get_knot_from_img();
+    PImage image = loadImage(selection.getAbsolutePath());
     data.make_data_extraction(image);
   }
 }
@@ -89,22 +90,29 @@ class Beads {//\u70b9\u306e\u30af\u30e9\u30b9
 }
 class data_extract {
 
+  int w , h;// \u89e3\u6790\u753b\u9762\u306e\u5927\u304d\u3055
+  int d[][];// \u753b\u50cf\u306e2\u5024\u5316\u30c7\u30fc\u30bf
+  int n,s;//\u89e3\u6790\u30e1\u30c3\u30b7\u30e5\u306e\u30b5\u30a4\u30ba
+
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//\u7dda\u3092\u767b\u9332
   ArrayList<Beads> points=new ArrayList<Beads>();//\u70b9\u3092\u767b\u9332
   transform tf;
+
+  //\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf
   data_extract(int _h, int _w, PImage _img) {
-    //make_data_extraction(_img)
+    w = _w;
+    h = _h;
     tf=new transform(this);
   }
+
+  // image\u30c7\u30fc\u30bf\u306e\u89e3\u6790
   public void make_data_extraction(PImage image) {
     ofutarisama_flag=false;
-    // String path = f.getAbsolutePath();
-    // image = loadImage(path);
-    //image.resize(1000, 1000);//500\u304b\u3089\u5909\u66f4
-    image.resize(800, 800);
+    //\u3082\u3068\u753b\u50cf\u304c\u6a2a\u9577\u306e\u5834\u5408\uff0c\u7e26\u9577\u306e\u5834\u5408\u306b\u5fdc\u3058\u3066\u5909\u3048\u308b\u3002
+    // \u30aa\u30d5\u30bb\u30c3\u30c8\u309250 \u306b\u53d6\u3063\u3066\u3044\u308b\u3002
+    image.resize(w - 100, h - 100);
+
     image.loadPixels();
-    w=image.width+100;
-    h=image.height+100;
     d=new int [w][h];
     loadPixels();
     for (int y=0; y<h; y++) {
@@ -869,6 +877,36 @@ class data_extract {
     }
     println("\u5e73\u5747\u306f"+sum/num);
     return sum/num;
+  }
+}
+class drawOption {
+  boolean drawOriginalImage;
+  boolean drawThinningImage;
+  boolean drawBeadsAndNhds;
+
+  drawOption() {
+    changeDrawOption(3);
+  }
+
+  public void setAllOptionFalse() {
+    drawOriginalImage=false;
+    drawThinningImage=false;
+    drawBeadsAndNhds=false;
+  }
+
+  public void changeDrawOption(int i) {
+    setAllOptionFalse();
+    switch(i) {
+    case 1:
+      drawOriginalImage=true;
+      break;
+    case 2:
+      drawThinningImage=true;
+      break;
+    case 3:
+      drawBeadsAndNhds=true;
+      break;
+    }
   }
 }
 class Nbh {//\u7dda\u306e\u30af\u30e9\u30b9
