@@ -12,7 +12,7 @@ class data_extract {
     // String path = f.getAbsolutePath();
     // image = loadImage(path);
     //image.resize(1000, 1000);//500から変更
-    image.resize(1300, 1300);
+    image.resize(1400, 1400);
     image.loadPixels();
     w=image.width+100;
     h=image.height+100;
