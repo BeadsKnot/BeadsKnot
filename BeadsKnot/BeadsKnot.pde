@@ -3,7 +3,7 @@ PImage image;
 int w, h;
 int d[][];
 int s;
-int n=s;
+int n = s;
 boolean ofutarisama_flag=false;//お二人様かどうかのフラグ
 PImage pastedImage;
 PImage output;
@@ -12,9 +12,9 @@ data_extract data;
 
 void setup() {
   //size(600, 600);//初期のサイズ
-  //size(1200, 1200);//初期のサイズ
-  size(1500, 1500);
-  data=new data_extract(1500, 1500, null);
+  size(1000, 1000);//初期のサイズ
+  //size(1500, 1500);
+  data = new data_extract(1000, 1000, null);
 }
 
 void draw() {
@@ -24,7 +24,6 @@ void draw() {
   // if ((keyPressed==true)&&(key=='t')) {
   if ( ofutarisama_flag) {
     data.tf.spring();
-    //  }
   }
 }
 
