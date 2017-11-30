@@ -39,12 +39,14 @@ class Node {
     }
     double getX(){ return x;}
     double getY(){ return y;}
+
     void drawNode(double l, double t, double r, double b){
+        //(l,t)-(r,b) がデータ空間の範囲
         double w = r-l;
         double h = b-t;
         double rate;
         if(w>h){
-            rate = 1080/w;
+            rate = 1080/w;//画面サイズに換算
         } else {
             rate = 1080/h;
         }
