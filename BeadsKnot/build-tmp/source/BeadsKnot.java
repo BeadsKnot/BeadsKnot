@@ -88,6 +88,73 @@ class Beads {//\u70b9\u306e\u30af\u30e9\u30b9
     Joint=false;
   }
 }
+class Node {
+    double x;
+    double y;
+    double theta;
+    double[] r;//\u9577\u3055\u3001\uff14\u3064
+    int radius;//\u5186\u306e\u534a\u5f84
+    public double edge_x(int i){
+        return x + r[i] * Math.cos(theta+Math.toRadians(i*90));
+    }
+    public double edge_y(int i){
+        return y - r[i] * Math.sin(theta+Math.toRadians(i*90));
+    }
+    public double edge_rx(int i, double s){
+        return x + s * Math.cos(theta+Math.toRadians(i*90));
+    }
+    public double edge_ry(int i,double s){
+        return y - s * Math.sin(theta+Math.toRadians(i*90));
+    }
+    boolean Joint;
+    boolean drawOn;
+    Node(double _x, double _y){
+        x=_x;
+        y=_y;
+        theta=0;
+        r=new double[4];
+        radius=20;
+        for(int i=0;i<4;i++) {
+            r[i]=5;//\u7dda\u306e\u9577\u3055
+        }
+        Joint=false;
+        drawOn = false;
+    }
+    public double getR(int i){
+        if(0<=i && i<4) return r[i];
+        else return 0;
+    }
+    public void setR(int i,double rr){
+        if(0<=i && i<4) r[i] = rr;
+    }
+    public double getX(){ return x;}
+    public double getY(){ return y;}
+    public void draw_Alignment(double l, double t, double r, double b){
+        double w = r-l;
+        double h = b-t;
+        double rate;
+        if(w>h){
+            rate = 1080/w;
+        } else {
+            rate = 1080/h;
+        }
+        //\u30ac\u30a4\u30c9\u306e\u63cf\u753b
+//        p.setARGB(160, 0, 0, 0);
+//        p.setStrokeWidth(5);
+//        for(int i=0;i<4;i++) {
+//           c.drawLine((float)x, (float)y, (float)edge_x(i), (float)edge_y(i) , p);
+//        }
+        if(Joint) {
+            fill(255, 255, 0, 0);
+        }else{
+            fill(255,0,255,0);
+        }
+        if(drawOn) {
+            noStroke();
+            ellipse((float) ((x - l) * rate), (float) ((y - t) * rate), radius, radius);
+        }
+    }
+}
 class data_extract {
 
   int w , h;// \u89e3\u6790\u753b\u9762\u306e\u5927\u304d\u3055

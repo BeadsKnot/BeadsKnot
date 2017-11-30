@@ -39,7 +39,7 @@ class Node {
     }
     double getX(){ return x;}
     double getY(){ return y;}
-    void draw_Alignment(Canvas c, Paint p, double l, double t, double r, double b){
+    void drawNode(double l, double t, double r, double b){
         double w = r-l;
         double h = b-t;
         double rate;
@@ -49,22 +49,19 @@ class Node {
             rate = 1080/h;
         }
         //ガイドの描画
-//        p.setARGB(160, 0, 0, 0);
-//        p.setStrokeWidth(5);
+//        stroke(160, 0, 0);
+//        strokeWidth(5);
 //        for(int i=0;i<4;i++) {
-//           c.drawLine((float)x, (float)y, (float)edge_x(i), (float)edge_y(i) , p);
+//           line((float)x, (float)y, (float)edge_x(i), (float)edge_y(i) , p);
 //        }
         if(Joint) {
-            p.setARGB(255, 255, 0, 0);
+            fill(255, 255, 0, 0);
         }else{
-            p.setARGB(255,0,255,0);
+            fill(255,0,255,0);
         }
         if(drawOn) {
-            p.setStyle(Paint.Style.FILL);
-            p.setStrokeWidth(0);
-            c.drawCircle((float) ((x - l) * rate), (float) ((y - t) * rate), radius, p);
+            noStroke();
+            ellipse((float) ((x - l) * rate), (float) ((y - t) * rate), radius, radius);
         }
     }
-
-
 }
