@@ -45,7 +45,6 @@ class data_extract {
     do { 
       s++;
       n++; 
-      nbhs=new ArrayList<Nbh>();
       points=new ArrayList<Beads>();
       for (int y=0; y<h; y+=n) {
         for (int x=0; x<w; x+=n) {
