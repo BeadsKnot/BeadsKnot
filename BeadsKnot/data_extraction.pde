@@ -2,7 +2,7 @@ class data_extract {
 
   int w , h;// 解析画面の大きさ
   int d[][];// 画像の2値化データ
-  int n,s;//解析メッシュのサイズ
+  int s;//解析メッシュのサイズ
 
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
   ArrayList<Beads> points=new ArrayList<Beads>();//点を登録
@@ -17,88 +17,57 @@ class data_extract {
 
   // imageデータの解析
   void make_data_extraction(PImage image) {
-    ofutarisama_flag=false;
     //もと画像が横長の場合，縦長の場合に応じて変える。
     // オフセットを50 に取っている。
-    image.resize(w - 100, h - 100);
-
-    image.loadPixels();
-    d=new int [w][h];
-    loadPixels();
-    for (int y=0; y<h; y++) {
-      for (int x=0; x<w; x++) {
-        if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
-          color c = image.pixels[(y-50) * image.width + (x-50)];
-          if (red(c)>128&&green(c)>128&&blue(c)>128) {
-            d[x][y]=0;
-          } else {
-            d[x][y]=1;
-          }
-        } else {
-          d[x][y]=0;
-        }
-      }
-    }
-    updatePixels();
-    int Thickness=thickness() ;
-    s=n=Thickness;
+    image.resize(w - 100, h - 100);//リサイズする。
+    
+    getBinalized(image);//２値化してd[][]に格納する
+    
+    s=thickness();//d[][]から線の太さを見積もる
+    
+    int loopLimit = min(10,s);
+    int kaisa = 0;
     do { 
-      s++;
-      n++; 
-      points=new ArrayList<Beads>();
-      for (int y=0; y<h; y+=n) {
-        for (int x=0; x<w; x+=n) {
+      if (kaisa % 2 == 0) {
+        s -= kaisa;
+      } else {
+        s += kaisa;
+      }
+      kaisa++;
+
+      nbhs.clear();
+      points.clear();
+
+      for (int y=0; y<h; y+=s) {
+        for (int x=0; x<w; x+=s) {
           copy_area(x, y);
         }
       }
+
+      //cancelLoop();がいるらしい。
       countNbhs();
-      removethrone();
-      fillgap();
-      // get_nbh();
+      removeThrone();
+      countNbhs();
+      fillGap();
       countNbhs();
       FindJoint();
-      ofutarisama_flag=Ofutarisama();
-      println(Ofutarisama(), s);
+      boolean ofutarisama_flag=Ofutarisama();
+      println(ofutarisama_flag, s);
       tf.ln=s;
-    } while (!Ofutarisama ()&&s<(Thickness+10));
-    //if (s==(Thickness+10)) {
-    //println("失敗");
-    //}
-    if ( ofutarisama_flag==false) {
-      s=n=Thickness;
-      do { 
-        s--;
-        n--; 
-        nbhs=new ArrayList<Nbh>();
-        points=new ArrayList<Beads>();
-        for (int y=0; y<h; y+=n) {
-          for (int x=0; x<w; x+=n) {
-            copy_area(x, y);
-          }
-        }
-        countNbhs();
-        removethrone();
-        fillgap();
-        //get_nbh();
-        countNbhs();
-        FindJoint();
-        ofutarisama_flag=Ofutarisama();
-        tf.ln=s;
-        println(Ofutarisama(), s);
-      } while (!Ofutarisama ()&&s>(Thickness-10));
-      if (s==(Thickness-10)) {
-        println("失敗");
-      }
-    }
+      if(ofutarisama_flag) break;
+    } while (kaisa < loopLimit);
+
     if ( ofutarisama_flag) {
       jointAddToNbhs();
       tf.spring_setup();
+    } else {
+      println("読み取り失敗");
     }
   }
 
   int addToPoints(int u, int v) {//点を追加する
     for (int i=0; i<points.size (); i++) {
-      if (dist(u, v, points.get(i).x, points.get(i).y )<n-1) {
+      if (dist(u, v, points.get(i).x, points.get(i).y )<s-1) {
         return i;
       }
     }
@@ -282,6 +251,28 @@ class data_extract {
     }
   }
 
+  void getBinalized(PImage image){
+    image.loadPixels();
+    d=new int [w][h];
+    //loadPixels();//画面を更新しないので、多分無意味。
+    for (int y=0; y<h; y++) {
+      for (int x=0; x<w; x++) {
+        if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
+          color c = image.pixels[(y-50) * image.width + (x-50)];
+          if (red(c)>128&&green(c)>128&&blue(c)>128) {
+            d[x][y]=0;
+          } else {
+            d[x][y]=1;
+          }
+        } else {
+          d[x][y]=0;
+        }
+      }
+    }
+    //updatePixels();//画面を更新しないので、多分無意味。
+  }
+
+
   void jointAddToNbhs() {//jointに関しての線を追加
     for (int u=0; u<points.size (); u++) {
       Beads vec=points.get(u);
@@ -348,7 +339,7 @@ class data_extract {
     }
   }
 
-  void removethrone() {//とげを除く
+  void removeThrone() {//とげを除く
     for (int u=0; u<points.size (); u++) {
       if ( points.get(u).c==1) {
         for (int i=nbhs.size ()-1; i>=0; i--) {
@@ -371,7 +362,7 @@ class data_extract {
     }
   }
 
-  void fillgap() {//点と点の距離の最小を記録し、最小の距離の点が1本さんならばその点と点をつなげる
+  void fillGap() {//点と点の距離の最小を記録し、最小の距離の点が1本さんならばその点と点をつなげる
     for (int u=0; u<points.size (); u++) {
       if ( points.get(u).c==1) {
         float min=w;

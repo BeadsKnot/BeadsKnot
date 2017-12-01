@@ -9,6 +9,7 @@ PImage pastedImage;
 PImage output;
 
 data_extract data;
+data_graph graph;
 
 void setup() {
   int extractSize=1500;
@@ -18,14 +19,16 @@ void setup() {
   // size(600, 600);//初期のサイズ
 
   data = new data_extract(extractSize, extractSize, null);
+  graph = new data_graph();
 }
 
 void draw() {
   background(255);
+  //data_extractの内容を描画する場合。
   data.drawPoints();
   data.drawNbhs();
   if ( ofutarisama_flag) {
-    data.tf.spring();
+    //data.tf.spring();
   }
 }
 

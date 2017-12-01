@@ -41,7 +41,7 @@ public void draw() {
   data.drawPoints();
   data.drawNbhs();
   if ( ofutarisama_flag) {
-    data.tf.spring();
+    //data.tf.spring();
   }
 }
 
@@ -539,7 +539,7 @@ class data_extract {
 
   int w , h;// \u89e3\u6790\u753b\u9762\u306e\u5927\u304d\u3055
   int d[][];// \u753b\u50cf\u306e2\u5024\u5316\u30c7\u30fc\u30bf
-  int n,s;//\u89e3\u6790\u30e1\u30c3\u30b7\u30e5\u306e\u30b5\u30a4\u30ba
+  int s;//\u89e3\u6790\u30e1\u30c3\u30b7\u30e5\u306e\u30b5\u30a4\u30ba
 
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//\u7dda\u3092\u767b\u9332
   ArrayList<Beads> points=new ArrayList<Beads>();//\u70b9\u3092\u767b\u9332
@@ -554,89 +554,57 @@ class data_extract {
 
   // image\u30c7\u30fc\u30bf\u306e\u89e3\u6790
   public void make_data_extraction(PImage image) {
-    ofutarisama_flag=false;
     //\u3082\u3068\u753b\u50cf\u304c\u6a2a\u9577\u306e\u5834\u5408\uff0c\u7e26\u9577\u306e\u5834\u5408\u306b\u5fdc\u3058\u3066\u5909\u3048\u308b\u3002
     // \u30aa\u30d5\u30bb\u30c3\u30c8\u309250 \u306b\u53d6\u3063\u3066\u3044\u308b\u3002
-    image.resize(w - 100, h - 100);
-
-    image.loadPixels();
-    d=new int [w][h];
-    loadPixels();
-    for (int y=0; y<h; y++) {
-      for (int x=0; x<w; x++) {
-        if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
-          int c = image.pixels[(y-50) * image.width + (x-50)];
-          if (red(c)>128&&green(c)>128&&blue(c)>128) {
-            d[x][y]=0;
-          } else {
-            d[x][y]=1;
-          }
-        } else {
-          d[x][y]=0;
-        }
-      }
-    }
-    updatePixels();
-    int Thickness=thickness() ;
-    s=n=Thickness;
+    image.resize(w - 100, h - 100);//\u30ea\u30b5\u30a4\u30ba\u3059\u308b\u3002
+    
+    getBinalized(image);//\uff12\u5024\u5316\u3057\u3066d[][]\u306b\u683c\u7d0d\u3059\u308b
+    
+    s=thickness();//d[][]\u304b\u3089\u7dda\u306e\u592a\u3055\u3092\u898b\u7a4d\u3082\u308b
+    
+    int loopLimit = min(10,s);
+    int kaisa = 0;
     do { 
-      s++;
-      n++; 
-      nbhs=new ArrayList<Nbh>();
-      points=new ArrayList<Beads>();
-      for (int y=0; y<h; y+=n) {
-        for (int x=0; x<w; x+=n) {
+      if (kaisa % 2 == 0) {
+        s -= kaisa;
+      } else {
+        s += kaisa;
+      }
+      kaisa++;
+
+      nbhs.clear();
+      points.clear();
+
+      for (int y=0; y<h; y+=s) {
+        for (int x=0; x<w; x+=s) {
           copy_area(x, y);
         }
       }
+
+      //cancelLoop();\u304c\u3044\u308b\u3089\u3057\u3044\u3002
       countNbhs();
-      removethrone();
-      fillgap();
-      // get_nbh();
+      removeThrone();
+      countNbhs();
+      fillGap();
       countNbhs();
       FindJoint();
-      ofutarisama_flag=Ofutarisama();
-      println(Ofutarisama(), s);
+      boolean ofutarisama_flag=Ofutarisama();
+      println(ofutarisama_flag, s);
       tf.ln=s;
-    } while (!Ofutarisama ()&&s<(Thickness+10));
-    //if (s==(Thickness+10)) {
-    //println("\u5931\u6557");
-    //}
-    if ( ofutarisama_flag==false) {
-      s=n=Thickness;
-      do { 
-        s--;
-        n--; 
-        nbhs=new ArrayList<Nbh>();
-        points=new ArrayList<Beads>();
-        for (int y=0; y<h; y+=n) {
-          for (int x=0; x<w; x+=n) {
-            copy_area(x, y);
-          }
-        }
-        countNbhs();
-        removethrone();
-        fillgap();
-        //get_nbh();
-        countNbhs();
-        FindJoint();
-        ofutarisama_flag=Ofutarisama();
-        tf.ln=s;
-        println(Ofutarisama(), s);
-      } while (!Ofutarisama ()&&s>(Thickness-10));
-      if (s==(Thickness-10)) {
-        println("\u5931\u6557");
-      }
-    }
+      if(ofutarisama_flag) break;
+    } while (kaisa < loopLimit);
+
     if ( ofutarisama_flag) {
       jointAddToNbhs();
       tf.spring_setup();
+    } else {
+      println("\u8aad\u307f\u53d6\u308a\u5931\u6557");
     }
   }
 
   public int addToPoints(int u, int v) {//\u70b9\u3092\u8ffd\u52a0\u3059\u308b
     for (int i=0; i<points.size (); i++) {
-      if (dist(u, v, points.get(i).x, points.get(i).y )<n-1) {
+      if (dist(u, v, points.get(i).x, points.get(i).y )<s-1) {
         return i;
       }
     }
@@ -820,6 +788,28 @@ class data_extract {
     }
   }
 
+  public void getBinalized(PImage image){
+    image.loadPixels();
+    d=new int [w][h];
+    //loadPixels();//\u753b\u9762\u3092\u66f4\u65b0\u3057\u306a\u3044\u306e\u3067\u3001\u591a\u5206\u7121\u610f\u5473\u3002
+    for (int y=0; y<h; y++) {
+      for (int x=0; x<w; x++) {
+        if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
+          int c = image.pixels[(y-50) * image.width + (x-50)];
+          if (red(c)>128&&green(c)>128&&blue(c)>128) {
+            d[x][y]=0;
+          } else {
+            d[x][y]=1;
+          }
+        } else {
+          d[x][y]=0;
+        }
+      }
+    }
+    //updatePixels();//\u753b\u9762\u3092\u66f4\u65b0\u3057\u306a\u3044\u306e\u3067\u3001\u591a\u5206\u7121\u610f\u5473\u3002
+  }
+
+
   public void jointAddToNbhs() {//joint\u306b\u95a2\u3057\u3066\u306e\u7dda\u3092\u8ffd\u52a0
     for (int u=0; u<points.size (); u++) {
       Beads vec=points.get(u);
@@ -886,7 +876,7 @@ class data_extract {
     }
   }
 
-  public void removethrone() {//\u3068\u3052\u3092\u9664\u304f
+  public void removeThrone() {//\u3068\u3052\u3092\u9664\u304f
     for (int u=0; u<points.size (); u++) {
       if ( points.get(u).c==1) {
         for (int i=nbhs.size ()-1; i>=0; i--) {
@@ -909,7 +899,7 @@ class data_extract {
     }
   }
 
-  public void fillgap() {//\u70b9\u3068\u70b9\u306e\u8ddd\u96e2\u306e\u6700\u5c0f\u3092\u8a18\u9332\u3057\u3001\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u304c1\u672c\u3055\u3093\u306a\u3089\u3070\u305d\u306e\u70b9\u3068\u70b9\u3092\u3064\u306a\u3052\u308b
+  public void fillGap() {//\u70b9\u3068\u70b9\u306e\u8ddd\u96e2\u306e\u6700\u5c0f\u3092\u8a18\u9332\u3057\u3001\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u304c1\u672c\u3055\u3093\u306a\u3089\u3070\u305d\u306e\u70b9\u3068\u70b9\u3092\u3064\u306a\u3052\u308b
     for (int u=0; u<points.size (); u++) {
       if ( points.get(u).c==1) {
         float min=w;
