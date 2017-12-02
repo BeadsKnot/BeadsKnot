@@ -58,7 +58,7 @@ class data_extract {
     } while (kaisa < loopLimit);
 
     if ( ofutarisama_flag) {
-      jointAddToNbhs();
+      addJointToNbhs();
       tf.spring_setup();
     } else {
       println("読み取り失敗");
@@ -273,7 +273,7 @@ class data_extract {
   }
 
 
-  void jointAddToNbhs() {//jointに関しての線を追加
+  void addJointToNbhs() {//jointに関しての線を追加
     for (int u=0; u<points.size (); u++) {
       Beads vec=points.get(u);
       if (vec.Joint) {
