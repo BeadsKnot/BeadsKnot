@@ -25,6 +25,8 @@ PImage pastedImage;
 PImage output;
 
 data_extract data;
+data_graph graph;
+display disp;
 
 public void setup() {
   int extractSize=1500;
@@ -32,12 +34,15 @@ public void setup() {
   //size(1500, 1500);//\u521d\u671f\u306e\u30b5\u30a4\u30ba
   //\u521d\u671f\u306e\u30b5\u30a4\u30ba
   // size(600, 600);//\u521d\u671f\u306e\u30b5\u30a4\u30ba
+  disp = new display(1000,1000);
+  data = new data_extract(extractSize, extractSize, null, disp);
+  graph = new data_graph();
 
-  data = new data_extract(extractSize, extractSize, null);
 }
 
 public void draw() {
   background(255);
+  //data_extract\u306e\u5185\u5bb9\u3092\u63cf\u753b\u3059\u308b\u5834\u5408\u3002
   data.drawPoints();
   data.drawNbhs();
   if ( ofutarisama_flag) {
@@ -69,6 +74,7 @@ public void fileSelected(File selection) {
     data.make_data_extraction(image);
   }
 }
+
 class Beads {//\u70b9\u306e\u30af\u30e9\u30b9
   float x;
   float y;
@@ -540,16 +546,18 @@ class data_extract {
   int w , h;// \u89e3\u6790\u753b\u9762\u306e\u5927\u304d\u3055
   int d[][];// \u753b\u50cf\u306e2\u5024\u5316\u30c7\u30fc\u30bf
   int s;//\u89e3\u6790\u30e1\u30c3\u30b7\u30e5\u306e\u30b5\u30a4\u30ba
+  display disp;
 
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//\u7dda\u3092\u767b\u9332
   ArrayList<Beads> points=new ArrayList<Beads>();//\u70b9\u3092\u767b\u9332
   transform tf;
 
   //\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf
-  data_extract(int _h, int _w, PImage _img) {
+  data_extract(int _h, int _w, PImage _img,display _disp) {
     w = _w;
     h = _h;
     tf=new transform(this);
+    disp = _disp;
   }
 
   // image\u30c7\u30fc\u30bf\u306e\u89e3\u6790
@@ -595,16 +603,20 @@ class data_extract {
     } while (kaisa < loopLimit);
 
     if ( ofutarisama_flag) {
-      jointAddToNbhs();
+      addJointToNbhs();
+      //TODO disp\u306e\u30c7\u30fc\u30bf\u3092\u66f8\u304d\u63db\u3048\u308b\u3002
       tf.spring_setup();
     } else {
       println("\u8aad\u307f\u53d6\u308a\u5931\u6557");
     }
   }
 
+  //TODO \u30e1\u30bd\u30c3\u30c9\u3092abc\u9806\u306b\u4e26\u3079\u308b\u304b\u3069\u3046\u304b\uff0c\u691c\u8a0e\u3059\u308b\u3002
+
   public int addToPoints(int u, int v) {//\u70b9\u3092\u8ffd\u52a0\u3059\u308b
+    // (u,v)\u306f\u70b9\u306e\u5ea7\u6a19\u306a\u306e\u3067\uff0cfloat\u578b\u3067\u306f\u306a\u3044\u304b\uff1f
     for (int i=0; i<points.size (); i++) {
-      if (dist(u, v, points.get(i).x, points.get(i).y )<s-1) {
+      if (dist(u, v, points.get(i).x, points.get(i).y )<s-1) {//\u8fd1\u304f\u306b\u65e2\u5b58\u306e\u70b9\u304c\u3042\u308b\u5834\u5408\u306b\u306f\u8ffd\u52a0\u3057\u306a\u3044
         return i;
       }
     }
@@ -612,6 +624,7 @@ class data_extract {
     return points.size()-1;
   }
 
+  //TODO disp\u3092\u3064\u304b\u3063\u3066\u8868\u793a\u3092\u753b\u9762\u30b5\u30a4\u30ba\u306b\u5408\u308f\u305b\u308b\u3088\u3046\u306b\u5ea7\u6a19\u5909\u63db\u3059\u308b\u3002
   public void drawPoints() {//\u70b9\u3092\u304b\u304f
     stroke(255, 0, 0);
     for (int i=0; i<points.size (); i++) {
@@ -635,7 +648,8 @@ class data_extract {
     return 1;
   }
 
-  public int connected(int nn, int mm) {//\u7dda\u304c\u3064\u306a\u304c\u3063\u3066\u3044\u308b\u304b
+  public int connected(int nn, int mm) {//\u7dda\u304c\u3064\u306a\u304c\u3063\u3066\u3044\u308b\u304b\u30c1\u30a7\u30c3\u30af\u3059\u308b
+    // nn,mm\u306fpoints\u306e\u306a\u304b\u306e\u756a\u53f7
     if ( duplicateNbhs(nn, mm)==1) {//\u91cd\u8907\u3057\u305f\u3089
       return 0;
     }
@@ -720,6 +734,7 @@ class data_extract {
     }
   }
 
+  //TODO disp \u3092\u4f7f\u3063\u3066\u753b\u50cf\u3092\u753b\u9762\u306b\u53ce\u3081\u308b\u3088\u3046\u306b\u5909\u6570\u5909\u63db\u3059\u308b\u3002
   public void drawNbhs() {//\u7dda\u3092\u66f8\u304f
     for (int i=0; i<points.size (); i++) {
       Beads vec=points.get(i);
@@ -810,7 +825,7 @@ class data_extract {
   }
 
 
-  public void jointAddToNbhs() {//joint\u306b\u95a2\u3057\u3066\u306e\u7dda\u3092\u8ffd\u52a0
+  public void addJointToNbhs() {//joint\u306b\u95a2\u3057\u3066\u306e\u7dda\u3092\u8ffd\u52a0
     for (int u=0; u<points.size (); u++) {
       Beads vec=points.get(u);
       if (vec.Joint) {
@@ -1315,6 +1330,37 @@ class data_extract {
     println("\u5e73\u5747\u306f"+sum/num);
     return sum/num;
   }
+}
+class data_graph{
+	
+	ArrayList<Node> nodes;
+	ArrayList<Edge> edges;
+	ArrayList<Beads> points;
+
+	data_graph(){
+		nodes = new ArrayList<Node>();
+		edges = new ArrayList<Edge>();
+	}
+
+	public void make_data_graph(ArrayList<Beads> _points){
+		points = _points;
+	    // JointOrientation();
+	    // add_half_point_Joint();
+	    // getNodes();
+	    // testFindNextJoint();
+            
+	}
+}
+class display{
+	float left,top,right,bottom;
+	float win_width,win_height,win_offset;
+
+	display(float _w, float _h){
+		win_width = _w;
+		win_height = _h;
+		win_offset = 50;
+	}
+
 }
 class drawOption {
   boolean drawOriginalImage;

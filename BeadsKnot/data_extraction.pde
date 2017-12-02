@@ -3,16 +3,18 @@ class data_extract {
   int w , h;// 解析画面の大きさ
   int d[][];// 画像の2値化データ
   int s;//解析メッシュのサイズ
+  display disp;
 
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
   ArrayList<Beads> points=new ArrayList<Beads>();//点を登録
   transform tf;
 
   //コンストラクタ
-  data_extract(int _h, int _w, PImage _img) {
+  data_extract(int _h, int _w, PImage _img,display _disp) {
     w = _w;
     h = _h;
     tf=new transform(this);
+    disp = _disp;
   }
 
   // imageデータの解析
@@ -59,15 +61,19 @@ class data_extract {
 
     if ( ofutarisama_flag) {
       addJointToNbhs();
+      //TODO dispのデータを書き換える。
       tf.spring_setup();
     } else {
       println("読み取り失敗");
     }
   }
 
+  //TODO メソッドをabc順に並べるかどうか，検討する。
+
   int addToPoints(int u, int v) {//点を追加する
+    // (u,v)は点の座標なので，float型ではないか？
     for (int i=0; i<points.size (); i++) {
-      if (dist(u, v, points.get(i).x, points.get(i).y )<s-1) {
+      if (dist(u, v, points.get(i).x, points.get(i).y )<s-1) {//近くに既存の点がある場合には追加しない
         return i;
       }
     }
@@ -75,6 +81,7 @@ class data_extract {
     return points.size()-1;
   }
 
+  //TODO dispをつかって表示を画面サイズに合わせるように座標変換する。
   void drawPoints() {//点をかく
     stroke(255, 0, 0);
     for (int i=0; i<points.size (); i++) {
@@ -98,7 +105,8 @@ class data_extract {
     return 1;
   }
 
-  int connected(int nn, int mm) {//線がつながっているか
+  int connected(int nn, int mm) {//線がつながっているかチェックする
+    // nn,mmはpointsのなかの番号
     if ( duplicateNbhs(nn, mm)==1) {//重複したら
       return 0;
     }
@@ -183,6 +191,7 @@ class data_extract {
     }
   }
 
+  //TODO disp を使って画像を画面に収めるように変数変換する。
   void drawNbhs() {//線を書く
     for (int i=0; i<points.size (); i++) {
       Beads vec=points.get(i);

@@ -10,6 +10,7 @@ PImage output;
 
 data_extract data;
 data_graph graph;
+display disp;
 
 void setup() {
   int extractSize=1500;
@@ -17,9 +18,10 @@ void setup() {
   //size(1500, 1500);//初期のサイズ
   size(1000, 1000);//初期のサイズ
   // size(600, 600);//初期のサイズ
-
-  data = new data_extract(extractSize, extractSize, null);
+  disp = new display(1000,1000);
+  data = new data_extract(extractSize, extractSize, null, disp);
   graph = new data_graph();
+
 }
 
 void draw() {
@@ -56,3 +58,4 @@ void fileSelected(File selection) {
     data.make_data_extraction(image);
   }
 }
+
