@@ -570,6 +570,7 @@ class data_extract {
     
     s=thickness();//d[][]\u304b\u3089\u7dda\u306e\u592a\u3055\u3092\u898b\u7a4d\u3082\u308b
     
+    boolean ofutarisama_flag;
     int loopLimit = min(10,s);
     int kaisa = 0;
     do { 
@@ -596,15 +597,18 @@ class data_extract {
       fillGap();
       countNbhs();
       FindJoint();
-      boolean ofutarisama_flag=Ofutarisama();
-      println(ofutarisama_flag, s);
+      ofutarisama_flag=Ofutarisama();
+      //println(ofutarisama_flag, s);
       tf.ln=s;
       if(ofutarisama_flag) break;
     } while (kaisa < loopLimit);
 
-    if ( ofutarisama_flag) {
+    if (ofutarisama_flag) {
+      // Joint\u7528\u306eNbh\u306e\u8a2d\u7f6e
       addJointToNbhs();
-      //TODO disp\u306e\u30c7\u30fc\u30bf\u3092\u66f8\u304d\u63db\u3048\u308b\u3002
+      // disp\u306e\u30c7\u30fc\u30bf\u3092\u66f8\u304d\u63db\u3048\u308b\u3002
+      getDisplayLTRB();
+      // \u30d0\u30cd\u30e2\u30c7\u30eb\u306e\u521d\u671f\u5316
       tf.spring_setup();
     } else {
       println("\u8aad\u307f\u53d6\u308a\u5931\u6557");
@@ -636,7 +640,7 @@ class data_extract {
       }
       if (vec.c<=0||vec.c>=4) {
       } else {
-        ellipse(vec.x, vec.y, vec.c*3+1, vec.c*3+1);//vec.c\u306f1or2or3\u306e\u306f\u305a
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), vec.c*3+1, vec.c*3+1);//vec.c\u306f1or2or3\u306e\u306f\u305a
       }
     }
   }
@@ -742,7 +746,7 @@ class data_extract {
         stroke(255, 0, 0);
         try { 
           if (!points.get(vec.n1).Joint) {
-            line(vec.x, vec.y, points.get(vec.n1).x, points.get(vec.n1).y);//\u30a8\u30e9\u30fc\u304c\u3067\u308b
+            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n1).x), disp.get_winY(points.get(vec.n1).y));//\u30a8\u30e9\u30fc\u304c\u3067\u308b
           }
         }
         catch (IndexOutOfBoundsException e) {
@@ -752,7 +756,7 @@ class data_extract {
         stroke(255, 0, 0);
         try { 
           if (!points.get(vec.n2).Joint) {
-            line(vec.x, vec.y, points.get(vec.n2).x, points.get(vec.n2).y);//\u30a8\u30e9\u30fc\u304c\u3067\u308b
+            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n2).x), disp.get_winY(points.get(vec.n2).y));//\u30a8\u30e9\u30fc\u304c\u3067\u308b
           }
           /* process */
         } 
@@ -824,6 +828,27 @@ class data_extract {
     //updatePixels();//\u753b\u9762\u3092\u66f4\u65b0\u3057\u306a\u3044\u306e\u3067\u3001\u591a\u5206\u7121\u610f\u5473\u3002
   }
 
+  public void getDisplayLTRB(){
+    float l,t,r,b;
+    l=t=r=b=0;
+    for (int u=0; u<points.size (); u++) {
+      Beads pt=points.get(u);
+      if(u==0){
+        l=r=pt.x;
+        t=b=pt.y;
+      } else {
+        if(pt.x<l) l=pt.x;
+        if(r<pt.x) r=pt.x;
+        if(pt.x<t) t=pt.y;
+        if(b<pt.y) b=pt.y;
+      }
+    }
+    disp.left=l;
+    disp.right=r;
+    disp.top=t;
+    disp.bottom=b;
+    disp.set_rate();
+  }
 
   public void addJointToNbhs() {//joint\u306b\u95a2\u3057\u3066\u306e\u7dda\u3092\u8ffd\u52a0
     for (int u=0; u<points.size (); u++) {
@@ -1327,7 +1352,7 @@ class data_extract {
         }
       }
     }
-    println("\u5e73\u5747\u306f"+sum/num);
+    println("thickness = "+sum/num);
     return sum/num;
   }
 }
@@ -1354,13 +1379,42 @@ class data_graph{
 class display{
 	float left,top,right,bottom;
 	float win_width,win_height,win_offset;
+	float rate;
 
 	display(float _w, float _h){
 		win_width = _w;
 		win_height = _h;
 		win_offset = 50;
+		left=win_offset;
+		top=win_offset;
+		right=win_width-win_offset;
+		bottom=win_height-win_offset;
+		rate=1;
 	}
 
+	public float get_winX(float x){
+		return (x-left)*rate+win_offset;
+	}
+
+	public float get_winY(float y){
+		return (y-top)*rate+win_offset;
+	}
+
+	public float getX_fromWin(float winX){
+		return (winX-win_offset)/rate + left;
+	}
+
+	public float getY_fromWin(float winY){
+		return (winY-win_offset)/rate + top;
+	}
+
+	public void set_rate(){
+		if(right-left>bottom-top){
+			rate = (win_width-2*win_offset)/(right-left);
+		} else {
+			rate = (win_width-2*win_offset)/(bottom-top);
+		}
+	}
 }
 class drawOption {
   boolean drawOriginalImage;

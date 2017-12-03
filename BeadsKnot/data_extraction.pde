@@ -27,6 +27,7 @@ class data_extract {
     
     s=thickness();//d[][]から線の太さを見積もる
     
+    boolean ofutarisama_flag;
     int loopLimit = min(10,s);
     int kaisa = 0;
     do { 
@@ -53,15 +54,18 @@ class data_extract {
       fillGap();
       countNbhs();
       FindJoint();
-      boolean ofutarisama_flag=Ofutarisama();
-      println(ofutarisama_flag, s);
+      ofutarisama_flag=Ofutarisama();
+      //println(ofutarisama_flag, s);
       tf.ln=s;
       if(ofutarisama_flag) break;
     } while (kaisa < loopLimit);
 
-    if ( ofutarisama_flag) {
+    if (ofutarisama_flag) {
+      // Joint用のNbhの設置
       addJointToNbhs();
-      //TODO dispのデータを書き換える。
+      // dispのデータを書き換える。
+      getDisplayLTRB();
+      // バネモデルの初期化
       tf.spring_setup();
     } else {
       println("読み取り失敗");
@@ -81,7 +85,6 @@ class data_extract {
     return points.size()-1;
   }
 
-  //TODO dispをつかって表示を画面サイズに合わせるように座標変換する。
   void drawPoints() {//点をかく
     stroke(255, 0, 0);
     for (int i=0; i<points.size (); i++) {
@@ -93,7 +96,8 @@ class data_extract {
       }
       if (vec.c<=0||vec.c>=4) {
       } else {
-        ellipse(vec.x, vec.y, vec.c*3+1, vec.c*3+1);//vec.cは1or2or3のはず
+        //dispをつかって表示を画面サイズに合わせるように座標変換する。
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), vec.c*3+1, vec.c*3+1);//vec.cは1or2or3のはず
       }
     }
   }
@@ -199,7 +203,7 @@ class data_extract {
         stroke(255, 0, 0);
         try { 
           if (!points.get(vec.n1).Joint) {
-            line(vec.x, vec.y, points.get(vec.n1).x, points.get(vec.n1).y);//エラーがでる
+            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n1).x), disp.get_winY(points.get(vec.n1).y));//エラーがでる
           }
         }
         catch (IndexOutOfBoundsException e) {
@@ -209,7 +213,7 @@ class data_extract {
         stroke(255, 0, 0);
         try { 
           if (!points.get(vec.n2).Joint) {
-            line(vec.x, vec.y, points.get(vec.n2).x, points.get(vec.n2).y);//エラーがでる
+            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n2).x), disp.get_winY(points.get(vec.n2).y));//エラーがでる
           }
           /* process */
         } 
@@ -281,6 +285,27 @@ class data_extract {
     //updatePixels();//画面を更新しないので、多分無意味。
   }
 
+  void getDisplayLTRB(){
+    float l,t,r,b;
+    l=t=r=b=0;
+    for (int u=0; u<points.size (); u++) {
+      Beads pt=points.get(u);
+      if(u==0){
+        l=r=pt.x;
+        t=b=pt.y;
+      } else {
+        if(pt.x<l) l=pt.x;
+        if(r<pt.x) r=pt.x;
+        if(pt.x<t) t=pt.y;
+        if(b<pt.y) b=pt.y;
+      }
+    }
+    disp.left=l;
+    disp.right=r;
+    disp.top=t;
+    disp.bottom=b;
+    disp.set_rate();
+  }
 
   void addJointToNbhs() {//jointに関しての線を追加
     for (int u=0; u<points.size (); u++) {
@@ -784,7 +809,7 @@ class data_extract {
         }
       }
     }
-    println("平均は"+sum/num);
+    println("thickness = "+sum/num);
     return sum/num;
   }
 }
