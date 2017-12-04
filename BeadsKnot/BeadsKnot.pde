@@ -27,9 +27,12 @@ void setup() {
 void draw() {
   background(255);
   //data_extractの内容を描画する場合。
-  data.drawPoints();
-  data.drawNbhs();
-  if ( ofutarisama_flag) {
+  if(data.extraction_beads){
+    data.drawPoints();
+    data.drawNbhs();
+  } else if(data.extraction_complete){
+    data.drawPoints();
+    data.drawNbhs();
     //data.tf.spring();
   }
 }

@@ -14,6 +14,7 @@ class Beads {//点のクラス
     n2=-1;
     u1=-1;
     u2=-1;
+    c=0;
     Joint=false;
   }
 }
