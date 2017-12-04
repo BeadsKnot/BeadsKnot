@@ -663,7 +663,7 @@ class data_extract {
   }
 
   public int addToNbhs(int nn, int mm) {//\u7dda\u3092\u8ffd\u52a0\u3059\u308b
-    if (nn!=mm&&connected(nn, mm)==1) {
+    if (nn!=mm && connected(nn, mm)==1) {
       nbhs.add(new Nbh(nn, mm));
     }
     return 1;
@@ -832,7 +832,8 @@ class data_extract {
       for (int x=0; x<w; x++) {
         if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
           int c = image.pixels[(y-50) * image.width + (x-50)];
-          if (red(c)>128&&green(c)>128&&blue(c)>128) {
+//          if (red(c)>128&&green(c)>128&&blue(c)>128) {
+          if (red(c)>160&&green(c)>160&&blue(c)>160) {
             d[x][y]=0;
           } else {
             d[x][y]=1;
@@ -958,38 +959,26 @@ class data_extract {
 
   public void fillGap() {//\u70b9\u3068\u70b9\u306e\u8ddd\u96e2\u306e\u6700\u5c0f\u3092\u8a18\u9332\u3057\u3001\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u304c1\u672c\u3055\u3093\u306a\u3089\u3070\u305d\u306e\u70b9\u3068\u70b9\u3092\u3064\u306a\u3052\u308b
     for (int u=0; u<points.size (); u++) {
-      if ( points.get(u).c==1) {
-        float min=w;
-        int num=0;
+      if ( points.get(u).c==1) {// \u307e\u305a\u300c\u81ea\u5206\u300d\u304c\u304a\u3072\u3068\u308a\u3055\u307e\u306e\u5834\u5408\u306e\u307f\u8abf\u3079\u308b
+        float min=w;//\u5927\u304d\u306a\u5024\u304b\u3089\u59cb\u3081\u308b\u3002
+        int num=-1;//\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u306e\u756a\u53f7\u3092\u8a18\u9332\u3059\u308b\u305f\u3081\u306e\u5909\u6570
         for (int v=0; v<points.size (); v++) {
           if (u!=v) {
-            /*
-            boolean OK=true;
-             for (Nbh n : nbhs) {
-             if (n.a==u&&n.b==v) {
-             OK=false;
-             }
-             if (n.a==v&&n.b==u) {
-             OK=false;
-             }
-             }
-             */
-            //if (OK) {
-              if (points.get(u).n1!=v) {
-                float d=dist(points.get(u).x, points.get(u).y, points.get(v).x, points.get(v).y);
-                if (min>d) {
-                  min=d;
-                  num=v;
-                }
+            if (points.get(u).n1!=v) {//\u304a\u3072\u3068\u308a\u3055\u307e\u306e\u76f8\u624b\u306f\u8fd1\u304f\u306b\u3044\u308b\u306b\u6c7a\u307e\u3063\u3066\u3044\u308b\u306e\u3067\u63a2\u7d22\u5bfe\u8c61\u304b\u3089\u9664\u5916
+              float d=dist(points.get(u).x, points.get(u).y, points.get(v).x, points.get(v).y);
+              if (min>d) {
+                min=d;
+                num=v;
               }
             }
           }
-          if (points.get(num).c==1) {
-            addToNbhs(u, num);
-          //\u306a\u306b\u304b\u3059\u308b
+        }
+        if (points.get(num).c==1) {//\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u304c\u304a\u3072\u3068\u308a\u3055\u307e
+          addToNbhs(u, num);
+          //\u306a\u306b\u304b\u3059\u308b//TODO \u300c\u306a\u306b\u304b\u3059\u308b\u300d\u3068\u3044\u3046\u53e4\u3044\u30e1\u30c3\u30bb\u30fc\u30b8\u306e\u610f\u5473\u3092\u8003\u3048\u308b\u3002
           points.get(num).c++;
           points.get(u).c++;
-        } else if (points.get(num).c==0) {
+        } else if (points.get(num).c==0) {//\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u304c\u5b64\u7acb
           addToNbhs(u, num);
           points.get(num).c++;
           points.get(u).c++;

@@ -116,7 +116,7 @@ class data_extract {
   }
 
   int addToNbhs(int nn, int mm) {//線を追加する
-    if (nn!=mm&&connected(nn, mm)==1) {
+    if (nn!=mm && connected(nn, mm)==1) {
       nbhs.add(new Nbh(nn, mm));
     }
     return 1;
@@ -285,7 +285,8 @@ class data_extract {
       for (int x=0; x<w; x++) {
         if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
           color c = image.pixels[(y-50) * image.width + (x-50)];
-          if (red(c)>128&&green(c)>128&&blue(c)>128) {
+//          if (red(c)>128&&green(c)>128&&blue(c)>128) {
+          if (red(c)>160&&green(c)>160&&blue(c)>160) {
             d[x][y]=0;
           } else {
             d[x][y]=1;
@@ -411,38 +412,26 @@ class data_extract {
 
   void fillGap() {//点と点の距離の最小を記録し、最小の距離の点が1本さんならばその点と点をつなげる
     for (int u=0; u<points.size (); u++) {
-      if ( points.get(u).c==1) {
-        float min=w;
-        int num=0;
+      if ( points.get(u).c==1) {// まず「自分」がおひとりさまの場合のみ調べる
+        float min=w;//大きな値から始める。
+        int num=-1;//最小の距離の点の番号を記録するための変数
         for (int v=0; v<points.size (); v++) {
           if (u!=v) {
-            /*
-            boolean OK=true;
-             for (Nbh n : nbhs) {
-             if (n.a==u&&n.b==v) {
-             OK=false;
-             }
-             if (n.a==v&&n.b==u) {
-             OK=false;
-             }
-             }
-             */
-            //if (OK) {
-              if (points.get(u).n1!=v) {
-                float d=dist(points.get(u).x, points.get(u).y, points.get(v).x, points.get(v).y);
-                if (min>d) {
-                  min=d;
-                  num=v;
-                }
+            if (points.get(u).n1!=v) {//おひとりさまの相手は近くにいるに決まっているので探索対象から除外
+              float d=dist(points.get(u).x, points.get(u).y, points.get(v).x, points.get(v).y);
+              if (min>d) {
+                min=d;
+                num=v;
               }
             }
           }
-          if (points.get(num).c==1) {
-            addToNbhs(u, num);
-          //なにかする
+        }
+        if (points.get(num).c==1) {//最小の距離の点がおひとりさま
+          addToNbhs(u, num);
+          //なにかする//TODO 「なにかする」という古いメッセージの意味を考える。
           points.get(num).c++;
           points.get(u).c++;
-        } else if (points.get(num).c==0) {
+        } else if (points.get(num).c==0) {//最小の距離の点が孤立
           addToNbhs(u, num);
           points.get(num).c++;
           points.get(u).c++;
