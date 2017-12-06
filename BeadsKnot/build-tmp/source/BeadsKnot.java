@@ -29,24 +29,35 @@ data_graph graph;
 display disp;
 
 public void setup() {
-  int extractSize=1500;
+  int extractSize=1000;
 
   //size(1500, 1500);//\u521d\u671f\u306e\u30b5\u30a4\u30ba
   //\u521d\u671f\u306e\u30b5\u30a4\u30ba
   // size(600, 600);//\u521d\u671f\u306e\u30b5\u30a4\u30ba
   disp = new display(1000,1000);
-  data = new data_extract(extractSize, extractSize, null, disp);
+  data = new data_extract(extractSize, extractSize, disp);
   graph = new data_graph();
 
 }
 
 public void draw() {
   background(255);
+  if(data.extraction_binalized){
+    loadPixels();
+    for(int x=0; x<data.w; x++){
+      for(int y=0; y<data.h; y++){
+        pixels[x + y*width] = color(255*(1-data.d[x][y]));
+      }
+    }
+    updatePixels();
+  }
   //data_extract\u306e\u5185\u5bb9\u3092\u63cf\u753b\u3059\u308b\u5834\u5408\u3002
-  if(data.extraction_beads){
+   else if(data.extraction_beads){
     data.drawPoints();
     data.drawNbhs();
-  } else if(data.extraction_complete){
+  } 
+  //
+  else if(data.extraction_complete){
     data.drawPoints();
     data.drawNbhs();
     //data.tf.spring();
@@ -552,6 +563,7 @@ class data_extract {
   int e[][];// \u5207\u308a\u53d6\u3089\u308c\u305f\u753b\u50cf\u306e2\u5024\u5316\u30c7\u30fc\u30bf
   int s;//\u89e3\u6790\u30e1\u30c3\u30b7\u30e5\u306e\u30b5\u30a4\u30ba
   display disp;
+  boolean extraction_binalized;
   boolean extraction_beads;
   boolean extraction_complete;
 
@@ -560,11 +572,12 @@ class data_extract {
   transform tf;
 
   //\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf
-  data_extract(int _h, int _w, PImage _img,display _disp) {
+  data_extract(int _h, int _w,display _disp) {
     w = _w;
     h = _h;
     tf=new transform(this);
     disp = _disp;
+    extraction_binalized = false;
     extraction_complete = false;
     extraction_beads = false;
   }
@@ -573,8 +586,13 @@ class data_extract {
   public void make_data_extraction(PImage image) {
     //\u3082\u3068\u753b\u50cf\u304c\u6a2a\u9577\u306e\u5834\u5408\uff0c\u7e26\u9577\u306e\u5834\u5408\u306b\u5fdc\u3058\u3066\u5909\u3048\u308b\u3002
     // \u30aa\u30d5\u30bb\u30c3\u30c8\u309250 \u306b\u53d6\u3063\u3066\u3044\u308b\u3002
+    float ratio = image.width / image.height;
+    if(ratio >= 1.0f){
+      h = PApplet.parseInt((w - 100)/ratio + 100);
+    } else {
+      w = PApplet.parseInt((h - 100)*ratio + 100);
+    }
     image.resize(w - 100, h - 100);//\u30ea\u30b5\u30a4\u30ba\u3059\u308b\u3002
-    
     getBinalized(image);//\uff12\u5024\u5316\u3057\u3066d[][]\u306b\u683c\u7d0d\u3059\u308b
     
     s=thickness();//d[][]\u304b\u3089\u7dda\u306e\u592a\u3055\u3092\u898b\u7a4d\u3082\u308b
@@ -620,7 +638,7 @@ class data_extract {
 
     if (ofutarisama_flag) {
       extraction_complete = true;
-      println("extraction is finished");
+      println("extraction is finished. points # ="+points.size()+", Nbh # ="+nbhs.size());
       // Joint\u7528\u306eNbh\u306e\u8a2d\u7f6e
       addJointToNbhs();
       // disp\u306e\u30c7\u30fc\u30bf\u3092\u66f8\u304d\u63db\u3048\u308b\u3002
@@ -832,8 +850,7 @@ class data_extract {
       for (int x=0; x<w; x++) {
         if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
           int c = image.pixels[(y-50) * image.width + (x-50)];
-//          if (red(c)>128&&green(c)>128&&blue(c)>128) {
-          if (red(c)>160&&green(c)>160&&blue(c)>160) {
+          if ((red(c)+green(c)+blue(c))/3 > 128) {
             d[x][y]=0;
           } else {
             d[x][y]=1;
@@ -1360,7 +1377,7 @@ class data_extract {
       }
     }
     println("thickness = "+sum/num);
-    return sum/num;
+    return max(3,PApplet.parseInt(sum/num));
   }
 }
 class data_graph{

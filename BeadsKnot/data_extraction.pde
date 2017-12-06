@@ -5,6 +5,7 @@ class data_extract {
   int e[][];// 切り取られた画像の2値化データ
   int s;//解析メッシュのサイズ
   display disp;
+  boolean extraction_binalized;
   boolean extraction_beads;
   boolean extraction_complete;
 
@@ -13,11 +14,12 @@ class data_extract {
   transform tf;
 
   //コンストラクタ
-  data_extract(int _h, int _w, PImage _img,display _disp) {
+  data_extract(int _h, int _w,display _disp) {
     w = _w;
     h = _h;
     tf=new transform(this);
     disp = _disp;
+    extraction_binalized = false;
     extraction_complete = false;
     extraction_beads = false;
   }
@@ -26,8 +28,13 @@ class data_extract {
   void make_data_extraction(PImage image) {
     //もと画像が横長の場合，縦長の場合に応じて変える。
     // オフセットを50 に取っている。
+    float ratio = image.width / image.height;
+    if(ratio >= 1.0){
+      h = int((w - 100)/ratio + 100);
+    } else {
+      w = int((h - 100)*ratio + 100);
+    }
     image.resize(w - 100, h - 100);//リサイズする。
-    
     getBinalized(image);//２値化してd[][]に格納する
     
     s=thickness();//d[][]から線の太さを見積もる
@@ -73,7 +80,7 @@ class data_extract {
 
     if (ofutarisama_flag) {
       extraction_complete = true;
-      println("extraction is finished");
+      println("extraction is finished. points # ="+points.size()+", Nbh # ="+nbhs.size());
       // Joint用のNbhの設置
       addJointToNbhs();
       // dispのデータを書き換える。
@@ -285,8 +292,7 @@ class data_extract {
       for (int x=0; x<w; x++) {
         if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
           color c = image.pixels[(y-50) * image.width + (x-50)];
-//          if (red(c)>128&&green(c)>128&&blue(c)>128) {
-          if (red(c)>160&&green(c)>160&&blue(c)>160) {
+          if ((red(c)+green(c)+blue(c))/3 > 128) {
             d[x][y]=0;
           } else {
             d[x][y]=1;
@@ -813,6 +819,6 @@ class data_extract {
       }
     }
     println("thickness = "+sum/num);
-    return sum/num;
+    return max(3,int(sum/num));
   }
 }
