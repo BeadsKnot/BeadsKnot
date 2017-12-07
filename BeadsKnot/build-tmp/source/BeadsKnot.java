@@ -36,7 +36,7 @@ public void setup() {
   // size(600, 600);//\u521d\u671f\u306e\u30b5\u30a4\u30ba
   disp = new display(1000,1000);
   data = new data_extract(extractSize, extractSize, disp);
-  graph = new data_graph();
+  graph = new data_graph(data);
 
 }
 
@@ -1427,15 +1427,15 @@ class data_graph{
 	
 	ArrayList<Node> nodes;
 	ArrayList<Edge> edges;
-	ArrayList<Beads> points;
+	data_extract de;
 
-	data_graph(){
+	data_graph(data_extract _de){
 		nodes = new ArrayList<Node>();
 		edges = new ArrayList<Edge>();
+		de = _de;
 	}
 
-	public void make_data_graph(ArrayList<Beads> _points){
-		points = _points;
+	public void make_data_graph(){
 	    // JointOrientation();
 	    // add_half_point_Joint();
 	    // getNodes();

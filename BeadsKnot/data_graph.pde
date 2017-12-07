@@ -2,15 +2,15 @@ class data_graph{
 	
 	ArrayList<Node> nodes;
 	ArrayList<Edge> edges;
-	ArrayList<Beads> points;
+	data_extract de;
 
-	data_graph(){
+	data_graph(data_extract _de){
 		nodes = new ArrayList<Node>();
 		edges = new ArrayList<Edge>();
+		de = _de;
 	}
 
-	void make_data_graph(ArrayList<Beads> _points){
-		points = _points;
+	void make_data_graph(){
 	    // JointOrientation();
 	    // add_half_point_Joint();
 	    // getNodes();
