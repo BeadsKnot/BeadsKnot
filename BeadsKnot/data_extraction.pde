@@ -1,98 +1,103 @@
 class data_extract {
 
+  int w , h;// 解析画面の大きさ
+  int d[][];// 画像の2値化データ
+  int e[][];// 切り取られた画像の2値化データ
+  int s;//解析メッシュのサイズ
+  display disp;
+  boolean extraction_binalized;
+  boolean extraction_beads;
+  boolean extraction_complete;
+
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
   ArrayList<Beads> points=new ArrayList<Beads>();//点を登録
   transform tf;
-  data_extract(int _h, int _w, PImage _img) {
-    //make_data_extraction(_img)
+
+  //コンストラクタ
+  data_extract(int _h, int _w,display _disp) {
+    w = _w;
+    h = _h;
     tf=new transform(this);
+    disp = _disp;
+    extraction_binalized = false;
+    extraction_complete = false;
+    extraction_beads = false;
   }
+
+  // imageデータの解析
   void make_data_extraction(PImage image) {
-    ofutarisama_flag=false;
-    // String path = f.getAbsolutePath();
-    // image = loadImage(path);
-    //image.resize(1000, 1000);//500から変更
-    image.resize(1400, 1400);
-    image.loadPixels();
-    w=image.width+100;
-    h=image.height+100;
-    d=new int [w][h];
-    loadPixels();
-    for (int y=0; y<h; y++) {
-      for (int x=0; x<w; x++) {
-        if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
-          color c = image.pixels[(y-50) * image.width + (x-50)];
-          if (red(c)>128&&green(c)>128&&blue(c)>128) {
-            d[x][y]=0;
-          } else {
-            d[x][y]=1;
-          }
-        } else {
-          d[x][y]=0;
-        }
-      }
+    //もと画像が横長の場合，縦長の場合に応じて変える。
+    // オフセットを50 に取っている。
+    float ratio = image.width / image.height;
+    if(ratio >= 1.0){
+      h = int((w - 100)/ratio + 100);
+    } else {
+      w = int((h - 100)*ratio + 100);
     }
-    updatePixels();
-    int Thickness=thickness() ;
-    s=n=Thickness;
+    image.resize(w - 100, h - 100);//リサイズする。
+    getBinalized(image);//２値化してd[][]に格納する
+    
+    s=thickness();//d[][]から線の太さを見積もる
+    
+    boolean ofutarisama_flag;
+    int loopLimit = 1;//min(10,s);
+    int kaisa = 0;
     do { 
-      s++;
-      n++; 
-      nbhs=new ArrayList<Nbh>();
-      points=new ArrayList<Beads>();
-      for (int y=0; y<h; y+=n) {
-        for (int x=0; x<w; x+=n) {
+      if (kaisa % 2 == 0) {
+        s -= kaisa;
+      } else {
+        s += kaisa;
+      }
+      kaisa++;
+
+      extraction_beads = false;
+      nbhs.clear();
+      points.clear();
+
+      for (int y=0; y<h; y+=s) {
+        for (int x=0; x<w; x+=s) {
           copy_area(x, y);
         }
       }
+
+      //cancelLoop();がいるらしい。
       countNbhs();
-      removethrone();
-      fillgap();
-      // get_nbh();
+      removeThrone();
+      countNbhs();
+      fillGap();
       countNbhs();
       FindJoint();
+
+      getDisplayLTRB();
+      extraction_beads = true;
+
+
       ofutarisama_flag=Ofutarisama();
-      println(Ofutarisama(), s);
+      println(ofutarisama_flag, s);
       tf.ln=s;
-    } while (!Ofutarisama ()&&s<(Thickness+10));
-    //if (s==(Thickness+10)) {
-    //println("失敗");
-    //}
-    if ( ofutarisama_flag==false) {
-      s=n=Thickness;
-      do { 
-        s--;
-        n--; 
-        nbhs=new ArrayList<Nbh>();
-        points=new ArrayList<Beads>();
-        for (int y=0; y<h; y+=n) {
-          for (int x=0; x<w; x+=n) {
-            copy_area(x, y);
-          }
-        }
-        countNbhs();
-        removethrone();
-        fillgap();
-        //get_nbh();
-        countNbhs();
-        FindJoint();
-        ofutarisama_flag=Ofutarisama();
-        tf.ln=s;
-        println(Ofutarisama(), s);
-      } while (!Ofutarisama ()&&s>(Thickness-10));
-      if (s==(Thickness-10)) {
-        println("失敗");
-      }
-    }
-    if ( ofutarisama_flag) {
-      jointAddToNbhs();
+      if(ofutarisama_flag) break;
+    } while (kaisa < loopLimit);
+
+    if (ofutarisama_flag) {
+      extraction_complete = true;
+      println("extraction is finished. points # ="+points.size()+", Nbh # ="+nbhs.size());
+      // Joint用のNbhの設置
+      addJointToNbhs();
+      // dispのデータを書き換える。
+      getDisplayLTRB();
+      // バネモデルの初期化
       tf.spring_setup();
+    } else {
+      println("extraction failed.");
     }
   }
 
+  //TODO メソッドをabc順に並べるかどうか，検討する。
+
   int addToPoints(int u, int v) {//点を追加する
+    // (u,v)は点の座標なので，float型ではないか？
     for (int i=0; i<points.size (); i++) {
-      if (dist(u, v, points.get(i).x, points.get(i).y )<n-1) {
+      if (dist(u, v, points.get(i).x, points.get(i).y )<s-1) {//近くに既存の点がある場合には追加しない
         return i;
       }
     }
@@ -111,19 +116,21 @@ class data_extract {
       }
       if (vec.c<=0||vec.c>=4) {
       } else {
-        ellipse(vec.x, vec.y, vec.c*3+1, vec.c*3+1);//vec.cは1or2or3のはず
+        //dispをつかって表示を画面サイズに合わせるように座標変換する。
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), vec.c*3+1, vec.c*3+1);//vec.cは1or2or3のはず
       }
     }
   }
 
   int addToNbhs(int nn, int mm) {//線を追加する
-    if (nn!=mm&&connected(nn, mm)==1) {
+    if (nn!=mm && connected(nn, mm)==1) {
       nbhs.add(new Nbh(nn, mm));
     }
     return 1;
   }
 
-  int connected(int nn, int mm) {//線がつながっているか
+  int connected(int nn, int mm) {//線がつながっているかチェックする
+    // nn,mmはpointsのなかの番号
     if ( duplicateNbhs(nn, mm)==1) {//重複したら
       return 0;
     }
@@ -208,6 +215,7 @@ class data_extract {
     }
   }
 
+  //TODO disp を使って画像を画面に収めるように変数変換する。
   void drawNbhs() {//線を書く
     for (int i=0; i<points.size (); i++) {
       Beads vec=points.get(i);
@@ -215,7 +223,7 @@ class data_extract {
         stroke(255, 0, 0);
         try { 
           if (!points.get(vec.n1).Joint) {
-            line(vec.x, vec.y, points.get(vec.n1).x, points.get(vec.n1).y);//エラーがでる
+            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n1).x), disp.get_winY(points.get(vec.n1).y));//エラーがでる
           }
         }
         catch (IndexOutOfBoundsException e) {
@@ -225,7 +233,7 @@ class data_extract {
         stroke(255, 0, 0);
         try { 
           if (!points.get(vec.n2).Joint) {
-            line(vec.x, vec.y, points.get(vec.n2).x, points.get(vec.n2).y);//エラーがでる
+            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n2).x), disp.get_winY(points.get(vec.n2).y));//エラーがでる
           }
           /* process */
         } 
@@ -276,7 +284,50 @@ class data_extract {
     }
   }
 
-  void jointAddToNbhs() {//jointに関しての線を追加
+  void getBinalized(PImage image){
+    image.loadPixels();
+    d=new int [w][h];
+    //loadPixels();//画面を更新しないので、多分無意味。
+    for (int y=0; y<h; y++) {
+      for (int x=0; x<w; x++) {
+        if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
+          color c = image.pixels[(y-50) * image.width + (x-50)];
+          if ((red(c)+green(c)+blue(c))/3 > 128) {
+            d[x][y]=0;
+          } else {
+            d[x][y]=1;
+          }
+        } else {
+          d[x][y]=0;
+        }
+      }
+    }
+    //updatePixels();//画面を更新しないので、多分無意味。
+  }
+
+  void getDisplayLTRB(){
+    float l,t,r,b;
+    l=t=r=b=0;
+    for (int u=0; u<points.size (); u++) {
+      Beads pt=points.get(u);
+      if(u==0){
+        l=r=pt.x;
+        t=b=pt.y;
+      } else {
+        if(pt.x<l) l=pt.x;
+        if(r<pt.x) r=pt.x;
+        if(pt.y<t) t=pt.y;
+        if(b<pt.y) b=pt.y;
+      }
+    }
+    disp.left=l;
+    disp.right=r;
+    disp.top=t;
+    disp.bottom=b;
+    disp.set_rate();
+  }
+
+  void addJointToNbhs() {//jointに関しての線を追加
     for (int u=0; u<points.size (); u++) {
       Beads vec=points.get(u);
       if (vec.Joint) {
@@ -342,7 +393,7 @@ class data_extract {
     }
   }
 
-  void removethrone() {//とげを除く
+  void removeThrone() {//とげを除く
     for (int u=0; u<points.size (); u++) {
       if ( points.get(u).c==1) {
         for (int i=nbhs.size ()-1; i>=0; i--) {
@@ -365,26 +416,14 @@ class data_extract {
     }
   }
 
-  void fillgap() {//点と点の距離の最小を記録し、最小の距離の点が1本さんならばその点と点をつなげる
+  void fillGap() {//点と点の距離の最小を記録し、最小の距離の点が1本さんならばその点と点をつなげる
     for (int u=0; u<points.size (); u++) {
-      if ( points.get(u).c==1) {
-        float min=w;
-        int num=0;
+      if ( points.get(u).c==1) {// まず「自分」がおひとりさまの場合のみ調べる
+        float min=w;//大きな値から始める。
+        int num=-1;//最小の距離の点の番号を記録するための変数
         for (int v=0; v<points.size (); v++) {
           if (u!=v) {
-            /*
-            boolean OK=true;
-             for (Nbh n : nbhs) {
-             if (n.a==u&&n.b==v) {
-             OK=false;
-             }
-             if (n.a==v&&n.b==u) {
-             OK=false;
-             }
-             }
-             */
-            //if (OK) {
-            if (points.get(u).n1!=v) {
+            if (points.get(u).n1!=v) {//おひとりさまの相手は近くにいるに決まっているので探索対象から除外
               float d=dist(points.get(u).x, points.get(u).y, points.get(v).x, points.get(v).y);
               if (min>d) {
                 min=d;
@@ -393,12 +432,12 @@ class data_extract {
             }
           }
         }
-        if (points.get(num).c==1) {
+        if (points.get(num).c==1) {//最小の距離の点がおひとりさま
           addToNbhs(u, num);
-          //なにかする
+          //なにかする//TODO 「なにかする」という古いメッセージの意味を考える。
           points.get(num).c++;
           points.get(u).c++;
-        } else if (points.get(num).c==0) {
+        } else if (points.get(num).c==0) {//最小の距離の点が孤立
           addToNbhs(u, num);
           points.get(num).c++;
           points.get(u).c++;
@@ -546,8 +585,8 @@ class data_extract {
 
 
   void copy_area(int x, int y) {//
-    int e[][]=new int[s][s];
-    if (x+s>w||y+s>h) {
+    e = new int[s][s];
+    if (x<0 || x+s>w || y<0 || y+s>h) {
       return;
     }
     for (int j=0; j<s; j++) {
@@ -652,102 +691,103 @@ class data_extract {
           addToNbhs(v2, v4);
         }
       }
-    }
 
-    boolean OKy=true;
-    int flagy;
-    int i1=0;
-    int i2=s-1;
-    int i3=0;
-    int i4=0;
-    for (int j=0; j<s; j++) {
-      flagy=0;
+      boolean OKy=true;
+      int flagy;
+      int i1=0;
+      int i2=s-1;
+      int i3=0;
+      int i4=0;
+      for (int j=0; j<s; j++) {
+        flagy=0;
+        for (int i=0; i<s; i++) {
+          if (flagy==0&&e[i][j]==0) {
+            flagy=1;
+          } else if (flagy==0&&e[i][j]==1) {
+            flagy=2;
+            i1=i;
+          } else if (flagy==1&&e[i][j]==1) {
+            flagy=2;
+            i1=i;
+          } else if (flagy==2&&e[i][j]==0) {
+            flagy=3;
+            i2=i;
+          } else if (flagy==3&&e[i][j]==1) {
+            flagy=4;
+          }
+        }
+        if (j==0) {
+          i3=((i1+i2)/2);
+        }
+        if (j==s-1) {
+          i4=((i1+i2)/2);
+        }
+        if (flagy!=3&&flagy!=2) {
+          OKy=false;
+        }
+      }
+      if (OKy) {
+        for (int j=0; j<s; j++) {
+          for (int i=0; i<s; i++) {
+            if ( e[i][j]==1) {
+              stroke(0, 255, 0);
+            } else {
+              stroke(0, 0, 255);
+            }
+          }
+        }
+        stroke(0);
+      }
+
+      boolean OKx=true;
+      int flagx;
+      int j1=0;
+      int j2=s-1;
+      int j3=0;
+      int j4=0;
       for (int i=0; i<s; i++) {
-        if (flagy==0&&e[i][j]==0) {
-          flagy=1;
-        } else if (flagy==0&&e[i][j]==1) {
-          flagy=2;
-          i1=i;
-        } else if (flagy==1&&e[i][j]==1) {
-          flagy=2;
-          i1=i;
-        } else if (flagy==2&&e[i][j]==0) {
-          flagy=3;
-          i2=i;
-        } else if (flagy==3&&e[i][j]==1) {
-          flagy=4;
-        }
-      }
-      if (j==0) {
-        i3=((i1+i2)/2);
-      }
-      if (j==s-1) {
-        i4=((i1+i2)/2);
-      }
-      if (flagy!=3&&flagy!=2) {
-        OKy=false;
-      }
-    }
-    if (OKy) {
-      for (int j=0; j<s; j++) {
-        for (int i=0; i<s; i++) {
-          if ( e[i][j]==1) {
-            stroke(0, 255, 0);
-          } else {
-            stroke(0, 0, 255);
+        flagx=0;
+        for (int j=0; j<s; j++) {
+          if (flagx==0&&e[i][j]==0) {
+            flagx=1;
+          } else if (flagx==0&&e[i][j]==1) {
+            flagx=2;
+            j1=j;
+          } else if (flagx==1&&e[i][j]==1) {
+            flagx=2;
+            j1=j;
+          } else if (flagx==2&&e[i][j]==0) {
+            flagx=3;
+            j2=j;
+          } else if (flagx==3&&e[i][j]==1) {
+            flagx=4;
           }
         }
-      }
-      stroke(0);
-    }
-
-    boolean OKx=true;
-    int flagx;
-    int j1=0;
-    int j2=s-1;
-    int j3=0;
-    int j4=0;
-    for (int i=0; i<s; i++) {
-      flagx=0;
-      for (int j=0; j<s; j++) {
-        if (flagx==0&&e[i][j]==0) {
-          flagx=1;
-        } else if (flagx==0&&e[i][j]==1) {
-          flagx=2;
-          j1=j;
-        } else if (flagx==1&&e[i][j]==1) {
-          flagx=2;
-          j1=j;
-        } else if (flagx==2&&e[i][j]==0) {
-          flagx=3;
-          j2=j;
-        } else if (flagx==3&&e[i][j]==1) {
-          flagx=4;
+        if (i==0) {
+          j3=((j1+j2)/2);
+        }
+        if (i==s-1) {
+          j4=((j1+j2)/2);
+        }
+        if (flagx!=3&&flagx!=2) {
+          OKx=false;
         }
       }
-      if (i==0) {
-        j3=((j1+j2)/2);
-      }
-      if (i==s-1) {
-        j4=((j1+j2)/2);
-      }
-      if (flagx!=3&&flagx!=2) {
-        OKx=false;
-      }
-    }
-    if (OKx) {
-      for (int j=0; j<s; j++) {
-        for (int i=0; i<s; i++) {
-          if ( e[i][j]==1) {
-            stroke(255);
-          } else {
-            stroke(0, 0, 255);
+      if (OKx) {
+        for (int j=0; j<s; j++) {
+          for (int i=0; i<s; i++) {
+            if ( e[i][j]==1) {
+              stroke(255);
+            } else {
+              stroke(0, 0, 255);
+            }
           }
         }
+        stroke(0);
       }
-      stroke(0);
     }
   }
+
   boolean Ofutarisama() {//みんなお二人様だったか確認
     for (Beads vec : points) {
       if (vec.c!=2) {
@@ -778,7 +818,7 @@ class data_extract {
         }
       }
     }
-    println("平均は"+sum/num);
-    return sum/num;
+    println("thickness = "+sum/num);
+    return max(3,int(sum/num));
   }
 }
