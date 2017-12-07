@@ -53,6 +53,13 @@ public void draw() {
   }
   //data_extract\u306e\u5185\u5bb9\u3092\u63cf\u753b\u3059\u308b\u5834\u5408\u3002
    else if(data.extraction_beads){
+    loadPixels();
+    for(int x=0; x<data.w; x++){
+      for(int y=0; y<data.h; y++){
+        pixels[x + y*width] = color(255*(1-data.d[x][y]));
+      }
+    }
+    updatePixels();
     data.drawPoints();
     data.drawNbhs();
   } 
@@ -874,7 +881,7 @@ class data_extract {
       } else {
         if(pt.x<l) l=pt.x;
         if(r<pt.x) r=pt.x;
-        if(pt.x<t) t=pt.y;
+        if(pt.y<t) t=pt.y;
         if(b<pt.y) b=pt.y;
       }
     }
@@ -1416,6 +1423,7 @@ class display{
 		rate=1;
 	}
 
+	//TODO \u30bb\u30f3\u30bf\u30ea\u30f3\u30b0\u3057\u305f\u3082\u306e\u3092\u8003\u3048\u3066\u304a\u304f\u3002
 	public float get_winX(float x){
 		return (x-left)*rate+win_offset;
 	}

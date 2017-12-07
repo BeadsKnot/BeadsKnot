@@ -14,6 +14,7 @@ class display{
 		rate=1;
 	}
 
+	//TODO センタリングしたものを考えておく。
 	float get_winX(float x){
 		return (x-left)*rate+win_offset;
 	}

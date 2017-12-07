@@ -316,7 +316,7 @@ class data_extract {
       } else {
         if(pt.x<l) l=pt.x;
         if(r<pt.x) r=pt.x;
-        if(pt.x<t) t=pt.y;
+        if(pt.y<t) t=pt.y;
         if(b<pt.y) b=pt.y;
       }
     }
