@@ -1,7 +1,6 @@
 class data_extract {
 
   int w , h;// 解析画面の大きさ
-  int d[][];// 画像の2値化データ
   int e[][];// 切り取られた画像の2値化データ
   int s;//解析メッシュのサイズ
   display disp;
@@ -12,12 +11,14 @@ class data_extract {
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
   ArrayList<Beads> points=new ArrayList<Beads>();//点を登録
   transform tf;
+  Binalization bin;
 
   //コンストラクタ
   data_extract(int _h, int _w,display _disp) {
     w = _w;
     h = _h;
     tf=new transform(this);
+    bin = new Binalization();
     disp = _disp;
     extraction_binalized = false;
     extraction_complete = false;
@@ -35,7 +36,8 @@ class data_extract {
       w = int((h - 100)*ratio + 100);
     }
     image.resize(w - 100, h - 100);//リサイズする。
-    getBinalized(image);//２値化してd[][]に格納する
+
+    bin.getBinalized(w,h,image);//２値化してbin.d[][]に格納する
     
     s=thickness();//d[][]から線の太さを見積もる
     
@@ -149,7 +151,7 @@ class data_extract {
     int [][]g=new int[r-l+1][b-t+1];  
     for (int x=0; x<r-l+1; x++) {
       for (int y=0; y<b-t+1; y++) {
-        f[x][y]=d[l+x][t+y];
+        f[x][y]=bin.d[l+x][t+y];
       }
     }
     int fax=int(xa-l);
@@ -284,26 +286,6 @@ class data_extract {
     }
   }
 
-  void getBinalized(PImage image){
-    image.loadPixels();
-    d=new int [w][h];
-    //loadPixels();//画面を更新しないので、多分無意味。
-    for (int y=0; y<h; y++) {
-      for (int x=0; x<w; x++) {
-        if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
-          color c = image.pixels[(y-50) * image.width + (x-50)];
-          if ((red(c)+green(c)+blue(c))/3 > 128) {
-            d[x][y]=0;
-          } else {
-            d[x][y]=1;
-          }
-        } else {
-          d[x][y]=0;
-        }
-      }
-    }
-    //updatePixels();//画面を更新しないので、多分無意味。
-  }
 
   void getDisplayLTRB(){
     float l,t,r,b;
@@ -591,7 +573,7 @@ class data_extract {
     }
     for (int j=0; j<s; j++) {
       for (int i=0; i<s; i++) {
-        e[i][j]=d[x+i][y+j];
+        e[i][j]=bin.d[x+i][y+j];
       }
     }
     float XY=0, X=0, Y=0, XX=0, YY=0;
@@ -617,14 +599,14 @@ class data_extract {
       if ((num*XX)-(X*X)>(num*YY)-(Y*Y)) {
         float a=(num*XY-X*Y)/((num*XX)-(X*X));
         float b=(XX*Y-XY*X)/((num*XX)-(X*X));
-        boolean p1=(b>=0&&b<=s&&d[x][(int)(y+b)]==1);//p1が辺上に乗っているならば
+        boolean p1=(b>=0&&b<=s&&bin.d[x][(int)(y+b)]==1);//p1が辺上に乗っているならば
         float k=a*s+b;
-        boolean p2=(k>=0&&k<=s&&d[x+s][(int)(y+k)]==1); //p2が辺上に載っているならば
+        boolean p2=(k>=0&&k<=s&&bin.d[x+s][(int)(y+k)]==1); //p2が辺上に載っているならば
         float h=-b/a;
         //if(a==0)何か処理が必要
-        boolean p3=(h>=0&&h<=s&&d[(int)(x+h)][y]==1); //p3が辺上に載っているならば
+        boolean p3=(h>=0&&h<=s&&bin.d[(int)(x+h)][y]==1); //p3が辺上に載っているならば
         float l=(s-b)/a;
-        boolean p4=(l>=0&&l<=s&&d[(int)(x+l)][y+s]==1); //p4が辺上に載っているならば
+        boolean p4=(l>=0&&l<=s&&bin.d[(int)(x+l)][y+s]==1); //p4が辺上に載っているならば
         if (p1) {
           v1=addToPoints(x, (int)(y+b));
         }
@@ -655,14 +637,14 @@ class data_extract {
       } else {
         float a=(num*XY-X*Y)/((num*YY)-(Y*Y));
         float b=(YY*X-XY*Y)/((num*YY)-(Y*Y));
-        boolean p1=(b>=0&&b<=s&&d[(int)(x+b)][y]==1);//p1が辺上に乗っているならば
+        boolean p1=(b>=0&&b<=s&&bin.d[(int)(x+b)][y]==1);//p1が辺上に乗っているならば
         float k=a*s+b;
-        boolean p2=(k>=0&&k<=s&&d[(int)(x+k)][y+s]==1); //p2が辺上に載っているならば
+        boolean p2=(k>=0&&k<=s&&bin.d[(int)(x+k)][y+s]==1); //p2が辺上に載っているならば
         float h=-b/a;
         //if(a==0)何か処理が必要
-        boolean p3=(h>=0&&h<=s&&d[x][(int)(y+h)]==1); //p3が辺上に載っているならば
+        boolean p3=(h>=0&&h<=s&&bin.d[x][(int)(y+h)]==1); //p3が辺上に載っているならば
         float l=(s-b)/a;
-        boolean p4=(l>=0&&l<=s&&d[x+s][(int)(y+l)]==1); //p4が辺上に載っているならば
+        boolean p4=(l>=0&&l<=s&&bin.d[x+s][(int)(y+l)]==1); //p4が辺上に載っているならば
         if (p1) {
           v1=addToPoints((int)(x+b), y);
         }
@@ -804,11 +786,11 @@ class data_extract {
     boolean flag=false;
     for (int y=100; y<h; y+=100) {
       for (int x=0; x<w; x++) {
-        if (d[x][y]==1) {
+        if (bin.d[x][y]==1) {
           flag=true;
           count++;
         }
-        if (flag==true&&d[x][y]==0) {
+        if (flag==true&&bin.d[x][y]==0) {
           flag=false;
           if (count>=5) {
             sum+=count;

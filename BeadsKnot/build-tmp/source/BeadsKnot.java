@@ -46,7 +46,7 @@ public void draw() {
     loadPixels();
     for(int x=0; x<data.w; x++){
       for(int y=0; y<data.h; y++){
-        pixels[x + y*width] = color(255*(1-data.d[x][y]));
+        pixels[x + y*width] = color(255*(1-data.bin.d[x][y]));
       }
     }
     updatePixels();
@@ -56,7 +56,7 @@ public void draw() {
     loadPixels();
     for(int x=0; x<data.w; x++){
       for(int y=0; y<data.h; y++){
-        pixels[x + y*width] = color(255*(1-data.d[x][y]));
+        pixels[x + y*width] = color(255*(1-data.bin.d[x][y]));
       }
     }
     updatePixels();
@@ -95,6 +95,7 @@ public void fileSelected(File selection) {
     data.make_data_extraction(image);
   }
 }
+
 class Beads {//\u70b9\u306e\u30af\u30e9\u30b9
   float x;
   float y;
@@ -114,6 +115,33 @@ class Beads {//\u70b9\u306e\u30af\u30e9\u30b9
     c=0;
     Joint=false;
   }
+}
+class Binalization{
+  int d[][];// \u753b\u50cf\u306e2\u5024\u5316\u30c7\u30fc\u30bf
+  Binalization(){
+
+  }
+
+  public void getBinalized(int w, int h,PImage image){
+  	image.loadPixels();
+  	d=new int [w][h];
+    for (int y=0; y<h; y++) {
+    	for (int x=0; x<w; x++) {
+    		if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
+    			int c = image.pixels[(y-50) * image.width + (x-50)];
+    			if ((red(c)+green(c)+blue(c))/3 > 128) {
+    				d[x][y]=0;
+    			} else {
+    				d[x][y]=1;
+    			}
+    		} else {
+    			d[x][y]=0;
+    		}
+    	}
+    }
+}
+
+
 }
 class Edge {
     private int h;//node
@@ -564,99 +592,105 @@ class Node {
 }
 class data_extract {
 
+  int w , h;// \u89e3\u6790\u753b\u9762\u306e\u5927\u304d\u3055
+  int e[][];// \u5207\u308a\u53d6\u3089\u308c\u305f\u753b\u50cf\u306e2\u5024\u5316\u30c7\u30fc\u30bf
+  int s;//\u89e3\u6790\u30e1\u30c3\u30b7\u30e5\u306e\u30b5\u30a4\u30ba
+  display disp;
+  boolean extraction_binalized;
+  boolean extraction_beads;
+  boolean extraction_complete;
+
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//\u7dda\u3092\u767b\u9332
   ArrayList<Beads> points=new ArrayList<Beads>();//\u70b9\u3092\u767b\u9332
   transform tf;
-  data_extract(int _h, int _w, PImage _img) {
-    //make_data_extraction(_img)
+  Binalization bin;
+
+  //\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf
+  data_extract(int _h, int _w,display _disp) {
+    w = _w;
+    h = _h;
     tf=new transform(this);
+    bin = new Binalization();
+    disp = _disp;
+    extraction_binalized = false;
+    extraction_complete = false;
+    extraction_beads = false;
   }
+
+  // image\u30c7\u30fc\u30bf\u306e\u89e3\u6790
   public void make_data_extraction(PImage image) {
-    ofutarisama_flag=false;
-    // String path = f.getAbsolutePath();
-    // image = loadImage(path);
-    //image.resize(1000, 1000);//500\u304b\u3089\u5909\u66f4
-    image.resize(1400, 1400);
-    image.loadPixels();
-    w=image.width+100;
-    h=image.height+100;
-    d=new int [w][h];
-    loadPixels();
-    for (int y=0; y<h; y++) {
-      for (int x=0; x<w; x++) {
-        if (x>=50&&x<(w-50)&&y>=50&&y<(h-50)) {
-          int c = image.pixels[(y-50) * image.width + (x-50)];
-          if (red(c)>128&&green(c)>128&&blue(c)>128) {
-            d[x][y]=0;
-          } else {
-            d[x][y]=1;
-          }
-        } else {
-          d[x][y]=0;
-        }
-      }
+    //\u3082\u3068\u753b\u50cf\u304c\u6a2a\u9577\u306e\u5834\u5408\uff0c\u7e26\u9577\u306e\u5834\u5408\u306b\u5fdc\u3058\u3066\u5909\u3048\u308b\u3002
+    // \u30aa\u30d5\u30bb\u30c3\u30c8\u309250 \u306b\u53d6\u3063\u3066\u3044\u308b\u3002
+    float ratio = image.width / image.height;
+    if(ratio >= 1.0f){
+      h = PApplet.parseInt((w - 100)/ratio + 100);
+    } else {
+      w = PApplet.parseInt((h - 100)*ratio + 100);
     }
-    updatePixels();
-    int Thickness=thickness() ;
-    s=n=Thickness;
+    image.resize(w - 100, h - 100);//\u30ea\u30b5\u30a4\u30ba\u3059\u308b\u3002
+    bin.getBinalized(w,h,image);//\uff12\u5024\u5316\u3057\u3066d[][]\u306b\u683c\u7d0d\u3059\u308b
+    
+    s=thickness();//d[][]\u304b\u3089\u7dda\u306e\u592a\u3055\u3092\u898b\u7a4d\u3082\u308b
+    
+    boolean ofutarisama_flag;
+    int loopLimit = 1;//min(10,s);
+    int kaisa = 0;
     do { 
-      s++;
-      n++; 
-      nbhs=new ArrayList<Nbh>();
-      points=new ArrayList<Beads>();
-      for (int y=0; y<h; y+=n) {
-        for (int x=0; x<w; x+=n) {
+      if (kaisa % 2 == 0) {
+        s -= kaisa;
+      } else {
+        s += kaisa;
+      }
+      kaisa++;
+
+      extraction_beads = false;
+      nbhs.clear();
+      points.clear();
+
+      for (int y=0; y<h; y+=s) {
+        for (int x=0; x<w; x+=s) {
           copy_area(x, y);
         }
       }
+
+      //cancelLoop();\u304c\u3044\u308b\u3089\u3057\u3044\u3002
       countNbhs();
-      removethrone();
-      fillgap();
-      // get_nbh();
+      removeThrone();
+      countNbhs();
+      fillGap();
       countNbhs();
       FindJoint();
+
+      getDisplayLTRB();
+      extraction_beads = true;
+
+
       ofutarisama_flag=Ofutarisama();
-      println(Ofutarisama(), s);
+      println(ofutarisama_flag, s);
       tf.ln=s;
-    } while (!Ofutarisama ()&&s<(Thickness+10));
-    //if (s==(Thickness+10)) {
-    //println("\u5931\u6557");
-    //}
-    if ( ofutarisama_flag==false) {
-      s=n=Thickness;
-      do { 
-        s--;
-        n--; 
-        nbhs=new ArrayList<Nbh>();
-        points=new ArrayList<Beads>();
-        for (int y=0; y<h; y+=n) {
-          for (int x=0; x<w; x+=n) {
-            copy_area(x, y);
-          }
-        }
-        countNbhs();
-        removethrone();
-        fillgap();
-        //get_nbh();
-        countNbhs();
-        FindJoint();
-        ofutarisama_flag=Ofutarisama();
-        tf.ln=s;
-        println(Ofutarisama(), s);
-      } while (!Ofutarisama ()&&s>(Thickness-10));
-      if (s==(Thickness-10)) {
-        println("\u5931\u6557");
-      }
-    }
-    if ( ofutarisama_flag) {
-      jointAddToNbhs();
+      if(ofutarisama_flag) break;
+    } while (kaisa < loopLimit);
+
+    if (ofutarisama_flag) {
+      extraction_complete = true;
+      println("extraction is finished. points # ="+points.size()+", Nbh # ="+nbhs.size());
+      // Joint\u7528\u306eNbh\u306e\u8a2d\u7f6e
+      addJointToNbhs();
+      // disp\u306e\u30c7\u30fc\u30bf\u3092\u66f8\u304d\u63db\u3048\u308b\u3002
+      getDisplayLTRB();
+      // \u30d0\u30cd\u30e2\u30c7\u30eb\u306e\u521d\u671f\u5316
       tf.spring_setup();
+    } else {
+      println("extraction failed.");
     }
   }
 
+  //TODO \u30e1\u30bd\u30c3\u30c9\u3092abc\u9806\u306b\u4e26\u3079\u308b\u304b\u3069\u3046\u304b\uff0c\u691c\u8a0e\u3059\u308b\u3002
+
   public int addToPoints(int u, int v) {//\u70b9\u3092\u8ffd\u52a0\u3059\u308b
+    // (u,v)\u306f\u70b9\u306e\u5ea7\u6a19\u306a\u306e\u3067\uff0cfloat\u578b\u3067\u306f\u306a\u3044\u304b\uff1f
     for (int i=0; i<points.size (); i++) {
-      if (dist(u, v, points.get(i).x, points.get(i).y )<n-1) {
+      if (dist(u, v, points.get(i).x, points.get(i).y )<s-1) {//\u8fd1\u304f\u306b\u65e2\u5b58\u306e\u70b9\u304c\u3042\u308b\u5834\u5408\u306b\u306f\u8ffd\u52a0\u3057\u306a\u3044
         return i;
       }
     }
@@ -675,19 +709,21 @@ class data_extract {
       }
       if (vec.c<=0||vec.c>=4) {
       } else {
-        ellipse(vec.x, vec.y, vec.c*3+1, vec.c*3+1);//vec.c\u306f1or2or3\u306e\u306f\u305a
+        //disp\u3092\u3064\u304b\u3063\u3066\u8868\u793a\u3092\u753b\u9762\u30b5\u30a4\u30ba\u306b\u5408\u308f\u305b\u308b\u3088\u3046\u306b\u5ea7\u6a19\u5909\u63db\u3059\u308b\u3002
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), vec.c*3+1, vec.c*3+1);//vec.c\u306f1or2or3\u306e\u306f\u305a
       }
     }
   }
 
   public int addToNbhs(int nn, int mm) {//\u7dda\u3092\u8ffd\u52a0\u3059\u308b
-    if (nn!=mm&&connected(nn, mm)==1) {
+    if (nn!=mm && connected(nn, mm)==1) {
       nbhs.add(new Nbh(nn, mm));
     }
     return 1;
   }
 
-  public int connected(int nn, int mm) {//\u7dda\u304c\u3064\u306a\u304c\u3063\u3066\u3044\u308b\u304b
+  public int connected(int nn, int mm) {//\u7dda\u304c\u3064\u306a\u304c\u3063\u3066\u3044\u308b\u304b\u30c1\u30a7\u30c3\u30af\u3059\u308b
+    // nn,mm\u306fpoints\u306e\u306a\u304b\u306e\u756a\u53f7
     if ( duplicateNbhs(nn, mm)==1) {//\u91cd\u8907\u3057\u305f\u3089
       return 0;
     }
@@ -706,7 +742,7 @@ class data_extract {
     int [][]g=new int[r-l+1][b-t+1];  
     for (int x=0; x<r-l+1; x++) {
       for (int y=0; y<b-t+1; y++) {
-        f[x][y]=d[l+x][t+y];
+        f[x][y]=bin.d[l+x][t+y];
       }
     }
     int fax=PApplet.parseInt(xa-l);
@@ -772,6 +808,7 @@ class data_extract {
     }
   }
 
+  //TODO disp \u3092\u4f7f\u3063\u3066\u753b\u50cf\u3092\u753b\u9762\u306b\u53ce\u3081\u308b\u3088\u3046\u306b\u5909\u6570\u5909\u63db\u3059\u308b\u3002
   public void drawNbhs() {//\u7dda\u3092\u66f8\u304f
     for (int i=0; i<points.size (); i++) {
       Beads vec=points.get(i);
@@ -779,7 +816,7 @@ class data_extract {
         stroke(255, 0, 0);
         try { 
           if (!points.get(vec.n1).Joint) {
-            line(vec.x, vec.y, points.get(vec.n1).x, points.get(vec.n1).y);//\u30a8\u30e9\u30fc\u304c\u3067\u308b
+            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n1).x), disp.get_winY(points.get(vec.n1).y));//\u30a8\u30e9\u30fc\u304c\u3067\u308b
           }
         }
         catch (IndexOutOfBoundsException e) {
@@ -789,7 +826,7 @@ class data_extract {
         stroke(255, 0, 0);
         try { 
           if (!points.get(vec.n2).Joint) {
-            line(vec.x, vec.y, points.get(vec.n2).x, points.get(vec.n2).y);//\u30a8\u30e9\u30fc\u304c\u3067\u308b
+            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n2).x), disp.get_winY(points.get(vec.n2).y));//\u30a8\u30e9\u30fc\u304c\u3067\u308b
           }
           /* process */
         } 
@@ -840,7 +877,30 @@ class data_extract {
     }
   }
 
-  public void jointAddToNbhs() {//joint\u306b\u95a2\u3057\u3066\u306e\u7dda\u3092\u8ffd\u52a0
+
+  public void getDisplayLTRB(){
+    float l,t,r,b;
+    l=t=r=b=0;
+    for (int u=0; u<points.size (); u++) {
+      Beads pt=points.get(u);
+      if(u==0){
+        l=r=pt.x;
+        t=b=pt.y;
+      } else {
+        if(pt.x<l) l=pt.x;
+        if(r<pt.x) r=pt.x;
+        if(pt.y<t) t=pt.y;
+        if(b<pt.y) b=pt.y;
+      }
+    }
+    disp.left=l;
+    disp.right=r;
+    disp.top=t;
+    disp.bottom=b;
+    disp.set_rate();
+  }
+
+  public void addJointToNbhs() {//joint\u306b\u95a2\u3057\u3066\u306e\u7dda\u3092\u8ffd\u52a0
     for (int u=0; u<points.size (); u++) {
       Beads vec=points.get(u);
       if (vec.Joint) {
@@ -906,7 +966,7 @@ class data_extract {
     }
   }
 
-  public void removethrone() {//\u3068\u3052\u3092\u9664\u304f
+  public void removeThrone() {//\u3068\u3052\u3092\u9664\u304f
     for (int u=0; u<points.size (); u++) {
       if ( points.get(u).c==1) {
         for (int i=nbhs.size ()-1; i>=0; i--) {
@@ -929,26 +989,14 @@ class data_extract {
     }
   }
 
-  public void fillgap() {//\u70b9\u3068\u70b9\u306e\u8ddd\u96e2\u306e\u6700\u5c0f\u3092\u8a18\u9332\u3057\u3001\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u304c1\u672c\u3055\u3093\u306a\u3089\u3070\u305d\u306e\u70b9\u3068\u70b9\u3092\u3064\u306a\u3052\u308b
+  public void fillGap() {//\u70b9\u3068\u70b9\u306e\u8ddd\u96e2\u306e\u6700\u5c0f\u3092\u8a18\u9332\u3057\u3001\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u304c1\u672c\u3055\u3093\u306a\u3089\u3070\u305d\u306e\u70b9\u3068\u70b9\u3092\u3064\u306a\u3052\u308b
     for (int u=0; u<points.size (); u++) {
-      if ( points.get(u).c==1) {
-        float min=w;
-        int num=0;
+      if ( points.get(u).c==1) {// \u307e\u305a\u300c\u81ea\u5206\u300d\u304c\u304a\u3072\u3068\u308a\u3055\u307e\u306e\u5834\u5408\u306e\u307f\u8abf\u3079\u308b
+        float min=w;//\u5927\u304d\u306a\u5024\u304b\u3089\u59cb\u3081\u308b\u3002
+        int num=-1;//\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u306e\u756a\u53f7\u3092\u8a18\u9332\u3059\u308b\u305f\u3081\u306e\u5909\u6570
         for (int v=0; v<points.size (); v++) {
           if (u!=v) {
-            /*
-            boolean OK=true;
-             for (Nbh n : nbhs) {
-             if (n.a==u&&n.b==v) {
-             OK=false;
-             }
-             if (n.a==v&&n.b==u) {
-             OK=false;
-             }
-             }
-             */
-            //if (OK) {
-            if (points.get(u).n1!=v) {
+            if (points.get(u).n1!=v) {//\u304a\u3072\u3068\u308a\u3055\u307e\u306e\u76f8\u624b\u306f\u8fd1\u304f\u306b\u3044\u308b\u306b\u6c7a\u307e\u3063\u3066\u3044\u308b\u306e\u3067\u63a2\u7d22\u5bfe\u8c61\u304b\u3089\u9664\u5916
               float d=dist(points.get(u).x, points.get(u).y, points.get(v).x, points.get(v).y);
               if (min>d) {
                 min=d;
@@ -957,12 +1005,12 @@ class data_extract {
             }
           }
         }
-        if (points.get(num).c==1) {
+        if (points.get(num).c==1) {//\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u304c\u304a\u3072\u3068\u308a\u3055\u307e
           addToNbhs(u, num);
-          //\u306a\u306b\u304b\u3059\u308b
+          //\u306a\u306b\u304b\u3059\u308b//TODO \u300c\u306a\u306b\u304b\u3059\u308b\u300d\u3068\u3044\u3046\u53e4\u3044\u30e1\u30c3\u30bb\u30fc\u30b8\u306e\u610f\u5473\u3092\u8003\u3048\u308b\u3002
           points.get(num).c++;
           points.get(u).c++;
-        } else if (points.get(num).c==0) {
+        } else if (points.get(num).c==0) {//\u6700\u5c0f\u306e\u8ddd\u96e2\u306e\u70b9\u304c\u5b64\u7acb
           addToNbhs(u, num);
           points.get(num).c++;
           points.get(u).c++;
@@ -1110,13 +1158,13 @@ class data_extract {
 
 
   public void copy_area(int x, int y) {//
-    int e[][]=new int[s][s];
-    if (x+s>w||y+s>h) {
+    e = new int[s][s];
+    if (x<0 || x+s>w || y<0 || y+s>h) {
       return;
     }
     for (int j=0; j<s; j++) {
       for (int i=0; i<s; i++) {
-        e[i][j]=d[x+i][y+j];
+        e[i][j]=bin.d[x+i][y+j];
       }
     }
     float XY=0, X=0, Y=0, XX=0, YY=0;
@@ -1142,14 +1190,14 @@ class data_extract {
       if ((num*XX)-(X*X)>(num*YY)-(Y*Y)) {
         float a=(num*XY-X*Y)/((num*XX)-(X*X));
         float b=(XX*Y-XY*X)/((num*XX)-(X*X));
-        boolean p1=(b>=0&&b<=s&&d[x][(int)(y+b)]==1);//p1\u304c\u8fba\u4e0a\u306b\u4e57\u3063\u3066\u3044\u308b\u306a\u3089\u3070
+        boolean p1=(b>=0&&b<=s&&bin.d[x][(int)(y+b)]==1);//p1\u304c\u8fba\u4e0a\u306b\u4e57\u3063\u3066\u3044\u308b\u306a\u3089\u3070
         float k=a*s+b;
-        boolean p2=(k>=0&&k<=s&&d[x+s][(int)(y+k)]==1); //p2\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
+        boolean p2=(k>=0&&k<=s&&bin.d[x+s][(int)(y+k)]==1); //p2\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
         float h=-b/a;
         //if(a==0)\u4f55\u304b\u51e6\u7406\u304c\u5fc5\u8981
-        boolean p3=(h>=0&&h<=s&&d[(int)(x+h)][y]==1); //p3\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
+        boolean p3=(h>=0&&h<=s&&bin.d[(int)(x+h)][y]==1); //p3\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
         float l=(s-b)/a;
-        boolean p4=(l>=0&&l<=s&&d[(int)(x+l)][y+s]==1); //p4\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
+        boolean p4=(l>=0&&l<=s&&bin.d[(int)(x+l)][y+s]==1); //p4\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
         if (p1) {
           v1=addToPoints(x, (int)(y+b));
         }
@@ -1180,14 +1228,14 @@ class data_extract {
       } else {
         float a=(num*XY-X*Y)/((num*YY)-(Y*Y));
         float b=(YY*X-XY*Y)/((num*YY)-(Y*Y));
-        boolean p1=(b>=0&&b<=s&&d[(int)(x+b)][y]==1);//p1\u304c\u8fba\u4e0a\u306b\u4e57\u3063\u3066\u3044\u308b\u306a\u3089\u3070
+        boolean p1=(b>=0&&b<=s&&bin.d[(int)(x+b)][y]==1);//p1\u304c\u8fba\u4e0a\u306b\u4e57\u3063\u3066\u3044\u308b\u306a\u3089\u3070
         float k=a*s+b;
-        boolean p2=(k>=0&&k<=s&&d[(int)(x+k)][y+s]==1); //p2\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
+        boolean p2=(k>=0&&k<=s&&bin.d[(int)(x+k)][y+s]==1); //p2\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
         float h=-b/a;
         //if(a==0)\u4f55\u304b\u51e6\u7406\u304c\u5fc5\u8981
-        boolean p3=(h>=0&&h<=s&&d[x][(int)(y+h)]==1); //p3\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
+        boolean p3=(h>=0&&h<=s&&bin.d[x][(int)(y+h)]==1); //p3\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
         float l=(s-b)/a;
-        boolean p4=(l>=0&&l<=s&&d[x+s][(int)(y+l)]==1); //p4\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
+        boolean p4=(l>=0&&l<=s&&bin.d[x+s][(int)(y+l)]==1); //p4\u304c\u8fba\u4e0a\u306b\u8f09\u3063\u3066\u3044\u308b\u306a\u3089\u3070
         if (p1) {
           v1=addToPoints((int)(x+b), y);
         }
@@ -1216,102 +1264,103 @@ class data_extract {
           addToNbhs(v2, v4);
         }
       }
-    }
 
-    boolean OKy=true;
-    int flagy;
-    int i1=0;
-    int i2=s-1;
-    int i3=0;
-    int i4=0;
-    for (int j=0; j<s; j++) {
-      flagy=0;
+      boolean OKy=true;
+      int flagy;
+      int i1=0;
+      int i2=s-1;
+      int i3=0;
+      int i4=0;
+      for (int j=0; j<s; j++) {
+        flagy=0;
+        for (int i=0; i<s; i++) {
+          if (flagy==0&&e[i][j]==0) {
+            flagy=1;
+          } else if (flagy==0&&e[i][j]==1) {
+            flagy=2;
+            i1=i;
+          } else if (flagy==1&&e[i][j]==1) {
+            flagy=2;
+            i1=i;
+          } else if (flagy==2&&e[i][j]==0) {
+            flagy=3;
+            i2=i;
+          } else if (flagy==3&&e[i][j]==1) {
+            flagy=4;
+          }
+        }
+        if (j==0) {
+          i3=((i1+i2)/2);
+        }
+        if (j==s-1) {
+          i4=((i1+i2)/2);
+        }
+        if (flagy!=3&&flagy!=2) {
+          OKy=false;
+        }
+      }
+      if (OKy) {
+        for (int j=0; j<s; j++) {
+          for (int i=0; i<s; i++) {
+            if ( e[i][j]==1) {
+              stroke(0, 255, 0);
+            } else {
+              stroke(0, 0, 255);
+            }
+          }
+        }
+        stroke(0);
+      }
+
+      boolean OKx=true;
+      int flagx;
+      int j1=0;
+      int j2=s-1;
+      int j3=0;
+      int j4=0;
       for (int i=0; i<s; i++) {
-        if (flagy==0&&e[i][j]==0) {
-          flagy=1;
-        } else if (flagy==0&&e[i][j]==1) {
-          flagy=2;
-          i1=i;
-        } else if (flagy==1&&e[i][j]==1) {
-          flagy=2;
-          i1=i;
-        } else if (flagy==2&&e[i][j]==0) {
-          flagy=3;
-          i2=i;
-        } else if (flagy==3&&e[i][j]==1) {
-          flagy=4;
-        }
-      }
-      if (j==0) {
-        i3=((i1+i2)/2);
-      }
-      if (j==s-1) {
-        i4=((i1+i2)/2);
-      }
-      if (flagy!=3&&flagy!=2) {
-        OKy=false;
-      }
-    }
-    if (OKy) {
-      for (int j=0; j<s; j++) {
-        for (int i=0; i<s; i++) {
-          if ( e[i][j]==1) {
-            stroke(0, 255, 0);
-          } else {
-            stroke(0, 0, 255);
+        flagx=0;
+        for (int j=0; j<s; j++) {
+          if (flagx==0&&e[i][j]==0) {
+            flagx=1;
+          } else if (flagx==0&&e[i][j]==1) {
+            flagx=2;
+            j1=j;
+          } else if (flagx==1&&e[i][j]==1) {
+            flagx=2;
+            j1=j;
+          } else if (flagx==2&&e[i][j]==0) {
+            flagx=3;
+            j2=j;
+          } else if (flagx==3&&e[i][j]==1) {
+            flagx=4;
           }
         }
-      }
-      stroke(0);
-    }
-
-    boolean OKx=true;
-    int flagx;
-    int j1=0;
-    int j2=s-1;
-    int j3=0;
-    int j4=0;
-    for (int i=0; i<s; i++) {
-      flagx=0;
-      for (int j=0; j<s; j++) {
-        if (flagx==0&&e[i][j]==0) {
-          flagx=1;
-        } else if (flagx==0&&e[i][j]==1) {
-          flagx=2;
-          j1=j;
-        } else if (flagx==1&&e[i][j]==1) {
-          flagx=2;
-          j1=j;
-        } else if (flagx==2&&e[i][j]==0) {
-          flagx=3;
-          j2=j;
-        } else if (flagx==3&&e[i][j]==1) {
-          flagx=4;
+        if (i==0) {
+          j3=((j1+j2)/2);
+        }
+        if (i==s-1) {
+          j4=((j1+j2)/2);
+        }
+        if (flagx!=3&&flagx!=2) {
+          OKx=false;
         }
       }
-      if (i==0) {
-        j3=((j1+j2)/2);
-      }
-      if (i==s-1) {
-        j4=((j1+j2)/2);
-      }
-      if (flagx!=3&&flagx!=2) {
-        OKx=false;
-      }
-    }
-    if (OKx) {
-      for (int j=0; j<s; j++) {
-        for (int i=0; i<s; i++) {
-          if ( e[i][j]==1) {
-            stroke(255);
-          } else {
-            stroke(0, 0, 255);
+      if (OKx) {
+        for (int j=0; j<s; j++) {
+          for (int i=0; i<s; i++) {
+            if ( e[i][j]==1) {
+              stroke(255);
+            } else {
+              stroke(0, 0, 255);
+            }
           }
         }
+        stroke(0);
       }
-      stroke(0);
     }
   }
+
   public boolean Ofutarisama() {//\u307f\u3093\u306a\u304a\u4e8c\u4eba\u69d8\u3060\u3063\u305f\u304b\u78ba\u8a8d
     for (Beads vec : points) {
       if (vec.c!=2) {
@@ -1328,11 +1377,11 @@ class data_extract {
     boolean flag=false;
     for (int y=100; y<h; y+=100) {
       for (int x=0; x<w; x++) {
-        if (d[x][y]==1) {
+        if (bin.d[x][y]==1) {
           flag=true;
           count++;
         }
-        if (flag==true&&d[x][y]==0) {
+        if (flag==true&&bin.d[x][y]==0) {
           flag=false;
           if (count>=5) {
             sum+=count;
@@ -1342,8 +1391,8 @@ class data_extract {
         }
       }
     }
-    println("\u5e73\u5747\u306f"+sum/num);
-    return sum/num;
+    println("thickness = "+sum/num);
+    return max(3,PApplet.parseInt(sum/num));
   }
 }
 class data_graph{
