@@ -30,7 +30,7 @@ void draw() {
     loadPixels();
     for(int x=0; x<data.w; x++){
       for(int y=0; y<data.h; y++){
-        pixels[x + y*width] = color(255*(1-data.bin.d[x][y]));
+        pixels[x + y*width] = color(255*(1-data.d[x][y]));
       }
     }
     updatePixels();
@@ -40,7 +40,7 @@ void draw() {
     loadPixels();
     for(int x=0; x<data.w; x++){
       for(int y=0; y<data.h; y++){
-        pixels[x + y*width] = color(255*(1-data.bin.d[x][y]));
+        pixels[x + y*width] = color(255*(1-data.d[x][y]));
       }
     }
     updatePixels();
