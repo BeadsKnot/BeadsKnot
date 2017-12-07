@@ -13,6 +13,7 @@ class data_extract {
   transform tf;
   Binalization bin;
   Square sq;
+  Thinning th;
 
   //コンストラクタ
   data_extract(int _h, int _w,display _disp) {
@@ -21,6 +22,7 @@ class data_extract {
     tf=new transform(this);
     bin = new Binalization(this);
     sq = new Square(this);
+    th = new Thinning(this);
     disp = _disp;
     extraction_binalized = false;
     extraction_complete = false;

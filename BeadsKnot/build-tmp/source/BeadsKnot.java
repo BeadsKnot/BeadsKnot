@@ -870,6 +870,109 @@ class Square{
 
 
 }
+class Thinning{
+	data_extract DE;
+	int w,h;
+	int d_new[][];
+
+	Thinning(data_extract _de){
+		DE=_de;
+		w=DE.w;
+		h=DE.h;
+		d_new = new int[w][h];
+	}
+
+	public boolean getThinningExtraction(){
+	    DE.nbhs.clear();
+	    DE.points.clear();
+
+
+
+		// int de.d[w][h] \u3092\u4eee\u5b9a\u3057\u3066\u3088\u3044\u3002
+		return false;
+
+	}
+
+	public boolean do_thinning() {
+	    boolean cont=false;
+	    for (int x=0; x<w; x++) {
+	      for (int y=0; y<h; y++) {
+	        d_new[y][x]=DE.d[y][x];
+	      }
+	    }
+	    for (int p=0; p<4; p++) {
+	      for (int x=1; x<w-1; x++) {
+	        for (int y=1; y<h-1; y++) {
+	          if (DE.d[y][x]==1) {
+	            boolean c1=(DE.d[y-1][x-1]==1);
+	            boolean c2=(DE.d[y][x-1]==1);
+	            boolean c3=(DE.d[y+1][x-1]==1);
+	            boolean c4=(DE.d[y+1][x]==1);
+	            boolean c5=(DE.d[y+1][x+1]==1);
+	            boolean c6=(DE.d[y][x+1]==1);
+	            boolean c7=(DE.d[y-1][x+1]==1);
+	            boolean c8=(DE.d[y-1][x]==1);
+	            if (p==0) {
+	              if (!c1 && !c2 && !c3 && c5 && c6 && c7) {
+	                d_new[y][x]=0;
+	              }
+	              if (!c8 && !c1 && !c2 && c4 && c5 && c6) {
+	                d_new[y][x]=0;
+	              }
+	              if (!c7 && !c8 && !c1 && c3 && c4 && c5) {
+	                d_new[y][x]=0;
+	              }
+	            }
+	            if (p==1) {
+	              if (!c7 && !c8 && !c1 && c3 && c4 && c5) {
+	                d_new[y][x]=0;
+	              }
+	              if (!c6 && !c7 && !c8 && c2 && c3 && c4) {
+	                d_new[y][x]=0;
+	              }
+	              if (!c5 && !c6 && !c7 && c1 && c2 && c3) {
+	                d_new[y][x]=0;
+	              }
+	            }
+	            if (p==2) {
+	              if (!c5 && !c6 && !c7 && c1 && c2 && c3) {
+	                d_new[y][x]=0;
+	              }
+	              if (!c4 && !c5 && !c6 && c8 && c1 && c2) {
+	                d_new[y][x]=0;
+	              }
+	              if (!c3 && !c4 && !c5 && c7 && c8 && c1) {
+	                d_new[y][x]=0;
+	              }
+	            }
+	            if (p==3) {
+	              if (!c3 && !c4 && !c5 && c7 && c8 && c1) {
+	                d_new[y][x]=0;
+	              }
+	              if (!c2 && !c3 && !c4 && c6 && c7 && c8) {
+	                d_new[y][x]=0;
+	              }
+	              if (!c1 && !c2 && !c3 && c5 && c6 && c7) {
+	                d_new[y][x]=0;
+	              }
+	            }
+	          }
+	        }
+	      }
+	      cont=false;
+	      for (int x=0; x<w; x++) {
+	        for (int y=0; y<h; y++) {
+	          if (DE.d[y][x]!=d_new[y][x]) {
+	            DE.d[y][x]=d_new[y][x];
+	            cont=true;
+	          }
+	        }
+	      }
+	    }
+	    return cont;
+	}
+
+}
 class data_extract {
 
   int w , h;// \u89e3\u6790\u753b\u9762\u306e\u5927\u304d\u3055
@@ -885,6 +988,7 @@ class data_extract {
   transform tf;
   Binalization bin;
   Square sq;
+  Thinning th;
 
   //\u30b3\u30f3\u30b9\u30c8\u30e9\u30af\u30bf
   data_extract(int _h, int _w,display _disp) {
@@ -893,6 +997,7 @@ class data_extract {
     tf=new transform(this);
     bin = new Binalization(this);
     sq = new Square(this);
+    th = new Thinning(this);
     disp = _disp;
     extraction_binalized = false;
     extraction_complete = false;
