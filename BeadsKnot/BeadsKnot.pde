@@ -36,14 +36,7 @@ void draw() {
     updatePixels();
   }
   //data_extractの内容を描画する場合。
-   else if(data.extraction_beads){
-    loadPixels();
-    for(int x=0; x<data.w; x++){
-      for(int y=0; y<data.h; y++){
-        pixels[x + y*width] = color(255*(1-data.d[x][y]));
-      }
-    }
-    updatePixels();
+  if(data.extraction_beads){
     data.drawPoints();
     data.drawNbhs();
   } 

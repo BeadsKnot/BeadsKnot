@@ -33,7 +33,7 @@ class data_extract {
   void make_data_extraction(PImage image) {
     //もと画像が横長の場合，縦長の場合に応じて変える。
     // オフセットを50 に取っている。
-    float ratio = image.width / image.height;
+    float ratio = 1.0 * image.width / image.height;
     if(ratio >= 1.0){
       h = int((w - 100)/ratio + 100);
     } else {
@@ -43,7 +43,8 @@ class data_extract {
 
     bin.getBinalized(image);//２値化してd[][]に格納する
 
-    sq.getSquareExtraction();
+    // sq.getSquareExtraction();
+    th.getThinningExtraction();
   }
 
   //TODO メソッドをabc順に並べるかどうか，検討する。
