@@ -110,6 +110,13 @@ class Beads {//\u70b9\u306e\u30af\u30e9\u30b9
     Joint=false;
     midJoint=false;
   }
+  public float getTheta(ArrayList<Beads> points){
+        Beads neighbor1=points.get(n1);
+        double x1=neighbor1.x;
+        double y1=neighbor1.y;
+        double th=Math.atan2(-y1+y,x1-x);
+        return (float)th;
+    }
 }
 class Binarization{
   data_extract de;
@@ -175,10 +182,10 @@ class Binarization{
 
 }
 class Edge {
-    private int h;//node
-    private int i;//edge
-    private int j;//node
-    private int k;//edge
+     int h;//node
+     int i;//edge
+     int j;//node
+     int k;//edge
     Edge(int _h,int _i,int _j,int _k){
         h=_h;
         i=_i;
@@ -236,11 +243,11 @@ class Edge {
         drawCubicBezier(hx,hy,ix,iy,jx,jy,kx,ky);
     }
 
-    private double naibun(double p, double q, double t) {
+     public double naibun(double p, double q, double t) {
         return (p*(1.0f-t)+q*t);
     }
 
-    private double coordinate_bezier(double a, double c, double e, double g, double t) {
+     public double coordinate_bezier(double a, double c, double e, double g, double t) {
         double x1 = naibun(a, c, t);
         double x2 = naibun(c, e, t);
         double x3 = naibun(e, g, t);
@@ -249,11 +256,11 @@ class Edge {
         return naibun(x4, x5, t);
     }
 
-    private void drawCubicBezier(double hx, double hy, double ix, double iy, double jx, double jy, double kx, double ky){
+     public void drawCubicBezier(double hx, double hy, double ix, double iy, double jx, double jy, double kx, double ky){
 
     }
 
-    private double angle(double ax, double ay, double bx, double by, double cx, double cy) {
+     public double angle(double ax, double ay, double bx, double by, double cx, double cy) {
         double ang1 = (Math.atan2(ay-by, ax-bx));
         double ang2 = (Math.atan2(by-cy, bx-cx));
         double ret = ang2-ang1;
@@ -265,7 +272,7 @@ class Edge {
         }
         return ret;
     }
-    private double get_rangewidth_angle(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+     public double get_rangewidth_angle(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
         double ret0 = (Math.PI);
         double ret1 = 0;
         double step=(0.05f);// step is 1/20
@@ -366,7 +373,7 @@ class Edge {
         a0.r[i]=r1;
         a1.r[k]=r2;
     }
-    private double dist(double x1,double y1,double x2,double y2){//2\u70b9\u9593\u306e\u8ddd\u96e2
+     public double dist(double x1,double y1,double x2,double y2){//2\u70b9\u9593\u306e\u8ddd\u96e2
         return (Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)));
     }
 
@@ -437,7 +444,7 @@ class Edge {
         }
     }
 
-    private double getXIntersectionWithInterval(double ox, double oy, double sx,double sy, double tx,double ty){
+     public double getXIntersectionWithInterval(double ox, double oy, double sx,double sy, double tx,double ty){
         if((sy-oy)*(ty-oy)>0){
             return -9999.0f;
         }
@@ -1184,8 +1191,8 @@ class data_extract {
 
     bin.getBinarized(image);//\uff12\u5024\u5316\u3057\u3066d[][]\u306b\u683c\u7d0d\u3059\u308b
 
-    // sq.getSquareExtraction();
-    th.getThinningExtraction();
+     sq.getSquareExtraction();
+    //th.getThinningExtraction();
   }
 
   //TODO \u30e1\u30bd\u30c3\u30c9\u3092abc\u9806\u306b\u4e26\u3079\u308b\u304b\u3069\u3046\u304b\uff0c\u691c\u8a0e\u3059\u308b\u3002
@@ -1699,13 +1706,14 @@ class data_graph{
 	
 	ArrayList<Node> nodes;
 	ArrayList<Edge> edges;
-	data_extract de;
+	data_extract de; 
 	int[] table;
 
 	data_graph(data_extract _de){
 		nodes = new ArrayList<Node>();
 		edges = new ArrayList<Edge>();
 		de = _de;
+		make_data_graph();
 	}
 
 	public void make_data_graph(){//nodes\u3084edges\u3092\u6c7a\u3081\u308b
@@ -1713,6 +1721,8 @@ class data_graph{
 	     add_half_point_Joint();
 	     getNodes();
 	     testFindNextJoint();
+	     set_nodes_edges();
+
             
 	}
 	public void JointOrientation(){
@@ -1934,37 +1944,134 @@ class data_graph{
         }
     }
 
+ public int getNodesFromPoint(int p){
+        for(int i = 0; i < table.length; i++) {
+            if(table[i]==p){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void getEdges(ArrayList<Edge> edges){
+        for(int i=0;i<de.points.size();i++){
+            Beads a=de.points.get(i);
+            if(a.Joint||a.midJoint){
+                // Log.d("getNodesFromPoint(i)\u306f",""+getNodesFromPoint(i));
+                // Beads b=points.get(a.n1);
+                // Beads c=a.findNextJoint(points,b);
+                int b=findNeighborJointInPoints(i,a.n1);
+                int c=findJointInPoints(i,a.n1);
+                int j=getNodesFromPoint(c);
+                int k=findk(de.points.get(c),b);
+                int h=getNodesFromPoint (i);
+                //Log.d("0\u306e\u884c\u5148\u306f",""+getNodesFromPoint(c)+","+k);
+                if(j>h) {
+                    edges.add(new Edge(h, 0, j, k));
+                }
+                //b=points.get(a.n2);
+                //c=a.findNextJoint(points,b);
+                if(a.Joint) {
+                    b = findNeighborJointInPoints(i, a.u1);
+                    c = findJointInPoints(i, a.u1);
+                    j = getNodesFromPoint(c);
+                    k = findk(de.points.get(c), b);
+                    // Log.d("1\u306e\u884c\u5148\u306f",""+getNodesFromPoint(c)+","+k);
+                    if (j > h) {
+                        edges.add(new Edge(h, 1, j, k));
+                    }
+                }
+                b=findNeighborJointInPoints(i,a.n2);
+                c=findJointInPoints(i,a.n2);
+                j=getNodesFromPoint(c);
+                k=findk(de.points.get(c),b);
+                //Log.d("2\u306e\u884c\u5148\u306f",""+getNodesFromPoint(c)+","+k);
+                if(j>h) {
+                    edges.add(new Edge(h, 2, j, k));
+                }
+                if(a.Joint) {
+                    //b=points.get(a.u1);
+                    //c=a.findNextJoint(points,b);
+                    //b=points.get(a.u2);
+                    //c=a.findNextJoint(points,b);
+                    b = findNeighborJointInPoints(i, a.u2);
+                    c = findJointInPoints(i, a.u2);
+                    j = getNodesFromPoint(c);
+                    k = findk(de.points.get(c), b);
+                    //Log.d("3\u306e\u884c\u5148\u306f",""+getNodesFromPoint(c)+","+k);
+                    if (j > h) {
+                        edges.add(new Edge(h, 3, j, k));
+                    }
+                }
+            }
+        }
+    }
+public void modifyArmsOfAlignments(Edge e){
+        Node n1 = nodes.get(e.getH());
+        Node n2 = nodes.get(e.getJ());
+        int a1 = e.getI();
+        int a2 = e.getK();
+        double r1;
+        double r2;
+        int count = 0;
+        boolean loopGoOn;
+        do{
+            loopGoOn = false;
+            double d1 = Math.hypot(n1.getX() - n1.edge_x(a1), n1.getY() - n1.edge_y(a1));
+            double d2 = Math.hypot(n1.edge_x(a1) - n2.edge_x(a2), n1.edge_y(a1) - n2.edge_y(a2));
+            double d3 = Math.hypot(n2.getX() - n2.edge_x(a2), n2.getY() - n2.edge_y(a2));
+            r1 = n1.getR(a1);
+            if(d1 + 3.0f < d2){
+                n1.setR(a1, r1+3.0f);
+                loopGoOn = true;
+            } else if(d1 - 3.0f > d2){
+                n1.setR(a1, r1-3.0f);
+                loopGoOn = true;
+            }
+            r2 = n2.getR(a2);
+            if(d3 + 3.0f < d2){
+                n2.setR(a2, r2+3.0f);
+                loopGoOn = true;
+            } else if(d3 - 3.0f > d2){
+                n2.setR(a2, r2-3.0f);
+                loopGoOn = true;
+            }
+        } while (loopGoOn && count++<50);
+    }
+
+   public void modify(){
+        //Node\u306e\u5ea7\u6a19\u3082\u5fae\u8abf\u6574\u3057\u305f\u3044\u3002
+        for(Edge i:edges) {
+            i. scaling_shape_modifier(nodes);
+        }
+        rotation_shape_modifier(nodes,edges);
+    }
+
 public void set_nodes_edges(){
-	/*
       // \u8aad\u307f\u53d6\u308a\u30c7\u30fc\u30bf\u304b\u3089Alignment\u306e\u30c7\u30fc\u30bf\u3092\u53d6\u308a\u51fa\u3059\u3002
-            for (int i = 0; i < extract.points.size(); i++) {
-                Beads vec = extract.points.get(i);
+            for (int i = 0; i < de.points.size(); i++) {
+                Beads vec = de.points.get(i);
                 if (vec.Joint||vec.midJoint) {
                     Node ali=new Node((float)vec.x,(float)vec.y);
-                    ali.theta=vec.getTheta(extract.points);
+                    ali.theta=vec.getTheta(de.points);
                     if(vec.Joint) {
-                        ali.Joint=true;
+                       ali.Joint=true;
                     }
                     nodes.add(ali);
                 }
             }
             //Log.d("nodes\u306e\u9577\u3055",""+nodes.size());
             //\u3000Alignment\u306e\u30c7\u30fc\u30bf\u304b\u3089edge\u306e\u30c7\u30fc\u30bf\u3092\u6574\u3048\u308b\u3002
-            //extract.getEdges(edges);
+            getEdges(edges);
             //  \u5f62\u3092\u6574\u3048\u308b\u3002
             for(Edge e:edges) {
-               // modifyArmsOfAlignments(e);
+                modifyArmsOfAlignments(e);
             }
             for(int i=0;i<100;i++) {
-                //modify();
+               // modify();
             }
-        */
         }
-
-         
-
-
-
+       
 }
 class display{
 	float left,top,right,bottom;

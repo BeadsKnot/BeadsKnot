@@ -43,8 +43,8 @@ class data_extract {
 
     bin.getBinarized(image);//２値化してd[][]に格納する
 
-    // sq.getSquareExtraction();
-    th.getThinningExtraction();
+     sq.getSquareExtraction();
+    //th.getThinningExtraction();
   }
 
   //TODO メソッドをabc順に並べるかどうか，検討する。

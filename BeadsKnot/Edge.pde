@@ -1,8 +1,8 @@
 class Edge {
-    private int h;//node
-    private int i;//edge
-    private int j;//node
-    private int k;//edge
+     int h;//node
+     int i;//edge
+     int j;//node
+     int k;//edge
     Edge(int _h,int _i,int _j,int _k){
         h=_h;
         i=_i;
@@ -60,11 +60,11 @@ class Edge {
         drawCubicBezier(hx,hy,ix,iy,jx,jy,kx,ky);
     }
 
-    private double naibun(double p, double q, double t) {
+     double naibun(double p, double q, double t) {
         return (p*(1.0-t)+q*t);
     }
 
-    private double coordinate_bezier(double a, double c, double e, double g, double t) {
+     double coordinate_bezier(double a, double c, double e, double g, double t) {
         double x1 = naibun(a, c, t);
         double x2 = naibun(c, e, t);
         double x3 = naibun(e, g, t);
@@ -73,11 +73,11 @@ class Edge {
         return naibun(x4, x5, t);
     }
 
-    private void drawCubicBezier(double hx, double hy, double ix, double iy, double jx, double jy, double kx, double ky){
+     void drawCubicBezier(double hx, double hy, double ix, double iy, double jx, double jy, double kx, double ky){
 
     }
 
-    private double angle(double ax, double ay, double bx, double by, double cx, double cy) {
+     double angle(double ax, double ay, double bx, double by, double cx, double cy) {
         double ang1 = (Math.atan2(ay-by, ax-bx));
         double ang2 = (Math.atan2(by-cy, bx-cx));
         double ret = ang2-ang1;
@@ -89,7 +89,7 @@ class Edge {
         }
         return ret;
     }
-    private double get_rangewidth_angle(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+     double get_rangewidth_angle(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
         double ret0 = (Math.PI);
         double ret1 = 0;
         double step=(0.05);// step is 1/20
@@ -190,7 +190,7 @@ class Edge {
         a0.r[i]=r1;
         a1.r[k]=r2;
     }
-    private double dist(double x1,double y1,double x2,double y2){//2点間の距離
+     double dist(double x1,double y1,double x2,double y2){//2点間の距離
         return (Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)));
     }
 
@@ -261,7 +261,7 @@ class Edge {
         }
     }
 
-    private double getXIntersectionWithInterval(double ox, double oy, double sx,double sy, double tx,double ty){
+     double getXIntersectionWithInterval(double ox, double oy, double sx,double sy, double tx,double ty){
         if((sy-oy)*(ty-oy)>0){
             return -9999.0;
         }
