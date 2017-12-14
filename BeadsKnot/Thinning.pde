@@ -17,7 +17,11 @@ class Thinning{
 	    DE.points.clear();
 		// int de.d[w][h] を仮定してよい。
 		get_edge_data_thinning();
+
 		DE.countNbhs();
+		println("remove throne");
+		DE.removeThrone();
+
 		DE.getDisplayLTRB();
 		println(DE.points.size(),DE.nbhs.size());
 		DE.extraction_binalized = true;

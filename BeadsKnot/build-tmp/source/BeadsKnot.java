@@ -109,16 +109,16 @@ class Beads {//\u70b9\u306e\u30af\u30e9\u30b9
     Joint=false;
   }
 }
-class Binalization{
+class Binarization{
   data_extract de;
   int threshold;
 
-  Binalization(data_extract _de){
+  Binarization(data_extract _de){
     de = _de;
     threshold = 150;
   }
 
-  public void getBinalized(PImage image){
+  public void getBinarized(PImage image){
     threshold = getThreshold(image);
     println("Threshold = "+threshold);
     int w = de.w;
@@ -164,7 +164,7 @@ class Binalization{
      }
     }
     if(minC<maxC){
-      return (minC+maxC*2)/3;
+      return (minC+maxC)/2;
     } else {
       return 150;
     }
@@ -915,7 +915,11 @@ class Thinning{
 	    DE.points.clear();
 		// int de.d[w][h] \u3092\u4eee\u5b9a\u3057\u3066\u3088\u3044\u3002
 		get_edge_data_thinning();
+
 		DE.countNbhs();
+		println("remove throne");
+		DE.removeThrone();
+
 		DE.getDisplayLTRB();
 		println(DE.points.size(),DE.nbhs.size());
 		DE.extraction_binalized = true;
@@ -1150,7 +1154,7 @@ class data_extract {
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//\u7dda\u3092\u767b\u9332
   ArrayList<Beads> points=new ArrayList<Beads>();//\u70b9\u3092\u767b\u9332
   transform tf;
-  Binalization bin;
+  Binarization bin;
   Square sq;
   Thinning th;
 
@@ -1159,7 +1163,7 @@ class data_extract {
     w = _w;
     h = _h;
     tf=new transform(this);
-    bin = new Binalization(this);
+    bin = new Binarization(this);
     sq = new Square(this);
     th = new Thinning(this);
     disp = _disp;
@@ -1180,7 +1184,7 @@ class data_extract {
     }
     image.resize(w - 100, h - 100);//\u30ea\u30b5\u30a4\u30ba\u3059\u308b\u3002
 
-    bin.getBinalized(image);//\uff12\u5024\u5316\u3057\u3066d[][]\u306b\u683c\u7d0d\u3059\u308b
+    bin.getBinarized(image);//\uff12\u5024\u5316\u3057\u3066d[][]\u306b\u683c\u7d0d\u3059\u308b
 
     // sq.getSquareExtraction();
     th.getThinningExtraction();
