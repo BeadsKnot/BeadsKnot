@@ -7,6 +7,7 @@ class Beads {//点のクラス
   int u1;
   int u2;
   boolean Joint;
+  boolean midJoint;
   Beads(float _x, float _y) {
     x=_x;
     y=_y;
@@ -16,5 +17,6 @@ class Beads {//点のクラス
     u2=-1;
     c=0;
     Joint=false;
+    midJoint=false;
   }
 }

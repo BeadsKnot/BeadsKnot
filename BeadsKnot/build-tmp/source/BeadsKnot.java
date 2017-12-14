@@ -98,6 +98,7 @@ class Beads {//\u70b9\u306e\u30af\u30e9\u30b9
   int u1;
   int u2;
   boolean Joint;
+  boolean midJoint;
   Beads(float _x, float _y) {
     x=_x;
     y=_y;
@@ -107,18 +108,19 @@ class Beads {//\u70b9\u306e\u30af\u30e9\u30b9
     u2=-1;
     c=0;
     Joint=false;
+    midJoint=false;
   }
 }
-class Binalization{
+class Binarization{
   data_extract de;
   int threshold;
 
-  Binalization(data_extract _de){
+  Binarization(data_extract _de){
     de = _de;
     threshold = 150;
   }
 
-  public void getBinalized(PImage image){
+  public void getBinarized(PImage image){
     threshold = getThreshold(image);
     println("Threshold = "+threshold);
     int w = de.w;
@@ -164,7 +166,7 @@ class Binalization{
      }
     }
     if(minC<maxC){
-      return (minC+maxC*2)/3;
+      return (minC+maxC)/2;
     } else {
       return 150;
     }
@@ -1150,7 +1152,7 @@ class data_extract {
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//\u7dda\u3092\u767b\u9332
   ArrayList<Beads> points=new ArrayList<Beads>();//\u70b9\u3092\u767b\u9332
   transform tf;
-  Binalization bin;
+  Binarization bin;
   Square sq;
   Thinning th;
 
@@ -1159,7 +1161,7 @@ class data_extract {
     w = _w;
     h = _h;
     tf=new transform(this);
-    bin = new Binalization(this);
+    bin = new Binarization(this);
     sq = new Square(this);
     th = new Thinning(this);
     disp = _disp;
@@ -1180,7 +1182,7 @@ class data_extract {
     }
     image.resize(w - 100, h - 100);//\u30ea\u30b5\u30a4\u30ba\u3059\u308b\u3002
 
-    bin.getBinalized(image);//\uff12\u5024\u5316\u3057\u3066d[][]\u306b\u683c\u7d0d\u3059\u308b
+    bin.getBinarized(image);//\uff12\u5024\u5316\u3057\u3066d[][]\u306b\u683c\u7d0d\u3059\u308b
 
     // sq.getSquareExtraction();
     th.getThinningExtraction();
@@ -1698,6 +1700,7 @@ class data_graph{
 	ArrayList<Node> nodes;
 	ArrayList<Edge> edges;
 	data_extract de;
+	int[] table;
 
 	data_graph(data_extract _de){
 		nodes = new ArrayList<Node>();
@@ -1705,13 +1708,263 @@ class data_graph{
 		de = _de;
 	}
 
-	public void make_data_graph(){
-	    // JointOrientation();
-	    // add_half_point_Joint();
-	    // getNodes();
-	    // testFindNextJoint();
+	public void make_data_graph(){//nodes\u3084edges\u3092\u6c7a\u3081\u308b
+	     JointOrientation();
+	     add_half_point_Joint();
+	     getNodes();
+	     testFindNextJoint();
             
 	}
+	public void JointOrientation(){
+        for (int i=0; i<de.points.size (); i++) {
+            Beads vec=de.points.get(i);
+            if (vec.Joint) {
+                if(vec.u1<0||vec.u1>=de.points.size()||vec.u2<0||vec.u2>=de.points.size()){
+                    return;
+                }
+                Beads vecn1=de.points.get(vec.n1);
+                double x0=vecn1.x;
+                double y0=vecn1.y;
+                Beads vecu1=de.points.get(vec.u1);
+                double x1=vecu1.x;
+                double y1=vecu1.y;
+                Beads vecn2=de.points.get(vec.n2);
+                double x2=vecn2.x;
+                double y2=vecn2.y;
+                Beads vecu2=de.points.get(vec.u2);
+                double x3=vecu2.x;
+                double y3=vecu2.y;
+                double x02=x0-x2;//a
+                double y02=y0-y2;//b
+                double x13=x1-x3;//c
+                double y13=y1-y3;//d
+                if(x02*y13-y02*x13>0){
+                    int a=vec.u1;
+                    vec.u1=vec.u2;
+                    vec.u2=a;
+                }
+            }
+        }
+
+    }
+     public void add_half_point_Joint() {
+        for (int i = 0; i < de.points.size(); i++) {
+            Beads a = de.points.get(i);
+            if(a.Joint){
+                int c=findtrueJointInPoints(i,a.n1);
+                if(i<c){
+                    int count = countNeighborJointInPoints(i, a.n1, 0);
+                    int half = get_half_position(i, a.n1, count / 2);
+                    de.points.get(half).midJoint=true;
+                }
+                c=findtrueJointInPoints(i,a.u1);
+                if(i<c){
+                    int count = countNeighborJointInPoints(i, a.u1, 0);
+                    int half = get_half_position(i, a.u1, count / 2);
+                    de.points.get(half).midJoint=true;
+                }
+                c=findtrueJointInPoints(i,a.n2);
+                if(i<c){
+                    int count = countNeighborJointInPoints(i, a.n2, 0);
+                    int half = get_half_position(i, a.n2, count / 2);
+                    de.points.get(half).midJoint=true;
+                }
+                c=findtrueJointInPoints(i,a.u2);
+                if(i<c){
+                    int count = countNeighborJointInPoints(i, a.u2, 0);
+                    int half = get_half_position(i, a.u2, count / 2);
+                    de.points.get(half).midJoint=true;
+                }
+
+            }
+        }
+    }
+     public int findtrueJointInPoints(int j,int c) {
+        // for (int i = 0; i < de.points.size(); i++) {
+        Beads p=de.points.get(c);
+        if(p.Joint){
+            return c;
+        }
+        int d=0;
+        if(p.n1==j){
+            d=p.n2;
+        }else if(p.n2==j){
+            d=p.n1;
+        }else{
+            println("\u9593\u9055\u3063\u3066\u3044\u308b");
+        }
+        return findtrueJointInPoints(c,d);
+    }
+
+    public int findNeighborJointInPoints(int j,int c) {
+        // for (int i = 0; i < de.points.size(); i++) {
+        Beads p=de.points.get(c);
+        if(p.Joint||p.midJoint){
+            return j;
+        }
+        int d=0;
+        if(p.n1==j){
+            d=p.n2;
+        }else if(p.n2==j){
+            d=p.n1;
+        }else{
+            println("\u9593\u9055\u3063\u3066\u3044\u308b");
+        }
+        return findNeighborJointInPoints(c,d);
+    }
+
+    private int countNeighborJointInPoints(int j,int c,int count) {
+        Beads p=de.points.get(c);
+        if(p.Joint||p.midJoint){
+            return count;
+        }
+        int d=0;
+        if(p.n1==j){
+            d=p.n2;
+        }else if(p.n2==j){
+            d=p.n1;
+        }else{
+           // Log.d("\u9593\u9055\u3063\u3066\u3044\u308b","");
+        }
+        return countNeighborJointInPoints(c,d,count+1);
+    }
+     public int get_half_position(int j,int c,int count){
+        if(count==0){
+            return c;
+        }
+        Beads p=de.points.get(c);
+        if(p.Joint){
+            //Log.d("\u30a8\u30e9\u30fc","");
+        }
+        int d=0;
+        if(p.n1==j){
+            d=p.n2;
+        }else if(p.n2==j){
+            d=p.n1;
+        }else{
+           // Log.d("\u9593\u9055\u3063\u3066\u3044\u308b","");
+        }
+        return get_half_position(c,d,count-1);
+    }
+    public void getNodes(){
+        int count=0;
+        for(int i = 0; i < de.points.size(); i++) {
+            Beads vec = de.points.get(i);
+            if (vec.Joint||vec.midJoint) {
+                count++;
+            }
+        }
+//        Log.d("count\u306e\u6570",""+count);
+        table=new int[count];
+        count=0;
+        for(int i = 0; i < de.points.size(); i++) {
+            Beads vec = de.points.get(i);
+            if (vec.Joint||vec.midJoint) {
+                table[count]=i;
+                count++;
+            }
+        }
+    }
+     private void testFindNextJoint(){//\u30c7\u30d0\u30c3\u30af
+        for(int i=0;i<de.points.size();i++){
+            Beads a=de.points.get(i);
+            if(a.Joint||a.midJoint){
+                //Log.d("getNodesFromPoint(i)\u306f",""+getNodesFromPoint(i));
+                // Beads b=points.get(a.n1);
+                // Beads c=a.findNextJoint(points,b);
+                int j=findNeighborJointInPoints(i,a.n1);
+                int c=findJointInPoints(i,a.n1);
+                int k=findk(de.points.get(c),j);
+                //Log.d("0\u306e\u884c\u5148\u306f",""+getNodesFromPoint(c)+","+k);
+                //b=points.get(a.n2);
+                //c=a.findNextJoint(points,b);
+                if(a.Joint) {
+                    j = findNeighborJointInPoints(i, a.u1);
+                    c = findJointInPoints(i, a.u1);
+                    k = findk(de.points.get(c), j);
+                    //Log.d("1\u306e\u884c\u5148\u306f", "" + getNodesFromPoint(c) + "," + k);
+                }
+                j=findNeighborJointInPoints(i,a.n2);
+                c=findJointInPoints(i,a.n2);
+                k=findk(de.points.get(c),j);
+                //Log.d("2\u306e\u884c\u5148\u306f",""+getNodesFromPoint(c)+","+k);
+                //b=points.get(a.u1);
+                //c=a.findNextJoint(points,b);
+
+                //b=points.get(a.u2);
+                //c=a.findNextJoint(points,b);
+                if(a.Joint) {
+                    j = findNeighborJointInPoints(i, a.u2);
+                    c = findJointInPoints(i, a.u2);
+                    k = findk(de.points.get(c), j);
+                   // Log.d("3\u306e\u884c\u5148\u306f", "" + getNodesFromPoint(c) + "," + k);
+                }
+            }
+        }
+    }
+    public int findJointInPoints(int j,int c) {
+        // for (int i = 0; i < points.size(); i++) {
+        Beads p=de.points.get(c);
+        if(p.Joint||p.midJoint){
+            return c;
+        }
+        int d=0;
+        if(p.n1==j){
+            d=p.n2;
+        } else if(p.n2==j){
+            d=p.n1;
+        } else {
+            //Log.d("\u9593\u9055\u3063\u3066\u3044\u308b","");
+        }
+        return findJointInPoints(c,d);
+    }
+
+    public int findk(Beads joint, int j){
+        if(joint.n1==j) {
+            return 0;
+        }
+        else if(joint.u1==j) {
+            return 1;
+        }else   if(joint.n2==j) {
+            return 2;
+        }else   if(joint.u2==j) {
+            return 3;
+        }else {
+            return -1;
+        }
+    }
+
+public void set_nodes_edges(){
+	/*
+      // \u8aad\u307f\u53d6\u308a\u30c7\u30fc\u30bf\u304b\u3089Alignment\u306e\u30c7\u30fc\u30bf\u3092\u53d6\u308a\u51fa\u3059\u3002
+            for (int i = 0; i < extract.points.size(); i++) {
+                Beads vec = extract.points.get(i);
+                if (vec.Joint||vec.midJoint) {
+                    Node ali=new Node((float)vec.x,(float)vec.y);
+                    ali.theta=vec.getTheta(extract.points);
+                    if(vec.Joint) {
+                        ali.Joint=true;
+                    }
+                    nodes.add(ali);
+                }
+            }
+            //Log.d("nodes\u306e\u9577\u3055",""+nodes.size());
+            //\u3000Alignment\u306e\u30c7\u30fc\u30bf\u304b\u3089edge\u306e\u30c7\u30fc\u30bf\u3092\u6574\u3048\u308b\u3002
+            //extract.getEdges(edges);
+            //  \u5f62\u3092\u6574\u3048\u308b\u3002
+            for(Edge e:edges) {
+               // modifyArmsOfAlignments(e);
+            }
+            for(int i=0;i<100;i++) {
+                //modify();
+            }
+        */
+        }
+
+         
+
+
+
 }
 class display{
 	float left,top,right,bottom;
