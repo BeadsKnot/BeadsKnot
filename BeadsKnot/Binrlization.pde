@@ -1,13 +1,13 @@
-class Binalization{
+class Binarization{
   data_extract de;
   int threshold;
 
-  Binalization(data_extract _de){
+  Binarization(data_extract _de){
     de = _de;
     threshold = 150;
   }
 
-  void getBinalized(PImage image){
+  void getBinarized(PImage image){
     threshold = getThreshold(image);
     println("Threshold = "+threshold);
     int w = de.w;
