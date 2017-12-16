@@ -19,12 +19,13 @@ class Thinning{
 		get_edge_data_thinning();
 
 		DE.countNbhs();
-		println("remove throne");
-		DE.removeThrone();
+
+		println("cancel_loop()");
+		cancel_loop() ;
 
 		DE.getDisplayLTRB();
 		println(DE.points.size(),DE.nbhs.size());
-		DE.extraction_binalized = true;
+		//DE.extraction_binalized = true;
 		DE.extraction_beads = true;
 		return false;
 
@@ -242,4 +243,218 @@ class Thinning{
 		DE.nbhs.add(new Nbh(i1, i2));
 		return true;
 	}
+
+////////////////////////////////////////////
+//
+//      calcel_loop()
+//
+////////////////////////////////////////////
+	int[] pt_tag2 ;
+	int[] pt_tag1 ;
+	int[] pt_prev ;
+	boolean[] pt_left ;
+	boolean[] pt_treated ;
+	boolean[] nbh_left ;
+	int[][] pt_nhd ;
+	int[][] pt_row ;
+	int cancel_loop_phase=0;
+
+	void cancel_loop() {
+  		cancel_loop1();
+  		cancel_loop2();
+  		cancel_loop3();
+	}
+
+
+	void cancel_loop1() {//
+  		cancel_loop_phase=1;
+  		int pointsSize = DE.points.size();
+  		pt_tag2 = new int[pointsSize];
+  		pt_tag1 = new int[pointsSize];
+  		pt_prev = new int[pointsSize];
+		pt_left = new boolean[pointsSize];
+		pt_treated = new boolean[pointsSize];
+		nbh_left = new boolean[DE.nbhs.size()];
+		pt_nhd = new int[pointsSize][4];
+		pt_row = new int[pointsSize][4];
+		for (int p=0; p<pointsSize; p++) {
+			pt_tag2[p]=-1;
+			pt_tag1[p]=-1;
+			pt_prev[p]=-1;
+			pt_left[p]=false;
+			pt_treated[p]=false;
+    		//pt v=points.get(p);
+    		pt_nhd[p][0]=pt_nhd[p][1]=pt_nhd[p][2]=pt_nhd[p][3]=-1;
+    		pt_row[p][0]=pt_row[p][1]=pt_row[p][2]=pt_row[p][3]=-1;
+  		}
+  		for (int n=0; n<DE.nbhs.size (); n++) {
+			Nbh u = DE.nbhs.get(n);
+    		for (int i=0; i<4; i++) {
+      			if (pt_nhd[u.a][i]<0) {
+        			pt_nhd[u.a][i] = u.b;
+        			pt_row[u.a][i] = n;
+        			break;
+      			}
+    		}
+			for (int i=0; i<4; i++) {
+				if (pt_nhd[u.b][i]<0) {
+					pt_nhd[u.b][i] = u.a;
+					pt_row[u.b][i] = n;
+					break;
+				}
+			}
+    		nbh_left[n]=false;
+  		}
+  		for (int p=0; p<DE.points.size (); p++) {
+    		fill_pt_tag1(p, 1);
+  		}
+	}
+
+	void cancel_loop2() {//
+		cancel_loop_phase=2;
+		int max, maxp, countp=DE.points.size();
+		do {
+			countp--;
+			max=0;
+			maxp=-1;
+			for (int p=0; p<DE.points.size (); p++) {
+				if ( pt_tag2[p]<0 && pt_tag1[p]>max) {
+					max = pt_tag1[p];
+					maxp = p;
+				}
+			}
+			fill_pt_tag2(maxp, 1, -1);
+		} 
+		while (max>0 && countp>0);
+	}
+
+	void cancel_loop3() {//
+		cancel_loop_phase=3;
+		int max, maxp, countp=DE.points.size();
+		do {
+			countp--;
+			max=0;
+			maxp=-1;
+			for (int p=0; p<DE.points.size (); p++) {
+				if ( !pt_treated[p] && pt_tag2[p]>max) {
+					max = pt_tag2[p];
+					maxp = p;
+				}
+			}
+			fill_pt_treated(maxp);
+			if ( is_Beads_id(maxp) && DE.points.get(maxp).c>0) {
+				for (int q=maxp; q!=-1; q=pt_prev[q]) {
+					pt_left[q]=true;
+				}
+			}
+		} while (max>0 && countp>0);
+		for (int p=DE.points.size ()-1; p>=0; p--) {
+			if ( !pt_left[p] ) {
+				Beads u = DE.points.get(p);
+				if (is_Beads_id(u.n1)) {
+					Beads uo = DE.points.get(u.n1);
+					uo.c --;
+					if (uo.n1==p) { 
+						uo.n1=uo.n2; uo.n2=uo.u1; uo.u1=uo.u2; uo.u2=-1;
+					} else if (uo.n2==p) { 
+						uo.n2=uo.u1; uo.u1=uo.u2; uo.u2=-1;
+					} else if (uo.u1==p) { 
+						uo.u1=uo.u2; uo.u2=-1;
+					}
+				}
+				if (is_Beads_id(u.n2)) {
+					Beads uo = DE.points.get(u.n2);
+					uo.c --;
+					if (uo.n1==p) { 
+						uo.n1=uo.n2; uo.n2=uo.u1; uo.u1=uo.u2; uo.u2=-1;
+					} else if (uo.n2==p) { 
+						uo.n2=uo.u1; uo.u1=uo.u2; uo.u2=-1;
+					} else if (uo.u1==p) { 
+						uo.u1=uo.u2; uo.u2=-1;
+					}
+				}
+				if (is_Beads_id(u.u1)) {
+					Beads uo = DE.points.get(u.u1);
+					uo.c --;
+					if (uo.n1==p) { 
+						uo.n1=uo.n2; uo.n2=uo.u1; uo.u1=uo.u2; uo.u2=-1;
+					} else if (uo.n2==p) { 
+						uo.n2=uo.u1; uo.u1=uo.u2; uo.u2=-1;
+					} else if (uo.u1==p) { 
+						uo.u1=uo.u2; uo.u2=-1;
+					}
+				}
+				DE.points.remove(p);
+				for (int i=0; i<DE.points.size (); i++) {
+					Beads v = DE.points.get(i);
+					if (v.n1>p) v.n1--;
+					if (v.n2>p) v.n2--;
+					if (v.u1>p) v.u1--;
+					if (v.u2>p) v.u2--;
+				}
+				for (int i=DE.nbhs.size ()-1; i>=0; i--) {
+					Nbh r = DE.nbhs.get(i) ;
+					if (r.a==p || r.b==p) {
+						DE.nbhs.remove(i);
+					} else {
+						if (r.a>p) r.a--;
+						if (r.b>p) r.b--;
+					}
+				}
+			}
+		}
+	}
+
+	void fill_pt_tag1(int p, int i) {
+		if (! is_Beads_id(p)) {
+			return ;
+		}
+		if (pt_tag1[p]>=0) {
+			return ;
+		} else {
+			pt_tag1[p] = i;
+			for (int k=0; k<4; k++) {
+				fill_pt_tag1(pt_nhd[p][k], i+1);
+			}
+		}
+	}
+
+	void fill_pt_tag2(int p, int i, int prev) {
+		if (! is_Beads_id(p)) {
+			return ;
+		}
+		if (pt_tag2[p]>=0) {
+			return ;
+		} else {
+			pt_tag2[p] = i;
+			pt_prev[p] = prev;
+			for (int k=0; k<4; k++) {
+				fill_pt_tag2(pt_nhd[p][k], i+1, p);
+			}
+		}
+	}
+
+
+	void fill_pt_treated(int p) {
+		if (! is_Beads_id(p)) {
+			return ;
+		}
+		if (pt_treated[p]) {
+			return ;
+		}
+		pt_treated[p] = true;
+		for (int k=0; k<4; k++) {
+			fill_pt_treated(pt_nhd[p][k]);
+		}
+	}
+
+// void remove_isolated_point() {
+//   for (int i=points.size ()-1; i>=0; i--) {
+//     if (points.get(i).deg == 0) {
+//       points.remove(i);
+//     }
+//   }
+// }
+
+
 }
