@@ -3,11 +3,14 @@ class Thinning{
 	int w,h;
 	int d_new[][];
 
+	ArrayList<Nbh> cross;
+
 	Thinning(data_extract _de){
 		DE=_de;
 		w=DE.w;
 		h=DE.h;
 		d_new = new int[w][h];
+		cross = new ArrayList<Nbh>();
 	}
 
 	boolean getThinningExtraction(){
@@ -22,6 +25,9 @@ class Thinning{
 
 		println("cancel_loop()");
 		cancel_loop() ;
+
+		// println("find_crossing()");
+		// find_crossing();		
 
 		DE.getDisplayLTRB();
 		println(DE.points.size(),DE.nbhs.size());
@@ -283,7 +289,6 @@ class Thinning{
 			pt_prev[p]=-1;
 			pt_left[p]=false;
 			pt_treated[p]=false;
-    		//pt v=points.get(p);
     		pt_nhd[p][0]=pt_nhd[p][1]=pt_nhd[p][2]=pt_nhd[p][3]=-1;
     		pt_row[p][0]=pt_row[p][1]=pt_row[p][2]=pt_row[p][3]=-1;
   		}
@@ -456,5 +461,148 @@ class Thinning{
 //   }
 // }
 
+////////////////////////////////////////////
+//
+//      find_crossing()
+//
+////////////////////////////////////////////
+	boolean find_crossing() {
+		for (int i=0; i<DE.points.size (); i++) {
+	    Beads bdsi=DE.points.get(i);
+	    if (bdsi.c==1) {
+	      float min=9999;
+	      int minJ=-1;
+	      for (int j=0; j<DE.points.size (); j++) {
+	        float d=dist(bdsi.x, bdsi.y, DE.points.get(j).x, DE.points.get(j).y);
+	        if (d<min && i!=j ) {
+	          if (j!=bdsi.n1 && DE.points.get(bdsi.n1).c == 2) {
+	            if (!is_near_two_points(i, j, 5)) {
+	              //if (j!=DE.points.get(bdsi.o1).o1 && j!=DE.points.get(bdsi.o1).o2) {
+	              min=d;
+	              minJ=j;
+	            }
+	          }
+	        }
+	      }
+	      if (minJ>=0 && DE.points.get(minJ).c == 2) {
+	        //if (!segmentOnCurve(i, minJ)) {
+	          cross.add(new Nbh(i, minJ));
+	        //}
+	      }
+	    }
+	  }
+	  find_crosspt_from_cross_new();
+	  return false;
+	}
+	
+	boolean is_near_two_points(int p, int q,int cc) {
+	  if(!is_Beads_id(p)){
+	  	return false;
+	  }
+	  if(p==q){
+	    return true;
+	  }
+	  int a_prev = p;
+	  int a_now = DE.points.get(p).n1;
+	  if (is_Beads_id(a_now)) {
+	    for (int i=0; i<cc && a_now!=-1; i++) {
+	      if (a_now==q) {
+	        return true;
+	      }
+	      int a_next = find_next(a_prev, a_now);
+	      a_prev = a_now;
+	      a_now = a_next;
+	    }
+	  }
+	  a_prev = p;
+	  a_now = DE.points.get(p).n2;
+	  if (is_Beads_id(a_now)) {
+	    for (int i=0; i<cc && a_now!=-1; i++) {
+	      if (a_now==q) {
+	        return true;
+	      }
+	      int a_next = find_next(a_prev, a_now);
+	      a_prev = a_now;
+	      a_now = a_next;
+	    }
+	  }
+	  return false;
+	}
 
+	int find_next(int prv, int nw) {
+	  if (is_Beads_id(nw)) {
+	    Beads v = DE.points.get(nw);
+	    if (v.n1 == prv) {
+	      return v.n2;
+	    } else if (v.n2 == prv) {
+	      return v.n1;
+	    } else if (v.u1 == prv) {
+	      return v.u2;
+	    } else if (v.u2 == prv) {
+	      return v.u1;
+	    }
+	  }
+	  return -1;
+	}
+
+	void find_crosspt_from_cross_new() {
+	  for (int j=0; j<cross.size (); j++) {
+	    Nbh cj = cross.get(j);
+	    int m=0, max=DE.points.size();
+	    int maxk=-1;
+	    for (int k=0; k<cross.size (); k++) {
+	      if (j != k) {
+	        Nbh ck = cross.get(k);
+	        m = find_near_points(cj.b, ck.b, 10);
+	        if (0<=m && m<max) {
+	          max = m;
+	          maxk = k;
+	        }
+	      }
+	    }
+	    if (j<maxk) {
+	      Nbh ck = cross.get(maxk);
+	      Beads v=DE.points.get(ck.b);
+	      v.Joint=true;
+	      v.u1=cj.a;
+	      // TODO 向きを決めないといけない
+	      v.u2=ck.a;
+	      DE.points.get(cj.a).c=2;
+	      DE.points.get(cj.a).n2=ck.b;
+	      DE.points.get(ck.a).c=2;
+	      DE.points.get(ck.a).n2=ck.b;
+	    }
+	  }
+	}
+
+	int find_near_points(int p, int q,int cc) {
+		if(p==q){
+			return 0;
+		}
+		int a_prev = p;
+		int a_now = DE.points.get(p).n1;
+		if (is_Beads_id(a_now)) {
+			for (int i=0; i<cc && a_now!=-1; i++) {
+				if (a_now==q) {
+					return i;
+				}
+				int a_next = find_next(a_prev, a_now);
+				a_prev = a_now;
+				a_now = a_next;
+			}
+		}
+		a_prev = p;
+		a_now = DE.points.get(p).n2;
+		if (a_now>=0) {
+			for (int i=0; i<cc && a_now!=-1; i++) {
+				if (a_now==q) {
+					return i;
+				}
+				int a_next = find_next(a_prev, a_now);
+				a_prev = a_now;
+				a_now = a_next;
+			}
+		}
+		return -1;
+	}
 }
