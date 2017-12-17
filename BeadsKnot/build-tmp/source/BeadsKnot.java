@@ -924,8 +924,8 @@ class Thinning{
 		println("cancel_loop()");
 		cancel_loop() ;
 
-		// println("find_crossing()");
-		// find_crossing();		
+		println("find_crossing()");
+		find_crossing();		
 
 		DE.getDisplayLTRB();
 		println(DE.points.size(),DE.nbhs.size());
@@ -1366,31 +1366,32 @@ class Thinning{
 ////////////////////////////////////////////
 	public boolean find_crossing() {
 		for (int i=0; i<DE.points.size (); i++) {
-	    Beads bdsi=DE.points.get(i);
-	    if (bdsi.c==1) {
-	      float min=9999;
-	      int minJ=-1;
-	      for (int j=0; j<DE.points.size (); j++) {
-	        float d=dist(bdsi.x, bdsi.y, DE.points.get(j).x, DE.points.get(j).y);
-	        if (d<min && i!=j ) {
-	          if (j!=bdsi.n1 && DE.points.get(bdsi.n1).c == 2) {
-	            if (!is_near_two_points(i, j, 5)) {
-	              //if (j!=DE.points.get(bdsi.o1).o1 && j!=DE.points.get(bdsi.o1).o2) {
-	              min=d;
-	              minJ=j;
-	            }
-	          }
-	        }
-	      }
-	      if (minJ>=0 && DE.points.get(minJ).c == 2) {
-	        //if (!segmentOnCurve(i, minJ)) {
-	          cross.add(new Nbh(i, minJ));
-	        //}
-	      }
-	    }
-	  }
-	  find_crosspt_from_cross_new();
-	  return false;
+		    Beads bdsi=DE.points.get(i);
+		    if (bdsi.c==1) {
+		      	float min=9999;
+		      	int minJ=-1;
+		      	for (int j=0; j<DE.points.size (); j++) {
+		      		Beads bdsj = DE.points.get(j);
+		      		if(bdsj.c==2){
+		        		float d1=dist(bdsi.x, bdsi.y, DE.points.get(bdsj.n1).x, DE.points.get(bdsj.n1).y);
+		        		float d=dist(bdsi.x, bdsi.y, bdsj.x, bdsj.y);
+		        		float d2=dist(bdsi.x, bdsi.y, DE.points.get(bdsj.n2).x, DE.points.get(bdsj.n2).y);
+			        	if (i!=j && d<min && d<d1 && d<d2) {
+						//if (j!=bdsi.n1 && DE.points.get(bdsi.n1).c == 2) {
+		         			if (!is_near_two_points(i, j, 5)) {
+		            			min=d;
+		              			minJ=j;
+		            		}
+		          		}
+		        	}
+		      	}
+		      	if (minJ>=0) {
+		        	cross.add(new Nbh(i, minJ));
+		      	}
+		    }
+		}
+		find_crosspt_from_cross_new();
+		return false;
 	}
 	
 	public boolean is_near_two_points(int p, int q,int cc) {
@@ -1549,7 +1550,7 @@ class data_extract {
 
     bin.getBinarized(image);//\uff12\u5024\u5316\u3057\u3066d[][]\u306b\u683c\u7d0d\u3059\u308b
 
-    // sq.getSquareExtraction();
+    //sq.getSquareExtraction();
     th.getThinningExtraction();
   }
 
@@ -1576,11 +1577,9 @@ class data_extract {
         stroke(255, 0, 0);
       }
       if (vec.c<=0||vec.c>=4) {
-      } else if(vec.c==3){
-        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), vec.c*3+1, vec.c*3+1);//vec.c\u306f1or2or3\u306e\u306f\u305a
       } else {
         //disp\u3092\u3064\u304b\u3063\u3066\u8868\u793a\u3092\u753b\u9762\u30b5\u30a4\u30ba\u306b\u5408\u308f\u305b\u308b\u3088\u3046\u306b\u5ea7\u6a19\u5909\u63db\u3059\u308b\u3002
-        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 1, 1);//vec.c\u306f1or2or3\u306e\u306f\u305a
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), vec.c*3+1, vec.c*3+1);//vec.c\u306f1or2or3\u306e\u306f\u305a
       }
     }
   }
