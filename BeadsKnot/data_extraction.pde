@@ -11,7 +11,7 @@ class data_extract {
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
   ArrayList<Beads> points=new ArrayList<Beads>();//点を登録
   transform tf;
-  Binalization bin;
+  Binarization bin;
   Square sq;
   Thinning th;
 
@@ -20,7 +20,7 @@ class data_extract {
     w = _w;
     h = _h;
     tf=new transform(this);
-    bin = new Binalization(this);
+    bin = new Binarization(this);
     sq = new Square(this);
     th = new Thinning(this);
     disp = _disp;
@@ -41,9 +41,9 @@ class data_extract {
     }
     image.resize(w - 100, h - 100);//リサイズする。
 
-    bin.getBinalized(image);//２値化してd[][]に格納する
+    bin.getBinarized(image);//２値化してd[][]に格納する
 
-    // sq.getSquareExtraction();
+    //sq.getSquareExtraction();
     th.getThinningExtraction();
   }
 

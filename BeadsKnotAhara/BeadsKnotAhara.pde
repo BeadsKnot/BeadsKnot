@@ -34,7 +34,7 @@ void draw() {
       }
     }
     updatePixels();
-  } else if (DO.drawBeadsAndNbhs) {
+  } else if (DO.drawBeadsAndNhds) {
     for (int n=0; n<dataExt.nbhs.size(); ++n) {
       int n1 = dataExt.nbhs.get(n).a;
       float x1 = dataExt.points.get(n1).x;
