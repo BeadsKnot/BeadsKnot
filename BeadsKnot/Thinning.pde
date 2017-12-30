@@ -24,10 +24,10 @@ class Thinning{
 		DE.countNbhs();
 
 		println("cancel_loop()");
-		cancel_loop() ;
+		//cancel_loop() ;
 
-		println("find_crossing()");
-		find_crossing();		
+		//println("find_crossing()");
+		//find_crossing();		
 
 		DE.getDisplayLTRB();
 		println(DE.points.size(),DE.nbhs.size());
