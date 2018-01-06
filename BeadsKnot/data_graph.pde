@@ -4,12 +4,15 @@ class data_graph{
 	ArrayList<Edge> edges;
 	data_extract de; 
 	int[] table;
+    display disp;
+    boolean data_graph_complete=false;
 
 	data_graph(data_extract _de){
 		nodes = new ArrayList<Node>();
 		edges = new ArrayList<Edge>();
 		de = _de;
-		make_data_graph();
+        disp = de.disp;
+        
 	}
 
 	void make_data_graph(){//nodesやedgesを決める
@@ -17,9 +20,12 @@ class data_graph{
 	     add_half_point_Joint();
 	     getNodes();
 	     testFindNextJoint();
-	     set_nodes_edges();
-
-            
+	     set_nodes_edges();  
+         println("data_graph_completeしました");    
+         data_graph_complete=true;
+        de.extraction_binalized = false;
+        de.extraction_complete = false;
+        de.extraction_beads = false;
 	}
 	void JointOrientation(){
         for (int i=0; i<de.points.size (); i++) {
@@ -29,21 +35,21 @@ class data_graph{
                     return;
                 }
                 Beads vecn1=de.points.get(vec.n1);
-                double x0=vecn1.x;
-                double y0=vecn1.y;
+                float x0=vecn1.x;
+                float y0=vecn1.y;
                 Beads vecu1=de.points.get(vec.u1);
-                double x1=vecu1.x;
-                double y1=vecu1.y;
+                float x1=vecu1.x;
+                float y1=vecu1.y;
                 Beads vecn2=de.points.get(vec.n2);
-                double x2=vecn2.x;
-                double y2=vecn2.y;
+                float x2=vecn2.x;
+                float y2=vecn2.y;
                 Beads vecu2=de.points.get(vec.u2);
-                double x3=vecu2.x;
-                double y3=vecu2.y;
-                double x02=x0-x2;//a
-                double y02=y0-y2;//b
-                double x13=x1-x3;//c
-                double y13=y1-y3;//d
+                float x3=vecu2.x;
+                float y3=vecu2.y;
+                float x02=x0-x2;//a
+                float y02=y0-y2;//b
+                float x13=x1-x3;//c
+                float y13=y1-y3;//d
                 if(x02*y13-y02*x13>0){
                     int a=vec.u1;
                     vec.u1=vec.u2;
@@ -97,7 +103,7 @@ class data_graph{
         }else if(p.n2==j){
             d=p.n1;
         }else{
-            println("間違っている");
+            //println("間違っている");
         }
         return findtrueJointInPoints(c,d);
     }
@@ -114,7 +120,7 @@ class data_graph{
         }else if(p.n2==j){
             d=p.n1;
         }else{
-            println("間違っている");
+            //println("間違っている");
         }
         return findNeighborJointInPoints(c,d);
     }
@@ -249,7 +255,7 @@ class data_graph{
         return -1;
     }
 
-    void getEdges(ArrayList<Edge> edges){
+ void getEdges(ArrayList<Edge> edges){
         for(int i=0;i<de.points.size();i++){
             Beads a=de.points.get(i);
             if(a.Joint||a.midJoint){
@@ -307,15 +313,15 @@ void modifyArmsOfAlignments(Edge e){
         Node n2 = nodes.get(e.getJ());
         int a1 = e.getI();
         int a2 = e.getK();
-        double r1;
-        double r2;
+        float r1;
+        float r2;
         int count = 0;
         boolean loopGoOn;
         do{
             loopGoOn = false;
-            double d1 = Math.hypot(n1.getX() - n1.edge_x(a1), n1.getY() - n1.edge_y(a1));
-            double d2 = Math.hypot(n1.edge_x(a1) - n2.edge_x(a2), n1.edge_y(a1) - n2.edge_y(a2));
-            double d3 = Math.hypot(n2.getX() - n2.edge_x(a2), n2.getY() - n2.edge_y(a2));
+            float d1 = hypot(n1.getX() - n1.edge_x(a1), n1.getY() - n1.edge_y(a1));
+            float d2 = hypot(n1.edge_x(a1) - n2.edge_x(a2), n1.edge_y(a1) - n2.edge_y(a2));
+            float d3 = hypot(n2.getX() - n2.edge_x(a2), n2.getY() - n2.edge_y(a2));
             r1 = n1.getR(a1);
             if(d1 + 3.0 < d2){
                 n1.setR(a1, r1+3.0);
@@ -340,8 +346,127 @@ void modifyArmsOfAlignments(Edge e){
         for(Edge i:edges) {
             i. scaling_shape_modifier(nodes);
         }
-        //Edge.rotation_shape_modifier(nodes,edges);
+        rotation_shape_modifier(nodes,edges);
     }
+
+    void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {//円を自動で回転させる
+        float e0, e0p, e0m, e0r;
+        for (int h = 0; h < nodes.size (); h ++) {
+            /* Node node=nodes.get(h); */
+            e0 = e0p = e0m = e0r = 0;
+            for (int i = 0; i < 4; i ++) {
+                // int i2=node.edges[j];
+                int e1=-1,e2=-1,i1=-1,i2=-1;
+                for(Edge e:edges){
+                    if(h==e.h&&i==e.i){
+                        i1=h;
+                        i2=e.j;
+                        e1=i;
+                        e2=e.k;
+                        break;
+                    }else if(h==e.j&&i==e.k){
+                        i1=h;
+                        i2=e.h;
+                        e1=i;
+                        e2=e.i;
+                        break;
+                    }
+                }
+                if (i1!=-1&&i2!=-1&&e1!=-1&&e2!=-1) {
+                    Node a1 = nodes.get(i1);
+                    Node a2 = nodes.get(i2);
+                    float r1=a1.r[e1];
+                    float r2=a2.r[e2];
+                    float angle1 = (a1.theta+PI*e1/2);
+                    float angle2 = (a2.theta+PI*e2/2);
+                    float x1=a1.x;
+                    float y1=a1.y;
+                    float x4=a2.x;
+                    float y4=a2.y;
+                    float x2=(x1+r1*cos(angle1));
+                    float y2=(y1-r1*sin(angle1));
+                    float x2p=(x1+r1*cos(angle1+0.05));
+                    float y2p=(y1-r1*sin(angle1+0.05));
+                    float x2m=(x1+r1*cos(angle1-0.05));
+                    float y2m=(y1-r1*sin(angle1-0.05));
+                    float x2r=(x1+10*cos(angle1+PI));
+                    float y2r=(y1-10*sin(angle1+PI));
+                    float x3=(x4+r2*cos(angle2));
+                    float y3=(y4-r2*sin(angle2));
+                    float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
+                    float e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
+                    float e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
+                    float e11r=get_rangewidth_angle(x1, y1, x2r, y2r, x3, y3, x4, y4);
+                    e0 += e11;
+                    e0p += e11p;
+                    e0m += e11m;
+                    e0r += e11r;
+                }
+            }
+            /*if (e0r < e0) {
+                nodes.get(h).theta += PI;
+            } else */
+            if (e0>e0p && e0m>e0) {
+                nodes.get(h).theta +=0.05;
+            } else if (e0>e0m && e0p>e0) {
+                nodes.get(h).theta -=0.05;
+            } /*else {
+                Log.d("check","do nothing");
+            }*/
+        }
+    }
+
+      float get_rangewidth_angle(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+        float ret0 = (PI);
+        float ret1 = 0;
+        float step=(0.05);// step is 1/20
+        float cx = x1;
+        float dx = coordinate_bezier(x1, x2, x3, x4, step);
+        float cy = y1;
+        float dy = coordinate_bezier(y1, y2, y3, y4, step);
+        float ex, ey;
+        for (float i = step*2; i<=1.0; i += step) {
+            ex=coordinate_bezier(x1, x2, x3, x4, i);
+            ey=coordinate_bezier(y1, y2, y3, y4, i);
+            float ang = angle(cx, cy, dx, dy, ex, ey);
+            if (ang < ret0) { // get minimum
+                ret0 = ang;
+            }
+            if (ang > ret1) { // get maximum
+                ret1 = ang;
+            }
+            cx = dx;
+            cy = dy;
+            dx = ex;
+            dy = ey;
+        }
+        return ret1-ret0;
+    }
+
+     float coordinate_bezier(float a, float c, float e, float g, float t) {
+        float x1 = naibun(a, c, t);
+        float x2 = naibun(c, e, t);
+        float x3 = naibun(e, g, t);
+        float x4 = naibun(x1, x2, t);
+        float x5 = naibun(x2, x3, t);
+        return naibun(x4, x5, t);
+    }
+      float angle(float ax, float ay, float bx, float by, float cx, float cy) {
+        float ang1 = (atan2(ay-by, ax-bx));
+        float ang2 = (atan2(by-cy, bx-cx));
+        float ret = ang2-ang1;
+        if (ret < 0.0) {
+            ret = -ret;
+        }
+        if (ret > PI) {
+            ret = (2*PI - ret);
+        }
+        return ret;
+    }
+    float naibun(float p, float q, float t) {
+        return (p*(1.0-t)+q*t);
+    }
+
 
 void set_nodes_edges(){
       // 読み取りデータからAlignmentのデータを取り出す。
@@ -366,6 +491,26 @@ void set_nodes_edges(){
             for(int i=0;i<100;i++) {
                // modify();
             }
+    }
+
+    void drawNodes(){
+        for(Node n:nodes) {
+        if(n.Joint) {
+            fill(255, 255, 0);
+        }else{
+            fill(255,0,255);
         }
-       
+        if(n.drawOn) {
+            noStroke();
+            ellipse(disp.get_winX(n.x), disp.get_winY(n.y), n.radius, n.radius);
+        }
+        }
+        for(Edge e:edges) {
+            //e.connect_nodes(nodes,_l, _t, _r, _b);
+        }
+    }  
+float hypot(float x,float y){
+    return sqrt(x*x+y*y);
+    }
+
 }

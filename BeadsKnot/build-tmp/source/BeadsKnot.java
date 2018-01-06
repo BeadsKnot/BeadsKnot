@@ -61,6 +61,8 @@ public void draw() {
     data.drawPoints();
     data.drawNbhs();
     //data.tf.spring();
+  }else if(graph.data_graph_complete){
+   graph.drawNodes();
   }
 }
 
@@ -86,6 +88,7 @@ public void fileSelected(File selection) {
     println("User selected " + selection.getAbsolutePath());
     PImage image = loadImage(selection.getAbsolutePath());
     data.make_data_extraction(image);
+    graph.make_data_graph();
   }
 }
 
@@ -129,7 +132,7 @@ class Binarization{
 
   public void getBinarized(PImage image){
     threshold = getThreshold(image);
-    println("Threshold = "+threshold);
+    //println("Threshold = "+threshold);
     int w = de.w;
     int h = de.h;
   	image.loadPixels();
@@ -166,7 +169,7 @@ class Binarization{
         if(cc<min) min = cc;
         if(cc>max) max = cc;
       } 
-      println(min,max);
+//println(min,max);
       if(max-min>50){
         if(minC<min) minC=min;
         if(maxC>max) maxC=max;
@@ -206,14 +209,14 @@ class Edge {
         return k;
     }
     //\u3000node \u3068 node \u3092\u3064\u306a\u3050\u66f2\u7dda\u3092\u63cf\u304f
-    public void drawEdgeBezier(ArrayList<Node> nodes, double l, double t, double r, double b){
+    public void drawEdgeBezier(ArrayList<Node> nodes, float l, float t, float r, float b){
         // \u65e7\u95a2\u6570\u540d\u3000connect_nodes
         //\u95a2\u6570\u540d\u3092drawEdgeBezier\u306b\u3057\u305f\u3044\u3002
         // \u30b9\u30bf\u30fc\u30c8\u5730\u70b9\u3092\u79fb\u52d5
         //Log.d("h\u3068j\u3092\u8868\u793a",""+h+"  "+j);
-        double wid = r-l;
-        double hei = b-t;
-        double rate;
+        float wid = r-l;
+        float hei = b-t;
+        float rate;
         if(wid>hei){
             rate = 1080/wid;
         } else {
@@ -221,70 +224,70 @@ class Edge {
         }
         Node a0=nodes.get(h);
         Node a1=nodes.get(j);
-        double hx=(a0.x-l)*rate;
-        double hy=(a0.y-t)*rate;
+        float hx=(a0.x-l)*rate;
+        float hy=(a0.y-t)*rate;
         if(i==1 || i==3) {
             hx = (a0.edge_rx(i,30/rate) - l) * rate;
             hy = (a0.edge_ry(i,30/rate) - t) * rate;
         }
-        double ix=(a0.edge_x(i)-l)*rate;
-        double iy=(a0.edge_y(i)-t)*rate;
-        double jx=(a1.x-l)*rate;
-        double jy=(a1.y-t)*rate;
+        float ix=(a0.edge_x(i)-l)*rate;
+        float iy=(a0.edge_y(i)-t)*rate;
+        float jx=(a1.x-l)*rate;
+        float jy=(a1.y-t)*rate;
         if(k==1 || k==3){
             jx = (a1.edge_rx(k,30/rate)-l)*rate;
             jy = (a1.edge_ry(k,30/rate)-l)*rate;
         }
-        double kx=(a1.edge_x(k)-l)*rate;
-        double ky=(a1.edge_y(k)-t)*rate;
+        float kx=(a1.edge_x(k)-l)*rate;
+        float ky=(a1.edge_y(k)-t)*rate;
 
         stroke(255,0,0,0);
         strokeWeight(5);
         drawCubicBezier(hx,hy,ix,iy,jx,jy,kx,ky);
     }
 
-     public double naibun(double p, double q, double t) {
+     public float naibun(float p, float q, float t) {
         return (p*(1.0f-t)+q*t);
     }
 
-     public double coordinate_bezier(double a, double c, double e, double g, double t) {
-        double x1 = naibun(a, c, t);
-        double x2 = naibun(c, e, t);
-        double x3 = naibun(e, g, t);
-        double x4 = naibun(x1, x2, t);
-        double x5 = naibun(x2, x3, t);
+     public float coordinate_bezier(float a, float c, float e, float g, float t) {
+        float x1 = naibun(a, c, t);
+        float x2 = naibun(c, e, t);
+        float x3 = naibun(e, g, t);
+        float x4 = naibun(x1, x2, t);
+        float x5 = naibun(x2, x3, t);
         return naibun(x4, x5, t);
     }
 
-     public void drawCubicBezier(double hx, double hy, double ix, double iy, double jx, double jy, double kx, double ky){
+     public void drawCubicBezier(float hx, float hy, float ix, float iy, float jx, float jy, float kx, float ky){
 
     }
 
-     public double angle(double ax, double ay, double bx, double by, double cx, double cy) {
-        double ang1 = (Math.atan2(ay-by, ax-bx));
-        double ang2 = (Math.atan2(by-cy, bx-cx));
-        double ret = ang2-ang1;
+     public float angle(float ax, float ay, float bx, float by, float cx, float cy) {
+        float ang1 = (atan2(ay-by, ax-bx));
+        float ang2 = (atan2(by-cy, bx-cx));
+        float ret = ang2-ang1;
         if (ret < 0.0f) {
             ret = -ret;
         }
-        if (ret > Math.PI) {
-            ret = (2*Math.PI - ret);
+        if (ret > PI) {
+            ret = (2*PI - ret);
         }
         return ret;
     }
-     public double get_rangewidth_angle(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
-        double ret0 = (Math.PI);
-        double ret1 = 0;
-        double step=(0.05f);// step is 1/20
-        double cx = x1;
-        double dx = coordinate_bezier(x1, x2, x3, x4, step);
-        double cy = y1;
-        double dy = coordinate_bezier(y1, y2, y3, y4, step);
-        double ex, ey;
-        for (double i = step*2; i<=1.0f; i += step) {
+     public float get_rangewidth_angle(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+        float ret0 = (PI);
+        float ret1 = 0;
+        float step=(0.05f);// step is 1/20
+        float cx = x1;
+        float dx = coordinate_bezier(x1, x2, x3, x4, step);
+        float cy = y1;
+        float dy = coordinate_bezier(y1, y2, y3, y4, step);
+        float ex, ey;
+        for (float i = step*2; i<=1.0f; i += step) {
             ex=coordinate_bezier(x1, x2, x3, x4, i);
             ey=coordinate_bezier(y1, y2, y3, y4, i);
-            double ang = angle(cx, cy, dx, dy, ex, ey);
+            float ang = angle(cx, cy, dx, dy, ex, ey);
             if (ang < ret0) { // get minimum
                 ret0 = ang;
             }
@@ -302,14 +305,14 @@ class Edge {
     /*public void print_get_rangewidth_angle(ArrayList<Node> nodes){
         Node a0=nodes.get(h);
         Node a1=nodes.get(j);
-        double x1=a0.x;
-        double y1=a0.y;
-        double x2=a0.edge_x(i);
-        double y2=a0.edge_y(i);
-        double x3=a1.edge_x(k);
-        double y3=a1.edge_y(k);
-        double x4=a1.x;
-        double y4=a1.y;
+        float x1=a0.x;
+        float y1=a0.y;
+        float x2=a0.edge_x(i);
+        float y2=a0.edge_y(i);
+        float x3=a1.edge_x(k);
+        float y3=a1.edge_y(k);
+        float x4=a1.x;
+        float y4=a1.y;
         Log.d("CHECK",":" +get_rangewidth_angle(x1,y1,x2,y2,x3,y3,x4,y4) + "," );
     }*/
 
@@ -319,30 +322,30 @@ class Edge {
         // if (0<=e1 && e1<4 && 0<=e2 && e2<4 && is_gv_id(i1) && is_gv_id(i2) ) {
         Node a0=nodes.get(h);
         Node a1=nodes.get(j);
-        double r1=a0.r[i];
-        double r2=a1.r[k];
-        double angle1 = (a0.theta+Math.PI*i/2);
-        // double angle1 = x + r[i] * ( Math.cos(theta+Math.toRadians(i*90)));
-        double angle2 = (a1.theta+Math.PI*k/2);
-        //double angle2 = x + r[i] * ( Math.cos(theta+Math.toRadians(i*90)));
-        double x1=a0.x;
-        double y1=a0.y;
-        double x4=a1.x;
-        double y4=a1.y;
-        double x2=(x1+r1*Math.cos(angle1));
-        double y2=(y1-r1*Math.sin(angle1));
-        //double y2 = x + r[i] * ( Math.cos(theta+Math.toRadians(i*90)));
-        double x3=(x4+r2*Math.cos(angle2));
-        double y3=(y4-r2*Math.sin(angle2));
-        //  double y3 = x + r[i] * ( Math.cos(theta+Math.toRadians(i*90)));
-        double dst= dist(x1, y1, x4, y4);
+        float r1=a0.r[i];
+        float r2=a1.r[k];
+        float angle1 = (a0.theta+PI*i/2);
+        // float angle1 = x + r[i] * ( cos(theta+toRadians(i*90)));
+        float angle2 = (a1.theta+PI*k/2);
+        //float angle2 = x + r[i] * ( cos(theta+toRadians(i*90)));
+        float x1=a0.x;
+        float y1=a0.y;
+        float x4=a1.x;
+        float y4=a1.y;
+        float x2=(x1+r1*cos(angle1));
+        float y2=(y1-r1*sin(angle1));
+        //float y2 = x + r[i] * ( cos(theta+toRadians(i*90)));
+        float x3=(x4+r2*cos(angle2));
+        float y3=(y4-r2*sin(angle2));
+        //  float y3 = x + r[i] * ( cos(theta+toRadians(i*90)));
+        float dst= dist(x1, y1, x4, y4);
         int count=0;
         do {
-            double e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
-            double e21=get_rangewidth_angle(x1, y1, (x2+Math.cos(angle1)), (y2-Math.sin(angle1)), x3, y3, x4, y4);
-            double e01=get_rangewidth_angle(x1, y1, (x2-Math.cos(angle1)), (y2+Math.sin(angle1)), x3, y3, x4, y4);
-            double e12=get_rangewidth_angle(x1, y1, x2, y2, (x3+Math.cos(angle2)), (y3-Math.sin(angle2)), x4, y4);
-            double e10=get_rangewidth_angle(x1, y1, x2, y2, (x3-Math.cos(angle2)), (y3+Math.sin(angle2)), x4, y4);
+            float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
+            float e21=get_rangewidth_angle(x1, y1, (x2+cos(angle1)), (y2-sin(angle1)), x3, y3, x4, y4);
+            float e01=get_rangewidth_angle(x1, y1, (x2-cos(angle1)), (y2+sin(angle1)), x3, y3, x4, y4);
+            float e12=get_rangewidth_angle(x1, y1, x2, y2, (x3+cos(angle2)), (y3-sin(angle2)), x4, y4);
+            float e10=get_rangewidth_angle(x1, y1, x2, y2, (x3-cos(angle2)), (y3+sin(angle2)), x4, y4);
             if (e11>e01&&r1>10) {
                 r1--;
                 // if (r1<beadsDistance) {
@@ -364,21 +367,21 @@ class Edge {
             } else {
                 break;
             }
-            x2=(x1+r1*Math.cos(angle1));
-            y2=(y1-r1*Math.sin(angle1));
-            x3=(x4+r2*Math.cos(angle2));
-            y3=(y4-r2*Math.sin(angle2));
+            x2=(x1+r1*cos(angle1));
+            y2=(y1-r1*sin(angle1));
+            x3=(x4+r2*cos(angle2));
+            y3=(y4-r2*sin(angle2));
         }
         while (++count <10);
         a0.r[i]=r1;
         a1.r[k]=r2;
     }
-     public double dist(double x1,double y1,double x2,double y2){//2\u70b9\u9593\u306e\u8ddd\u96e2
-        return (Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)));
+     public float dist(float x1,float y1,float x2,float y2){//2\u70b9\u9593\u306e\u8ddd\u96e2
+        return (sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)));
     }
 
     public void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {//\u5186\u3092\u81ea\u52d5\u3067\u56de\u8ee2\u3055\u305b\u308b
-        double e0, e0p, e0m, e0r;
+        float e0, e0p, e0m, e0r;
         for (int h = 0; h < nodes.size (); h ++) {
             /* Node node=nodes.get(h); */
             e0 = e0p = e0m = e0r = 0;
@@ -403,28 +406,28 @@ class Edge {
                 if (i1!=-1&&i2!=-1&&e1!=-1&&e2!=-1) {
                     Node a1 = nodes.get(i1);
                     Node a2 = nodes.get(i2);
-                    double r1=a1.r[e1];
-                    double r2=a2.r[e2];
-                    double angle1 = (a1.theta+Math.PI*e1/2);
-                    double angle2 = (a2.theta+Math.PI*e2/2);
-                    double x1=a1.x;
-                    double y1=a1.y;
-                    double x4=a2.x;
-                    double y4=a2.y;
-                    double x2=(x1+r1*Math.cos(angle1));
-                    double y2=(y1-r1*Math.sin(angle1));
-                    double x2p=(x1+r1*Math.cos(angle1+0.05f));
-                    double y2p=(y1-r1*Math.sin(angle1+0.05f));
-                    double x2m=(x1+r1*Math.cos(angle1-0.05f));
-                    double y2m=(y1-r1*Math.sin(angle1-0.05f));
-                    double x2r=(x1+10*Math.cos(angle1+Math.PI));
-                    double y2r=(y1-10*Math.sin(angle1+Math.PI));
-                    double x3=(x4+r2*Math.cos(angle2));
-                    double y3=(y4-r2*Math.sin(angle2));
-                    double e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
-                    double e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
-                    double e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
-                    double e11r=get_rangewidth_angle(x1, y1, x2r, y2r, x3, y3, x4, y4);
+                    float r1=a1.r[e1];
+                    float r2=a2.r[e2];
+                    float angle1 = (a1.theta+PI*e1/2);
+                    float angle2 = (a2.theta+PI*e2/2);
+                    float x1=a1.x;
+                    float y1=a1.y;
+                    float x4=a2.x;
+                    float y4=a2.y;
+                    float x2=(x1+r1*cos(angle1));
+                    float y2=(y1-r1*sin(angle1));
+                    float x2p=(x1+r1*cos(angle1+0.05f));
+                    float y2p=(y1-r1*sin(angle1+0.05f));
+                    float x2m=(x1+r1*cos(angle1-0.05f));
+                    float y2m=(y1-r1*sin(angle1-0.05f));
+                    float x2r=(x1+10*cos(angle1+PI));
+                    float y2r=(y1-10*sin(angle1+PI));
+                    float x3=(x4+r2*cos(angle2));
+                    float y3=(y4-r2*sin(angle2));
+                    float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
+                    float e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
+                    float e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
+                    float e11r=get_rangewidth_angle(x1, y1, x2r, y2r, x3, y3, x4, y4);
                     e0 += e11;
                     e0p += e11p;
                     e0m += e11m;
@@ -432,7 +435,7 @@ class Edge {
                 }
             }
             /*if (e0r < e0) {
-                nodes.get(h).theta += Math.PI;
+                nodes.get(h).theta += PI;
             } else */
             if (e0>e0p && e0m>e0) {
                 nodes.get(h).theta +=0.05f;
@@ -444,12 +447,12 @@ class Edge {
         }
     }
 
-     public double getXIntersectionWithInterval(double ox, double oy, double sx,double sy, double tx,double ty){
+     public float getXIntersectionWithInterval(float ox, float oy, float sx,float sy, float tx,float ty){
         if((sy-oy)*(ty-oy)>0){
             return -9999.0f;
         }
-        double t = (sy-oy)/(sy-ty);// sy is not equal to ty here
-        double dx = sx - (sx-tx)*t;
+        float t = (sy-oy)/(sy-ty);// sy is not equal to ty here
+        float dx = sx - (sx-tx)*t;
         if(ox < dx){
             return dx;
         } else {
@@ -457,25 +460,25 @@ class Edge {
         }
     }
 
-    public double getXIntersectionWithBezier(double ox, double oy, ArrayList<Node> nodes){
+    public float getXIntersectionWithBezier(float ox, float oy, ArrayList<Node> nodes){
         Node a0 = nodes.get(h);
         Node a1 = nodes.get(j);
-        double hx=a0.x;
-        double hy=a0.y;
-        double ix=a0.edge_x(i);
-        double iy=a0.edge_y(i);
-        double jx=a1.x;
-        double jy=a1.y;
-        double kx=a1.edge_x(k);
-        double ky=a1.edge_y(k);
-        double step = 0.1f;
-        double ret = 9999.0f;
-        for(double t = 0.0f; t<1.0f-step; t += step){
-            double sx = coordinate_bezier(hx,ix,kx,jx,t);
-            double sy = coordinate_bezier(hy,iy,ky,jy,t);
-            double tx = coordinate_bezier(hx,ix,kx,jx,t+step);
-            double ty = coordinate_bezier(hy,iy,ky,jy,t+step);
-            double xx = getXIntersectionWithInterval(ox,oy,sx,sy,tx,ty);
+        float hx=a0.x;
+        float hy=a0.y;
+        float ix=a0.edge_x(i);
+        float iy=a0.edge_y(i);
+        float jx=a1.x;
+        float jy=a1.y;
+        float kx=a1.edge_x(k);
+        float ky=a1.edge_y(k);
+        float step = 0.1f;
+        float ret = 9999.0f;
+        for(float t = 0.0f; t<1.0f-step; t += step){
+            float sx = coordinate_bezier(hx,ix,kx,jx,t);
+            float sy = coordinate_bezier(hy,iy,ky,jy,t);
+            float tx = coordinate_bezier(hx,ix,kx,jx,t+step);
+            float ty = coordinate_bezier(hy,iy,ky,jy,t+step);
+            float xx = getXIntersectionWithInterval(ox,oy,sx,sy,tx,ty);
             if(-9998 < xx && xx<ret){
                 ret = xx;
             }
@@ -550,7 +553,8 @@ class Edge {
             }
             println("getArea:" + cursorEdge.getName());
         } while ( ++count<30 && cursorEdge != thisEdge);
-        //nodes.get(cursorEdge.j).drawOn = true;//maybe no need
+        nodes.get(cursorEdge.j).drawOn = true;//maybe no need
+        //nodes.drawOn=true;
     }
 
     public String getName(){
@@ -560,30 +564,30 @@ class Edge {
 
 
 class Node {
-    double x;
-    double y;
-    double theta;
-    double[] r;//\u9577\u3055\u3001\uff14\u3064
+    float x;
+    float y;
+    float theta;
+    float[] r;//\u9577\u3055\u3001\uff14\u3064
     int radius;//\u5186\u306e\u534a\u5f84
-    public double edge_x(int i){
-        return x + r[i] * Math.cos(theta+Math.toRadians(i*90));
+    public float edge_x(int i){
+        return x + r[i] * cos(theta+radians(i*90));
     }
-    public double edge_y(int i){
-        return y - r[i] * Math.sin(theta+Math.toRadians(i*90));
+    public float edge_y(int i){
+        return y - r[i] * sin(theta+radians(i*90));
     }
-    public double edge_rx(int i, double s){
-        return x + s * Math.cos(theta+Math.toRadians(i*90));
+    public float edge_rx(int i, float s){
+        return x + s * cos(theta+radians(i*90));
     }
-    public double edge_ry(int i,double s){
-        return y - s * Math.sin(theta+Math.toRadians(i*90));
+    public float edge_ry(int i,float s){
+        return y - s * sin(theta+radians(i*90));
     }
     boolean Joint;
     boolean drawOn;
-    Node(double _x, double _y){
+    Node(float _x, float _y){
         x=_x;
         y=_y;
         theta=0;
-        r=new double[4];
+        r=new float[4];
         radius=20;
         for(int i=0;i<4;i++) {
             r[i]=5;//\u7dda\u306e\u9577\u3055
@@ -591,42 +595,15 @@ class Node {
         Joint=false;
         drawOn = false;
     }
-    public double getR(int i){
+    public float getR(int i){
         if(0<=i && i<4) return r[i];
         else return 0;
     }
-    public void setR(int i,double rr){
+    public void setR(int i,float rr){
         if(0<=i && i<4) r[i] = rr;
     }
-    public double getX(){ return x;}
-    public double getY(){ return y;}
-
-    public void drawNode(double l, double t, double r, double b){
-        //(l,t)-(r,b) \u304c\u30c7\u30fc\u30bf\u7a7a\u9593\u306e\u7bc4\u56f2
-        double w = r-l;
-        double h = b-t;
-        double rate;
-        if(w>h){
-            rate = 1080/w;//\u753b\u9762\u30b5\u30a4\u30ba\u306b\u63db\u7b97
-        } else {
-            rate = 1080/h;
-        }
-        //\u30ac\u30a4\u30c9\u306e\u63cf\u753b
-//        stroke(160, 0, 0);
-//        strokeWidth(5);
-//        for(int i=0;i<4;i++) {
-//           line((float)x, (float)y, (float)edge_x(i), (float)edge_y(i) , p);
-//        }
-        if(Joint) {
-            fill(255, 255, 0, 0);
-        }else{
-            fill(255,0,255,0);
-        }
-        if(drawOn) {
-            noStroke();
-            ellipse((float) ((x - l) * rate), (float) ((y - t) * rate), radius, radius);
-        }
-    }
+    public float getX(){ return x;}
+    public float getY(){ return y;} 
 }
 class Square{
 	data_extract de;
@@ -643,10 +620,11 @@ class Square{
 
 	public boolean getSquareExtraction(){
 		s = de.thickness();//d[][]\u304b\u3089\u7dda\u306e\u592a\u3055\u3092\u898b\u7a4d\u3082\u308b
-
+        w = de.w;
+		h = de.h;
 
 		boolean ofutarisama_flag;
-		int loopLimit = 1;//min(10,s);
+		int loopLimit = 10;//min(10,s);
 		int kaisa = 0;	
 		do { 
 			if (kaisa % 2 == 0) {
@@ -1155,6 +1133,7 @@ class data_extract {
   boolean extraction_binalized;
   boolean extraction_beads;
   boolean extraction_complete;
+  boolean data_graph_complete;
 
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//\u7dda\u3092\u767b\u9332
   ArrayList<Beads> points=new ArrayList<Beads>();//\u70b9\u3092\u767b\u9332
@@ -1175,6 +1154,7 @@ class data_extract {
     extraction_binalized = false;
     extraction_complete = false;
     extraction_beads = false;
+    data_graph_complete=false;
   }
 
   // image\u30c7\u30fc\u30bf\u306e\u89e3\u6790
@@ -1708,12 +1688,15 @@ class data_graph{
 	ArrayList<Edge> edges;
 	data_extract de; 
 	int[] table;
+    display disp;
+    boolean data_graph_complete=false;
 
 	data_graph(data_extract _de){
 		nodes = new ArrayList<Node>();
 		edges = new ArrayList<Edge>();
 		de = _de;
-		make_data_graph();
+        disp = de.disp;
+        
 	}
 
 	public void make_data_graph(){//nodes\u3084edges\u3092\u6c7a\u3081\u308b
@@ -1721,9 +1704,12 @@ class data_graph{
 	     add_half_point_Joint();
 	     getNodes();
 	     testFindNextJoint();
-	     set_nodes_edges();
-
-            
+	     set_nodes_edges();  
+         println("data_graph_complete\u3057\u307e\u3057\u305f");    
+         data_graph_complete=true;
+        de.extraction_binalized = false;
+        de.extraction_complete = false;
+        de.extraction_beads = false;
 	}
 	public void JointOrientation(){
         for (int i=0; i<de.points.size (); i++) {
@@ -1733,21 +1719,21 @@ class data_graph{
                     return;
                 }
                 Beads vecn1=de.points.get(vec.n1);
-                double x0=vecn1.x;
-                double y0=vecn1.y;
+                float x0=vecn1.x;
+                float y0=vecn1.y;
                 Beads vecu1=de.points.get(vec.u1);
-                double x1=vecu1.x;
-                double y1=vecu1.y;
+                float x1=vecu1.x;
+                float y1=vecu1.y;
                 Beads vecn2=de.points.get(vec.n2);
-                double x2=vecn2.x;
-                double y2=vecn2.y;
+                float x2=vecn2.x;
+                float y2=vecn2.y;
                 Beads vecu2=de.points.get(vec.u2);
-                double x3=vecu2.x;
-                double y3=vecu2.y;
-                double x02=x0-x2;//a
-                double y02=y0-y2;//b
-                double x13=x1-x3;//c
-                double y13=y1-y3;//d
+                float x3=vecu2.x;
+                float y3=vecu2.y;
+                float x02=x0-x2;//a
+                float y02=y0-y2;//b
+                float x13=x1-x3;//c
+                float y13=y1-y3;//d
                 if(x02*y13-y02*x13>0){
                     int a=vec.u1;
                     vec.u1=vec.u2;
@@ -1801,7 +1787,7 @@ class data_graph{
         }else if(p.n2==j){
             d=p.n1;
         }else{
-            println("\u9593\u9055\u3063\u3066\u3044\u308b");
+            //println("\u9593\u9055\u3063\u3066\u3044\u308b");
         }
         return findtrueJointInPoints(c,d);
     }
@@ -1818,7 +1804,7 @@ class data_graph{
         }else if(p.n2==j){
             d=p.n1;
         }else{
-            println("\u9593\u9055\u3063\u3066\u3044\u308b");
+            //println("\u9593\u9055\u3063\u3066\u3044\u308b");
         }
         return findNeighborJointInPoints(c,d);
     }
@@ -1953,7 +1939,7 @@ class data_graph{
         return -1;
     }
 
-    public void getEdges(ArrayList<Edge> edges){
+ public void getEdges(ArrayList<Edge> edges){
         for(int i=0;i<de.points.size();i++){
             Beads a=de.points.get(i);
             if(a.Joint||a.midJoint){
@@ -2011,15 +1997,15 @@ public void modifyArmsOfAlignments(Edge e){
         Node n2 = nodes.get(e.getJ());
         int a1 = e.getI();
         int a2 = e.getK();
-        double r1;
-        double r2;
+        float r1;
+        float r2;
         int count = 0;
         boolean loopGoOn;
         do{
             loopGoOn = false;
-            double d1 = Math.hypot(n1.getX() - n1.edge_x(a1), n1.getY() - n1.edge_y(a1));
-            double d2 = Math.hypot(n1.edge_x(a1) - n2.edge_x(a2), n1.edge_y(a1) - n2.edge_y(a2));
-            double d3 = Math.hypot(n2.getX() - n2.edge_x(a2), n2.getY() - n2.edge_y(a2));
+            float d1 = hypot(n1.getX() - n1.edge_x(a1), n1.getY() - n1.edge_y(a1));
+            float d2 = hypot(n1.edge_x(a1) - n2.edge_x(a2), n1.edge_y(a1) - n2.edge_y(a2));
+            float d3 = hypot(n2.getX() - n2.edge_x(a2), n2.getY() - n2.edge_y(a2));
             r1 = n1.getR(a1);
             if(d1 + 3.0f < d2){
                 n1.setR(a1, r1+3.0f);
@@ -2047,6 +2033,125 @@ public void modifyArmsOfAlignments(Edge e){
         rotation_shape_modifier(nodes,edges);
     }
 
+    public void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {//\u5186\u3092\u81ea\u52d5\u3067\u56de\u8ee2\u3055\u305b\u308b
+        float e0, e0p, e0m, e0r;
+        for (int h = 0; h < nodes.size (); h ++) {
+            /* Node node=nodes.get(h); */
+            e0 = e0p = e0m = e0r = 0;
+            for (int i = 0; i < 4; i ++) {
+                // int i2=node.edges[j];
+                int e1=-1,e2=-1,i1=-1,i2=-1;
+                for(Edge e:edges){
+                    if(h==e.h&&i==e.i){
+                        i1=h;
+                        i2=e.j;
+                        e1=i;
+                        e2=e.k;
+                        break;
+                    }else if(h==e.j&&i==e.k){
+                        i1=h;
+                        i2=e.h;
+                        e1=i;
+                        e2=e.i;
+                        break;
+                    }
+                }
+                if (i1!=-1&&i2!=-1&&e1!=-1&&e2!=-1) {
+                    Node a1 = nodes.get(i1);
+                    Node a2 = nodes.get(i2);
+                    float r1=a1.r[e1];
+                    float r2=a2.r[e2];
+                    float angle1 = (a1.theta+PI*e1/2);
+                    float angle2 = (a2.theta+PI*e2/2);
+                    float x1=a1.x;
+                    float y1=a1.y;
+                    float x4=a2.x;
+                    float y4=a2.y;
+                    float x2=(x1+r1*cos(angle1));
+                    float y2=(y1-r1*sin(angle1));
+                    float x2p=(x1+r1*cos(angle1+0.05f));
+                    float y2p=(y1-r1*sin(angle1+0.05f));
+                    float x2m=(x1+r1*cos(angle1-0.05f));
+                    float y2m=(y1-r1*sin(angle1-0.05f));
+                    float x2r=(x1+10*cos(angle1+PI));
+                    float y2r=(y1-10*sin(angle1+PI));
+                    float x3=(x4+r2*cos(angle2));
+                    float y3=(y4-r2*sin(angle2));
+                    float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
+                    float e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
+                    float e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
+                    float e11r=get_rangewidth_angle(x1, y1, x2r, y2r, x3, y3, x4, y4);
+                    e0 += e11;
+                    e0p += e11p;
+                    e0m += e11m;
+                    e0r += e11r;
+                }
+            }
+            /*if (e0r < e0) {
+                nodes.get(h).theta += PI;
+            } else */
+            if (e0>e0p && e0m>e0) {
+                nodes.get(h).theta +=0.05f;
+            } else if (e0>e0m && e0p>e0) {
+                nodes.get(h).theta -=0.05f;
+            } /*else {
+                Log.d("check","do nothing");
+            }*/
+        }
+    }
+
+      public float get_rangewidth_angle(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+        float ret0 = (PI);
+        float ret1 = 0;
+        float step=(0.05f);// step is 1/20
+        float cx = x1;
+        float dx = coordinate_bezier(x1, x2, x3, x4, step);
+        float cy = y1;
+        float dy = coordinate_bezier(y1, y2, y3, y4, step);
+        float ex, ey;
+        for (float i = step*2; i<=1.0f; i += step) {
+            ex=coordinate_bezier(x1, x2, x3, x4, i);
+            ey=coordinate_bezier(y1, y2, y3, y4, i);
+            float ang = angle(cx, cy, dx, dy, ex, ey);
+            if (ang < ret0) { // get minimum
+                ret0 = ang;
+            }
+            if (ang > ret1) { // get maximum
+                ret1 = ang;
+            }
+            cx = dx;
+            cy = dy;
+            dx = ex;
+            dy = ey;
+        }
+        return ret1-ret0;
+    }
+
+     public float coordinate_bezier(float a, float c, float e, float g, float t) {
+        float x1 = naibun(a, c, t);
+        float x2 = naibun(c, e, t);
+        float x3 = naibun(e, g, t);
+        float x4 = naibun(x1, x2, t);
+        float x5 = naibun(x2, x3, t);
+        return naibun(x4, x5, t);
+    }
+      public float angle(float ax, float ay, float bx, float by, float cx, float cy) {
+        float ang1 = (atan2(ay-by, ax-bx));
+        float ang2 = (atan2(by-cy, bx-cx));
+        float ret = ang2-ang1;
+        if (ret < 0.0f) {
+            ret = -ret;
+        }
+        if (ret > PI) {
+            ret = (2*PI - ret);
+        }
+        return ret;
+    }
+    public float naibun(float p, float q, float t) {
+        return (p*(1.0f-t)+q*t);
+    }
+
+
 public void set_nodes_edges(){
       // \u8aad\u307f\u53d6\u308a\u30c7\u30fc\u30bf\u304b\u3089Alignment\u306e\u30c7\u30fc\u30bf\u3092\u53d6\u308a\u51fa\u3059\u3002
             for (int i = 0; i < de.points.size(); i++) {
@@ -2070,8 +2175,28 @@ public void set_nodes_edges(){
             for(int i=0;i<100;i++) {
                // modify();
             }
+    }
+
+    public void drawNodes(){
+        for(Node n:nodes) {
+        if(n.Joint) {
+            fill(255, 255, 0);
+        }else{
+            fill(255,0,255);
         }
-       
+        if(n.drawOn) {
+            noStroke();
+            ellipse(disp.get_winX(n.x), disp.get_winY(n.y), n.radius, n.radius);
+        }
+        }
+        for(Edge e:edges) {
+            //e.connect_nodes(nodes,_l, _t, _r, _b);
+        }
+    }  
+public float hypot(float x,float y){
+    return sqrt(x*x+y*y);
+    }
+
 }
 class display{
 	float left,top,right,bottom;

@@ -45,6 +45,8 @@ void draw() {
     data.drawPoints();
     data.drawNbhs();
     //data.tf.spring();
+  }else if(graph.data_graph_complete){
+   graph.drawNodes();
   }
 }
 
@@ -70,6 +72,7 @@ void fileSelected(File selection) {
     println("User selected " + selection.getAbsolutePath());
     PImage image = loadImage(selection.getAbsolutePath());
     data.make_data_extraction(image);
+    graph.make_data_graph();
   }
 }
 

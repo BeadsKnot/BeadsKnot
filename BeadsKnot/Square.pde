@@ -13,10 +13,11 @@ class Square{
 
 	boolean getSquareExtraction(){
 		s = de.thickness();//d[][]から線の太さを見積もる
-
+        w = de.w;
+		h = de.h;
 
 		boolean ofutarisama_flag;
-		int loopLimit = 1;//min(10,s);
+		int loopLimit = 10;//min(10,s);
 		int kaisa = 0;	
 		do { 
 			if (kaisa % 2 == 0) {
