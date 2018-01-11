@@ -7,6 +7,7 @@ class data_extract {
   boolean extraction_binalized;
   boolean extraction_beads;
   boolean extraction_complete;
+  boolean data_graph_complete;
 
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
   ArrayList<Beads> points=new ArrayList<Beads>();//点を登録
@@ -27,6 +28,7 @@ class data_extract {
     extraction_binalized = false;
     extraction_complete = false;
     extraction_beads = false;
+    data_graph_complete = false;
   }
 
   // imageデータの解析
