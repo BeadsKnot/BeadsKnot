@@ -4,7 +4,8 @@
 // int d[][];// ->data_extraction
 // int s;// ->data_extraction
 // int n = s;// ->data_extraction
-boolean ofutarisama_flag=false;//お二人様かどうかのフラグ// ->data_extraction
+//boolean ofutarisama_flag=false;//お二人様かどうかのフラグ// ->data_extraction
+//このofutarisama_flagはいらない？
 PImage pastedImage;
 PImage output;
 
@@ -45,6 +46,8 @@ void draw() {
     data.drawPoints();
     data.drawNbhs();
     //data.tf.spring();
+  }else if(graph.data_graph_complete){
+   graph.drawNodes();
   }
 }
 
@@ -70,6 +73,7 @@ void fileSelected(File selection) {
     println("User selected " + selection.getAbsolutePath());
     PImage image = loadImage(selection.getAbsolutePath());
     data.make_data_extraction(image);
+    graph.make_data_graph();
   }
 }
 

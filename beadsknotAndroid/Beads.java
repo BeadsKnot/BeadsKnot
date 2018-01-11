@@ -41,7 +41,7 @@ class Beads {
     float getTheta(ArrayList<Beads> points){
         Beads neighbor1=points.get(n1);
         double x1=neighbor1.x;
-        double y1=neighbor1.y;
+       double y1=neighbor1.y;
         double th=Math.atan2(-y1+y,x1-x);
         return (float)th;
     }

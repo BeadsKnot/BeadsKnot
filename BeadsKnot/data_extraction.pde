@@ -45,8 +45,8 @@ class data_extract {
 
     bin.getBinarized(image);//２値化してd[][]に格納する
 
-    sq.getSquareExtraction();
-    //th.getThinningExtraction();
+    sq.getSquareExtraction();//正方形分割をするときにコメントアウトをはずす
+    //th.getThinningExtraction();//thinning ver.にするときにコメントアウトをはずす
   }
 
   //TODO メソッドをabc順に並べるかどうか，検討する。
@@ -517,11 +517,6 @@ class data_extract {
       }
     }
   }
-
-
-
-
-
   boolean Ofutarisama() {//みんなお二人様だったか確認
     for (Beads vec : points) {
       if (vec.c!=2) {

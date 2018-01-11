@@ -9,7 +9,7 @@ class Binarization{
 
   void getBinarized(PImage image){
     threshold = getThreshold(image);
-    println("Threshold = "+threshold);
+    //println("Threshold = "+threshold);
     int w = de.w;
     int h = de.h;
   	image.loadPixels();
@@ -46,7 +46,7 @@ class Binarization{
         if(cc<min) min = cc;
         if(cc>max) max = cc;
       } 
-      println(min,max);
+//println(min,max);
       if(max-min>50){
         if(minC<min) minC=min;
         if(maxC>max) maxC=max;
