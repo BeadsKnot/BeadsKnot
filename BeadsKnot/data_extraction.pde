@@ -28,7 +28,7 @@ class data_extract {
     extraction_binalized = false;
     extraction_complete = false;
     extraction_beads = false;
-    data_graph_complete = false;
+    data_graph_complete=false;
   }
 
   // imageデータの解析
@@ -45,8 +45,8 @@ class data_extract {
 
     bin.getBinarized(image);//２値化してd[][]に格納する
 
-    //sq.getSquareExtraction();
-    th.getThinningExtraction();
+    sq.getSquareExtraction();
+    //th.getThinningExtraction();
   }
 
   //TODO メソッドをabc順に並べるかどうか，検討する。
