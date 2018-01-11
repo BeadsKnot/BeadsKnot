@@ -125,7 +125,8 @@ class data_graph{
         return findNeighborJointInPoints(c,d);
     }
 
-    private int countNeighborJointInPoints(int j,int c,int count) {
+    private int countNeighborJointInPoints(int 
+        j,int c,int count) {
         Beads p=de.points.get(c);
         if(p.Joint||p.midJoint){
             return count;

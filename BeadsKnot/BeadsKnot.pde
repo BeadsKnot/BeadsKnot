@@ -4,7 +4,8 @@
 // int d[][];// ->data_extraction
 // int s;// ->data_extraction
 // int n = s;// ->data_extraction
-boolean ofutarisama_flag=false;//お二人様かどうかのフラグ// ->data_extraction
+//boolean ofutarisama_flag=false;//お二人様かどうかのフラグ// ->data_extraction
+//このofutarisama_flagはいらない？
 PImage pastedImage;
 PImage output;
 
