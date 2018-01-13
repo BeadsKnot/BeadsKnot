@@ -61,7 +61,8 @@ void keyPressed() {
     save("knot"+mon+d+"-"+h+m+s+".png");
   }
 
-  if (int(key)==15) {// ctrl+o
+  //if (int(key)==15) {// ctrl+o
+  if ( key == 'o') {// o
     selectInput("Select a file to process:", "fileSelected");
   }
 }
@@ -73,7 +74,6 @@ void fileSelected(File selection) {
     println("User selected " + selection.getAbsolutePath());
     PImage image = loadImage(selection.getAbsolutePath());
     data.make_data_extraction(image);
-    graph.make_data_graph();
+    //graph.make_data_graph();
   }
 }
-
