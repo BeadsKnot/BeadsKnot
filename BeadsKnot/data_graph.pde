@@ -17,13 +17,14 @@ class data_graph {
   void make_data_graph() {//nodesやedgesを決める
     JointOrientation();
     add_half_point_Joint();
+    add_close_point_Joint();
     getNodes();
     testFindNextJoint();
     set_nodes_edges();  
     println("data_graph_completeしました");    
-    data_graph_complete=true;
+    data_graph_complete=false;
     de.extraction_binalized = false;
-    de.extraction_complete = false;
+    de.extraction_complete = true;
     de.extraction_beads = false;
   }
   void JointOrientation() {
@@ -88,6 +89,31 @@ class data_graph {
       }
     }
   }
+
+  void add_close_point_Joint() {//Ten Percent Neighborhood point
+    for (int p_i = 0; p_i < de.points.size(); p_i++) {
+      Beads b_a = de.points.get(p_i);
+      if (b_a.Joint) {
+        //int p_c=findtrueJointInPoints(p_i, b_a.n1);
+        int count = countNeighborJointInPoints(p_i, b_a.n1, 0);
+        int p_close = get_half_position(p_i, b_a.n1, ceil(count*0.1));
+        de.points.get(p_close).closeJoint=true;
+        //p_c=findtrueJointInPoints(p_i, b_a.u1);
+        count = countNeighborJointInPoints(p_i, b_a.u1, 0);
+        p_close = get_half_position(p_i, b_a.u1, ceil(count*0.1));
+        de.points.get(p_close).closeJoint=true;
+        //p_c=findtrueJointInPoints(p_i, b_a.n2);
+        count = countNeighborJointInPoints(p_i, b_a.n2, 0);
+        p_close = get_half_position(p_i, b_a.n2, ceil(count*0.1));
+        de.points.get(p_close).closeJoint=true;
+        //p_c=findtrueJointInPoints(p_i, b_a.u2);
+        count = countNeighborJointInPoints(p_i, b_a.u2, 0);
+        p_close = get_half_position(p_i, b_a.u2, ceil(count*0.1));
+        de.points.get(p_close).closeJoint=true;
+      }
+    }
+  }
+
   int findtrueJointInPoints(int j, int c) {
     // for (int i = 0; i < de.points.size(); i++) {
     Beads p=de.points.get(c);
@@ -522,7 +548,7 @@ class data_graph {
     //}
     Node a0=nodes.get(e.h);
     Node a1=nodes.get(e.j);
-   // float hx=(a0.x-disp.left)*disp.rate;
+    // float hx=(a0.x-disp.left)*disp.rate;
     float hx=disp.get_winX(a0.x);
     //float hy=(a0.y-disp.top)*disp.rate;
     float hy=disp.get_winY(a0.y);

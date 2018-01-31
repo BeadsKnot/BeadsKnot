@@ -1,6 +1,6 @@
 class data_extract {
 
-  int w , h;// 解析画面の大きさ
+  int w, h;// 解析画面の大きさ
   int d[][];// ２値化された画像のデータ
   int s;//解析メッシュのサイズ
   display disp;
@@ -17,7 +17,7 @@ class data_extract {
   Thinning th;
 
   //コンストラクタ
-  data_extract(int _h, int _w,display _disp) {
+  data_extract(int _h, int _w, display _disp) {
     w = _w;
     h = _h;
     tf=new transform(this);
@@ -36,7 +36,7 @@ class data_extract {
     //もと画像が横長の場合，縦長の場合に応じて変える。
     // オフセットを50 に取っている。
     float ratio = 1.0 * image.width / image.height;
-    if(ratio >= 1.0){
+    if (ratio >= 1.0) {
       h = int((w - 100)/ratio + 100);
     } else {
       w = int((h - 100)*ratio + 100);
@@ -68,6 +68,10 @@ class data_extract {
       Beads vec=points.get(i);
       if (vec.Joint) {
         stroke(0, 0, 255);
+      } else if (vec.closeJoint) {
+        stroke(0, 255, 0);
+      } else if (vec.midJoint) {
+        stroke(255, 255, 0);
       } else {
         stroke(255, 0, 0);
       }
@@ -242,19 +246,19 @@ class data_extract {
   }
 
 
-  void getDisplayLTRB(){
-    float l,t,r,b;
+  void getDisplayLTRB() {
+    float l, t, r, b;
     l=t=r=b=0;
     for (int u=0; u<points.size (); u++) {
       Beads pt=points.get(u);
-      if(u==0){
+      if (u==0) {
         l=r=pt.x;
         t=b=pt.y;
       } else {
-        if(pt.x<l) l=pt.x;
-        if(r<pt.x) r=pt.x;
-        if(pt.y<t) t=pt.y;
-        if(b<pt.y) b=pt.y;
+        if (pt.x<l) l=pt.x;
+        if (r<pt.x) r=pt.x;
+        if (pt.y<t) t=pt.y;
+        if (b<pt.y) b=pt.y;
       }
     }
     disp.left=l;
@@ -548,6 +552,6 @@ class data_extract {
       }
     }
     println("thickness = "+sum/num);
-    return max(3,int(sum/num));
+    return max(3, int(sum/num));
   }
 }
