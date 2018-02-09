@@ -129,6 +129,10 @@ class PLink {
   }
 }
 
+//交点の探し方
+//closeJointからcloseJointにつながっている線を探し、そこがつながっている線を記録
+
+
 
 
 class pairNum {//ペアにする関数
@@ -174,4 +178,8 @@ class plinkEdge {//辺に関する関数
 class plinkCrossing {//交点に関する関数
   int edgeNum1;
   int edgeNum2;
+  plinkCrossing(int eN1,int eN2){
+  edgeNum1=eN1;
+  edgeNum2=eN2;
+  }
 }
