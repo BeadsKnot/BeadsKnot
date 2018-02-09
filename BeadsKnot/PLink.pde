@@ -91,12 +91,30 @@ class PLink {
           pCo.add(new plinkComponent(pointCount, pointCount));
           pPo.add(new plinkPoint(pointCount, int(dePoint.x), int(dePoint.y)));
           pointCount++;
+          pairNum pn0=new pairNum(pN, dePoint.n1);
+          while (true) {
+            pairNum pn1=findMidJoint_CloseJointInPoints(pn0);
+            Beads dePoint_out=de.points.get(pn1.j);
+            if (!dePoint_out.treated) {//処理していなかったら
+              dePoint_out.treated=true;
+              pPo.add(new plinkPoint(pointCount, int(dePoint_out.x), int(dePoint_out.y)));
+              pEd.add(new plinkEdge(edgeCount, pointCount-1, pointCount));
+              pointCount++;
+              edgeCount++;
+              pn0.j=pn1.j;
+              pn0.c=pn1.c;
+            } else {
+              pEd.add(new plinkEdge(edgeCount, pointCount-1, pointCount0));
+              edgeCount++;
+              break;
+            }
+            //処理済みでなくて、midJointまたはcloseJointに対してplinkComponentの始点登録とし
+          }
         }
       }
+      //plinkPointsへの追加を行う
+      //do文から線をたどる
     }
-    //処理済みでなくて、midJointまたはcloseJointに対してplinkComponentの始点登録とし
-    //plinkPointsへの追加を行う
-    //do文から線をたどる
   }
 
   pairNum findMidJoint_CloseJointInPoints(pairNum _pn) {
@@ -121,10 +139,10 @@ class PLink {
         break;
       }
       if (pc.midJoint||pc.closeJoint) {
-        return new pairNum(j,c);
+        return new pairNum(j, c);
       }
     }
-    return new pairNum(0,0);//特に意味のない一文
+    return new pairNum(0, 0);//特に意味のない一文
   }
 }
 
@@ -163,6 +181,11 @@ class plinkEdge {
   int EdgeNum;
   int pointNum1;
   int pointNum2;
+  plinkEdge(int _count,int _count1, int _count2){
+  EdgeNum=_count;
+  pointNum1=_count1;
+  pointNum2=_count2;
+  }
 }
 
 class plinkCrossing {

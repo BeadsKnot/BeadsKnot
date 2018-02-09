@@ -1,4 +1,4 @@
-//sボタンを押すと画像を保存
+//sボタンを押すと画像を保存 //<>//
 // PImage image;// ->data_extraction
 // int w, h;// ->data_extraction
 // int d[][];// ->data_extraction
@@ -69,7 +69,7 @@ void keyPressed() {
     selectInput("Select a file to process:", "fileSelected");
   }
   if (key=='p') {
-    PLink PL=new PLink(data,disp);
+    PLink PL=new PLink(data, disp);
     PL.file_output();
   }
 }
@@ -84,10 +84,14 @@ void fileSelected(File selection) {
     graph.make_data_graph();
     file_name=selection.getAbsolutePath();
     int file_name_length= file_name.length();
-    String extension=file_name.substring(file_name_length-3); //<>// //<>//
+    String extension=file_name.substring(file_name_length-3);
     if (extension.equals("png")==true||extension.equals("jpg")==true||extension.equals("gif")==true) {
       String remove_extension=file_name.substring(0, file_name_length-4);
       file_name=remove_extension;
     }
   }
+}
+
+void mouseClicked() {
+  println(mouseX, mouseY);
 }
