@@ -89,7 +89,7 @@ class PLink {
           dePoint.treated=true;
           int pointCount0=pointCount;//輪が1以上あるときに使う
           pCo.add(new plinkComponent(pointCount, pointCount));
-          pPo.add(new plinkPoint(pointCount,int(dePoint.x),int(dePoint.y)));
+          pPo.add(new plinkPoint(pointCount, int(dePoint.x), int(dePoint.y)));
           pointCount++;
         }
       }
@@ -98,7 +98,47 @@ class PLink {
     //plinkPointsへの追加を行う
     //do文から線をたどる
   }
+
+  pairNum findMidJoint_CloseJointInPoints(pairNum _pn) {
+    int j=_pn.j;
+    int c=_pn.c;
+    while (true) {
+      Beads pc=de.points.get(c);
+      if (pc.n1==j) {
+        j=c;
+        c=pc.n2;
+      } else if (pc.n2==j) {
+        j=c;
+        c=pc.n1;
+      } else if (pc.u1==j) {
+        j=c;
+        c=pc.u2;
+      } else if (pc.u2==j) {
+        j=c;
+        c=pc.u1;
+      } else {
+        println("miss");
+        break;
+      }
+      if (pc.midJoint||pc.closeJoint) {
+        return new pairNum(j,c);
+      }
+    }
+    return new pairNum(0,0);//特に意味のない一文
+  }
 }
+
+
+
+class pairNum {
+  int j;
+  int c;
+  pairNum(int _j, int _c) {
+    j=_j;
+    c=_c;
+  }
+}
+
 class plinkComponent {
   int pointNum1;
   int pointNum2;
@@ -112,10 +152,10 @@ class plinkPoint {
   int pointNum;
   int x;
   int y;
-  plinkPoint(int _n,int _x,int _y){
-  pointNum=_n;
-  x=_x;
-  y=_y;
+  plinkPoint(int _n, int _x, int _y) {
+    pointNum=_n;
+    x=_x;
+    y=_y;
   }
 }
 
