@@ -9,6 +9,7 @@ class Beads {//点のクラス
   boolean Joint;
   boolean midJoint;
   boolean closeJoint;
+  boolean treated;
   Beads(float _x, float _y) {
     x=_x;
     y=_y;
@@ -20,6 +21,7 @@ class Beads {//点のクラス
     Joint=false;
     midJoint=false;
     closeJoint=false;
+    //treated=false;
   }
   
   float getTheta(ArrayList<Beads> points){

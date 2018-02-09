@@ -13,6 +13,8 @@ data_extract data;
 data_graph graph;
 display disp;
 
+
+
 String file_name="tes";
 
 void setup() {
@@ -82,7 +84,7 @@ void fileSelected(File selection) {
     graph.make_data_graph();
     file_name=selection.getAbsolutePath();
     int file_name_length= file_name.length();
-    String extension=file_name.substring(file_name_length-3); //<>//
+    String extension=file_name.substring(file_name_length-3); //<>// //<>//
     if (extension.equals("png")==true||extension.equals("jpg")==true||extension.equals("gif")==true) {
       String remove_extension=file_name.substring(0, file_name_length-4);
       file_name=remove_extension;
