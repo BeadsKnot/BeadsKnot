@@ -4,33 +4,17 @@ class PLink {
   display disp;
   //ファイル保存
   PrintWriter outfile;
-  ArrayList<plinkComponent> pCo;
-  ArrayList<plinkPoint> pPo;
-  ArrayList<plinkEdge> pEd;
-  ArrayList<plinkCrossing> pCr;
+  ArrayList<plinkComponent> pCo;//成分に関する配列
+  ArrayList<plinkPoint> pPo;//ポイントに関する配列
+  ArrayList<plinkEdge> pEd;//辺に関する配列
+  ArrayList<plinkCrossing> pCr;//交点に関する配列
   PLink(data_extract _de, display _disp) {
     de=_de;
     disp=_disp;
     makePlinkData();//たどる関数
   }
-  /*
-  int number_of_component() {
-   return ;
-   }
-   
-   int number_of_point() {
-   return ;
-   }
-   
-   int number_of_edge() {
-   return ;
-   }
-   
-   int number_of_joint() {
-   return;
-   }
-   */
-  boolean file_output() {
+
+  boolean file_output() {//出力する関数
     outfile = createWriter(file_name+".txt");
     outfile.println("% Link Projection");
     //成分数
@@ -68,28 +52,27 @@ class PLink {
     return true;
   }
 
-  void makePlinkData() {
+  void makePlinkData() {//たどる関数
     //初期化
     pCo=new ArrayList<plinkComponent>();
     pPo=new ArrayList<plinkPoint>();
     pEd=new ArrayList<plinkEdge>();
     pCr=new ArrayList<plinkCrossing>();
-    //midJointとcloseJointに処理済みかどうかのフラグを設定
+    //midJointとcloseJointに処理済みかどうかのフラグを設定//もしくはBeadsにフラグを設定
     for (int pN=0; pN<de.points.size(); pN++) {
-      de.points.get(pN).treated=false;
+      de.points.get(pN).treated=false;//どこもたどっていないのでまずすべてfalseに
     }
     int edgeCount=0;//辺を数える
     int pointCount=0;//点を数える
-    //もしくはBeadsにフラグを設定
     //pointでfor文を回してmidJointとcloseJointを探す
     for (int pN=0; pN<de.points.size(); pN++) {
-      Beads dePoint=de.points.get(pN);
-      if (dePoint.midJoint||dePoint.closeJoint) {
-        if (!dePoint.treated) {
-          dePoint.treated=true;
-          int pointCount0=pointCount;//輪が1以上あるときに使う
-          pCo.add(new plinkComponent(pointCount, pointCount));
-          pPo.add(new plinkPoint(pointCount, int(dePoint.x), int(dePoint.y)));
+      Beads dePoint=de.points.get(pN);//pNをたくさん使うのでBeads型で名前を付けておく
+      if (dePoint.midJoint||dePoint.closeJoint) {//midJointとcloseJointを探す
+        if (!dePoint.treated) {//たどっていないポイントのなかで(たどっていたらtrue)
+          dePoint.treated=true;//まずその点をたどったことにする
+          int pointCount0=pointCount;//2成分以上のときにどことつながるのかわかるようにする
+          pCo.add(new plinkComponent(pointCount, pointCount));//まず、成分に追加
+          pPo.add(new plinkPoint(pointCount, int(dePoint.x), int(dePoint.y)));//点の座標を追加
           pointCount++;
           pairNum pn0=new pairNum(pN, dePoint.n1);
           while (true) {
@@ -117,7 +100,7 @@ class PLink {
     }
   }
 
-  pairNum findMidJoint_CloseJointInPoints(pairNum _pn) {
+  pairNum findMidJoint_CloseJointInPoints(pairNum _pn) {//ペアでmidJointとcloseJointを探す関数
     int j=_pn.j;
     int c=_pn.c;
     while (true) {
@@ -148,7 +131,7 @@ class PLink {
 
 
 
-class pairNum {
+class pairNum {//ペアにする関数
   int j;
   int c;
   pairNum(int _j, int _c) {
@@ -157,7 +140,7 @@ class pairNum {
   }
 }
 
-class plinkComponent {
+class plinkComponent {//成分に関する関数
   int pointNum1;
   int pointNum2;
   plinkComponent(int _pN1, int _pN2) {
@@ -166,7 +149,7 @@ class plinkComponent {
   }
 }
 
-class plinkPoint {
+class plinkPoint {//点に関する関数
   int pointNum;
   int x;
   int y;
@@ -177,7 +160,7 @@ class plinkPoint {
   }
 }
 
-class plinkEdge {
+class plinkEdge {//辺に関する関数
   int EdgeNum;
   int pointNum1;
   int pointNum2;
@@ -188,7 +171,7 @@ class plinkEdge {
   }
 }
 
-class plinkCrossing {
+class plinkCrossing {//交点に関する関数
   int edgeNum1;
   int edgeNum2;
 }
