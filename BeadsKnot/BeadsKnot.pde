@@ -67,7 +67,7 @@ void keyPressed() {
     selectInput("Select a file to process:", "fileSelected");
   }
   if (key=='p') {
-    PLink PL=new PLink(graph,disp);
+    PLink PL=new PLink(data,disp);
     PL.file_output();
   }
 }
