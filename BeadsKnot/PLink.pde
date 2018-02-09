@@ -3,8 +3,12 @@ class PLink {
   display disp;
   //ファイル保存
   PrintWriter outfile;
+  ArrayList<plinkComponent> pCo;
+  ArrayList<plinkPoint> pPo;
+  ArrayList<plinkEdge> pEd;
+  ArrayList<plinkCrossing> pCr;
+  PLink(data_graph _dg, display _disp) {
 
-  PLink(data_graph _dg,display _disp) {
     dg=_dg;
     disp=_disp;
   }
@@ -30,23 +34,43 @@ class PLink {
     outfile.println("% Link Projection");
     //成分数
     //点の個数
-    outfile.println(dg.nodes.size());
-    for(int i=0;i<dg.nodes.size();i++){
-    int x=(int)(dg.nodes.get(i).x);
-    int y=(int)(dg.nodes.get(i).y);
-    outfile.println(x+" "+y);
+    outfile.println(pPo.size());
+    for (int i=0; i<pPo.size(); i++) {
+      int x=(int)(pPo.get(i).x);
+      int y=(int)(pPo.get(i).y);
+      outfile.println(x+" "+y);
     }
     //辺の数
-    outfile.println(dg.edges.size());
-    for(int i=0;i<dg.edges.size();i++){
-    int h=dg.edges.get(i).h;
-    int j=dg.edges.get(i).j;
-     outfile.println(h+" "+j);
+    outfile.println(pEd.size());
+    for (int i=0; i<pEd.size(); i++) {
+      int h=pEd.get(i).h;
+      int j=pEd.get(i).j;
+      outfile.println(h+" "+j);
     }
     //交点
     outfile.println("-1");
     outfile.flush(); //残りを出力する
     outfile.close(); // ファイルを閉じる
     return true;
+  }
+
+  class plinkComponent {
+    int pointNum1;
+    int pointNum2;
+  }
+
+  class plinkPoint {
+    int x;
+    int y;
+  }
+
+  class plinkEdge {
+    int pointNum1;
+    int pointNum2;
+  }
+
+  class plinkCrossing {
+    int edgeNum1;
+    int edgeNum2;
   }
 }
