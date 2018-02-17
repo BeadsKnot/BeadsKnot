@@ -64,9 +64,11 @@ class PLink {
     }
     int edgeCount=0;//辺を数える
     int pointCount=0;//点を数える
+    int crossingCount=0;//交点を数える
     //pointでfor文を回してmidJointとcloseJointを探す
     for (int pN=0; pN<de.points.size(); pN++) {
       Beads dePoint=de.points.get(pN);//pNをたくさん使うのでBeads型で名前を付けておく
+
       if (dePoint.midJoint||dePoint.closeJoint) {//midJointとcloseJointを探す
         if (!dePoint.treated) {//たどっていないポイントのなかで(たどっていたらtrue)
           dePoint.treated=true;//まずその点をたどったことにする
@@ -81,7 +83,7 @@ class PLink {
             if (!dePoint_out.treated) {//処理していなかったら
               dePoint_out.treated=true;
               pPo.add(new plinkPoint(pointCount, int(dePoint_out.x), int(dePoint_out.y)));
-              pEd.add(new plinkEdge(edgeCount, pointCount-1, pointCount));
+              pEd.add(new plinkEdge(edgeCount, pointCount-1, pointCount)); 
               pointCount++;
               edgeCount++;
               pn0.j=pn1.j;
@@ -97,6 +99,14 @@ class PLink {
       }
       //plinkPointsへの追加を行う
       //do文から線をたどる
+      if (dePoint.closeJoint) {//closeJointを探す
+
+        crossingCount++;
+        if (crossingCount%4==0) {
+          println(crossingCount);
+          pCr.add(new plinkCrossing(crossingCount, 0, 0));
+        }
+      }
     }
   }
 
@@ -122,6 +132,34 @@ class PLink {
         break;
       }
       if (pc.midJoint||pc.closeJoint) {
+        return new pairNum(j, c);
+      }
+    }
+    return new pairNum(0, 0);//特に意味のない一文
+  }
+
+  pairNum find_CloseJointInPoints(pairNum _pn) {//ペアでcloseJointを探す関数
+    int j=_pn.j;
+    int c=_pn.c;
+    while (true) {
+      Beads pc=de.points.get(c);
+      if (pc.n1==j) {
+        j=c;
+        c=pc.n2;
+      } else if (pc.n2==j) {
+        j=c;
+        c=pc.n1;
+      } else if (pc.u1==j) {
+        j=c;
+        c=pc.u2;
+      } else if (pc.u2==j) {
+        j=c;
+        c=pc.u1;
+      } else {
+        println("miss");
+        break;
+      }
+      if (pc.closeJoint) {
         return new pairNum(j, c);
       }
     }
@@ -168,18 +206,20 @@ class plinkEdge {//辺に関する関数
   int EdgeNum;
   int pointNum1;
   int pointNum2;
-  plinkEdge(int _count,int _count1, int _count2){
-  EdgeNum=_count;
-  pointNum1=_count1;
-  pointNum2=_count2;
+  plinkEdge(int _count, int _count1, int _count2) {
+    EdgeNum=_count;
+    pointNum1=_count1;
+    pointNum2=_count2;
   }
 }
 
 class plinkCrossing {//交点に関する関数
+  int CrossingNum;
   int edgeNum1;
   int edgeNum2;
-  plinkCrossing(int eN1,int eN2){
-  edgeNum1=eN1;
-  edgeNum2=eN2;
+  plinkCrossing(int count, int eN1, int eN2) {
+    CrossingNum=count;
+    edgeNum1=eN1;
+    edgeNum2=eN2;
   }
 }

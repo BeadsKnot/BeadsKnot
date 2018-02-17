@@ -91,7 +91,8 @@ void fileSelected(File selection) {
     }
   }
 }
-
+/*
 void mouseClicked() {
   println(mouseX, mouseY);
 }
+*/
