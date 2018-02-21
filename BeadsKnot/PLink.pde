@@ -7,6 +7,7 @@ class PLink {
   ArrayList<plinkComponent> pCo;//成分に関する配列
   ArrayList<plinkPoint> pPo;//ポイントに関する配列
   ArrayList<plinkEdge> pEd;//辺に関する配列
+  ArrayList<crossing_set> crs;//交点の情報
   ArrayList<plinkCrossing> pCr;//交点に関する配列
   PLink(data_extract _de, display _disp) {
     de=_de;
@@ -58,6 +59,7 @@ class PLink {
     pPo=new ArrayList<plinkPoint>();
     pEd=new ArrayList<plinkEdge>();
     pCr=new ArrayList<plinkCrossing>();
+    crs=new ArrayList<crossing_set>();
     //midJointとcloseJointに処理済みかどうかのフラグを設定//もしくはBeadsにフラグを設定
     for (int pN=0; pN<de.points.size(); pN++) {
       de.points.get(pN).treated=false;//どこもたどっていないのでまずすべてfalseに
@@ -79,6 +81,11 @@ class PLink {
           pairNum pn0=new pairNum(pN, dePoint.n1);
           while (true) {
             pairNum pn1=findMidJoint_CloseJointInPoints(pn0);
+            crossing_set c_s=find_JointInPoints(pn0, edgeCount);
+            if (c_s.edge_num!=-1) {
+              crs.add(c_s);
+            }
+
             Beads dePoint_out=de.points.get(pn1.j);
             if (!dePoint_out.treated) {//処理していなかったら
               dePoint_out.treated=true;
@@ -99,12 +106,29 @@ class PLink {
       }
       //plinkPointsへの追加を行う
       //do文から線をたどる
-      if (dePoint.closeJoint) {//closeJointを探す
+      //if (dePoint.closeJoint) {//closeJointを探す
 
-        crossingCount++;
-        if (crossingCount%4==0) {
-          println(crossingCount);
-          pCr.add(new plinkCrossing(crossingCount, 0, 0));
+      //  crossingCount++;
+      //  if (crossingCount%4==0) {
+      //    println(crossingCount);
+      //    pCr.add(new plinkCrossing(crossingCount, 0, 0));
+      //  }
+      //}
+    }
+    for (int i=0; i<crs.size(); i++) {
+      for (int j=i+1; j<crs.size(); j++) {
+        int joint_num_i=crs.get(i).joint_num;
+        int joint_num_j=crs.get(j).joint_num;
+        if (joint_num_i==joint_num_j) {
+          if (crs.get(i).over_under==2) {
+            pCr.add(new plinkCrossing(crossingCount, crs.get(i).edge_num, crs.get(j).edge_num));
+            println(crossingCount, crs.get(i).edge_num, crs.get(j).edge_num);
+            crossingCount++;
+          } else if (crs.get(i).over_under==1) {
+            pCr.add(new plinkCrossing(crossingCount, crs.get(j).edge_num, crs.get(i).edge_num));
+            println(crossingCount, crs.get(j).edge_num, crs.get(i).edge_num);
+            crossingCount++;
+          }
         }
       }
     }
@@ -138,32 +162,40 @@ class PLink {
     return new pairNum(0, 0);//特に意味のない一文
   }
 
-  pairNum find_CloseJointInPoints(pairNum _pn) {//ペアでcloseJointを探す関数
+  crossing_set find_JointInPoints(pairNum _pn, int edge_num) {//ペアでJointを探す関数
+    //第二引数でedge_countを入れる
     int j=_pn.j;
     int c=_pn.c;
+    int o_u_flag=0;
     while (true) {
       Beads pc=de.points.get(c);
       if (pc.n1==j) {
         j=c;
         c=pc.n2;
+        o_u_flag=1;
       } else if (pc.n2==j) {
         j=c;
         c=pc.n1;
+        o_u_flag=1;
       } else if (pc.u1==j) {
         j=c;
         c=pc.u2;
+        o_u_flag=2;
       } else if (pc.u2==j) {
         j=c;
         c=pc.u1;
+        o_u_flag=2;
       } else {
         println("miss");
         break;
       }
-      if (pc.closeJoint) {
-        return new pairNum(j, c);
+      if (pc.Joint) {
+        return new crossing_set(edge_num, j, o_u_flag );
+      } else if (pc.midJoint||pc.closeJoint) {
+        return new crossing_set(-1, -1, -1);//特に意味のない一文
       }
     }
-    return new pairNum(0, 0);//特に意味のない一文
+    return new crossing_set(-1, -1, -1);//特に意味のない一文
   }
 }
 
@@ -221,5 +253,16 @@ class plinkCrossing {//交点に関する関数
     CrossingNum=count;
     edgeNum1=eN1;
     edgeNum2=eN2;
+  }
+}
+
+class crossing_set {//
+  int edge_num;
+  int joint_num;
+  int over_under;//1なら上、2なら下
+  crossing_set(int edge, int joint, int o_u) {
+    edge_num=edge;
+    joint_num=joint;
+    over_under=o_u;
   }
 }
