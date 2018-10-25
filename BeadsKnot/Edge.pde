@@ -5,6 +5,10 @@ class Edge {
      int ANodeRID;//edge
      int BNodeID;//node
      int BNodeRID;//edge
+     
+     //edgeにビーズを張り付けておくことにする。（両端のnodeも含むようにする。）
+     ArrayList<Bead> beads;
+     
     Edge(int _ANodeID,int _ANodeRID,int _BNodeID,int _BNodeRID){
         ANodeID=_ANodeID;
         ANodeRID=_ANodeRID;
@@ -26,10 +30,7 @@ class Edge {
     }
     //　node と node をつなぐ曲線を描く
     void drawEdgeBezier(ArrayList<Node> nodes, float l, float t, float r, float b){
-        // 旧関数名　connect_nodes
-        //関数名をdrawEdgeBezierにしたい。
-        // スタート地点を移動
-        //Log.d("hとjを表示",""+h+"  "+BNodeID);
+        // 表示サイズを調節
         float wid = r-l;
         float hei = b-t;
         float rate;
@@ -38,6 +39,7 @@ class Edge {
         } else {
             rate = 1080/hei;
         }
+        //
         Node a0=nodes.get(ANodeID);
         Node a1=nodes.get(BNodeID);
         float hx=(a0.x-l)*rate;
