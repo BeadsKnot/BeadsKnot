@@ -1,34 +1,35 @@
+//Edgeのクラス
 
 class Edge {
-     int h;//node
-     int i;//edge
-     int j;//node
-     int k;//edge
-    Edge(int _h,int _i,int _j,int _k){
-        h=_h;
-        i=_i;
-        j=_j;
-        k=_k;
+     int ANodeID;//node
+     int ANodeRID;//edge
+     int BNodeID;//node
+     int BNodeRID;//edge
+    Edge(int _ANodeID,int _ANodeRID,int _BNodeID,int _BNodeRID){
+        ANodeID=_ANodeID;
+        ANodeRID=_ANodeRID;
+        BNodeID=_BNodeID;
+        BNodeRID=_BNodeRID;
     }
 
-    int getH(){
-        return h;
+    int getANodeID(){
+        return ANodeID;
     }
-    int getI(){
-        return i;
+    int getANodeRID(){
+        return ANodeRID;
     }
-    int getJ(){
-        return j;
+    int getBNodeID(){
+        return BNodeID;
     }
-    int getK(){
-        return k;
+    int getBNodeRID(){
+        return BNodeRID;
     }
     //　node と node をつなぐ曲線を描く
     void drawEdgeBezier(ArrayList<Node> nodes, float l, float t, float r, float b){
         // 旧関数名　connect_nodes
         //関数名をdrawEdgeBezierにしたい。
         // スタート地点を移動
-        //Log.d("hとjを表示",""+h+"  "+j);
+        //Log.d("hとjを表示",""+h+"  "+BNodeID);
         float wid = r-l;
         float hei = b-t;
         float rate;
@@ -37,24 +38,24 @@ class Edge {
         } else {
             rate = 1080/hei;
         }
-        Node a0=nodes.get(h);
-        Node a1=nodes.get(j);
+        Node a0=nodes.get(ANodeID);
+        Node a1=nodes.get(BNodeID);
         float hx=(a0.x-l)*rate;
         float hy=(a0.y-t)*rate;
-        if(i==1 || i==3) {
-            hx = (a0.edge_rx(i,30/rate) - l) * rate;
-            hy = (a0.edge_ry(i,30/rate) - t) * rate;
+        if(ANodeRID==1 || ANodeRID==3) {
+            hx = (a0.edge_rx(ANodeRID,30/rate) - l) * rate;
+            hy = (a0.edge_ry(ANodeRID,30/rate) - t) * rate;
         }
-        float ix=(a0.edge_x(i)-l)*rate;
-        float iy=(a0.edge_y(i)-t)*rate;
+        float ix=(a0.edge_x(ANodeRID)-l)*rate;
+        float iy=(a0.edge_y(ANodeRID)-t)*rate;
         float jx=(a1.x-l)*rate;
         float jy=(a1.y-t)*rate;
-        if(k==1 || k==3){
-            jx = (a1.edge_rx(k,30/rate)-l)*rate;
-            jy = (a1.edge_ry(k,30/rate)-l)*rate;
+        if(BNodeRID==1 || BNodeRID==3){
+            jx = (a1.edge_rx(BNodeRID,30/rate)-l)*rate;
+            jy = (a1.edge_ry(BNodeRID,30/rate)-l)*rate;
         }
-        float kx=(a1.edge_x(k)-l)*rate;
-        float ky=(a1.edge_y(k)-t)*rate;
+        float kx=(a1.edge_x(BNodeRID)-l)*rate;
+        float ky=(a1.edge_y(BNodeRID)-t)*rate;
 
         stroke(255,0,0,0);
         strokeWeight(5);
@@ -118,8 +119,8 @@ class Edge {
     }
 
     /*public void print_get_rangewidth_angle(ArrayList<Node> nodes){
-        Node a0=nodes.get(h);
-        Node a1=nodes.get(j);
+        Node a0=nodes.get(ANodeID);
+        Node a1=nodes.get(BNodeID);
         float x1=a0.x;
         float y1=a0.y;
         float x2=a0.edge_x(i);
@@ -135,13 +136,13 @@ class Edge {
         // E=min of angle;
         // minimize E
         // if (0<=e1 && e1<4 && 0<=e2 && e2<4 && is_gv_id(i1) && is_gv_id(i2) ) {
-        Node a0=nodes.get(h);
-        Node a1=nodes.get(j);
-        float r1=a0.r[i];
-        float r2=a1.r[k];
-        float angle1 = (a0.theta+PI*i/2);
+        Node a0=nodes.get(ANodeID);
+        Node a1=nodes.get(BNodeID);
+        float r1=a0.r[ANodeRID];
+        float r2=a1.r[BNodeRID];
+        float angle1 = (a0.theta+PI*ANodeRID/2);
         // float angle1 = x + r[i] * ( cos(theta+toRadians(i*90)));
-        float angle2 = (a1.theta+PI*k/2);
+        float angle2 = (a1.theta+PI*BNodeRID/2);
         //float angle2 = x + r[i] * ( cos(theta+toRadians(i*90)));
         float x1=a0.x;
         float y1=a0.y;
@@ -188,8 +189,8 @@ class Edge {
             y3=(y4-r2*sin(angle2));
         }
         while (++count <10);
-        a0.r[i]=r1;
-        a1.r[k]=r2;
+        a0.r[ANodeRID]=r1;
+        a1.r[BNodeRID]=r2;
     }
      float dist(float x1,float y1,float x2,float y2){//2点間の距離
         return (sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)));
@@ -201,20 +202,20 @@ class Edge {
             /* Node node=nodes.get(h); */
             e0 = e0p = e0m = e0r = 0;
             for (int i = 0; i < 4; i ++) {
-                // int i2=node.edges[j];
+                // int i2=node.edges[BNodeID];
                 int e1=-1,e2=-1,i1=-1,i2=-1;
                 for(Edge e:edges){
-                    if(h==e.h&&i==e.i){
+                    if(h==e.ANodeID&&i==e.ANodeRID){
                         i1=h;
-                        i2=e.j;
+                        i2=e.BNodeID;
                         e1=i;
-                        e2=e.k;
+                        e2=e.BNodeRID;
                         break;
-                    }else if(h==e.j&&i==e.k){
+                    }else if(h==e.BNodeID && i==e.BNodeRID){
                         i1=h;
-                        i2=e.h;
+                        i2=e.ANodeID;
                         e1=i;
-                        e2=e.i;
+                        e2=e.ANodeRID;
                         break;
                     }
                 }
@@ -250,12 +251,12 @@ class Edge {
                 }
             }
             /*if (e0r < e0) {
-                nodes.get(h).theta += PI;
+                nodes.get(ANodeID).theta += PI;
             } else */
             if (e0>e0p && e0m>e0) {
-                nodes.get(h).theta +=0.05;
+                nodes.get(ANodeID).theta +=0.05;
             } else if (e0>e0m && e0p>e0) {
-                nodes.get(h).theta -=0.05;
+                nodes.get(ANodeID).theta -=0.05;
             } /*else {
                 Log.d("check","do nothing");
             }*/
@@ -276,16 +277,16 @@ class Edge {
     }
 
     float getXIntersectionWithBezier(float ox, float oy, ArrayList<Node> nodes){
-        Node a0 = nodes.get(h);
-        Node a1 = nodes.get(j);
+        Node a0 = nodes.get(ANodeID);
+        Node a1 = nodes.get(BNodeID);
         float hx=a0.x;
         float hy=a0.y;
-        float ix=a0.edge_x(i);
-        float iy=a0.edge_y(i);
+        float ix=a0.edge_x(ANodeRID);
+        float iy=a0.edge_y(ANodeRID);
         float jx=a1.x;
         float jy=a1.y;
-        float kx=a1.edge_x(k);
-        float ky=a1.edge_y(k);
+        float kx=a1.edge_x(BNodeRID);
+        float ky=a1.edge_y(BNodeRID);
         float step = 0.1;
         float ret = 9999.0;
         for(float t = 0.0; t<1.0-step; t += step){
@@ -310,27 +311,27 @@ class Edge {
         int count=0;
         do{
             if(orientation){
-                nodes.get(cursorEdge.h).drawOn = true;
-                int newH = cursorEdge.j;
-                int newI = cursorEdge.k;
+                nodes.get(cursorEdge.ANodeID).drawOn = true;
+                int newH = cursorEdge.BNodeID;
+                int newI = cursorEdge.BNodeRID;
                 for(Edge e : edges){
                     boolean newHJoint = nodes.get(newH).Joint;
                     if(newHJoint){
-                        if(newH == e.h && (newI+1)%4 == e.i){
+                        if(newH == e.ANodeID && (newI+1)%4 == e.ANodeRID){
                         //orientation = true;
                             cursorEdge = e;
                             break;
-                        } else if(newH == e.j && (newI+1)%4 == e.k) {
+                        } else if(newH == e.BNodeID && (newI+1)%4 == e.BNodeRID) {
                             orientation = false;
                             cursorEdge = e;
                             break;
                         }
                     } else {
-                        if(newH == e.h && (newI+2)%4 == e.i){
+                        if(newH == e.ANodeID && (newI+2)%4 == e.ANodeRID){
                             //orientation = true;
                             cursorEdge = e;
                             break;
-                        } else if(newH == e.j && (newI+2)%4 == e.k) {
+                        } else if(newH == e.BNodeID && (newI+2)%4 == e.BNodeRID) {
                             orientation = false;
                             cursorEdge = e;
                             break;
@@ -338,27 +339,27 @@ class Edge {
                     }
                 }
             } else {
-                nodes.get(cursorEdge.j).drawOn = true;
-                int newJ = cursorEdge.h;
-                int newK = cursorEdge.i;
+                nodes.get(cursorEdge.BNodeID).drawOn = true;
+                int newJ = cursorEdge.ANodeID;
+                int newK = cursorEdge.ANodeRID;
                 for(Edge e : edges){
                     boolean newJJoint = nodes.get(newJ).Joint;
                     if(newJJoint){
-                        if(newJ == e.h && (newK+1)%4 == e.i){
+                        if(newJ == e.ANodeID && (newK+1)%4 == e.ANodeRID){
                             orientation = true;
                             cursorEdge = e;
                             break;
-                        } else if(newJ == e.j && (newK+1)%4 == e.k){
+                        } else if(newJ == e.BNodeID && (newK+1)%4 == e.BNodeRID){
                             //orientation = false;
                             cursorEdge = e;
                             break;
                         }
                     } else {
-                        if(newJ == e.h && (newK+2)%4 == e.i){
+                        if(newJ == e.ANodeID && (newK+2)%4 == e.ANodeRID){
                             orientation = true;
                             cursorEdge = e;
                             break;
-                        } else if(newJ == e.j && (newK+2)%4 == e.k){
+                        } else if(newJ == e.BNodeID && (newK+2)%4 == e.BNodeRID){
                             //orientation = false;
                             cursorEdge = e;
                             break;
@@ -368,12 +369,12 @@ class Edge {
             }
             println("getArea:" + cursorEdge.getName());
         } while ( ++count<30 && cursorEdge != thisEdge);
-        nodes.get(cursorEdge.j).drawOn = true;//maybe no need
+        nodes.get(cursorEdge.BNodeID).drawOn = true;//maybe no need
         //nodes.drawOn=true;
     }
 
     String getName(){
-        return "("+h+","+i+";"+j+","+k+")";
+        return "("+ANodeID+","+ANodeRID+";"+BNodeID+","+BNodeRID+")";
     }
 }
 

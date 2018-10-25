@@ -323,10 +323,10 @@ class data_graph {
     }
   }
   void modifyArmsOfAlignments(Edge e) {
-    Node n1 = nodes.get(e.getH());
-    Node n2 = nodes.get(e.getJ());
-    int a1 = e.getI();
-    int a2 = e.getK();
+    Node n1 = nodes.get(e.getANodeID());
+    Node n2 = nodes.get(e.getBNodeID());
+    int a1 = e.getANodeRID();
+    int a2 = e.getBNodeRID();
     float r1;
     float r2;
     int count = 0;
@@ -372,17 +372,17 @@ class data_graph {
         // int i2=node.edges[j];
         int e1=-1, e2=-1, i1=-1, i2=-1;
         for (Edge e : edges) {
-          if (h==e.h&&i==e.i) {
+          if (h==e.ANodeID&&i==e.ANodeRID) {
             i1=h;
-            i2=e.j;
+            i2=e.BNodeID;
             e1=i;
-            e2=e.k;
+            e2=e.BNodeRID;
             break;
-          } else if (h==e.j&&i==e.k) {
+          } else if (h==e.BNodeID&&i==e.BNodeRID) {
             i1=h;
-            i2=e.h;
+            i2=e.ANodeID;
             e1=i;
-            e2=e.i;
+            e2=e.ANodeRID;
             break;
           }
         }
@@ -533,34 +533,36 @@ class data_graph {
     //} else {
     //    rate = 1080/hei;
     //}
-    Node a0=nodes.get(e.h);
-    Node a1=nodes.get(e.j);
+    Node a0=nodes.get(e.ANodeID);
+    Node a1=nodes.get(e.BNodeID);
     // float hx=(a0.x-disp.left)*disp.rate;
     float hx=disp.get_winX(a0.x);
     //float hy=(a0.y-disp.top)*disp.rate;
     float hy=disp.get_winY(a0.y);
-    if (e.i==1 ||e.i==3) {
-      hx = disp.get_winX(a0.edge_rx(e.i, 30/disp.rate));
-      hy = disp.get_winY(a0.edge_ry(e.i, 30/disp.rate));
+    if (e.ANodeRID==1 ||e.ANodeRID==3) {
+      hx = disp.get_winX(a0.edge_rx(e.ANodeRID, 30/disp.rate));
+      hy = disp.get_winY(a0.edge_ry(e.ANodeRID, 30/disp.rate));
     }
     //float ix=(a0.edge_x(e.i)-disp.left)*disp.rate;
-    float ix=disp.get_winX(a0.edge_x(e.i));
-    float iy=disp.get_winY(a0.edge_y(e.i));
+    float ix=disp.get_winX(a0.edge_x(e.ANodeRID));
+    float iy=disp.get_winY(a0.edge_y(e.ANodeRID));
     float jx=disp.get_winX(a1.x);
     float jy=disp.get_winY(a1.y);
-    if (e.k==1 || e.k==3) {
-      jx = disp.get_winX(a1.edge_rx(e.k, 30/disp.rate));
-      jy = disp.get_winY(a1.edge_ry(e.k, 30/disp.rate));
+    if (e.BNodeRID==1 || e.BNodeRID==3) {
+      jx = disp.get_winX(a1.edge_rx(e.BNodeRID, 30/disp.rate));
+      jy = disp.get_winY(a1.edge_ry(e.BNodeRID, 30/disp.rate));
     }
-    float kx=disp.get_winX(a1.edge_x(e.k));
-    float ky=disp.get_winY(a1.edge_y(e.k));
+    float kx=disp.get_winX(a1.edge_x(e.BNodeRID));
+    float ky=disp.get_winY(a1.edge_y(e.BNodeRID));
 
     stroke( 0, 0, 0);
     strokeWeight(5);
     noFill();
     bezier(hx, hy, ix, iy, kx, ky, jx, jy);
   }
+  
   float hypot(float x, float y) {
     return sqrt(x*x+y*y);
   }
+  
 }
