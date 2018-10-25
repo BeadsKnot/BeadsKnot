@@ -1,4 +1,6 @@
 class data_graph {
+//データのグラフ構造
+//nodeとedgeからなる
 
   ArrayList<Node> nodes;
   ArrayList<Edge> edges;
@@ -22,28 +24,28 @@ class data_graph {
     testFindNextJoint();
     set_nodes_edges();  
     println("data_graph_completeしました");    
-    data_graph_complete=false;
+    data_graph_complete=true;
     de.extraction_binalized = false;
-    de.extraction_complete = true;
+    de.extraction_complete = false;
     de.extraction_beads = false;
   }
   void JointOrientation() {
     for (int i=0; i<de.points.size (); i++) {
-      Beads vec=de.points.get(i);
+      Bead vec=de.points.get(i);
       if (vec.Joint) {
         if (vec.u1<0||vec.u1>=de.points.size()||vec.u2<0||vec.u2>=de.points.size()) {
           return;
         }
-        Beads vecn1=de.points.get(vec.n1);
+        Bead vecn1=de.points.get(vec.n1);
         float x0=vecn1.x;
         float y0=vecn1.y;
-        Beads vecu1=de.points.get(vec.u1);
+        Bead vecu1=de.points.get(vec.u1);
         float x1=vecu1.x;
         float y1=vecu1.y;
-        Beads vecn2=de.points.get(vec.n2);
+        Bead vecn2=de.points.get(vec.n2);
         float x2=vecn2.x;
         float y2=vecn2.y;
-        Beads vecu2=de.points.get(vec.u2);
+        Bead vecu2=de.points.get(vec.u2);
         float x3=vecu2.x;
         float y3=vecu2.y;
         float x02=x0-x2;//a
@@ -60,7 +62,7 @@ class data_graph {
   }
   void add_half_point_Joint() {
     for (int i = 0; i < de.points.size(); i++) {
-      Beads a = de.points.get(i);
+      Bead a = de.points.get(i);
       if (a.Joint) {
         int c=findtrueJointInPoints(i, a.n1);
         if (i<c) {
@@ -92,7 +94,7 @@ class data_graph {
 
   void add_close_point_Joint() {//Ten Percent Neighborhood point
     for (int p_i = 0; p_i < de.points.size(); p_i++) {
-      Beads b_a = de.points.get(p_i);
+      Bead b_a = de.points.get(p_i);
       if (b_a.Joint) {
         //int p_c=findtrueJointInPoints(p_i, b_a.n1);
         int count = countNeighborJointInPoints(p_i, b_a.n1, 0);
@@ -116,7 +118,7 @@ class data_graph {
 
   int findtrueJointInPoints(int j, int c) {
     // for (int i = 0; i < de.points.size(); i++) {
-    Beads p=de.points.get(c);
+    Bead p=de.points.get(c);
     if (p.Joint) {
       return c;
     }
@@ -133,7 +135,7 @@ class data_graph {
 
   int findNeighborJointInPoints(int j, int c) {
     // for (int i = 0; i < de.points.size(); i++) {
-    Beads p=de.points.get(c);
+    Bead p=de.points.get(c);
     if (p.Joint||p.midJoint) {
       return j;
     }
@@ -150,7 +152,7 @@ class data_graph {
 
   private int countNeighborJointInPoints(int 
     j, int c, int count) {
-    Beads p=de.points.get(c);
+    Bead p=de.points.get(c);
     if (p.Joint||p.midJoint) {
       return count;
     }
@@ -168,7 +170,7 @@ class data_graph {
     if (count==0) {
       return c;
     }
-    Beads p=de.points.get(c);
+    Bead p=de.points.get(c);
     if (p.Joint) {
       //Log.d("エラー","");
     }
@@ -185,7 +187,7 @@ class data_graph {
   void getNodes() {
     int count=0;
     for (int i = 0; i < de.points.size(); i++) {
-      Beads vec = de.points.get(i);
+      Bead vec = de.points.get(i);
       if (vec.Joint||vec.midJoint) {
         count++;
       }
@@ -194,7 +196,7 @@ class data_graph {
     table=new int[count];
     count=0;
     for (int i = 0; i < de.points.size(); i++) {
-      Beads vec = de.points.get(i);
+      Bead vec = de.points.get(i);
       if (vec.Joint||vec.midJoint) {
         table[count]=i;
         count++;
@@ -203,11 +205,11 @@ class data_graph {
   }
   private void testFindNextJoint() {//デバック
     for (int i=0; i<de.points.size(); i++) {
-      Beads a=de.points.get(i);
+      Bead a=de.points.get(i);
       if (a.Joint||a.midJoint) {
         //Log.d("getNodesFromPoint(i)は",""+getNodesFromPoint(i));
-        // Beads b=points.get(a.n1);
-        // Beads c=a.findNextJoint(points,b);
+        // Bead b=points.get(a.n1);
+        // Bead c=a.findNextJoint(points,b);
         int j=findNeighborJointInPoints(i, a.n1);
         int c=findJointInPoints(i, a.n1);
         int k=findk(de.points.get(c), j);
@@ -240,7 +242,7 @@ class data_graph {
   }
   int findJointInPoints(int j, int c) {
     // for (int i = 0; i < points.size(); i++) {
-    Beads p=de.points.get(c);
+    Bead p=de.points.get(c);
     if (p.Joint||p.midJoint) {
       return c;
     }
@@ -255,7 +257,7 @@ class data_graph {
     return findJointInPoints(c, d);
   }
 
-  int findk(Beads joint, int j) {
+  int findk(Bead joint, int j) {
     if (joint.n1==j) {
       return 0;
     } else if (joint.u1==j) {
@@ -280,11 +282,11 @@ class data_graph {
 
   void getEdges(ArrayList<Edge> edges) {
     for (int i=0; i<de.points.size(); i++) {
-      Beads a=de.points.get(i);
+      Bead a=de.points.get(i);
       if (a.Joint||a.midJoint) {
         // Log.d("getNodesFromPoint(i)は",""+getNodesFromPoint(i));
-        // Beads b=points.get(a.n1);
-        // Beads c=a.findNextJoint(points,b);
+        // Bead b=points.get(a.n1);
+        // Bead c=a.findNextJoint(points,b);
         int b=findNeighborJointInPoints(i, a.n1);
         int c=findJointInPoints(i, a.n1);
         int j=getNodesFromPoint(c);
@@ -494,7 +496,7 @@ class data_graph {
   void set_nodes_edges() {
     // 読み取りデータからAlignmentのデータを取り出す。
     for (int i = 0; i < de.points.size(); i++) {
-      Beads vec = de.points.get(i);
+      Bead vec = de.points.get(i);
       if (vec.Joint||vec.midJoint) {
         Node ali=new Node((float)vec.x, (float)vec.y);
         ali.theta=vec.getTheta(de.points);

@@ -227,7 +227,7 @@ class Thinning {
     // 		return i;
     // 	}
     // }
-    DE.points.add(new Beads(_x, _y));
+    DE.points.add(new Bead(_x, _y));
     return DE.points.size()-1;
   }
 
@@ -403,9 +403,9 @@ class Thinning {
   }
 
   void removeBeadsWithAll(int p) {
-    Beads u = DE.points.get(p);
+    Bead u = DE.points.get(p);
     if (is_Beads_id(u.n1)) {
-      Beads uo = DE.points.get(u.n1);
+      Bead uo = DE.points.get(u.n1);
       uo.c --;
       if (uo.n1==p) { 
         uo.n1=uo.n2; 
@@ -422,7 +422,7 @@ class Thinning {
       }
     }
     if (is_Beads_id(u.n2)) {
-      Beads uo = DE.points.get(u.n2);
+      Bead uo = DE.points.get(u.n2);
       uo.c --;
       if (uo.n1==p) { 
         uo.n1=uo.n2; 
@@ -439,7 +439,7 @@ class Thinning {
       }
     }
     if (is_Beads_id(u.u1)) {
-      Beads uo = DE.points.get(u.u1);
+      Bead uo = DE.points.get(u.u1);
       uo.c --;
       if (uo.n1==p) { 
         uo.n1=uo.n2; 
@@ -457,7 +457,7 @@ class Thinning {
     }
     DE.points.remove(p);
     for (int i=0; i<DE.points.size (); i++) {
-      Beads v = DE.points.get(i);
+      Bead v = DE.points.get(i);
       if (v.n1>p) v.n1--;
       if (v.n2>p) v.n2--;
       if (v.u1>p) v.u1--;
@@ -487,7 +487,7 @@ class Thinning {
       pt_left[i] = true;
     }
     for (int u=0; u<DE.points.size(); u++) {
-      Beads vec0 = DE.points.get(u);
+      Bead vec0 = DE.points.get(u);
       if (vec0.c == 0) {
         pt_left[u]=false;
       } else 
@@ -515,12 +515,12 @@ class Thinning {
   ////////////////////////////////////////////
   boolean find_crossing() {
     for (int i=0; i<DE.points.size (); i++) {
-      Beads bdsi=DE.points.get(i);
+      Bead bdsi=DE.points.get(i);
       if (bdsi.c==1) {
         float min=9999;
         int minJ=-1;
         for (int j=0; j<DE.points.size (); j++) {
-          Beads bdsj = DE.points.get(j);
+          Bead bdsj = DE.points.get(j);
           if (bdsj.c==2) {
             float d1=dist(bdsi.x, bdsi.y, DE.points.get(bdsj.n1).x, DE.points.get(bdsj.n1).y);
             float d=dist(bdsi.x, bdsi.y, bdsj.x, bdsj.y);
@@ -579,7 +579,7 @@ class Thinning {
 
   int find_next(int prv, int nw) {
     if (is_Beads_id(nw)) {
-      Beads v = DE.points.get(nw);
+      Bead v = DE.points.get(nw);
       if (v.n1 == prv) {
         return v.n2;
       } else if (v.n2 == prv) {
@@ -610,7 +610,7 @@ class Thinning {
       }
       if (j<maxk) {
         Nbh ck = cross.get(maxk);
-        Beads v=DE.points.get(ck.b);
+        Bead v=DE.points.get(ck.b);
         v.Joint=true;
         v.u1=cj.a;
         // TODO 向きを決めないといけない

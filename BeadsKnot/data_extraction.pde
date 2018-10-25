@@ -57,14 +57,14 @@ class data_extract {
         return i;
       }
     }
-    points.add(new Beads(u, v));
+    points.add(new Bead(u, v));
     return points.size()-1;
   }
 
   void drawPoints() {//点をかく
     stroke(255, 0, 0);
     for (int i=0; i<points.size (); i++) {
-      Beads vec=points.get(i);
+      Bead vec=points.get(i);
       if (vec.Joint) {
         stroke(0, 0, 255);
       } else if (vec.closeJoint) {
@@ -178,7 +178,7 @@ class data_extract {
   //TODO disp を使って画像を画面に収めるように変数変換する。
   void drawNbhs() {//線を書く
     for (int i=0; i<points.size (); i++) {
-      Beads vec=points.get(i);
+      Bead vec=points.get(i);
       if (vec.n1!=-1) {
         stroke(255, 0, 0);
         try { 
@@ -212,14 +212,14 @@ class data_extract {
   }
 
   void countNbhs() {//線を数える
-    for (Beads vec : points) {
+    for (Bead vec : points) {
       vec.c=0;
       vec.n1=vec.n2=vec.u1=vec.u2=-1;//正常でない値
     }
     for (Nbh n : nbhs) {
       // points.get(n.a).c++;
       //points.get(n.b).c++;
-      Beads vec_1=points.get(n.a);
+      Bead vec_1=points.get(n.a);
       if (vec_1.c==0) {
         vec_1.n1=n.b;
       } else if (vec_1.c==1) {
@@ -230,7 +230,7 @@ class data_extract {
         vec_1.u2=n.b;
       }
       vec_1.c++;
-      Beads vec_2=points.get(n.b);
+      Bead vec_2=points.get(n.b);
       if (vec_2.c==0) {
         vec_2.n1=n.a;
       } else if (vec_2.c==1) {
@@ -249,7 +249,7 @@ class data_extract {
     float l, t, r, b;
     l=t=r=b=0;
     for (int u=0; u<points.size (); u++) {
-      Beads pt=points.get(u);
+      Bead pt=points.get(u);
       if (u==0) {
         l=r=pt.x;
         t=b=pt.y;
@@ -269,7 +269,7 @@ class data_extract {
 
   void addJointToNbhs() {//jointに関しての線を追加
     for (int u=0; u<points.size (); u++) {
-      Beads vec=points.get(u);
+      Bead vec=points.get(u);
       if (vec.Joint) {
         if (duplicateNbhs(u, vec.u1)==0) {
           nbhs.add(new Nbh(u, vec.u1));
@@ -317,7 +317,7 @@ class data_extract {
 
   void removePoint2(int u) {
     for (int i=0; i<points.size (); i++) {
-      Beads vec_po=points.get(i);
+      Bead vec_po=points.get(i);
       if (vec_po.n1>u) {
         vec_po.n1--;
       }
@@ -521,7 +521,7 @@ class data_extract {
     }
   }
   boolean Ofutarisama() {//みんなお二人様だったか確認
-    for (Beads vec : points) {
+    for (Bead vec : points) {
       if (vec.c!=2) {
         return false;
       }

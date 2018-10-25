@@ -26,6 +26,7 @@ void setup() {
   disp = new display(1000, 1000);
   data = new data_extract(extractSize, extractSize, disp);
   graph = new data_graph(data);
+  
 }
 
 void draw() {
