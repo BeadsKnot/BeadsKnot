@@ -1,5 +1,6 @@
 class data_extract {
-
+// 画像からの読みとり
+// ビーズとそれをつなぐNbhからなる。
   int w, h;// 解析画面の大きさ
   int d[][];// ２値化された画像のデータ
   int s;//解析メッシュのサイズ
@@ -10,7 +11,7 @@ class data_extract {
   boolean data_graph_complete;
 
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
-  ArrayList<Beads> points=new ArrayList<Beads>();//点を登録
+  ArrayList<Bead> points=new ArrayList<Bead>();//点を登録
   transform tf;
   Binarization bin;
   Square sq;
@@ -48,8 +49,6 @@ class data_extract {
     sq.getSquareExtraction();//正方形分割をするときにコメントアウトをはずす
     //th.getThinningExtraction();//thinning ver.にするときにコメントアウトをはずす
   }
-
-  //TODO メソッドをabc順に並べるかどうか，検討する。
 
   int addToPoints(int u, int v, int threshold) {//点を追加する
     // (u,v)は点の座標なので，float型ではないか？
