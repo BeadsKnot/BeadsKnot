@@ -21,7 +21,7 @@ class data_graph {
     add_half_point_Joint();
     add_close_point_Joint();
     getNodes();
-    testFindNextJoint();
+    //testFindNextJoint();
     set_nodes_edges();  
     println("data_graph_completeしました");    
     data_graph_complete=true;
@@ -203,43 +203,32 @@ class data_graph {
       }
     }
   }
-  private void testFindNextJoint() {//デバック
-    for (int i=0; i<de.points.size(); i++) {
-      Bead a=de.points.get(i);
-      if (a.Joint||a.midJoint) {
-        //Log.d("getNodesFromPoint(i)は",""+getNodesFromPoint(i));
-        // Bead b=points.get(a.n1);
-        // Bead c=a.findNextJoint(points,b);
-        int j=findNeighborJointInPoints(i, a.n1);
-        int c=findJointInPoints(i, a.n1);
-        int k=findk(de.points.get(c), j);
-        //Log.d("0の行先は",""+getNodesFromPoint(c)+","+k);
-        //b=points.get(a.n2);
-        //c=a.findNextJoint(points,b);
-        if (a.Joint) {
-          j = findNeighborJointInPoints(i, a.u1);
-          c = findJointInPoints(i, a.u1);
-          k = findk(de.points.get(c), j);
-          //Log.d("1の行先は", "" + getNodesFromPoint(c) + "," + k);
-        }
-        j=findNeighborJointInPoints(i, a.n2);
-        c=findJointInPoints(i, a.n2);
-        k=findk(de.points.get(c), j);
-        //Log.d("2の行先は",""+getNodesFromPoint(c)+","+k);
-        //b=points.get(a.u1);
-        //c=a.findNextJoint(points,b);
+  //private void testFindNextJoint() {//デバック
+  //  for (int i=0; i<de.points.size(); i++) {
+  //    Bead a=de.points.get(i);
+  //    if (a.Joint||a.midJoint) {
+  //      int j=findNeighborJointInPoints(i, a.n1);
+  //      int c=findJointInPoints(i, a.n1);
+  //      int k=findk(de.points.get(c), j);
+  //      if (a.Joint) {
+  //        j = findNeighborJointInPoints(i, a.u1);
+  //        c = findJointInPoints(i, a.u1);
+  //        k = findk(de.points.get(c), j);
+  //      }
 
-        //b=points.get(a.u2);
-        //c=a.findNextJoint(points,b);
-        if (a.Joint) {
-          j = findNeighborJointInPoints(i, a.u2);
-          c = findJointInPoints(i, a.u2);
-          k = findk(de.points.get(c), j);
-          // Log.d("3の行先は", "" + getNodesFromPoint(c) + "," + k);
-        }
-      }
-    }
-  }
+  //      j=findNeighborJointInPoints(i, a.n2);
+  //      c=findJointInPoints(i, a.n2);
+  //      k=findk(de.points.get(c), j);
+  //      if (a.Joint) {
+  //        j = findNeighborJointInPoints(i, a.u2);
+  //        c = findJointInPoints(i, a.u2);
+  //        k = findk(de.points.get(c), j);
+  //      }
+  //    }
+  //  }
+  //}
+
+  
   int findJointInPoints(int j, int c) {
     // for (int i = 0; i < points.size(); i++) {
     Bead p=de.points.get(c);
@@ -375,10 +364,10 @@ class data_graph {
   }
 
   void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {//円を自動で回転させる
-    float e0, e0p, e0m, e0r;
+    float e0, e0p, e0m;
     for (int h = 0; h < nodes.size (); h ++) {
       /* Node node=nodes.get(h); */
-      e0 = e0p = e0m = e0r = 0;
+      e0 = e0p = e0m = 0;
       for (int i = 0; i < 4; i ++) {
         // int i2=node.edges[j];
         int e1=-1, e2=-1, i1=-1, i2=-1;
@@ -414,18 +403,14 @@ class data_graph {
           float y2p=(y1-r1*sin(angle1+0.05));
           float x2m=(x1+r1*cos(angle1-0.05));
           float y2m=(y1-r1*sin(angle1-0.05));
-          float x2r=(x1+10*cos(angle1+PI));
-          float y2r=(y1-10*sin(angle1+PI));
           float x3=(x4+r2*cos(angle2));
           float y3=(y4-r2*sin(angle2));
           float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
           float e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
           float e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
-          float e11r=get_rangewidth_angle(x1, y1, x2r, y2r, x3, y3, x4, y4);
           e0 += e11;
           e0p += e11p;
           e0m += e11m;
-          e0r += e11r;
         }
       }
       /*if (e0r < e0) {

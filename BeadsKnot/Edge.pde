@@ -1,3 +1,4 @@
+
 class Edge {
      int h;//node
      int i;//edge
@@ -374,4 +375,8 @@ class Edge {
     String getName(){
         return "("+h+","+i+";"+j+","+k+")";
     }
+}
+
+class EdgeConst {
+  
 }

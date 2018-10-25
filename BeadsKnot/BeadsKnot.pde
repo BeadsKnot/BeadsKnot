@@ -1,28 +1,20 @@
-//sボタンを押すと画像を保存 //<>//
-// PImage image;// ->data_extraction
-// int w, h;// ->data_extraction
-// int d[][];// ->data_extraction
-// int s;// ->data_extraction
-// int n = s;// ->data_extraction
-//boolean ofutarisama_flag=false;//お二人様かどうかのフラグ// ->data_extraction
-//このofutarisama_flagはいらない？
-PImage pastedImage;
-PImage output;
+// usage //<>// //<>//
+// o : ファイル読み込み
+// s : 画像を保存
 
-data_extract data;
-data_graph graph;
-display disp;
+// グローバル変数はこれだけ
+data_extract data;// 画像解析から読み込んだ線のデータ
+data_graph graph;// data_extractから解析した平面グラフのデータ
+display disp;// 画面表示に関する定数
+String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
+// グローバル変数終了
 
-
-
-String file_name="tes";
 
 void setup() {
   int extractSize=1000;
 
-  //size(1500, 1500);//初期のサイズ
   size(1000, 1000);//初期のサイズ
-  // size(600, 600);//初期のサイズ
+  //初期化
   disp = new display(1000, 1000);
   data = new data_extract(extractSize, extractSize, disp);
   graph = new data_graph(data);
@@ -31,7 +23,7 @@ void setup() {
 
 void draw() {
   background(255);
-  if (data.extraction_binalized) {
+  if (data.extraction_binalized) {// 二値化したデータを表示
     loadPixels();
     for (int x=0; x<data.w; x++) {
       for (int y=0; y<data.h; y++) {
@@ -45,12 +37,14 @@ void draw() {
     data.drawPoints();
     data.drawNbhs();
   } 
-  //
+  //data_extract+spring_modelの内容を描画する場合。
   else if (data.extraction_complete) {
     data.drawPoints();
     data.drawNbhs();
-    //data.tf.spring();
-  } else if (graph.data_graph_complete) {
+    //data.tf.spring();// ばねモデルで動かしたものを表示
+  } 
+  // 平面グラフのデータを表示
+  else if (graph.data_graph_complete) {
     graph.drawNodes();
   }
 }

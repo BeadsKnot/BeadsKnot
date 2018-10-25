@@ -21,7 +21,7 @@ class transform {//形を整えるクラス
       calc_spring(de.nbhs.get(i).a, de.nbhs.get(i).b, ln);//Nbh[n,m]みたいな感じになる
     }
     for (int i=0; i<de.points.size (); i++) {//double spring scheme
-      Beads vec=de.points.get(i);
+      Bead vec=de.points.get(i);
       if (vec.Joint) {
         calc_spring(vec.n1, vec.u1, 1.414*ln);
         calc_spring(vec.n2, vec.u1, 1.414*ln);
