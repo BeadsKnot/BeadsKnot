@@ -6,6 +6,7 @@
 data_extract data;// 画像解析から読み込んだ線のデータ
 data_graph graph;// data_extractから解析した平面グラフのデータ
 display disp;// 画面表示に関する定数
+EdgeConst ec;// Edgeに関する定数
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 // グローバル変数終了
 
@@ -18,7 +19,7 @@ void setup() {
   disp = new display(1000, 1000);
   data = new data_extract(extractSize, extractSize, disp);
   graph = new data_graph(data);
-  
+  ec = new EdgeConst();
 }
 
 void draw() {
@@ -60,12 +61,17 @@ void keyPressed() {
   }
 
   //if (int(key)==15) {// ctrl+o
-  if ( key == 'o') {// o
+  else if ( key == 'o') {// o
     selectInput("Select a file to process:", "fileSelected");
   }
-  if (key=='p') {
+  else if (key=='p') {
     PLink PL=new PLink(data, disp);
     PL.file_output();
+  }
+  else if(key == 'm'){ // modify
+    if(graph.data_graph_complete){
+      graph.modify();
+    }
   }
 }
 

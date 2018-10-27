@@ -29,6 +29,7 @@ class data_graph {
     de.extraction_complete = false;
     de.extraction_beads = false;
   }
+
   void JointOrientation() {
     for (int i=0; i<de.points.size (); i++) {
       Bead vec=de.points.get(i);
@@ -357,8 +358,8 @@ class data_graph {
 
   void modify() {
     //Nodeの座標も微調整したい。
-    for (Edge i : edges) {
-      i. scaling_shape_modifier(nodes);
+    for (Edge edge : edges) {
+      edge.scaling_shape_modifier(nodes);
     }
     rotation_shape_modifier(nodes, edges);
   }
@@ -499,7 +500,7 @@ class data_graph {
       modifyArmsOfAlignments(e);
     }
     for (int i=0; i<100; i++) {
-      // modify();
+      //modify();
     }
   }
 

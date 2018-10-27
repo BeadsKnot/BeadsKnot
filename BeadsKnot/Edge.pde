@@ -1,385 +1,599 @@
 //Edgeのクラス
 
 class Edge {
-     int ANodeID;//node
-     int ANodeRID;//edge
-     int BNodeID;//node
-     int BNodeRID;//edge
-     
-     //edgeにビーズを張り付けておくことにする。（両端のnodeも含むようにする。）
-     ArrayList<Bead> beads;
-     
-    Edge(int _ANodeID,int _ANodeRID,int _BNodeID,int _BNodeRID){
-        ANodeID=_ANodeID;
-        ANodeRID=_ANodeRID;
-        BNodeID=_BNodeID;
-        BNodeRID=_BNodeRID;
-    }
+  int ANodeID;//node
+  int ANodeRID;//edge
+  int BNodeID;//node
+  int BNodeRID;//edge
 
-    int getANodeID(){
-        return ANodeID;
+  //edgeにビーズを張り付けておくことにする。（両端のnodeも含むようにする。）
+  ArrayList<Bead> beads;
+
+  Edge(int _ANodeID, int _ANodeRID, int _BNodeID, int _BNodeRID) {
+    ANodeID=_ANodeID;
+    ANodeRID=_ANodeRID;
+    BNodeID=_BNodeID;
+    BNodeRID=_BNodeRID;
+  }
+
+  int getANodeID() {
+    return ANodeID;
+  }
+  int getANodeRID() {
+    return ANodeRID;
+  }
+  int getBNodeID() {
+    return BNodeID;
+  }
+  int getBNodeRID() {
+    return BNodeRID;
+  }
+  //　node と node をつなぐ曲線を描く
+  void drawEdgeBezier(ArrayList<Node> nodes, float l, float t, float r, float b) {
+    // 表示サイズを調節
+    float wid = r-l;
+    float hei = b-t;
+    float rate;
+    if (wid>hei) {
+      rate = 1080/wid;
+    } else {
+      rate = 1080/hei;
     }
-    int getANodeRID(){
-        return ANodeRID;
+    //
+    Node a0=nodes.get(ANodeID);
+    Node a1=nodes.get(BNodeID);
+    float hx=(a0.x-l)*rate;
+    float hy=(a0.y-t)*rate;
+    if (ANodeRID==1 || ANodeRID==3) {
+      hx = (a0.edge_rx(ANodeRID, 30/rate) - l) * rate;
+      hy = (a0.edge_ry(ANodeRID, 30/rate) - t) * rate;
     }
-    int getBNodeID(){
-        return BNodeID;
+    float ix=(a0.edge_x(ANodeRID)-l)*rate;
+    float iy=(a0.edge_y(ANodeRID)-t)*rate;
+    float jx=(a1.x-l)*rate;
+    float jy=(a1.y-t)*rate;
+    if (BNodeRID==1 || BNodeRID==3) {
+      jx = (a1.edge_rx(BNodeRID, 30/rate)-l)*rate;
+      jy = (a1.edge_ry(BNodeRID, 30/rate)-l)*rate;
     }
-    int getBNodeRID(){
-        return BNodeRID;
+    float kx=(a1.edge_x(BNodeRID)-l)*rate;
+    float ky=(a1.edge_y(BNodeRID)-t)*rate;
+
+    stroke(255, 0, 0, 0);
+    strokeWeight(5);
+    drawCubicBezier(hx, hy, ix, iy, jx, jy, kx, ky);
+  }
+
+  float naibun(float p, float q, float t) {
+    return (p*(1.0-t)+q*t);
+  }
+
+  float coordinate_bezier(float a, float c, float e, float g, float t) {
+    float x1 = naibun(a, c, t);
+    float x2 = naibun(c, e, t);
+    float x3 = naibun(e, g, t);
+    float x4 = naibun(x1, x2, t);
+    float x5 = naibun(x2, x3, t);
+    return naibun(x4, x5, t);
+  }
+
+  void drawCubicBezier(float hx, float hy, float ix, float iy, float jx, float jy, float kx, float ky) {
+  }
+
+  float angle(float ax, float ay, float bx, float by, float cx, float cy) {
+    float ang1 = (atan2(ay-by, ax-bx));
+    float ang2 = (atan2(by-cy, bx-cx));
+    float ret = ang2-ang1;
+    if (ret < 0.0) {
+      ret = -ret;
     }
-    //　node と node をつなぐ曲線を描く
-    void drawEdgeBezier(ArrayList<Node> nodes, float l, float t, float r, float b){
-        // 表示サイズを調節
-        float wid = r-l;
-        float hei = b-t;
-        float rate;
-        if(wid>hei){
-            rate = 1080/wid;
-        } else {
-            rate = 1080/hei;
+    if (ret > PI) {
+      ret = (2*PI - ret);
+    }
+    return ret;
+  }
+  float get_rangewidth_angle(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+    float ret0 = (PI);
+    float ret1 = 0;
+    float step=(0.05);// step is 1/20
+    float cx = x1;
+    float dx = coordinate_bezier(x1, x2, x3, x4, step);
+    float cy = y1;
+    float dy = coordinate_bezier(y1, y2, y3, y4, step);
+    float ex, ey;
+    for (float i = step*2; i<=1.0; i += step) {
+      ex=coordinate_bezier(x1, x2, x3, x4, i);
+      ey=coordinate_bezier(y1, y2, y3, y4, i);
+      float ang = angle(cx, cy, dx, dy, ex, ey);
+      if (ang < ret0) { // get minimum
+        ret0 = ang;
+      }
+      if (ang > ret1) { // get maximum
+        ret1 = ang;
+      }
+      cx = dx;
+      cy = dy;
+      dx = ex;
+      dy = ey;
+    }
+    return ret1-ret0;
+  }
+
+  /*public void print_get_rangewidth_angle(ArrayList<Node> nodes){
+   Node a0=nodes.get(ANodeID);
+   Node a1=nodes.get(BNodeID);
+   float x1=a0.x;
+   float y1=a0.y;
+   float x2=a0.edge_x(i);
+   float y2=a0.edge_y(i);
+   float x3=a1.edge_x(k);
+   float y3=a1.edge_y(k);
+   float x4=a1.x;
+   float y4=a1.y;
+   Log.d("CHECK",":" +get_rangewidth_angle(x1,y1,x2,y2,x3,y3,x4,y4) + "," );
+   }*/
+
+  float atan2Vec(PVector v0, PVector v1) {
+    float a = v0.x;
+    float c = v0.y;
+    float b = -c;
+    float d = a;
+    float p = v1.x;
+    float q = v1.y;
+    float s = (p * d - b * q) / (a*d - b*c);
+    float t = (a * q - p * c) / (a*d - b*c);
+    float ret = atan2(t, s);
+    if (ret < 0) {
+      ret += 2*PI;
+    }
+    return ret;
+  }
+
+  //四本の線の長さを変えることで形を整える
+  void scaling_shape_modifier(ArrayList<Node> nodes) {
+    // 準備
+    Node ANode=nodes.get(ANodeID);
+    Node BNode=nodes.get(BNodeID);
+    PVector V1 = new PVector(ANode.x, ANode.y);
+    PVector V2 = new PVector(ANode.edge_x(ANodeRID), ANode.edge_y(ANodeRID));
+    PVector V3 = new PVector(BNode.edge_x(BNodeRID), BNode.edge_y(BNodeRID));
+    PVector V4 = new PVector(BNode.x, BNode.y);
+    PVector V41 = V4;
+    V41.sub(V1); // V4 - V1
+    PVector V21 = V2;
+    V21.sub(V1); // V2 - V1
+    PVector V34 = V3;
+    V34.sub(V4); // V3 - V4
+    float rate = (V41.mag())/250f;// 250=計測したときのV4-V1の長さ
+    float t1 = degrees(atan2Vec(V21, V41));
+    float t2 = degrees(atan2Vec(V21, V34));
+    int th1 = int(t1 / 10f);
+    int th2 = int(t2 / 10f);
+    println("" + rate + " " + t1 + " " + t2 + " " + th1 + " " + th2);
+    if (th1 == 36)
+    {
+      th1 = 0;
+      t1 -= 360f;
+    }
+    if (th2 == 36)
+    {
+      th2 = 0;
+      t2 -= 360f;
+    }
+    // 端数の処理のため
+    t1 -= 10f * th1;
+    t2 -= 10f * th2;
+    t1 /= 10f;
+    t2 /= 10f;
+
+    float a10 = ec.len1[th1][th2];
+    float a11 = ec.len1[(th1 + 1) % 36][th2];
+    float a12 = ec.len1[th1][(th2 + 1) % 36];
+    float a1 = a10 + t1 * (a11 - a10) + t2 * (a12 - a10);
+    float a20 = ec.len2[th1][th2];
+    float a21 = ec.len2[(th1 + 1) % 36][th2];
+    float a22 = ec.len2[th1][(th2 + 1) % 36];
+    float a2 = a20 + t1 * (a21 - a20) + t2 * (a22 - a20);
+    //float a30 = ec.angleRange[th1][th2];
+    //float a31 = ec.angleRange[(th1 + 1) % 36][th2];
+    //float a32 = ec.angleRange[th1][(th2 + 1) % 36];
+    //float a3 = a30 + t1 * (a31 - a30) + t2 * (a32 - a30);
+
+    ANode.r[ANodeRID] = rate * a1;
+    BNode.r[BNodeRID] = rate * a2;
+  }
+
+  ////四本の線の長さを変えることで形を整える
+  //void scaling_shape_modifier_old(ArrayList<Node> nodes) {
+  //  // E=min of angle;
+  //  // minimize E
+  //  // if (0<=e1 && e1<4 && 0<=e2 && e2<4 && is_gv_id(i1) && is_gv_id(i2) ) {
+  //  Node a0=nodes.get(ANodeID);
+  //  Node a1=nodes.get(BNodeID);
+  //  float r1=a0.r[ANodeRID];
+  //  float r2=a1.r[BNodeRID];
+  //  float angle1 = (a0.theta+PI*ANodeRID/2);
+  //  // float angle1 = x + r[i] * ( cos(theta+toRadians(i*90)));
+  //  float angle2 = (a1.theta+PI*BNodeRID/2);
+  //  //float angle2 = x + r[i] * ( cos(theta+toRadians(i*90)));
+  //  float x1=a0.x;
+  //  float y1=a0.y;
+  //  float x4=a1.x;
+  //  float y4=a1.y;
+  //  float x2=(x1+r1*cos(angle1));
+  //  float y2=(y1-r1*sin(angle1));
+  //  //float y2 = x + r[i] * ( cos(theta+toRadians(i*90)));
+  //  float x3=(x4+r2*cos(angle2));
+  //  float y3=(y4-r2*sin(angle2));
+  //  //  float y3 = x + r[i] * ( cos(theta+toRadians(i*90)));
+  //  float dst= dist(x1, y1, x4, y4);
+  //  int count=0;
+  //  do {
+  //    float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
+  //    float e21=get_rangewidth_angle(x1, y1, (x2+cos(angle1)), (y2-sin(angle1)), x3, y3, x4, y4);
+  //    float e01=get_rangewidth_angle(x1, y1, (x2-cos(angle1)), (y2+sin(angle1)), x3, y3, x4, y4);
+  //    float e12=get_rangewidth_angle(x1, y1, x2, y2, (x3+cos(angle2)), (y3-sin(angle2)), x4, y4);
+  //    float e10=get_rangewidth_angle(x1, y1, x2, y2, (x3-cos(angle2)), (y3+sin(angle2)), x4, y4);
+  //    if (e11>e01&&r1>10) {
+  //      r1--;
+  //      // if (r1<beadsDistance) {
+  //      //   r1=beadsDistance;
+  //      //}
+  //    } else if (e11>e21) {
+  //      if (r1+1 < dst) {
+  //        r1++;
+  //      }
+  //    } else if (e11>e10&&r2>10) {
+  //      r2--;
+  //      //if (r2<beadsDistance) {
+  //      //  r2=beadsDistance;
+  //      //}
+  //    } else if (e11>e12) {
+  //      if (r2+1 < dst) {
+  //        r2++;
+  //      }
+  //    } else {
+  //      break;
+  //    }
+  //    x2=(x1+r1*cos(angle1));
+  //    y2=(y1-r1*sin(angle1));
+  //    x3=(x4+r2*cos(angle2));
+  //    y3=(y4-r2*sin(angle2));
+  //  } while (++count <10);
+  //  a0.r[ANodeRID]=r1;
+  //  a1.r[BNodeRID]=r2;
+  //}
+  //float dist(float x1, float y1, float x2, float y2) {//2点間の距離
+  //  return (sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)));
+  //}
+
+  //円を自動で回転させる
+  void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {
+    float e0, e0p, e0m, e0r;
+    for (int h = 0; h < nodes.size (); h ++) {
+      /* Node node=nodes.get(h); */
+      e0 = e0p = e0m = e0r = 0;
+      for (int i = 0; i < 4; i ++) {
+        // int i2=node.edges[BNodeID];
+        int e1=-1, e2=-1, i1=-1, i2=-1;
+        for (Edge e : edges) {
+          if (h==e.ANodeID&&i==e.ANodeRID) {
+            i1=h;
+            i2=e.BNodeID;
+            e1=i;
+            e2=e.BNodeRID;
+            break;
+          } else if (h==e.BNodeID && i==e.BNodeRID) {
+            i1=h;
+            i2=e.ANodeID;
+            e1=i;
+            e2=e.ANodeRID;
+            break;
+          }
         }
-        //
-        Node a0=nodes.get(ANodeID);
-        Node a1=nodes.get(BNodeID);
-        float hx=(a0.x-l)*rate;
-        float hy=(a0.y-t)*rate;
-        if(ANodeRID==1 || ANodeRID==3) {
-            hx = (a0.edge_rx(ANodeRID,30/rate) - l) * rate;
-            hy = (a0.edge_ry(ANodeRID,30/rate) - t) * rate;
+        if (i1!=-1&&i2!=-1&&e1!=-1&&e2!=-1) {
+          Node a1 = nodes.get(i1);
+          Node a2 = nodes.get(i2);
+          float r1=a1.r[e1];
+          float r2=a2.r[e2];
+          float angle1 = (a1.theta+PI*e1/2);
+          float angle2 = (a2.theta+PI*e2/2);
+          float x1=a1.x;
+          float y1=a1.y;
+          float x4=a2.x;
+          float y4=a2.y;
+          float x2=(x1+r1*cos(angle1));
+          float y2=(y1-r1*sin(angle1));
+          float x2p=(x1+r1*cos(angle1+0.05));
+          float y2p=(y1-r1*sin(angle1+0.05));
+          float x2m=(x1+r1*cos(angle1-0.05));
+          float y2m=(y1-r1*sin(angle1-0.05));
+          float x2r=(x1+10*cos(angle1+PI));
+          float y2r=(y1-10*sin(angle1+PI));
+          float x3=(x4+r2*cos(angle2));
+          float y3=(y4-r2*sin(angle2));
+          float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
+          float e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
+          float e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
+          float e11r=get_rangewidth_angle(x1, y1, x2r, y2r, x3, y3, x4, y4);
+          e0 += e11;
+          e0p += e11p;
+          e0m += e11m;
+          e0r += e11r;
         }
-        float ix=(a0.edge_x(ANodeRID)-l)*rate;
-        float iy=(a0.edge_y(ANodeRID)-t)*rate;
-        float jx=(a1.x-l)*rate;
-        float jy=(a1.y-t)*rate;
-        if(BNodeRID==1 || BNodeRID==3){
-            jx = (a1.edge_rx(BNodeRID,30/rate)-l)*rate;
-            jy = (a1.edge_ry(BNodeRID,30/rate)-l)*rate;
-        }
-        float kx=(a1.edge_x(BNodeRID)-l)*rate;
-        float ky=(a1.edge_y(BNodeRID)-t)*rate;
-
-        stroke(255,0,0,0);
-        strokeWeight(5);
-        drawCubicBezier(hx,hy,ix,iy,jx,jy,kx,ky);
+      }
+      /*if (e0r < e0) {
+       nodes.get(ANodeID).theta += PI;
+       } else */
+      if (e0>e0p && e0m>e0) {
+        nodes.get(ANodeID).theta +=0.05;
+      } else if (e0>e0m && e0p>e0) {
+        nodes.get(ANodeID).theta -=0.05;
+      } /*else {
+       Log.d("check","do nothing");
+       }*/
     }
+  }
 
-     float naibun(float p, float q, float t) {
-        return (p*(1.0-t)+q*t);
+  float getXIntersectionWithInterval(float ox, float oy, float sx, float sy, float tx, float ty) {
+    if ((sy-oy)*(ty-oy)>0) {
+      return -9999.0;
     }
-
-     float coordinate_bezier(float a, float c, float e, float g, float t) {
-        float x1 = naibun(a, c, t);
-        float x2 = naibun(c, e, t);
-        float x3 = naibun(e, g, t);
-        float x4 = naibun(x1, x2, t);
-        float x5 = naibun(x2, x3, t);
-        return naibun(x4, x5, t);
+    float t = (sy-oy)/(sy-ty);// sy is not equal to ty here
+    float dx = sx - (sx-tx)*t;
+    if (ox < dx) {
+      return dx;
+    } else {
+      return -9999.0;
     }
+  }
 
-     void drawCubicBezier(float hx, float hy, float ix, float iy, float jx, float jy, float kx, float ky){
-
+  float getXIntersectionWithBezier(float ox, float oy, ArrayList<Node> nodes) {
+    Node a0 = nodes.get(ANodeID);
+    Node a1 = nodes.get(BNodeID);
+    float hx=a0.x;
+    float hy=a0.y;
+    float ix=a0.edge_x(ANodeRID);
+    float iy=a0.edge_y(ANodeRID);
+    float jx=a1.x;
+    float jy=a1.y;
+    float kx=a1.edge_x(BNodeRID);
+    float ky=a1.edge_y(BNodeRID);
+    float step = 0.1;
+    float ret = 9999.0;
+    for (float t = 0.0; t<1.0-step; t += step) {
+      float sx = coordinate_bezier(hx, ix, kx, jx, t);
+      float sy = coordinate_bezier(hy, iy, ky, jy, t);
+      float tx = coordinate_bezier(hx, ix, kx, jx, t+step);
+      float ty = coordinate_bezier(hy, iy, ky, jy, t+step);
+      float xx = getXIntersectionWithInterval(ox, oy, sx, sy, tx, ty);
+      if (-9998 < xx && xx<ret) {
+        ret = xx;
+      }
     }
+    return ret;
+  }
 
-     float angle(float ax, float ay, float bx, float by, float cx, float cy) {
-        float ang1 = (atan2(ay-by, ax-bx));
-        float ang2 = (atan2(by-cy, bx-cx));
-        float ret = ang2-ang1;
-        if (ret < 0.0) {
-            ret = -ret;
-        }
-        if (ret > PI) {
-            ret = (2*PI - ret);
-        }
-        return ret;
-    }
-     float get_rangewidth_angle(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-        float ret0 = (PI);
-        float ret1 = 0;
-        float step=(0.05);// step is 1/20
-        float cx = x1;
-        float dx = coordinate_bezier(x1, x2, x3, x4, step);
-        float cy = y1;
-        float dy = coordinate_bezier(y1, y2, y3, y4, step);
-        float ex, ey;
-        for (float i = step*2; i<=1.0; i += step) {
-            ex=coordinate_bezier(x1, x2, x3, x4, i);
-            ey=coordinate_bezier(y1, y2, y3, y4, i);
-            float ang = angle(cx, cy, dx, dy, ex, ey);
-            if (ang < ret0) { // get minimum
-                ret0 = ang;
+  // TODO : call setDrawOn from MainActivity
+  // TODO : add  'orientation' as input
+  void setDrawOn(ArrayList<Node> nodes, ArrayList<Edge> edges) {
+    Edge thisEdge = this;
+    Edge cursorEdge = this;
+    boolean orientation = true;
+    int count=0;
+    do {
+      if (orientation) {
+        nodes.get(cursorEdge.ANodeID).drawOn = true;
+        int newAID = cursorEdge.BNodeID;
+        int newARID = cursorEdge.BNodeRID;
+        for (Edge e : edges) {
+          boolean newAIDJoint = nodes.get(newAID).Joint;
+          if (newAIDJoint) {
+            if (newAID == e.ANodeID && (newARID+1)%4 == e.ANodeRID) {
+              //orientation = true;
+              cursorEdge = e;
+              break;
+            } else if (newAID == e.BNodeID && (newARID+1)%4 == e.BNodeRID) {
+              orientation = false;
+              cursorEdge = e;
+              break;
             }
-            if (ang > ret1) { // get maximum
-                ret1 = ang;
+          } else {
+            if (newAID == e.ANodeID && (newARID+2)%4 == e.ANodeRID) {
+              //orientation = true;
+              cursorEdge = e;
+              break;
+            } else if (newAID == e.BNodeID && (newARID+2)%4 == e.BNodeRID) {
+              orientation = false;
+              cursorEdge = e;
+              break;
             }
-            cx = dx;
-            cy = dy;
-            dx = ex;
-            dy = ey;
+          }
         }
-        return ret1-ret0;
-    }
-
-    /*public void print_get_rangewidth_angle(ArrayList<Node> nodes){
-        Node a0=nodes.get(ANodeID);
-        Node a1=nodes.get(BNodeID);
-        float x1=a0.x;
-        float y1=a0.y;
-        float x2=a0.edge_x(i);
-        float y2=a0.edge_y(i);
-        float x3=a1.edge_x(k);
-        float y3=a1.edge_y(k);
-        float x4=a1.x;
-        float y4=a1.y;
-        Log.d("CHECK",":" +get_rangewidth_angle(x1,y1,x2,y2,x3,y3,x4,y4) + "," );
-    }*/
-
-    void scaling_shape_modifier(ArrayList<Node> nodes) {//四本の線の長さを変えることで形を整える
-        // E=min of angle;
-        // minimize E
-        // if (0<=e1 && e1<4 && 0<=e2 && e2<4 && is_gv_id(i1) && is_gv_id(i2) ) {
-        Node a0=nodes.get(ANodeID);
-        Node a1=nodes.get(BNodeID);
-        float r1=a0.r[ANodeRID];
-        float r2=a1.r[BNodeRID];
-        float angle1 = (a0.theta+PI*ANodeRID/2);
-        // float angle1 = x + r[i] * ( cos(theta+toRadians(i*90)));
-        float angle2 = (a1.theta+PI*BNodeRID/2);
-        //float angle2 = x + r[i] * ( cos(theta+toRadians(i*90)));
-        float x1=a0.x;
-        float y1=a0.y;
-        float x4=a1.x;
-        float y4=a1.y;
-        float x2=(x1+r1*cos(angle1));
-        float y2=(y1-r1*sin(angle1));
-        //float y2 = x + r[i] * ( cos(theta+toRadians(i*90)));
-        float x3=(x4+r2*cos(angle2));
-        float y3=(y4-r2*sin(angle2));
-        //  float y3 = x + r[i] * ( cos(theta+toRadians(i*90)));
-        float dst= dist(x1, y1, x4, y4);
-        int count=0;
-        do {
-            float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
-            float e21=get_rangewidth_angle(x1, y1, (x2+cos(angle1)), (y2-sin(angle1)), x3, y3, x4, y4);
-            float e01=get_rangewidth_angle(x1, y1, (x2-cos(angle1)), (y2+sin(angle1)), x3, y3, x4, y4);
-            float e12=get_rangewidth_angle(x1, y1, x2, y2, (x3+cos(angle2)), (y3-sin(angle2)), x4, y4);
-            float e10=get_rangewidth_angle(x1, y1, x2, y2, (x3-cos(angle2)), (y3+sin(angle2)), x4, y4);
-            if (e11>e01&&r1>10) {
-                r1--;
-                // if (r1<beadsDistance) {
-                //   r1=beadsDistance;
-                //}
-            } else if (e11>e21) {
-                if (r1+1 < dst) {
-                    r1++;
-                }
-            } else if (e11>e10&&r2>10) {
-                r2--;
-                //if (r2<beadsDistance) {
-                //  r2=beadsDistance;
-                //}
-            } else if (e11>e12) {
-                if (r2+1 < dst) {
-                    r2++;
-                }
-            } else {
-                break;
+      } else {
+        nodes.get(cursorEdge.BNodeID).drawOn = true;
+        int newBID = cursorEdge.ANodeID;
+        int newBRID = cursorEdge.ANodeRID;
+        for (Edge e : edges) {
+          boolean newBIDJoint = nodes.get(newBID).Joint;
+          if (newBIDJoint) {
+            if (newBID == e.ANodeID && (newBRID+1)%4 == e.ANodeRID) {
+              orientation = true;
+              cursorEdge = e;
+              break;
+            } else if (newBID == e.BNodeID && (newBRID+1)%4 == e.BNodeRID) {
+              //orientation = false;
+              cursorEdge = e;
+              break;
             }
-            x2=(x1+r1*cos(angle1));
-            y2=(y1-r1*sin(angle1));
-            x3=(x4+r2*cos(angle2));
-            y3=(y4-r2*sin(angle2));
-        }
-        while (++count <10);
-        a0.r[ANodeRID]=r1;
-        a1.r[BNodeRID]=r2;
-    }
-     float dist(float x1,float y1,float x2,float y2){//2点間の距離
-        return (sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)));
-    }
-
-    void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {//円を自動で回転させる
-        float e0, e0p, e0m, e0r;
-        for (int h = 0; h < nodes.size (); h ++) {
-            /* Node node=nodes.get(h); */
-            e0 = e0p = e0m = e0r = 0;
-            for (int i = 0; i < 4; i ++) {
-                // int i2=node.edges[BNodeID];
-                int e1=-1,e2=-1,i1=-1,i2=-1;
-                for(Edge e:edges){
-                    if(h==e.ANodeID&&i==e.ANodeRID){
-                        i1=h;
-                        i2=e.BNodeID;
-                        e1=i;
-                        e2=e.BNodeRID;
-                        break;
-                    }else if(h==e.BNodeID && i==e.BNodeRID){
-                        i1=h;
-                        i2=e.ANodeID;
-                        e1=i;
-                        e2=e.ANodeRID;
-                        break;
-                    }
-                }
-                if (i1!=-1&&i2!=-1&&e1!=-1&&e2!=-1) {
-                    Node a1 = nodes.get(i1);
-                    Node a2 = nodes.get(i2);
-                    float r1=a1.r[e1];
-                    float r2=a2.r[e2];
-                    float angle1 = (a1.theta+PI*e1/2);
-                    float angle2 = (a2.theta+PI*e2/2);
-                    float x1=a1.x;
-                    float y1=a1.y;
-                    float x4=a2.x;
-                    float y4=a2.y;
-                    float x2=(x1+r1*cos(angle1));
-                    float y2=(y1-r1*sin(angle1));
-                    float x2p=(x1+r1*cos(angle1+0.05));
-                    float y2p=(y1-r1*sin(angle1+0.05));
-                    float x2m=(x1+r1*cos(angle1-0.05));
-                    float y2m=(y1-r1*sin(angle1-0.05));
-                    float x2r=(x1+10*cos(angle1+PI));
-                    float y2r=(y1-10*sin(angle1+PI));
-                    float x3=(x4+r2*cos(angle2));
-                    float y3=(y4-r2*sin(angle2));
-                    float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
-                    float e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
-                    float e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
-                    float e11r=get_rangewidth_angle(x1, y1, x2r, y2r, x3, y3, x4, y4);
-                    e0 += e11;
-                    e0p += e11p;
-                    e0m += e11m;
-                    e0r += e11r;
-                }
+          } else {
+            if (newBID == e.ANodeID && (newBRID+2)%4 == e.ANodeRID) {
+              orientation = true;
+              cursorEdge = e;
+              break;
+            } else if (newBID == e.BNodeID && (newBRID+2)%4 == e.BNodeRID) {
+              //orientation = false;
+              cursorEdge = e;
+              break;
             }
-            /*if (e0r < e0) {
-                nodes.get(ANodeID).theta += PI;
-            } else */
-            if (e0>e0p && e0m>e0) {
-                nodes.get(ANodeID).theta +=0.05;
-            } else if (e0>e0m && e0p>e0) {
-                nodes.get(ANodeID).theta -=0.05;
-            } /*else {
-                Log.d("check","do nothing");
-            }*/
+          }
         }
-    }
+      }
+      println("getArea:" + cursorEdge.getName());
+    } while ( ++count<30 && cursorEdge != thisEdge);
+    nodes.get(cursorEdge.BNodeID).drawOn = true;//maybe no need
+    //nodes.drawOn=true;
+  }
 
-     float getXIntersectionWithInterval(float ox, float oy, float sx,float sy, float tx,float ty){
-        if((sy-oy)*(ty-oy)>0){
-            return -9999.0;
-        }
-        float t = (sy-oy)/(sy-ty);// sy is not equal to ty here
-        float dx = sx - (sx-tx)*t;
-        if(ox < dx){
-            return dx;
-        } else {
-            return -9999.0;
-        }
-    }
-
-    float getXIntersectionWithBezier(float ox, float oy, ArrayList<Node> nodes){
-        Node a0 = nodes.get(ANodeID);
-        Node a1 = nodes.get(BNodeID);
-        float hx=a0.x;
-        float hy=a0.y;
-        float ix=a0.edge_x(ANodeRID);
-        float iy=a0.edge_y(ANodeRID);
-        float jx=a1.x;
-        float jy=a1.y;
-        float kx=a1.edge_x(BNodeRID);
-        float ky=a1.edge_y(BNodeRID);
-        float step = 0.1;
-        float ret = 9999.0;
-        for(float t = 0.0; t<1.0-step; t += step){
-            float sx = coordinate_bezier(hx,ix,kx,jx,t);
-            float sy = coordinate_bezier(hy,iy,ky,jy,t);
-            float tx = coordinate_bezier(hx,ix,kx,jx,t+step);
-            float ty = coordinate_bezier(hy,iy,ky,jy,t+step);
-            float xx = getXIntersectionWithInterval(ox,oy,sx,sy,tx,ty);
-            if(-9998 < xx && xx<ret){
-                ret = xx;
-            }
-        }
-        return ret;
-    }
-
-    // TODO : call setDrawOn from MainActivity
-    // TODO : add  'orientation' as input
-    void setDrawOn(ArrayList<Node> nodes, ArrayList<Edge> edges){
-        Edge thisEdge = this;
-        Edge cursorEdge = this;
-        boolean orientation = true;
-        int count=0;
-        do{
-            if(orientation){
-                nodes.get(cursorEdge.ANodeID).drawOn = true;
-                int newH = cursorEdge.BNodeID;
-                int newI = cursorEdge.BNodeRID;
-                for(Edge e : edges){
-                    boolean newHJoint = nodes.get(newH).Joint;
-                    if(newHJoint){
-                        if(newH == e.ANodeID && (newI+1)%4 == e.ANodeRID){
-                        //orientation = true;
-                            cursorEdge = e;
-                            break;
-                        } else if(newH == e.BNodeID && (newI+1)%4 == e.BNodeRID) {
-                            orientation = false;
-                            cursorEdge = e;
-                            break;
-                        }
-                    } else {
-                        if(newH == e.ANodeID && (newI+2)%4 == e.ANodeRID){
-                            //orientation = true;
-                            cursorEdge = e;
-                            break;
-                        } else if(newH == e.BNodeID && (newI+2)%4 == e.BNodeRID) {
-                            orientation = false;
-                            cursorEdge = e;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                nodes.get(cursorEdge.BNodeID).drawOn = true;
-                int newJ = cursorEdge.ANodeID;
-                int newK = cursorEdge.ANodeRID;
-                for(Edge e : edges){
-                    boolean newJJoint = nodes.get(newJ).Joint;
-                    if(newJJoint){
-                        if(newJ == e.ANodeID && (newK+1)%4 == e.ANodeRID){
-                            orientation = true;
-                            cursorEdge = e;
-                            break;
-                        } else if(newJ == e.BNodeID && (newK+1)%4 == e.BNodeRID){
-                            //orientation = false;
-                            cursorEdge = e;
-                            break;
-                        }
-                    } else {
-                        if(newJ == e.ANodeID && (newK+2)%4 == e.ANodeRID){
-                            orientation = true;
-                            cursorEdge = e;
-                            break;
-                        } else if(newJ == e.BNodeID && (newK+2)%4 == e.BNodeRID){
-                            //orientation = false;
-                            cursorEdge = e;
-                            break;
-                        }
-                    }
-                }
-            }
-            println("getArea:" + cursorEdge.getName());
-        } while ( ++count<30 && cursorEdge != thisEdge);
-        nodes.get(cursorEdge.BNodeID).drawOn = true;//maybe no need
-        //nodes.drawOn=true;
-    }
-
-    String getName(){
-        return "("+ANodeID+","+ANodeRID+";"+BNodeID+","+BNodeRID+")";
-    }
+  String getName() {
+    return "("+ANodeID+","+ANodeRID+";"+BNodeID+","+BNodeRID+")";
+  }
 }
 
 class EdgeConst {
-  
+  EdgeConst(){};
+  float[][] len1 = {{147.91724, 158.80765, 162.3324, 162.2876, 161.04608, 159.28922, 157.25934, 154.61673, 149.53748, 141.48767, 135.38705, 132.3147, 130.10965, 127.808685, 124.88284, 121.35672, 118.79715, 118.191345, 119.33679, 121.52466, 123.0058, 123.45752, 122.80316, 122.02042, 120.795105, 118.436615, 115.118195, 111.825134, 109.17355, 107.23453, 105.92224, 104.87497, 104.76669, 107.01047, 115.18564, 130.75687}, 
+    {146.90292, 157.893, 163.38995, 163.95944, 162.23407, 159.66425, 156.71213, 151.80127, 139.9563, 119.953766, 102.789215, 94.18259, 90.891785, 90.06433, 90.35562, 91.37833, 93.45883, 97.03003, 101.668, 105.66409, 107.20032, 107.018555, 106.28781, 106.49399, 107.425415, 108.1315, 108.41855, 108.77222, 109.608185, 110.75003, 112.58276, 115.266205, 118.39197, 122.02298, 127.651764, 136.00494}, 
+    {178.16525, 194.46225, 204.24362, 206.90024, 206.27505, 204.62756, 202.13629, 195.69968, 177.39139, 143.88358, 109.58359, 87.44977, 77.522675, 75.52313, 76.94565, 79.75601, 83.681274, 88.918976, 94.92096, 99.762085, 101.61075, 100.91525, 98.97592, 97.99536, 98.80481, 100.78226, 103.52042, 106.85675, 110.94766, 115.378174, 121.064545, 128.79895, 136.84299, 144.54605, 153.52814, 164.25845}, 
+    {207.85883, 224.97665, 234.57132, 237.4205, 237.57584, 237.08707, 236.10883, 232.1294, 217.46567, 184.76459, 141.40091, 102.70676, 79.11957, 71.680176, 72.7977, 76.49548, 81.141266, 86.694305, 92.75406, 98.05286, 101.162476, 101.72354, 100.068726, 98.06192, 97.52237, 98.86395, 102.12723, 106.842285, 112.91562, 119.922, 129.33856, 142.21301, 155.07736, 166.08151, 177.60611, 191.3088}, 
+    {217.76303, 234.53217, 243.26987, 246.4028, 247.16852, 247.2164, 247.06573, 245.9017, 239.33588, 218.77927, 179.87143, 130.83084, 91.1181, 73.10211, 71.08136, 74.93033, 80.147766, 85.80234, 91.427216, 96.39642, 100.05725, 102.110565, 102.25067, 101.13394, 100.15152, 100.0502, 101.33768, 104.164154, 109.41113, 116.99133, 128.00723, 142.8901, 157.46262, 169.59033, 182.24762, 198.53809}, 
+    {212.45312, 229.30453, 239.80255, 245.67926, 248.14825, 248.77155, 248.84537, 248.65048, 246.5646, 236.41876, 208.49725, 161.11871, 111.79254, 80.73367, 71.44241, 73.79138, 79.4758, 85.60614, 91.31973, 96.157074, 99.89853, 102.66708, 104.24069, 104.63245, 104.31247, 103.150085, 100.92337, 98.8103, 100.50043, 107.16464, 118.67822, 133.89572, 148.83652, 161.77441, 175.2443, 192.42145}, 
+    {201.63998, 218.34964, 232.1289, 242.17499, 247.17682, 248.69907, 248.96909, 248.97235, 248.47946, 244.62027, 229.37964, 194.47522, 145.11554, 100.26309, 77.84784, 75.14386, 80.68338, 87.83792, 94.53067, 100.028625, 104.12857, 107.144684, 109.138824, 110.21652, 110.406555, 108.74637, 103.950134, 97.35907, 94.592255, 98.433105, 108.246216, 121.991425, 136.81604, 151.23221, 166.08908, 182.99545}, 
+    {191.86249, 209.33023, 226.2604, 239.48691, 246.2857, 248.49197, 248.94403, 248.99731, 248.94019, 247.98688, 241.99054, 221.75015, 180.3583, 127.681915, 90.95514, 79.5318, 83.42108, 91.865326, 100.2818, 107.09866, 111.88971, 114.904236, 116.52472, 117.33353, 117.51453, 116.32895, 112.535706, 106.48062, 102.13812, 102.17239, 106.28775, 113.71109, 124.90277, 139.4715, 156.00635, 173.60165}, 
+    {182.02701, 201.28, 220.99295, 236.81503, 245.16089, 248.07645, 248.84357, 248.9848, 248.99576, 248.82059, 246.85889, 236.69101, 207.2879, 157.86713, 111.88913, 88.53897, 87.43677, 96.48038, 106.91174, 115.28705, 120.982056, 124.16379, 125.424286, 125.70938, 125.43494, 124.4971, 122.57663, 119.47757, 116.36099, 114.153015, 112.13855, 110.849976, 114.74811, 126.51242, 143.54959, 162.48657}, 
+    {169.3458, 191.27783, 214.03339, 232.90161, 243.13953, 246.97885, 248.43524, 248.8937, 248.98923, 248.97562, 248.46774, 244.42126, 228.18292, 191.76788, 144.44171, 107.40265, 96.46719, 104.267395, 116.71448, 126.54028, 132.7555, 135.82635, 136.61844, 136.26282, 135.29352, 133.95016, 132.57657, 131.11737, 129.2367, 126.5029, 121.24814, 113.39755, 108.929016, 114.39609, 128.74234, 147.86105}, 
+    {151.9555, 175.15317, 199.7836, 221.78937, 235.32205, 242.04556, 246.1547, 248.13293, 248.80945, 248.96188, 248.92819, 247.89148, 241.35443, 219.80444, 178.42706, 131.51273, 107.9346, 111.46042, 125.03436, 136.10638, 142.45877, 145.18665, 145.724, 145.32385, 144.41656, 143.08728, 141.7528, 140.61203, 139.16534, 136.80643, 131.4071, 121.18387, 110.35919, 107.35913, 114.779724, 130.62909}, 
+    {132.90527, 154.12497, 177.58041, 200.7985, 218.17407, 229.91046, 239.14899, 244.78207, 247.51266, 248.52036, 248.86288, 248.7378, 246.46005, 234.995, 203.43124, 154.95114, 119.49173, 114.94464, 127.773346, 140.24869, 147.16605, 149.93115, 150.61041, 150.5524, 150.08026, 149.03214, 147.68582, 146.29843, 144.66144, 142.71768, 138.94406, 130.79398, 119.04764, 109.59613, 107.60004, 115.80075}, 
+    {117.1615, 133.50247, 153.98224, 176.20682, 195.7406, 211.3428, 225.04681, 235.3305, 242.24042, 245.98315, 247.79172, 248.41092, 247.9639, 243.0145, 222.97406, 180.96375, 137.10168, 120.848145, 129.19476, 141.56305, 148.47086, 151.11224, 151.81519, 151.8161, 151.4867, 150.66666, 149.55197, 148.23935, 146.66379, 145.11212, 143.05408, 138.77182, 130.91254, 120.49393, 111.08737, 108.83447}, 
+    {108.09769, 117.72519, 134.95886, 154.80695, 173.62238, 189.41205, 203.88046, 217.26215, 229.2204, 237.83301, 243.05734, 245.45709, 246.49014, 245.5365, 234.85168, 203.85358, 160.47589, 135.41931, 136.74612, 145.70697, 150.27484, 151.68677, 151.99716, 151.89859, 151.66559, 151.13864, 150.46255, 149.61151, 148.51404, 147.3526, 146.21408, 144.44379, 140.76608, 133.41339, 121.86664, 110.707794}, 
+    {102.20709, 104.34918, 117.88202, 135.39877, 152.79715, 167.3584, 180.51425, 194.4538, 209.37122, 222.28891, 231.24445, 236.19263, 239.67493, 242.64395, 240.043, 223.52826, 192.65414, 168.16068, 162.58432, 163.58539, 161.7854, 159.9317, 159.18912, 158.86542, 158.64551, 158.29333, 157.90103, 157.27902, 156.10379, 154.35959, 152.4588, 149.95389, 146.50632, 140.7814, 129.6738, 113.66083}, 
+    {91.51404, 89.69165, 100.10104, 116.52185, 133.88602, 148.21655, 160.61343, 173.80377, 188.71579, 202.9722, 213.40546, 219.92029, 225.7392, 232.0224, 235.20218, 231.31741, 217.95615, 203.69553, 196.98343, 191.40231, 183.6503, 178.8082, 177.1756, 176.57736, 175.98569, 175.23477, 174.4123, 173.07236, 170.49786, 166.5369, 161.45834, 153.89642, 144.21146, 133.5499, 120.40634, 104.07208}, 
+    {72.0585, 71.325836, 80.72824, 97.11456, 115.05075, 129.9737, 143.15118, 156.17099, 169.94687, 183.79199, 194.5004, 201.80466, 208.42966, 215.32169, 220.16818, 221.90436, 219.25626, 214.38687, 210.64859, 205.31296, 198.7189, 195.53369, 195.42963, 195.92218, 195.77087, 195.09973, 194.06311, 192.0408, 188.06305, 181.6651, 172.26059, 156.9353, 136.08261, 114.26248, 95.10898, 79.99216}, 
+    {53.217987, 51.645935, 60.24173, 76.51611, 94.640686, 110.27591, 124.876495, 138.33081, 151.14725, 164.31174, 175.26575, 183.31766, 190.0466, 196.33325, 201.043, 204.05197, 205.03757, 204.44965, 203.19843, 200.45166, 197.26907, 196.64069, 198.44562, 200.79807, 202.15164, 202.57104, 202.36032, 201.14468, 198.07199, 192.19861, 182.01688, 163.78848, 137.15567, 108.07144, 82.61096, 63.162994}, 
+    {50.802826, 42.16449, 45.174255, 57.526886, 73.800354, 89.67172, 105.645966, 120.26898, 133.353, 146.0008, 156.46512, 164.2237, 170.01071, 174.7912, 178.41174, 181.14636, 183.12491, 184.24713, 184.315, 183.43741, 183.10272, 185.26901, 189.71643, 195.00702, 198.93857, 201.0485, 201.87817, 201.68826, 200.07697, 196.02676, 188.01859, 173.14001, 150.5899, 124.766266, 98.03491, 70.73749}, 
+    {57.14383, 40.910736, 36.39392, 42.388306, 54.964813, 69.92505, 86.16913, 101.55072, 115.11636, 126.83652, 135.69705, 141.95914, 146.04858, 148.80829, 150.65295, 152.4974, 155.04184, 157.10477, 157.11105, 156.28885, 158.28738, 165.20761, 175.78287, 187.76749, 196.83118, 201.69122, 203.76514, 204.46075, 204.08008, 201.91968, 196.4772, 185.25156, 167.14578, 145.36285, 118.791504, 85.68692}, 
+    {65.03363, 42.06595, 31.44754, 31.928925, 40.07422, 52.481903, 67.42859, 82.20276, 94.75256, 104.22516, 110.40729, 114.30356, 116.39621, 117.21234, 117.48251, 119.09985, 123.08832, 125.5054, 122.71622, 118.08243, 119.672424, 132.15982, 154.71222, 181.95703, 202.00739, 211.58557, 215.10925, 216.45364, 216.82123, 215.92865, 212.22888, 202.86115, 185.8417, 163.95758, 136.2862, 99.828705}, 
+    {81.318634, 51.14554, 33.924225, 28.424774, 31.211548, 39.83087, 52.840057, 66.56738, 77.51117, 84.73132, 88.648346, 90.68887, 91.6362, 91.80344, 92.30939, 95.964325, 102.88577, 104.90283, 96.75705, 84.07034, 78.98367, 91.314026, 125.718445, 173.97113, 210.60864, 226.94247, 231.73889, 233.06671, 233.4172, 232.78235, 229.77078, 221.54706, 205.3988, 183.50812, 156.70862, 120.52942}, 
+    {103.19357, 67.253845, 43.50882, 31.773407, 29.447449, 34.8584, 47.1102, 61.49643, 72.899536, 79.88461, 82.83557, 83.756226, 84.15317, 84.42453, 85.775604, 90.862, 98.386566, 98.415955, 86.500885, 68.513885, 55.808807, 60.94397, 96.25757, 156.74316, 208.39044, 234.18564, 242.33185, 244.08777, 244.23395, 243.53214, 241.03275, 234.52905, 221.18936, 201.8576, 178.04541, 144.40695}, 
+    {126.18573, 87.19678, 58.565796, 41.203156, 33.77951, 35.845367, 47.988037, 65.29117, 80.64078, 90.62335, 94.483, 95.06836, 94.93732, 94.6864, 94.73657, 96.40045, 98.47513, 94.31601, 82.01193, 65.16553, 50.24182, 47.378387, 71.73117, 126.6669, 184.84311, 223.64069, 241.53217, 247.21371, 248.26025, 247.95584, 246.5149, 242.44608, 233.11615, 217.98102, 197.8446, 167.25803}, 
+    {146.66275, 107.75363, 77.025116, 55.441467, 41.809113, 36.77353, 43.66165, 60.203064, 79.217316, 94.704346, 102.58212, 105.03488, 105.2056, 104.50531, 103.15805, 101.36694, 98.47598, 91.792145, 80.95856, 67.284485, 53.132263, 44.115814, 52.02054, 86.973114, 139.3432, 190.1839, 225.22296, 242.30048, 247.92188, 248.92227, 248.4273, 246.35706, 240.72473, 229.97147, 213.26181, 185.62366}, 
+    {163.6629, 127.08157, 96.529724, 72.772064, 54.04648, 41.111023, 38.70233, 48.261322, 65.82208, 85.17145, 98.81244, 106.10886, 108.84506, 108.99768, 107.50903, 104.59253, 99.945496, 92.875305, 83.39026, 71.90933, 59.170807, 47.448975, 42.780792, 55.107758, 89.377625, 139.6195, 189.47052, 224.55002, 242.05215, 247.9154, 248.85031, 247.89944, 244.65533, 237.26651, 223.39023, 198.85788}, 
+    {179.04306, 145.42578, 116.24509, 92.395874, 71.48172, 53.533875, 42.53232, 41.95578, 51.949524, 69.172, 86.12399, 99.11929, 106.63449, 109.70059, 109.7016, 107.43057, 102.90744, 96.21564, 87.53903, 77.25726, 65.80203, 54.0159, 43.98758, 41.191437, 53.99414, 88.11185, 137.90231, 187.77686, 223.63156, 241.82999, 247.90308, 248.64691, 246.99487, 242.08502, 230.97223, 209.98062}, 
+    {196.34369, 165.68756, 137.5333, 113.909454, 92.73279, 73.29324, 57.76248, 49.20337, 49.520264, 58.477203, 72.114685, 86.336975, 97.45859, 104.6423, 108.19153, 108.616486, 105.66376, 99.793365, 91.781006, 82.32236, 71.86322, 60.84207, 49.930603, 41.086304, 39.218872, 52.424133, 86.062744, 135.50842, 186.0857, 222.93976, 241.64157, 247.72144, 248.19934, 245.6637, 238.26779, 222.29202}, 
+    {214.43643, 188.72366, 162.23666, 138.3313, 116.74747, 96.93924, 79.66928, 66.66754, 59.20636, 57.99109, 63.007812, 72.29425, 82.974396, 93.25592, 101.56082, 106.84143, 107.23703, 102.96274, 95.74545, 86.97684, 77.2684, 67.03201, 56.65497, 46.793243, 38.994415, 37.815918, 50.860474, 84.17163, 134.11249, 185.71332, 223.1972, 241.76083, 247.4766, 247.5599, 243.78787, 233.6116}, 
+    {231.3057, 213.2709, 190.97931, 168.02106, 145.93073, 124.63638, 104.56607, 87.24823, 73.434784, 63.523438, 59.916687, 62.677185, 70.32831, 81.08139, 92.41376, 102.05441, 106.307434, 104.37244, 98.37912, 90.42239, 81.45517, 72.09567, 62.591034, 53.310455, 44.48822, 37.46884, 36.501495, 49.624695, 83.58362, 134.77835, 187.20096, 223.95993, 241.23367, 246.83893, 246.9595, 242.41412}, 
+    {242.51312, 232.7175, 217.67966, 199.6524, 180.19797, 159.01959, 136.53345, 115.079254, 96.45911, 81.2045, 72.14661, 69.650024, 72.716, 79.97873, 89.26178, 98.58365, 104.14285, 104.083374, 99.59573, 92.72693, 84.7063, 76.36951, 67.7016, 59.159332, 50.726044, 42.49597, 35.71933, 35.0632, 49.100952, 84.70596, 136.81503, 187.00491, 220.25931, 238.14334, 245.93494, 246.83838}, 
+    {247.14053, 243.26825, 235.09128, 223.67892, 210.07193, 193.67862, 174.16656, 153.48633, 134.63925, 119.07138, 108.614624, 102.34558, 99.26193, 98.94208, 100.37244, 103.09857, 105.31445, 104.85043, 101.15808, 95.35773, 88.42441, 80.994385, 72.7301, 64.5788, 56.521606, 48.30246, 40.086243, 33.460144, 33.553192, 48.950806, 84.3215, 130.90573, 174.30777, 210.40729, 235.07703, 245.77936}, 
+    {246.48804, 247.35553, 243.78305, 237.55429, 229.59442, 219.6193, 206.93484, 192.28558, 178.29095, 166.67169, 158.00235, 149.93512, 141.33588, 132.88754, 124.930115, 118.59445, 114.612885, 111.289185, 106.95572, 101.76767, 95.77463, 88.79468, 80.30173, 72.09622, 64.102875, 55.766632, 47.087128, 38.376343, 31.804382, 32.456635, 46.10681, 73.36734, 111.56271, 160.3255, 207.11868, 235.8711}, 
+    {238.15942, 245.89053, 245.83453, 242.99597, 238.96082, 233.69257, 226.45667, 217.182, 207.60376, 199.48178, 193.2898, 186.35907, 176.89465, 165.33331, 152.358, 139.99579, 131.17032, 125.104004, 119.79495, 115.00052, 109.93207, 103.551605, 95.16501, 87.05188, 78.94849, 70.04169, 60.4299, 50.289764, 41.07657, 35.390625, 35.814575, 44.488525, 66.62363, 109.830444, 166.14377, 213.03357}, 
+    {217.25632, 233.10706, 236.66348, 236.10248, 234.45554, 231.99005, 228.08722, 222.53998, 216.41302, 210.9953, 207.038, 202.5611, 195.61829, 185.89969, 173.48416, 160.1365, 149.73093, 142.40561, 136.39606, 131.72946, 127.610504, 122.91449, 116.61777, 110.23996, 103.07413, 94.250946, 84.17911, 73.61511, 64.13315, 57.366547, 53.588257, 52.88098, 60.075287, 84.72388, 129.64844, 180.51523}, 
+    {182.99915, 199.8483, 204.77881, 205.1857, 204.4479, 203.16373, 201.1222, 198.20471, 194.46365, 190.19504, 187.07602, 184.33527, 180.40683, 174.69131, 166.63123, 156.91278, 148.69122, 142.89725, 138.72229, 136.3117, 134.61826, 132.71365, 129.60828, 126.14578, 121.70062, 115.53824, 108.11508, 100.62372, 94.23227, 89.60925, 86.35098, 83.721436, 83.95163, 92.39578, 115.54816, 150.82193}};
+  float[][] len2 = {{71.86923, 67.82184, 66.35657, 66.276, 66.55075, 66.926544, 67.36456, 67.89441, 69.56036, 72.64279, 74.72449, 75.57242, 76.45233, 77.93643, 80.49271, 83.22238, 83.54257, 79.23767, 72.68063, 71.209625, 74.381195, 78.07056, 80.7312, 82.59787, 84.1886, 85.7337, 87.09018, 88.08267, 88.521515, 88.269714, 87.61905, 87.049774, 86.65222, 85.65497, 82.80249, 77.64932}, 
+    {74.080505, 69.91614, 67.63721, 67.25052, 67.5921, 68.20932, 69.09155, 70.73224, 75.32123, 83.25336, 89.5672, 92.539, 94.00101, 94.93118, 95.85687, 96.371216, 95.089325, 90.660736, 84.384125, 81.66135, 82.27246, 83.62506, 84.75107, 85.699036, 86.38913, 86.93854, 87.28467, 87.20715, 86.7189, 85.80478, 84.65106, 83.58365, 82.821655, 81.717865, 79.90402, 77.52908}, 
+    {68.070404, 62.949677, 59.517273, 58.38446, 58.159607, 58.248688, 58.71396, 60.536102, 66.80652, 78.52219, 89.55505, 96.13074, 99.3439, 100.06476, 99.60123, 98.64584, 97.03073, 94.54611, 91.35773, 89.46069, 88.68335, 88.22763, 87.82269, 87.56961, 87.20563, 86.80118, 86.30127, 85.458466, 84.31, 82.85736, 81.10849, 79.18875, 77.645355, 75.87744, 73.57413, 71.32385}, 
+    {68.38916, 65.38638, 63.330505, 62.62393, 62.36313, 62.293427, 62.386414, 63.288086, 67.65329, 77.41443, 88.75543, 97.56998, 102.81076, 103.58835, 101.634796, 98.97739, 96.40289, 94.25473, 92.33511, 90.857544, 89.741455, 88.99136, 88.52643, 88.35565, 88.10089, 87.74185, 87.276215, 86.62448, 85.511536, 83.77756, 81.26489, 78.10083, 75.545654, 73.424805, 71.33115, 69.871765}, 
+    {79.46048, 78.92874, 78.51193, 78.3956, 78.3905, 78.49921, 78.572815, 78.72629, 80.3219, 85.13757, 92.54669, 100.33801, 106.20627, 107.25171, 104.60251, 100.8139, 97.239685, 94.29541, 91.77432, 89.59488, 87.862335, 86.93652, 86.83151, 87.35202, 88.00238, 88.86279, 90.36923, 92.47064, 93.25079, 92.05206, 89.17908, 85.40399, 82.53677, 80.66318, 79.41861, 79.128876}, 
+    {95.79675, 96.63397, 97.19925, 97.55954, 97.85611, 98.0972, 98.273926, 98.39224, 98.84949, 100.38153, 103.557526, 107.97327, 111.88339, 112.273346, 109.31607, 104.80145, 100.137665, 95.84973, 91.9299, 88.49405, 85.700775, 83.96152, 83.41519, 83.85449, 84.95389, 87.4346, 92.80664, 100.55319, 105.456726, 105.77896, 102.94119, 99.11664, 96.29816, 94.651886, 94.06171, 94.56271}, 
+    {112.762085, 114.03082, 115.41193, 116.55377, 117.4433, 117.99951, 118.443665, 118.82773, 119.14618, 119.44336, 120.21472, 121.72867, 123.21329, 122.651, 119.45889, 114.1246, 107.84564, 101.49777, 95.50314, 90.222046, 85.72061, 82.29855, 80.23898, 79.464325, 79.91388, 82.837494, 90.5242, 102.22089, 110.931915, 114.326355, 114.34424, 113.555756, 112.62323, 111.66525, 111.33792, 111.750824}, 
+    {130.59286, 132.16727, 134.54382, 136.70306, 138.27899, 139.23941, 139.96753, 140.5636, 140.9266, 140.91516, 140.83707, 140.89648, 140.55981, 138.5459, 134.24121, 127.47864, 119.13327, 110.26425, 101.81088, 94.338104, 87.754486, 82.439514, 78.72397, 76.420135, 75.335144, 76.16989, 80.709015, 89.10986, 97.00302, 103.57883, 110.81259, 119.62839, 126.18408, 128.76862, 129.52826, 129.9263}, 
+    {150.03775, 153.01065, 156.84607, 160.1688, 162.31857, 163.53171, 164.31598, 164.8898, 165.2746, 165.35922, 165.32559, 165.00443, 163.42355, 159.37045, 152.61942, 143.39886, 132.57825, 120.84198, 109.47421, 99.25235, 89.98782, 82.69351, 77.59772, 73.97983, 71.329834, 69.64026, 69.76947, 72.47473, 76.47107, 83.07318, 95.813934, 115.4158, 133.15848, 142.42206, 145.97461, 147.98209}, 
+    {169.07242, 175.21371, 181.85233, 187.28595, 190.21124, 191.44809, 191.98996, 192.22595, 192.30789, 192.24918, 192.29312, 192.19128, 190.78168, 186.36777, 177.94199, 165.92877, 152.12692, 136.92007, 121.61078, 107.216125, 93.74176, 83.458405, 76.64502, 71.80798, 67.86798, 64.35611, 61.731842, 60.879974, 61.666565, 66.07736, 79.136536, 103.93204, 131.3884, 149.40332, 158.14651, 163.68939}, 
+    {182.99524, 192.50824, 202.72675, 211.45511, 215.76355, 216.97083, 217.12753, 216.98123, 216.69098, 216.28522, 216.10211, 216.08899, 215.44754, 212.12268, 203.28668, 188.39896, 170.80579, 151.79141, 132.29889, 113.41519, 95.74945, 82.53842, 74.15692, 68.68698, 64.46341, 60.454803, 56.709595, 53.964752, 52.373596, 53.72519, 62.84616, 85.25232, 116.78204, 144.22873, 162.20435, 173.80228}, 
+    {191.93677, 204.1391, 216.67584, 228.17603, 233.98941, 235.336, 235.26477, 234.98492, 234.60876, 234.07788, 233.74713, 233.66995, 233.35388, 230.81, 221.97156, 204.3537, 181.73215, 157.98953, 134.36835, 112.01245, 92.342285, 78.22073, 69.377655, 63.87802, 59.985107, 56.331482, 52.420105, 48.54883, 45.061615, 43.595978, 47.51587, 62.294678, 89.94745, 123.34393, 153.99881, 176.73727}, 
+    {196.8963, 213.88156, 226.31009, 237.2799, 243.15753, 244.70663, 244.77051, 244.56647, 244.22037, 243.70215, 243.28986, 242.99496, 242.58862, 240.81296, 233.76028, 216.53287, 190.46927, 161.93085, 133.9479, 108.06073, 86.61899, 72.055084, 63.096893, 57.64496, 54.080048, 50.998444, 47.530243, 43.457214, 39.1084, 35.972565, 36.055786, 42.71591, 60.60437, 91.27374, 130.75696, 168.8815}, 
+    {195.63437, 223.32626, 235.89288, 243.28635, 246.97095, 248.00473, 248.10693, 247.98755, 247.75421, 247.45065, 247.19217, 246.85123, 246.2944, 244.94095, 240.03482, 225.99411, 200.80942, 170.35306, 139.04214, 108.809906, 83.47754, 67.177246, 57.922424, 52.576508, 49.292725, 46.75824, 44.000153, 40.480957, 36.3515, 32.762665, 31.097565, 32.7341, 40.86798, 61.120605, 98.41864, 148.67111}, 
+    {187.83713, 226.6499, 241.98654, 246.86719, 248.45395, 248.87372, 248.93259, 248.8812, 248.77325, 248.65524, 248.52856, 248.25891, 247.81781, 247.052, 244.56857, 236.25177, 218.21399, 192.51065, 161.90698, 127.569275, 95.84372, 75.72464, 65.60947, 60.460968, 57.52957, 55.49536, 53.468018, 50.841156, 47.594208, 44.440277, 42.46472, 42.172363, 44.546295, 54.072205, 80.48953, 129.99362}, 
+    {185.95761, 224.73422, 242.98343, 248.11505, 249.06232, 249.19968, 249.21677, 249.20248, 249.16907, 249.12912, 249.04306, 248.82309, 248.49857, 248.09329, 247.1702, 244.01822, 235.8241, 221.51193, 200.13684, 170.24231, 138.89157, 118.62018, 109.19516, 104.97333, 102.76251, 101.33469, 100.03836, 98.42221, 96.42215, 94.407135, 93.08609, 92.61917, 92.902374, 95.75775, 108.44354, 140.2233}, 
+    {200.93335, 226.29236, 242.63275, 248.22662, 249.29169, 249.3822, 249.3764, 249.3718, 249.36545, 249.35593, 249.31686, 249.2023, 249.03268, 248.83069, 248.4495, 247.54071, 245.20795, 240.4412, 231.68646, 216.7157, 199.55356, 188.96143, 184.66263, 182.93661, 182.01852, 181.4082, 180.87149, 180.21283, 179.39786, 178.56888, 178.04456, 177.78064, 177.30203, 176.2573, 176.42435, 183.15784}, 
+    {225.95474, 237.17932, 246.00204, 248.92169, 249.31058, 249.2656, 249.2373, 249.2315, 249.23029, 249.22928, 249.22064, 249.18658, 249.12521, 249.02066, 248.74646, 248.22781, 247.38992, 246.07211, 243.9646, 239.86343, 234.90543, 232.40533, 231.78162, 231.63062, 231.499, 231.36688, 231.24811, 231.09506, 230.89359, 230.68298, 230.56454, 230.492, 230.2019, 229.13446, 226.79532, 224.15634}, 
+    {242.11786, 245.50232, 248.1601, 248.88904, 249.03766, 249.06082, 249.06491, 249.06528, 249.06284, 249.06296, 249.06232, 249.057, 249.04187, 248.98831, 248.75516, 248.07727, 246.61536, 244.69287, 243.5845, 242.80121, 242.45154, 243.18445, 244.29279, 245.35785, 245.9613, 246.16986, 246.27856, 246.34955, 246.34833, 246.31854, 246.30432, 246.29636, 246.23022, 245.91882, 245.0267, 243.25266}, 
+    {247.5286, 247.91208, 247.91339, 247.88959, 248.34076, 248.69699, 248.83994, 248.85938, 248.81696, 248.8068, 248.80966, 248.81131, 248.80786, 248.75873, 248.3706, 246.47162, 241.33429, 234.69196, 231.25296, 230.26044, 230.95319, 233.46252, 237.33728, 242.11383, 245.5373, 247.11157, 247.94427, 248.53073, 248.75629, 248.79343, 248.79541, 248.79541, 248.78912, 248.74277, 248.59183, 248.17206}, 
+    {248.54254, 247.89072, 246.66861, 245.88528, 246.40793, 247.09827, 247.30142, 247.08109, 246.6207, 246.42566, 246.42908, 246.4566, 246.46848, 246.30853, 244.79706, 238.00409, 222.16852, 204.24683, 195.41623, 193.341, 194.47021, 199.3016, 209.37329, 223.92032, 235.80957, 242.10483, 245.45087, 247.71967, 248.73032, 248.97089, 249.00235, 249.00443, 249.00485, 249.001, 248.97995, 248.8906}, 
+    {248.77554, 247.89206, 245.95242, 243.83188, 242.87787, 241.9154, 239.74908, 236.69696, 233.53851, 231.92276, 231.69534, 231.84732, 231.96082, 231.42636, 227.1643, 211.65839, 181.41632, 152.16592, 139.85504, 138.38257, 140.22742, 146.9477, 164.21786, 191.95721, 216.99023, 231.78589, 239.94962, 245.42007, 248.08514, 248.86475, 249.02267, 249.04947, 249.06076, 249.0635, 249.05203, 249.01111}, 
+    {248.97095, 248.43814, 246.72018, 243.5347, 239.09695, 231.6448, 219.76022, 205.64325, 192.76852, 185.31467, 183.37628, 183.64279, 184.17508, 183.74466, 178.58383, 161.11963, 130.95511, 107.378174, 102.463104, 106.30881, 110.04199, 116.122345, 133.59879, 165.42145, 197.8489, 219.87634, 233.11789, 241.99713, 246.59412, 248.24533, 248.78497, 248.97604, 249.09494, 249.14328, 249.10776, 249.0574}, 
+    {248.30658, 248.08936, 247.09738, 244.01547, 237.05362, 222.43787, 197.28958, 165.64996, 135.44766, 115.20981, 107.72357, 106.964264, 108.12402, 109.27728, 108.296814, 100.90613, 87.63861, 81.37869, 86.80969, 95.909485, 102.45587, 107.926056, 120.541504, 146.38797, 178.02463, 204.91931, 223.64816, 235.896, 242.34207, 245.25467, 246.76212, 247.62433, 248.29037, 248.65619, 248.62366, 248.42303}, 
+    {244.59137, 243.90192, 243.09451, 241.11932, 236.50192, 224.8516, 200.12338, 162.949, 121.19586, 86.91785, 69.83667, 64.72592, 64.80481, 66.517395, 68.51138, 69.47128, 69.58249, 73.98248, 83.42746, 94.1676, 102.806946, 108.81497, 116.57773, 132.5907, 157.38834, 185.2037, 208.62991, 224.28006, 232.53128, 236.82635, 239.78073, 242.0498, 244.13058, 245.55405, 245.84048, 245.29453}, 
+    {234.79419, 232.05093, 230.07312, 228.79321, 228.30475, 225.5503, 212.88971, 185.5763, 145.97278, 104.77875, 77.532074, 63.771484, 59.028137, 58.91565, 60.97818, 64.403625, 69.03613, 76.09186, 85.533844, 96.1449, 106.17136, 114.00665, 120.18689, 128.56924, 143.6293, 165.88953, 189.3735, 207.23087, 217.32846, 222.69208, 226.60818, 230.04959, 233.66919, 236.67587, 237.85312, 236.98871}, 
+    {216.767, 210.41565, 205.82343, 204.40216, 207.06473, 211.88037, 211.98999, 200.6889, 175.12738, 140.0412, 108.91287, 85.78842, 72.58591, 67.21329, 66.572815, 68.98584, 73.78064, 80.673004, 89.434875, 99.553925, 110.0238, 119.16522, 125.69806, 130.6753, 137.77582, 150.82227, 168.68512, 185.76904, 197.62668, 204.55869, 209.07843, 212.48862, 216.17267, 219.88269, 221.94635, 221.03558}, 
+    {192.655, 183.1352, 175.71936, 173.02783, 176.06146, 183.4408, 190.22491, 191.18402, 182.47885, 163.54486, 139.84732, 115.52661, 96.68274, 84.75171, 78.49423, 76.80737, 79.43277, 85.324585, 93.39105, 102.83362, 112.771454, 121.69653, 128.27997, 132.52704, 135.90588, 141.54355, 151.2792, 163.48111, 174.60883, 182.6441, 187.81009, 190.9273, 194.00516, 197.52628, 199.75598, 198.65305}, 
+    {168.33191, 158.58365, 150.23907, 145.85419, 146.32333, 151.24954, 158.29248, 164.48538, 167.58017, 165.3255, 156.00134, 140.71295, 124.30957, 109.25952, 96.81189, 88.37009, 86.370575, 90.17404, 97.28723, 105.866, 114.82056, 122.83157, 128.98871, 133.2655, 136.00064, 138.49509, 142.37915, 148.48535, 155.76569, 162.25879, 166.67908, 169.11847, 171.54633, 174.42462, 176.03348, 174.51831}, 
+    {145.87302, 137.62311, 129.22842, 123.22058, 120.87549, 122.92474, 128.96301, 137.19757, 146.79648, 155.79779, 158.63348, 153.96356, 144.10126, 130.55652, 115.132965, 101.001526, 93.744446, 94.43729, 99.91574, 107.16165, 114.83011, 121.90756, 127.75369, 132.1517, 135.258, 137.44464, 139.24728, 141.63156, 144.58734, 147.1449, 148.31534, 148.4408, 149.37677, 151.02869, 151.93546, 150.69064}, 
+    {124.567535, 117.77365, 109.2113, 101.523254, 96.43729, 95.69989, 100.173065, 108.49527, 119.9194, 132.87656, 141.17044, 143.07272, 139.74268, 131.66351, 119.73309, 106.64505, 98.30011, 97.089935, 100.82825, 106.47061, 112.779236, 119.05783, 124.73648, 129.15103, 132.4949, 135.02493, 136.86667, 138.52936, 139.44324, 138.7312, 135.96716, 132.41547, 130.32101, 129.24146, 128.61829, 127.6832}, 
+    {104.347595, 98.89795, 90.82315, 82.70917, 75.71762, 71.41443, 71.491, 75.75461, 83.40045, 93.20108, 100.69089, 105.15039, 107.35318, 107.1846, 104.61679, 100.26926, 97.09155, 97.22662, 100.404755, 104.86124, 109.99472, 115.42456, 120.6048, 124.522766, 127.44266, 129.7851, 131.82349, 134.00162, 135.14313, 134.05322, 130.1449, 124.46298, 118.74515, 112.652374, 108.026825, 106.104614}, 
+    {84.40982, 79.66574, 72.67514, 65.754, 59.14633, 53.153137, 48.996582, 47.49939, 48.700104, 52.398376, 56.587006, 61.488922, 67.392, 73.74536, 80.29013, 85.8569, 89.96338, 93.60663, 97.73306, 101.85803, 106.220184, 110.96222, 115.72592, 119.2626, 121.7796, 123.79971, 125.76813, 128.2818, 130.155, 130.33832, 128.13855, 123.43329, 115.87091, 104.4545, 93.19473, 86.95688}, 
+    {66.37924, 60.460724, 54.66504, 49.70276, 44.998047, 40.101715, 35.46527, 31.961517, 30.177246, 30.479187, 32.25403, 36.089386, 42.207886, 50.282257, 60.665344, 71.46701, 79.918945, 85.89447, 90.70087, 94.70029, 98.46112, 102.44217, 106.65427, 109.9064, 112.34628, 114.50882, 116.815704, 119.772125, 122.300476, 123.60251, 123.384, 121.28259, 115.52646, 103.44348, 87.33963, 73.93796}, 
+    {55.926514, 47.793427, 43.105896, 40.202362, 37.64505, 34.937958, 32.250793, 30.013306, 28.67984, 28.527435, 29.246338, 31.399597, 35.419373, 41.473877, 50.584167, 61.133453, 69.66022, 75.147644, 79.00693, 82.96527, 87.02539, 90.6944, 94.0661, 96.61749, 98.783966, 101.078766, 103.7363, 106.939026, 109.72189, 111.4332, 112.175446, 112.04785, 109.59421, 101.62036, 86.73117, 69.23111}, 
+    {59.438477, 52.00345, 48.84369, 47.663696, 46.887238, 46.111786, 45.371246, 44.720306, 44.601044, 45.22586, 45.790802, 46.62735, 48.441895, 51.66278, 57.2865, 64.24631, 69.363464, 70.66928, 70.009094, 72.1864, 76.65201, 80.66763, 83.58438, 85.61264, 87.48859, 89.56119, 91.759094, 93.98624, 95.657104, 96.43698, 96.6626, 96.75745, 96.19882, 93.00943, 84.60666, 71.60504}};
+  float[][] angleRange = {{3.1415927, 0.34317446, 0.17507637, 0.115835845, 0.08525011, 0.06661703, 0.053784907, 0.04445395, 0.037038445, 0.03107223, 0.026115954, 0.021792918, 0.0180417, 0.014473528, 0.011235803, 0.008333981, 0.005541384, 0.002750516, 8.047252E-5, 0.0055398084, 0.0064638853, 0.008799955, 0.011765346, 0.015011489, 0.018511996, 0.022336453, 0.02668783, 0.031758234, 0.037703767, 0.045106947, 0.054752037, 0.06815776, 0.08707687, 0.118173815, 0.17879826, 0.34897742}, 
+    {0.20249744, 0.45399874, 1.04498, 0.27837107, 0.15188819, 0.10294053, 0.075784475, 0.060246855, 0.048940927, 0.03924066, 0.032958418, 0.027808398, 0.023191005, 0.019317895, 0.015712345, 0.012433678, 0.009725988, 0.006956518, 0.0045368997, 0.0027407221, 2.9237848E-4, 0.0051049488, 0.0077534337, 0.010103881, 0.013110034, 0.016425766, 0.019930974, 0.02403196, 0.02865088, 0.03404192, 0.04053901, 0.048198614, 0.058447175, 0.07297158, 0.09395737, 0.12783802}, 
+    {0.07806021, 0.04159892, 0.049494836, 0.059695207, 0.07402848, 0.094890654, 0.13104862, 0.20269062, 0.39272907, 0.05381745, 0.043403864, 0.035976946, 0.030026495, 0.02537018, 0.021284401, 0.01759836, 0.014649726, 0.011751488, 0.008930333, 0.006837707, 0.0054856986, 0.004440367, 2.5755167E-4, 0.0043071965, 0.007983336, 0.01148304, 0.014690151, 0.018227832, 0.021137442, 0.024816139, 0.028741388, 0.033519655, 0.039607823, 0.046986148, 0.05030091, 0.061836153}, 
+    {0.035129175, 0.031033313, 0.03697367, 0.044515043, 0.054790303, 0.069194406, 0.091141194, 0.12953803, 0.21574616, 0.55477726, 0.0534876, 0.043049604, 0.035259098, 0.030290514, 0.026105642, 0.0226167, 0.019491032, 0.01663771, 0.013817728, 0.011271015, 0.009505585, 0.008243009, 0.0071566403, 0.004368156, 3.3038855E-4, 0.0038395477, 0.006714139, 0.010074727, 0.012317404, 0.014985479, 0.018297736, 0.018743988, 0.019222334, 0.022964403, 0.025801811, 0.024028072}, 
+    {0.020098034, 0.02425309, 0.029196326, 0.035377152, 0.043390095, 0.054061595, 0.06982444, 0.09470081, 0.14047444, 0.25295985, 0.8360989, 0.075262606, 0.043199882, 0.03701298, 0.03210221, 0.027811399, 0.024090197, 0.020877093, 0.018147483, 0.01606454, 0.014261305, 0.012619585, 0.01129511, 0.010052174, 0.008940607, 0.004119586, 3.6013126E-4, 0.0026357882, 0.0057357214, 0.008513704, 0.011383027, 0.012755685, 0.01483147, 0.017044898, 0.020313414, 0.023944214}, 
+    {0.017951895, 0.01899993, 0.023036612, 0.028271701, 0.03493077, 0.043680716, 0.05607748, 0.075350046, 0.10653925, 0.16745305, 0.3455615, 0.10559309, 0.05330453, 0.04542397, 0.03911808, 0.034251466, 0.029998407, 0.02643533, 0.02371496, 0.021059394, 0.019263148, 0.017554939, 0.015936077, 0.014543802, 0.013252497, 0.011861235, 0.007872447, 0.0033795089, 4.645586E-4, 0.0028134845, 0.005487889, 0.0071942257, 0.00931556, 0.011835985, 0.014350989, 0.016534217}, 
+    {0.013586624, 0.016871057, 0.020382281, 0.023188593, 0.028405474, 0.03664255, 0.047707558, 0.062892556, 0.08576727, 0.12502408, 0.2111913, 0.55614626, 0.1041789, 0.054528683, 0.046485364, 0.040382862, 0.035473645, 0.031576753, 0.028449297, 0.025994003, 0.023977965, 0.022195816, 0.020374417, 0.019000739, 0.017741382, 0.01655823, 0.015478641, 0.0065826625, 0.0033989, 0.002343716, 0.0032698512, 0.0027808119, 0.0047931494, 0.0069290437, 0.009170882, 0.011643438}, 
+    {0.00984359, 0.012309848, 0.014914852, 0.018241819, 0.023710132, 0.031338573, 0.040864825, 0.053326488, 0.07135522, 0.09970987, 0.15285897, 0.28954756, 1.2898921, 0.079815686, 0.0558483, 0.048084855, 0.042012095, 0.0373106, 0.033739388, 0.030943036, 0.029243588, 0.027125418, 0.025672615, 0.024309874, 0.022755861, 0.02147907, 0.02016455, 0.01896298, 0.014795572, 0.009149313, 0.005002871, 0.0026524067, 0.0011429787, 0.002972193, 0.0050669312, 0.007218047}, 
+    {0.006054187, 0.010450959, 0.011316986, 0.01581788, 0.020096064, 0.02699852, 0.035431862, 0.046185017, 0.060516477, 0.08210385, 0.11786091, 0.19341981, 0.4615357, 0.14126629, 0.06819072, 0.05767283, 0.050234735, 0.04479158, 0.04055816, 0.037459433, 0.035072744, 0.03315264, 0.03160292, 0.029908419, 0.028484762, 0.027106285, 0.02567774, 0.024401426, 0.023272932, 0.020528316, 0.017115057, 0.0072350204, 0.0048320293, 0.002876848, 0.0016300082, 0.0036255661}, 
+    {0.0029106755, 0.00516963, 0.007629037, 0.010582805, 0.016224384, 0.022609591, 0.030220151, 0.03961253, 0.051770568, 0.06889057, 0.09549546, 0.14386821, 0.26614237, 1.0249256, 0.11018449, 0.071024, 0.06080717, 0.0534482, 0.048338532, 0.044835865, 0.042138517, 0.0401721, 0.03882563, 0.036946476, 0.03519559, 0.033225298, 0.0316602, 0.030399263, 0.02922839, 0.028152049, 0.02464515, 0.016810298, 0.008885294, 0.006712258, 0.0049300194, 0.003605783}, 
+    {0.0058906674, 0.0059924126, 0.005750954, 0.007705299, 0.012992024, 0.019045472, 0.02602911, 0.034397006, 0.044910908, 0.05905676, 0.07955909, 0.113533735, 0.18305087, 0.41513288, 0.93786365, 0.09881997, 0.07563698, 0.06570506, 0.059041977, 0.06026554, 0.050775886, 0.04835975, 0.046477675, 0.04493016, 0.043374836, 0.041385412, 0.039251447, 0.037700236, 0.036279738, 0.035025835, 0.03374207, 0.029969752, 0.014881551, 0.011455268, 0.009129137, 0.007374078}, 
+    {0.00960201, 0.008280575, 0.008322597, 0.008010447, 0.0114353895, 0.016800046, 0.02228105, 0.029905677, 0.039112568, 0.05105567, 0.0676465, 0.09305644, 0.1387198, 0.24987817, 0.87741214, 0.12714928, 0.09155846, 0.07788807, 0.06939256, 0.064376116, 0.060656786, 0.058158398, 0.056181073, 0.054549456, 0.053002477, 0.051339865, 0.04879892, 0.04677415, 0.0445655, 0.04331118, 0.04202634, 0.04077393, 0.035317063, 0.017464638, 0.014415324, 0.011706114}, 
+    {0.014159381, 0.012429595, 0.014422387, 0.0112371445, 0.013774455, 0.017413616, 0.019105434, 0.025985718, 0.034244776, 0.044590235, 0.058346033, 0.07814288, 0.11081004, 0.17612624, 0.38081384, 1.1062013, 0.122559845, 0.096334696, 0.08473873, 0.07765329, 0.07347846, 0.070409775, 0.06847525, 0.06660211, 0.065330386, 0.0633688, 0.06104338, 0.05834639, 0.055706143, 0.05366683, 0.05236101, 0.05095589, 0.049461484, 0.045366526, 0.019169569, 0.015556991}, 
+    {0.017326415, 0.015041411, 0.014559925, 0.015036881, 0.016379595, 0.0198614, 0.023334801, 0.0271613, 0.030291557, 0.039343834, 0.05103445, 0.06720948, 0.09183502, 0.13533163, 0.23711109, 0.74582815, 0.17010278, 0.12067616, 0.103515625, 0.09497154, 0.08985734, 0.08672345, 0.08426201, 0.0825876, 0.0810529, 0.07921207, 0.07684612, 0.07379842, 0.070666075, 0.06796563, 0.06622839, 0.06476188, 0.06317568, 0.059967637, 0.055547714, 0.022032738}, 
+    {0.019989252, 0.019013941, 0.018219113, 0.018121779, 0.020709038, 0.0236969, 0.028377712, 0.03146285, 0.035446465, 0.040397465, 0.045086563, 0.058564425, 0.07787967, 0.109414816, 0.17152262, 0.36015677, 1.2105843, 0.16297805, 0.13322997, 0.120461345, 0.11367822, 0.10997796, 0.10774386, 0.10613513, 0.103963494, 0.102742195, 0.10070121, 0.09695232, 0.09326494, 0.089276075, 0.08611059, 0.08435285, 0.0826534, 0.08107853, 0.07844436, 0.070310116}, 
+    {0.02596718, 0.023970008, 0.022929728, 0.0236063, 0.023341537, 0.027189493, 0.03161341, 0.03701693, 0.04142475, 0.045687556, 0.052680492, 0.06026721, 0.06941235, 0.091154575, 0.13309622, 0.22965932, 0.6674998, 0.53079593, 0.2084322, 0.24124992, 0.15342069, 0.14925575, 0.14609396, 0.14387083, 0.14276981, 0.14035344, 0.13799477, 0.13423133, 0.12991488, 0.12387216, 0.12047899, 0.117734194, 0.11499548, 0.112027526, 0.109101534, 0.10163236}, 
+    {0.14530909, 0.030637681, 0.028784037, 0.028340757, 0.02788949, 0.03150636, 0.036149442, 0.040819883, 0.046219826, 0.052512527, 0.06009519, 0.06915474, 0.07999694, 0.09348786, 0.11128771, 0.17202199, 0.35952222, 1.2855586, 0.318277, 0.5475675, 1.2932343, 0.7485844, 0.37476873, 0.24536192, 0.1810925, 0.14359641, 0.11830044, 0.10176289, 0.09137613, 0.08369226, 0.08707609, 0.09264294, 0.107919335, 0.25793064, 0.25316167, 0.05058396}, 
+    {0.058125496, 0.040618718, 0.036763668, 0.03499943, 0.034555376, 0.03711641, 0.041074038, 0.047403276, 0.055462062, 0.061272502, 0.07041347, 0.08189416, 0.09539223, 0.11242139, 0.13692296, 0.17268789, 0.22916162, 0.6615623, 0.59170103, 1.5059816, 0.6756207, 0.3613063, 0.23940277, 0.17680621, 0.13908577, 0.11326492, 0.094968915, 0.0819211, 0.07280755, 0.06699157, 0.06656892, 0.06733386, 0.07057202, 0.062648535, 0.083299994, 0.4882568}, 
+    {3.1415927, 0.06921506, 0.048671603, 0.044528127, 0.043007433, 0.045579314, 0.04843831, 0.053844213, 0.06309986, 0.07149911, 0.08288813, 0.096858144, 0.116675496, 0.14258409, 0.18020928, 0.24053693, 0.3570794, 0.6471132, 3.1415927, 0.647099, 0.3570752, 0.24052429, 0.17757416, 0.13886213, 0.11290109, 0.09392583, 0.07963896, 0.06853235, 0.06015396, 0.054005146, 0.049421787, 0.048058152, 0.049265027, 0.05765295, 0.07665789, 0.1241349}, 
+    {0.0869385, 0.51684046, 0.08330536, 0.058779597, 0.054803252, 0.055093408, 0.0564934, 0.06385815, 0.07270706, 0.08313203, 0.09866321, 0.117550254, 0.14522326, 0.18444419, 0.25318527, 0.37518394, 0.70734555, 1.5211469, 0.61134017, 0.7166773, 0.24088287, 0.18131745, 0.14342868, 0.11391771, 0.095436335, 0.08050573, 0.06882298, 0.059396744, 0.051692367, 0.045544386, 0.04102254, 0.038785577, 0.03588891, 0.039863348, 0.05029452, 0.052125096}, 
+    {0.035199642, 0.05093074, 0.24384785, 0.10364449, 0.07276237, 0.06897652, 0.070370674, 0.07870996, 0.086690426, 0.10366285, 0.12535334, 0.15651369, 0.20306098, 0.28040767, 0.43202758, 0.78787816, 1.4227107, 0.6660888, 0.39292228, 0.6602556, 0.5388112, 0.18667412, 0.11936283, 0.10008788, 0.081312895, 0.06908178, 0.059598565, 0.05155623, 0.04493451, 0.03942454, 0.035191774, 0.03266406, 0.029439926, 0.030414462, 0.03392279, 0.031397343}, 
+    {0.026650548, 0.031052113, 0.045012355, 0.14347684, 0.13767457, 0.09454322, 0.09209657, 0.094346404, 0.110260844, 0.13267434, 0.16860867, 0.22068477, 0.3051859, 0.4744773, 0.8529308, 1.4231883, 0.7479495, 0.16113305, 0.18098557, 0.24607635, 0.59947395, 0.80280054, 0.19840622, 0.09867358, 0.06901789, 0.059827328, 0.05177605, 0.04458511, 0.039042473, 0.034343004, 0.030451417, 0.02776277, 0.02616775, 0.022658706, 0.025840044, 0.029593945}, 
+    {0.02137196, 0.021871865, 0.025914192, 0.039612412, 0.10697627, 1.4833164, 0.12820637, 0.1277827, 0.15209639, 0.17805994, 0.23554373, 0.3390665, 0.5256461, 0.95563745, 1.4729949, 0.79234684, 0.113625646, 0.11996353, 0.13254523, 0.16076112, 0.23006248, 0.47391415, 0.97227645, 0.12345815, 0.07933617, 0.05958104, 0.045936942, 0.039301157, 0.03420937, 0.029726982, 0.025949478, 0.022845685, 0.02012539, 0.01864624, 0.01986134, 0.020683765}, 
+    {0.016403556, 0.01655358, 0.018248081, 0.021540284, 0.035192728, 0.08663404, 0.08278167, 0.0886662, 0.07162368, 0.074768186, 0.07796323, 0.08078408, 0.08246386, 0.08387804, 0.0858134, 0.08813727, 0.091578126, 0.09702146, 0.106663585, 0.122859, 0.15439254, 0.22468483, 0.49364966, 0.19263625, 0.09450269, 0.06803274, 0.051736116, 0.039239883, 0.030217886, 0.025947154, 0.022091448, 0.018869162, 0.016545951, 0.013785541, 0.0149870515, 0.017526746}, 
+    {0.011783659, 0.0126799345, 0.013494432, 0.015474021, 0.022962093, 0.031861186, 0.071633756, 0.06820357, 0.06684661, 0.05850941, 0.060957313, 0.06362152, 0.065612555, 0.067564905, 0.06936365, 0.07167959, 0.07459217, 0.07914549, 0.0861094, 0.09658283, 0.11591679, 0.15056801, 0.22360295, 0.5227304, 0.16607594, 0.08003163, 0.059139967, 0.04502821, 0.03450322, 0.02611947, 0.019078314, 0.015675426, 0.0128214955, 0.010604203, 0.011277676, 0.0134289265}, 
+    {0.010135353, 0.009390533, 0.010185003, 0.011837482, 0.014211789, 0.016600192, 0.028018653, 0.05219233, 0.05893308, 0.048127532, 0.048928857, 0.05106294, 0.05329603, 0.054915488, 0.056778193, 0.058849692, 0.06147933, 0.065209985, 0.07056463, 0.07846749, 0.09093177, 0.1108613, 0.1452865, 0.21730196, 0.530195, 0.13866901, 0.06815076, 0.051538944, 0.03949523, 0.030269384, 0.022584915, 0.016126513, 0.010559082, 0.0074700117, 0.008045912, 0.008926868}, 
+    {0.0060460567, 0.0069180727, 0.007756561, 0.009300768, 0.010437965, 0.012210369, 0.014809623, 0.024493098, 0.047873735, 0.044138968, 0.046696484, 0.041122973, 0.04316348, 0.044896364, 0.04662615, 0.0484311, 0.050852835, 0.05407238, 0.05817145, 0.06448156, 0.07342464, 0.08676016, 0.10756022, 0.14312991, 0.21359017, 0.5377933, 0.12660587, 0.058959484, 0.044926405, 0.03440225, 0.025981307, 0.01900816, 0.012952805, 0.0075838575, 0.0053295586, 0.0058524013}, 
+    {0.0048949514, 0.0037064552, 0.00498569, 0.006861776, 0.009084344, 0.009537205, 0.011069775, 0.014930129, 0.023091853, 0.036675155, 0.042061448, 0.038211107, 0.037322164, 0.036827087, 0.038543224, 0.040376365, 0.042467415, 0.045197904, 0.048936903, 0.053791523, 0.060628593, 0.07024974, 0.08447939, 0.105544, 0.14139345, 0.21548702, 0.54289734, 0.12592125, 0.052181363, 0.0400095, 0.03037858, 0.022780776, 0.016290665, 0.01051712, 0.0077416543, 0.005666828}, 
+    {0.0060396064, 0.0039026365, 0.001632452, 0.0030056238, 0.004731089, 0.007257104, 0.009917617, 0.012537628, 0.016923517, 0.02233553, 0.02752006, 0.032682776, 0.03376901, 0.03452617, 0.032832444, 0.03316635, 0.035128415, 0.03750056, 0.040658236, 0.04483056, 0.05033493, 0.057739228, 0.067944676, 0.08253002, 0.10390569, 0.1400965, 0.21397932, 0.5390967, 0.12249529, 0.04588616, 0.03504026, 0.0265584, 0.019593, 0.0135614425, 0.010493334, 0.008069322}, 
+    {0.00854669, 0.00670377, 0.004953945, 0.0029472578, 9.90971E-4, 0.0025456548, 0.004875377, 0.007565111, 0.010316312, 0.012070626, 0.018086791, 0.023833573, 0.030434787, 0.0301646, 0.03265643, 0.028467, 0.02880919, 0.031044066, 0.033910096, 0.03740576, 0.04208544, 0.048079252, 0.055879176, 0.066479415, 0.08086358, 0.10265564, 0.1371193, 0.21221147, 0.5324662, 0.116254926, 0.040605903, 0.031077862, 0.023300529, 0.017710755, 0.014006672, 0.010998419}, 
+    {0.011630884, 0.0090713315, 0.00792544, 0.0071866307, 0.0061535724, 0.003710432, 7.57426E-4, 0.0025282502, 0.005462557, 0.0058318377, 0.0088587105, 0.014712721, 0.019500107, 0.0242998, 0.025736153, 0.02394861, 0.023327202, 0.025422186, 0.027894616, 0.031451017, 0.035155147, 0.040050954, 0.04627092, 0.054155782, 0.0647804, 0.079288386, 0.10035504, 0.13359472, 0.20816354, 0.5073881, 0.10003936, 0.036299825, 0.027985383, 0.022382155, 0.018104952, 0.014563876}, 
+    {0.015538794, 0.012535557, 0.010135467, 0.009074927, 0.008024991, 0.006864301, 0.0053432966, 0.0022174735, 0.0024264157, 0.0030904599, 0.0065193847, 0.010426164, 0.013218284, 0.014761955, 0.016972631, 0.018957824, 0.02012834, 0.02023375, 0.022651851, 0.025597125, 0.029028744, 0.034104496, 0.038315963, 0.04484743, 0.052675933, 0.06295486, 0.076958165, 0.096606806, 0.12875775, 0.20407143, 0.4842779, 0.09372938, 0.03455295, 0.028006313, 0.022875099, 0.018827435}, 
+    {0.020813502, 0.016817883, 0.013480544, 0.011642869, 0.010425459, 0.009019339, 0.007401861, 0.005692765, 0.00562948, 0.011181831, 0.011431694, 0.010927796, 0.010432959, 0.010511398, 0.011152625, 0.0123104155, 0.013706118, 0.015863687, 0.017578721, 0.020738423, 0.023533024, 0.027151003, 0.031524524, 0.036849502, 0.04296717, 0.0507458, 0.060691684, 0.07391444, 0.093128145, 0.12470099, 0.1985212, 0.45126736, 0.90064746, 0.047192097, 0.029084608, 0.023988478}, 
+    {0.027359625, 0.022677306, 0.018300358, 0.015623586, 0.013496692, 0.011807404, 0.00989724, 0.008012297, 0.00593012, 0.004002746, 0.009032309, 0.008989155, 0.008519471, 0.0106268525, 0.008395255, 0.008238494, 0.00939557, 0.010981113, 0.013421521, 0.016313791, 0.0197187, 0.023713177, 0.025702614, 0.030077089, 0.0351374, 0.04110092, 0.048612148, 0.05806017, 0.07097691, 0.08970904, 0.122712076, 0.19316143, 0.42406785, 1.0030005, 0.038481038, 0.030751467}, 
+    {0.036114573, 0.029960822, 0.025543641, 0.022093266, 0.01888667, 0.016312608, 0.014319999, 0.012074966, 0.010289833, 0.0088347, 0.010767758, 0.0102549195, 0.009858429, 0.009845912, 0.009528935, 0.0058336854, 0.007873386, 0.010243893, 0.011045724, 0.013739433, 0.016340638, 0.019866206, 0.022951558, 0.027517825, 0.032126218, 0.03608343, 0.04290968, 0.04863906, 0.056789577, 0.06915802, 0.089683056, 0.119609445, 0.18592271, 0.39452767, 1.187026, 0.05001222}, 
+    {0.05941227, 0.051505666, 0.044650204, 0.03928653, 0.034833893, 0.031521823, 0.027887816, 0.025103528, 0.022314802, 0.019307397, 0.017388105, 0.014947593, 0.012376308, 0.010608375, 0.008648694, 0.0058500767, 0.0045294464, 0.006669879, 0.006624125, 0.009246109, 0.011593498, 0.014809541, 0.018217087, 0.022107244, 0.026192069, 0.03126517, 0.035708457, 0.042519093, 0.05125901, 0.06276795, 0.07938555, 0.10318616, 0.1477513, 0.25093687, 0.7519168, 0.53411996}};
+  float[][] arcLen = {{296.33588, 297.5991, 298.10956, 298.10233, 299.03143, 297.76965, 296.3464, 292.93283, 288.81927, 284.71045, 280.00867, 274.6856, 269.28815, 264.7823, 260.20773, 256.02798, 252.78201, 250.72256, 250.0, 250.18079, 251.37666, 253.61613, 256.42264, 259.6861, 263.62195, 268.92487, 272.70755, 276.32834, 280.9608, 282.99866, 284.66663, 282.5166, 283.31085, 283.56082, 283.25104, 284.13715}, 
+    {284.76276, 283.57812, 282.68857, 283.03842, 282.83826, 282.38202, 284.43558, 282.7951, 282.23868, 285.9192, 282.08823, 277.4202, 273.5055, 268.6558, 264.49805, 260.1838, 255.70232, 252.71179, 250.99248, 250.69174, 251.28645, 253.07637, 256.15814, 260.87485, 265.31024, 270.10214, 275.34027, 280.06754, 283.47882, 287.21512, 289.3826, 292.47833, 295.28333, 294.9562, 293.8355, 295.06604}, 
+    {298.685, 290.53348, 288.64676, 287.706, 285.07077, 282.21487, 278.75772, 275.87592, 271.89545, 280.08682, 279.59988, 277.23337, 274.6379, 270.5649, 266.3845, 262.689, 258.65622, 255.67444, 253.77853, 252.7895, 252.91571, 254.04987, 255.15678, 258.13257, 261.62918, 265.25977, 270.1774, 273.30414, 278.0405, 281.04782, 283.72952, 286.49734, 289.7463, 291.87637, 290.22754, 290.60468}, 
+    {308.3489, 320.06332, 321.00937, 318.32263, 314.9941, 311.12488, 308.01578, 303.89032, 299.56628, 295.31522, 287.89395, 286.04788, 284.3628, 278.56973, 272.6014, 267.41257, 262.90454, 259.46933, 257.33417, 256.20435, 256.03192, 256.48712, 257.98334, 258.70236, 261.94308, 266.21152, 271.0911, 275.52542, 281.1922, 285.08316, 289.6103, 293.5614, 301.10162, 303.0832, 305.77856, 312.34293}, 
+    {348.58487, 347.97577, 346.39783, 345.31613, 341.91238, 340.38754, 336.01373, 330.42358, 324.49448, 318.49942, 313.6916, 287.97504, 292.11813, 285.57428, 279.20306, 273.94717, 269.19626, 265.90765, 262.71826, 260.5497, 259.35498, 259.66025, 260.59882, 262.3452, 264.7954, 266.69504, 271.9401, 278.00604, 283.4107, 289.24887, 295.20538, 302.20505, 308.15933, 314.26404, 318.3939, 320.59634}, 
+    {358.57974, 376.81528, 377.3379, 375.23724, 371.99078, 368.37128, 363.75223, 357.64456, 352.6741, 346.01727, 339.28732, 299.99326, 291.20468, 287.56842, 282.3771, 277.32712, 273.13742, 269.76358, 266.7779, 265.19882, 263.54688, 263.0129, 263.35284, 264.44284, 266.26285, 269.87292, 272.4563, 277.584, 285.9393, 293.78036, 300.5352, 308.21808, 318.96368, 324.40295, 329.8282, 342.06528}, 
+    {372.8545, 374.67682, 381.9853, 396.67725, 398.1889, 393.46857, 389.64014, 384.0352, 378.1264, 370.89, 363.30252, 356.35474, 310.4508, 297.5291, 292.86578, 286.91306, 281.8828, 277.58765, 274.07764, 271.25488, 269.756, 269.3074, 270.08682, 270.68417, 272.3877, 274.57065, 276.91052, 276.20203, 286.43423, 294.52856, 304.3373, 315.33292, 325.34595, 333.74094, 345.50217, 353.1358}, 
+    {378.99524, 395.33386, 414.25967, 424.80008, 423.47485, 420.66458, 417.80905, 413.55978, 406.1174, 397.79272, 388.91183, 378.91293, 371.64664, 316.95035, 310.5698, 303.33475, 296.7933, 290.9838, 286.74094, 284.58572, 281.48932, 280.22006, 278.48386, 278.32993, 279.2528, 280.2245, 281.6528, 284.42435, 280.98364, 289.56052, 301.26065, 312.95514, 330.385, 343.9498, 357.7534, 370.09277}, 
+    {395.4383, 398.10242, 427.73413, 433.0572, 446.0347, 443.96716, 440.9948, 435.13724, 431.22174, 422.79306, 414.71368, 406.06223, 396.93637, 330.07318, 313.62567, 306.10077, 298.92044, 293.80206, 290.06897, 287.76657, 287.00256, 285.37473, 284.4328, 284.66492, 285.29044, 286.13007, 287.51376, 289.50345, 291.53836, 293.96472, 296.85843, 310.16074, 322.18616, 340.8008, 364.4734, 380.14825}, 
+    {409.99124, 431.1318, 455.83878, 477.96912, 478.82364, 479.17633, 476.2206, 472.14114, 464.97842, 457.6769, 447.8298, 439.59476, 429.7176, 420.41794, 342.9437, 331.66995, 322.3107, 313.38522, 308.81805, 306.12738, 303.85602, 302.64517, 300.82135, 298.85367, 297.24152, 295.6679, 295.55127, 297.0121, 298.3029, 299.40457, 299.45123, 302.67868, 321.17773, 337.57492, 354.75558, 379.51938}, 
+    {399.92886, 420.40045, 460.85098, 498.25287, 501.15005, 502.71, 500.80502, 496.18307, 489.6823, 480.81985, 472.52347, 461.17377, 449.88205, 439.85648, 430.99548, 354.9698, 349.4583, 339.30753, 332.64264, 327.744, 314.86652, 311.9826, 309.5678, 308.24066, 307.47836, 306.6046, 306.6454, 308.29233, 309.19595, 310.89078, 312.89258, 310.44113, 307.61374, 326.8499, 346.4996, 364.69897}, 
+    {383.03558, 415.85495, 444.57614, 491.49484, 505.55423, 509.82208, 518.59875, 515.063, 511.5779, 503.4139, 494.9595, 485.76685, 476.18213, 466.13922, 455.5496, 346.28726, 342.25064, 332.93665, 327.301, 324.7723, 321.0469, 317.59436, 315.1896, 315.5141, 315.80322, 316.54846, 313.3447, 314.11984, 312.4178, 312.99432, 313.73795, 314.26242, 310.63977, 313.23563, 329.00772, 352.51508}, 
+    {364.13235, 391.24762, 403.60443, 466.31577, 485.30856, 489.86877, 524.67883, 523.02686, 519.2864, 512.2127, 504.06958, 494.43866, 483.69006, 472.34015, 463.44852, 454.06854, 352.51355, 343.82828, 338.30988, 330.25446, 324.8099, 323.0553, 321.9749, 320.60263, 320.41043, 318.56607, 319.45987, 319.96915, 317.38794, 316.76617, 317.09488, 315.71188, 316.79495, 318.14966, 322.86966, 347.41583}, 
+    {360.47137, 397.31067, 419.92932, 437.6355, 473.21857, 481.8092, 492.3163, 499.16608, 519.79144, 515.2646, 509.5739, 501.59637, 491.6805, 480.32385, 468.23703, 458.7265, 339.48584, 332.8628, 328.0562, 326.02298, 322.18625, 319.2773, 317.76822, 315.84842, 316.26627, 314.99466, 314.50296, 313.46457, 313.18576, 314.23, 314.85797, 315.60263, 317.28815, 319.09256, 319.8731, 326.3873}, 
+    {347.17032, 373.98242, 403.91904, 425.6204, 437.68536, 458.20435, 462.86984, 481.43112, 493.55115, 496.0865, 510.75162, 503.26596, 495.65646, 485.75232, 476.51492, 466.91544, 456.01877, 348.90283, 340.02518, 331.44006, 321.31607, 319.44824, 319.61874, 319.20944, 320.32053, 321.0798, 322.59454, 322.14865, 324.48004, 322.7795, 321.723, 322.9251, 323.48938, 323.3963, 322.6282, 323.5138}, 
+    {319.82715, 350.13974, 378.77988, 393.1522, 426.30768, 441.17538, 451.9365, 455.98218, 469.07205, 488.20282, 484.99127, 481.9531, 474.27734, 487.8936, 477.72992, 468.10162, 459.43323, 454.25174, 450.68918, 416.24863, 337.5616, 337.00403, 332.37393, 330.85168, 330.97318, 328.44086, 328.69064, 328.93002, 328.52933, 327.3662, 327.09567, 326.16647, 327.33228, 327.83105, 327.7861, 326.52048}, 
+    {323.81952, 317.5714, 349.02597, 373.6011, 402.3004, 416.3782, 430.66547, 447.5084, 461.33173, 469.56934, 474.9744, 474.04175, 472.61707, 468.56094, 461.24393, 459.38733, 450.27563, 444.30127, 443.00574, 440.1007, 438.03998, 443.8448, 449.02094, 451.5951, 451.05215, 451.2112, 447.67294, 444.82935, 435.8969, 415.35617, 408.8417, 380.88577, 339.41068, 327.56815, 312.117, 268.97034}, 
+    {268.5832, 288.73355, 316.38715, 344.35815, 374.82797, 387.27747, 412.34262, 423.1716, 427.0856, 446.42432, 454.12537, 455.01813, 457.61386, 459.62476, 456.43002, 449.70413, 443.65512, 438.13733, 435.7361, 437.50314, 439.02335, 440.53983, 446.83038, 451.62857, 453.30936, 454.38828, 456.1251, 453.35947, 451.29068, 443.6775, 438.55252, 414.62738, 378.99762, 298.73245, 266.84146, 261.31696}, 
+    {261.30875, 267.7248, 287.96124, 314.8247, 343.99698, 356.91772, 382.31946, 404.9819, 410.87384, 425.99316, 434.10294, 440.75922, 440.03503, 439.49393, 438.1715, 435.41504, 430.73044, 425.48196, 423.03464, 425.48193, 430.73038, 435.41492, 443.68066, 451.10794, 456.7196, 459.50436, 460.31873, 459.6599, 457.5132, 451.7694, 437.12808, 423.00873, 401.31808, 381.6063, 356.60864, 318.9014}, 
+    {300.3592, 293.21075, 266.84152, 286.3931, 310.99133, 332.50244, 357.25244, 375.17966, 392.44095, 409.97324, 416.04272, 424.79874, 426.3867, 428.56226, 426.56784, 424.64865, 421.25595, 418.53766, 417.2916, 419.07214, 423.98196, 429.95914, 438.25116, 453.5842, 457.61377, 462.09247, 465.21896, 465.5726, 464.2979, 461.4034, 453.3036, 446.5631, 412.42972, 399.53433, 387.61765, 322.2295}, 
+    {291.99023, 268.7618, 260.45285, 265.7477, 284.45807, 307.9902, 329.80142, 342.81598, 369.196, 377.28867, 386.69458, 393.04892, 396.24146, 398.30182, 398.63455, 398.21204, 396.9521, 396.12527, 393.67667, 387.73593, 390.35706, 428.7497, 436.00235, 442.72983, 464.42105, 475.79047, 480.00134, 483.24872, 484.17874, 483.39325, 480.18515, 474.57446, 442.21796, 426.89005, 400.08215, 327.39404}, 
+    {325.6272, 294.4023, 268.89163, 262.32635, 264.48245, 278.9789, 300.10266, 327.52542, 336.84918, 350.51035, 359.25623, 367.74094, 374.92203, 379.91644, 383.853, 383.7963, 384.168, 301.79102, 299.46454, 284.18555, 282.88235, 283.4601, 331.39825, 432.00018, 475.82108, 487.38904, 498.49066, 509.5005, 510.88187, 511.7794, 508.62485, 502.80728, 489.81247, 437.5845, 427.3924, 399.06448}, 
+    {364.41696, 316.78915, 289.27826, 268.76154, 262.83807, 262.95187, 277.33432, 297.2469, 308.93472, 325.83475, 337.40503, 346.9051, 356.5325, 364.53067, 371.28513, 375.58984, 316.25256, 311.32718, 309.44748, 303.11624, 289.7704, 284.72092, 284.8353, 418.74472, 477.91257, 488.11984, 498.4595, 515.936, 519.2862, 520.6933, 517.225, 510.92496, 492.1824, 474.25543, 452.91702, 409.60483}, 
+    {393.88202, 348.65048, 314.31705, 286.38544, 268.1959, 262.24002, 281.34103, 285.64206, 296.97424, 294.37723, 293.14713, 292.09775, 292.91025, 293.8584, 294.5213, 294.65387, 293.57947, 292.35306, 292.00302, 293.69092, 296.79337, 290.5436, 288.23383, 369.54968, 462.24988, 485.1002, 494.5711, 517.2692, 521.8225, 524.39557, 524.9057, 523.3279, 518.9604, 486.8761, 473.8712, 453.95782}, 
+    {409.09677, 377.03113, 341.00363, 311.9618, 294.10022, 266.25397, 258.85004, 279.0755, 285.20203, 295.54172, 294.74048, 293.08923, 292.79388, 292.22897, 292.41632, 292.14682, 291.73724, 291.1626, 291.4009, 294.31525, 295.94925, 294.0525, 289.08377, 287.86206, 364.11823, 467.50342, 485.75336, 500.0917, 511.0586, 519.5734, 524.6788, 523.4845, 521.5403, 508.90817, 491.38416, 473.41617}, 
+    {440.3964, 391.5456, 362.7774, 331.85803, 303.74896, 280.9506, 265.51395, 263.13214, 273.42322, 290.15515, 292.6335, 291.45416, 291.14014, 291.62872, 290.93903, 291.37027, 290.8616, 291.33472, 292.10178, 294.08322, 297.023, 301.547, 304.05072, 300.24985, 299.16107, 375.81705, 475.99457, 485.89838, 495.04877, 499.77066, 507.42868, 509.59738, 515.0712, 512.6497, 499.24417, 472.1665}, 
+    {427.76892, 396.81375, 370.1925, 344.5069, 321.33572, 298.9295, 277.65085, 264.1846, 257.42764, 275.0631, 280.06287, 291.58716, 290.5876, 291.03073, 290.89124, 291.44797, 291.22855, 291.82608, 293.07196, 295.65845, 299.80603, 305.73016, 311.43387, 311.2844, 309.0602, 308.08347, 376.63995, 474.76508, 483.44968, 489.84033, 497.93015, 499.85242, 501.1232, 501.6536, 497.20398, 468.16895}, 
+    {448.62482, 383.05035, 356.48944, 338.10968, 321.63162, 310.05893, 292.3067, 275.8556, 264.0013, 259.06503, 267.63843, 279.3038, 284.3469, 287.39285, 287.23917, 287.04343, 287.55536, 288.45425, 290.16434, 293.14294, 297.82367, 302.85522, 305.0029, 310.95428, 308.66092, 307.96887, 307.65213, 360.49612, 453.52704, 459.7059, 470.5906, 473.52444, 476.01608, 477.96902, 474.58322, 467.38577}, 
+    {420.5581, 390.2188, 364.47354, 344.5018, 324.78345, 309.83286, 297.3907, 286.3927, 276.64786, 270.29578, 267.04514, 266.84842, 273.08105, 276.99658, 281.60724, 284.5178, 285.42392, 286.6751, 288.9049, 292.45258, 297.83096, 304.40768, 306.50638, 310.35483, 313.91656, 313.25677, 312.6686, 311.71378, 354.67712, 442.61142, 449.35452, 453.12662, 455.20062, 463.99182, 461.05182, 455.6711}, 
+    {428.22638, 402.83868, 372.51907, 347.02704, 330.38074, 314.35904, 302.49152, 291.27524, 280.85352, 270.8604, 264.1034, 260.26865, 260.0625, 268.14102, 271.67963, 277.90314, 280.22937, 281.62357, 284.16623, 287.87415, 293.3774, 297.51834, 303.28128, 306.9101, 308.8137, 312.71323, 312.0451, 311.57297, 311.24042, 346.05322, 421.9523, 426.295, 430.58182, 432.5947, 434.3922, 433.1082}, 
+    {403.00488, 395.71402, 373.17285, 353.66864, 335.4207, 317.00284, 304.93274, 292.62784, 285.31705, 276.46118, 267.0336, 260.5335, 258.42462, 259.33987, 264.04428, 270.26978, 273.60272, 275.04062, 277.79175, 281.6228, 285.42383, 291.58325, 298.45886, 304.07547, 309.45227, 313.7539, 315.39532, 316.80115, 316.41077, 315.37668, 345.66138, 398.3503, 403.17236, 407.3935, 407.3214, 406.54007}, 
+    {381.3918, 374.37024, 362.63904, 348.75787, 333.88095, 320.2226, 306.59494, 294.51096, 285.2261, 278.06018, 271.03522, 265.68024, 262.11993, 261.70258, 260.7565, 261.9957, 264.7588, 268.0437, 270.88943, 273.81802, 278.7542, 283.32687, 290.01083, 294.08658, 298.15402, 302.2562, 304.52972, 309.7248, 311.05255, 310.05023, 308.93362, 330.4652, 376.25412, 379.56738, 383.13013, 381.8088}, 
+    {361.23178, 350.71585, 342.08395, 333.132, 324.49304, 314.1002, 303.85245, 294.68723, 287.19513, 285.44296, 283.579, 278.5321, 272.5764, 267.69992, 264.1493, 261.60306, 261.40262, 262.63068, 264.9275, 268.40137, 272.7447, 279.55554, 286.08472, 291.16626, 296.753, 300.8208, 301.7444, 307.1612, 308.67438, 309.96548, 309.63773, 308.42642, 308.60092, 328.40393, 346.13953, 350.59732}, 
+    {331.91217, 324.22403, 314.98593, 311.24, 306.04388, 300.5764, 293.38705, 286.78064, 280.42032, 274.9145, 273.76425, 272.3268, 269.20798, 266.0443, 261.86877, 258.47144, 257.12994, 257.18338, 259.0736, 262.06726, 265.92468, 270.06577, 276.33017, 282.63727, 287.5916, 294.1994, 297.09195, 302.6091, 304.3245, 305.70874, 305.12, 304.04474, 302.73157, 302.6831, 317.25488, 319.73566}, 
+    {295.93353, 289.72766, 288.88885, 287.69067, 284.0839, 281.39606, 279.04172, 274.64508, 272.04477, 270.09702, 268.7148, 267.51566, 266.30673, 262.79187, 260.77603, 256.9387, 255.66788, 255.20447, 255.3539, 256.9419, 259.59775, 262.83948, 267.76923, 272.0239, 276.25742, 280.58542, 285.1204, 291.50424, 297.9492, 302.41135, 303.38763, 305.47418, 303.6738, 302.88803, 302.092, 287.80762}, 
+    {268.37106, 268.7624, 268.89212, 268.76205, 268.38196, 267.7694, 266.7812, 265.7931, 264.6644, 262.89993, 261.41312, 259.85117, 258.4733, 257.20108, 256.17108, 254.43896, 252.93214, 252.18294, 251.69284, 252.42113, 254.2081, 256.93497, 260.10645, 263.24478, 267.9093, 271.65268, 276.16205, 280.3563, 282.58316, 283.6384, 285.3063, 287.72067, 288.86078, 288.858, 288.92645, 289.67694}};
 }
