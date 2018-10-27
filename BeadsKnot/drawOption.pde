@@ -27,4 +27,4 @@ class drawOption {
       break;
     }
   }
-}
+};

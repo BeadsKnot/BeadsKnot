@@ -6,8 +6,7 @@ class Edge {
   int BNodeID;//node
   int BNodeRID;//edge
 
-  //edgeにビーズを張り付けておくことにする。（両端のnodeも含むようにする。）
-  ArrayList<Bead> beads;
+  float arcLength;
 
   Edge(int _ANodeID, int _ANodeRID, int _BNodeID, int _BNodeRID) {
     ANodeID=_ANodeID;
@@ -150,6 +149,7 @@ class Edge {
   }
 
   //四本の線の長さを変えることで形を整える
+  // arcLength に値を代入する。
   void scaling_shape_modifier(ArrayList<Node> nodes) {
     // 準備
     Node ANode=nodes.get(ANodeID);
@@ -202,6 +202,51 @@ class Edge {
     ANode.r[ANodeRID] = rate * a1;
     BNode.r[BNodeRID] = rate * a2;
   }
+
+  // 最適化されたedgeの弧長を返す。
+  float get_arclength(ArrayList<Node> nodes) {
+    // 準備
+    Node ANode=nodes.get(ANodeID);
+    Node BNode=nodes.get(BNodeID);
+    PVector V1 = new PVector(ANode.x, ANode.y);
+    PVector V2 = new PVector(ANode.edge_x(ANodeRID), ANode.edge_y(ANodeRID));
+    PVector V3 = new PVector(BNode.edge_x(BNodeRID), BNode.edge_y(BNodeRID));
+    PVector V4 = new PVector(BNode.x, BNode.y);
+    PVector V41 = V4;
+    V41.sub(V1); // V4 - V1
+    PVector V21 = V2;
+    V21.sub(V1); // V2 - V1
+    PVector V34 = V3;
+    V34.sub(V4); // V3 - V4
+    float rate = (V41.mag())/250f;// 250=計測したときのV4-V1の長さ
+    float t1 = degrees(atan2Vec(V21, V41));
+    float t2 = degrees(atan2Vec(V21, V34));
+    int th1 = int(t1 / 10f);
+    int th2 = int(t2 / 10f);
+    println("" + rate + " " + t1 + " " + t2 + " " + th1 + " " + th2);
+    if (th1 == 36)
+    {
+      th1 = 0;
+      t1 -= 360f;
+    }
+    if (th2 == 36)
+    {
+      th2 = 0;
+      t2 -= 360f;
+    }
+    // 端数の処理のため
+    t1 -= 10f * th1;
+    t2 -= 10f * th2;
+    t1 /= 10f;
+    t2 /= 10f;
+
+    float a40 = ec.arcLen[th1][th2];
+    float a41 = ec.arcLen[(th1 + 1) % 36][th2];
+    float a42 = ec.arcLen[th1][(th2 + 1) % 36];
+    float a4 = a40 + t1 * (a41 - a40) + t2 * (a42 - a40);
+    return a4;
+  }
+
 
   ////四本の線の長さを変えることで形を整える
   //void scaling_shape_modifier_old(ArrayList<Node> nodes) {

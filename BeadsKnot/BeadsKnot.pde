@@ -46,7 +46,7 @@ void draw() {
   } 
   // 平面グラフのデータを表示
   else if (graph.data_graph_complete) {
-    graph.drawNodes();
+    graph.draw_nodes_edges();
   }
 }
 

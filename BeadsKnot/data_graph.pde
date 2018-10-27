@@ -1,14 +1,15 @@
 class data_graph {
-//データのグラフ構造
-//nodeとedgeからなる
+  //データのグラフ構造
+  //nodeとedgeからなる
 
   ArrayList<Node> nodes;
   ArrayList<Edge> edges;
   data_extract de; 
   int[] table;
   display disp;
-  boolean data_graph_complete=false;
+  boolean data_graph_complete=false;//->いずれdrawOptionへ移動。
 
+  // コンストラクタ
   data_graph(data_extract _de) {
     nodes = new ArrayList<Node>();
     edges = new ArrayList<Edge>();
@@ -16,15 +17,16 @@ class data_graph {
     disp = de.disp;
   }
 
-  void make_data_graph() {//nodesやedgesを決める
+  // deのデータから
+  //nodesやedgesを決める
+  void make_data_graph() {
     nodes.clear();
     edges.clear();
-    JointOrientation();
+    modify_Joint_orientation();
     add_half_point_Joint();
     add_close_point_Joint();
-    getNodes();
-    //testFindNextJoint();
-    set_nodes_edges();  
+    get_node_table();
+    get_data_nodes_edges();  
     println("data_graph_completeしました");    
     data_graph_complete=true;
     de.extraction_binalized = false;
@@ -32,7 +34,10 @@ class data_graph {
     de.extraction_beads = false;
   }
 
-  void JointOrientation() {
+  // deのデータから
+  //nodesやedgesを決める（その１）
+  //準備として、u1,u2の向きが適切なものにする。
+  void modify_Joint_orientation() {
     for (int i=0; i<de.points.size (); i++) {
       Bead vec=de.points.get(i);
       if (vec.Joint) {
@@ -63,6 +68,10 @@ class data_graph {
       }
     }
   }
+
+  // deのデータから
+  //nodesやedgesを決める（その２）
+  //　エッジの真ん中にあたるビーズをノードにする。
   void add_half_point_Joint() {
     for (int i = 0; i < de.points.size(); i++) {
       Bead a = de.points.get(i);
@@ -95,6 +104,10 @@ class data_graph {
     }
   }
 
+  // deのデータから
+  //nodesやedgesを決める（その３）
+  //　エッジの端のほうにあるビーズをclosepointにする。
+  //　これはPLinkファイルをつくるため。
   void add_close_point_Joint() {//Ten Percent Neighborhood point
     for (int p_i = 0; p_i < de.points.size(); p_i++) {
       Bead b_a = de.points.get(p_i);
@@ -187,7 +200,11 @@ class data_graph {
     }
     return get_half_position(c, d, count-1);
   }
-  void getNodes() {
+
+  // deのデータから
+  //nodesやedgesを決める（その４）
+  //Jointつきビーズの番号と、ノードの番号の対応表を作る
+  void get_node_table() {
     int count=0;
     for (int i = 0; i < de.points.size(); i++) {
       Bead vec = de.points.get(i);
@@ -195,7 +212,7 @@ class data_graph {
         count++;
       }
     }
-    //        Log.d("countの数",""+count);
+    // Log.d("countの数",""+count);
     table=new int[count];
     count=0;
     for (int i = 0; i < de.points.size(); i++) {
@@ -206,32 +223,7 @@ class data_graph {
       }
     }
   }
-  //private void testFindNextJoint() {//デバック
-  //  for (int i=0; i<de.points.size(); i++) {
-  //    Bead a=de.points.get(i);
-  //    if (a.Joint||a.midJoint) {
-  //      int j=findNeighborJointInPoints(i, a.n1);
-  //      int c=findJointInPoints(i, a.n1);
-  //      int k=findk(de.points.get(c), j);
-  //      if (a.Joint) {
-  //        j = findNeighborJointInPoints(i, a.u1);
-  //        c = findJointInPoints(i, a.u1);
-  //        k = findk(de.points.get(c), j);
-  //      }
 
-  //      j=findNeighborJointInPoints(i, a.n2);
-  //      c=findJointInPoints(i, a.n2);
-  //      k=findk(de.points.get(c), j);
-  //      if (a.Joint) {
-  //        j = findNeighborJointInPoints(i, a.u2);
-  //        c = findJointInPoints(i, a.u2);
-  //        k = findk(de.points.get(c), j);
-  //      }
-  //    }
-  //  }
-  //}
-
-  
   int findJointInPoints(int j, int c) {
     // for (int i = 0; i < points.size(); i++) {
     Bead p=de.points.get(c);
@@ -272,101 +264,26 @@ class data_graph {
     return -1;
   }
 
-  void getEdges(ArrayList<Edge> edges) {
-    for (int i=0; i<de.points.size(); i++) {
-      Bead a=de.points.get(i);
-      if (a.Joint||a.midJoint) {
-        // Log.d("getNodesFromPoint(i)は",""+getNodesFromPoint(i));
-        // Bead b=points.get(a.n1);
-        // Bead c=a.findNextJoint(points,b);
-        int b=findNeighborJointInPoints(i, a.n1);
-        int c=findJointInPoints(i, a.n1);
-        int j=getNodesFromPoint(c);
-        int k=findk(de.points.get(c), b);
-        int h=getNodesFromPoint (i);
-        //Log.d("0の行先は",""+getNodesFromPoint(c)+","+k);
-        if (j>h) {
-          edges.add(new Edge(h, 0, j, k));
-        }
-        //b=points.get(a.n2);
-        //c=a.findNextJoint(points,b);
-        if (a.Joint) {
-          b = findNeighborJointInPoints(i, a.u1);
-          c = findJointInPoints(i, a.u1);
-          j = getNodesFromPoint(c);
-          k = findk(de.points.get(c), b);
-          // Log.d("1の行先は",""+getNodesFromPoint(c)+","+k);
-          if (j > h) {
-            edges.add(new Edge(h, 1, j, k));
-          }
-        }
-        b=findNeighborJointInPoints(i, a.n2);
-        c=findJointInPoints(i, a.n2);
-        j=getNodesFromPoint(c);
-        k=findk(de.points.get(c), b);
-        //Log.d("2の行先は",""+getNodesFromPoint(c)+","+k);
-        if (j>h) {
-          edges.add(new Edge(h, 2, j, k));
-        }
-        if (a.Joint) {
-          //b=points.get(a.u1);
-          //c=a.findNextJoint(points,b);
-          //b=points.get(a.u2);
-          //c=a.findNextJoint(points,b);
-          b = findNeighborJointInPoints(i, a.u2);
-          c = findJointInPoints(i, a.u2);
-          j = getNodesFromPoint(c);
-          k = findk(de.points.get(c), b);
-          //Log.d("3の行先は",""+getNodesFromPoint(c)+","+k);
-          if (j > h) {
-            edges.add(new Edge(h, 3, j, k));
-          }
-        }
-      }
-    }
-  }
-  void modifyArmsOfAlignments(Edge e) {
-    Node n1 = nodes.get(e.getANodeID());
-    Node n2 = nodes.get(e.getBNodeID());
-    int a1 = e.getANodeRID();
-    int a2 = e.getBNodeRID();
-    float r1;
-    float r2;
-    int count = 0;
-    boolean loopGoOn;
-    do {
-      loopGoOn = false;
-      float d1 = hypot(n1.getX() - n1.edge_x(a1), n1.getY() - n1.edge_y(a1));
-      float d2 = hypot(n1.edge_x(a1) - n2.edge_x(a2), n1.edge_y(a1) - n2.edge_y(a2));
-      float d3 = hypot(n2.getX() - n2.edge_x(a2), n2.getY() - n2.edge_y(a2));
-      r1 = n1.getR(a1);
-      if (d1 + 3.0 < d2) {
-        n1.setR(a1, r1+3.0);
-        loopGoOn = true;
-      } else if (d1 - 3.0 > d2) {
-        n1.setR(a1, r1-3.0);
-        loopGoOn = true;
-      }
-      r2 = n2.getR(a2);
-      if (d3 + 3.0 < d2) {
-        n2.setR(a2, r2+3.0);
-        loopGoOn = true;
-      } else if (d3 - 3.0 > d2) {
-        n2.setR(a2, r2-3.0);
-        loopGoOn = true;
-      }
-    } while (loopGoOn && count++<50);
-  }
-
+  /**
+   // modify(); 
+   */
   void modify() {
-    //Nodeの座標も微調整したい。
+    //Nodeのr[]を最適化する
     for (Edge edge : edges) {
       edge.scaling_shape_modifier(nodes);
     }
-    rotation_shape_modifier(nodes, edges);
+    //Nodeのthetaを最適化する
+    //rotation_shape_modifier(nodes, edges);
+    //Nodeの(x,y)を最適化する
+    //nodeCoordinateModifier(nodes, edges);
   }
 
   void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {//円を自動で回転させる
+    float totalArcLength=0f;
+    for (int n=0; n<nodes.size(); n++) {
+    }
+  }
+  void rotation_shape_modifier_old(ArrayList<Node> nodes, ArrayList<Edge> edges) {//円を自動で回転させる
     float e0, e0p, e0m;
     for (int h = 0; h < nodes.size (); h ++) {
       /* Node node=nodes.get(h); */
@@ -480,33 +397,90 @@ class data_graph {
     return (p*(1.0-t)+q*t);
   }
 
+  //deからnodesとedgesをつくる（５）
+  void get_data_nodes_edges() {
+    // nodesのデータを作る
+    get_nodes();
+    //edgesのデータを作る。
+    get_edges(edges);
+    //  形を整える。
+    modify();
+  }
 
-  void set_nodes_edges() {
-    // 読み取りデータからAlignmentのデータを取り出す。
+    // nodesのデータを作る
+  void get_nodes() {
     for (int i = 0; i < de.points.size(); i++) {
       Bead vec = de.points.get(i);
       if (vec.Joint||vec.midJoint) {
-        Node ali=new Node((float)vec.x, (float)vec.y);
-        ali.theta=vec.getTheta(de.points);
+        Node nd=new Node((float)vec.x, (float)vec.y);
+        nd.theta=vec.getTheta(de.points);
         if (vec.Joint) {
-          ali.Joint=true;
+          nd.Joint=true;
         }
-        nodes.add(ali);
+        nodes.add(nd);
       }
-    }
-    //Log.d("nodesの長さ",""+nodes.size());
-    //　Alignmentのデータからedgeのデータを整える。
-    getEdges(edges);
-    //  形を整える。
-    for (Edge e : edges) {
-      modifyArmsOfAlignments(e);
-    }
-    for (int i=0; i<100; i++) {
-      //modify();
     }
   }
 
-  void drawNodes() {
+    //edgesのデータを作る。
+  void get_edges(ArrayList<Edge> edges) {
+    for (int i=0; i<de.points.size(); i++) {
+      Bead a=de.points.get(i);
+      if (a.Joint||a.midJoint) {
+        // Log.d("getNodesFromPoint(i)は",""+getNodesFromPoint(i));
+        // Bead b=points.get(a.n1);
+        // Bead c=a.findNextJoint(points,b);
+        int b=findNeighborJointInPoints(i, a.n1);
+        int c=findJointInPoints(i, a.n1);
+        int j=getNodesFromPoint(c);
+        int k=findk(de.points.get(c), b);
+        int h=getNodesFromPoint (i);
+        //Log.d("0の行先は",""+getNodesFromPoint(c)+","+k);
+        if (j>h) {
+          edges.add(new Edge(h, 0, j, k));
+        }
+        //b=points.get(a.n2);
+        //c=a.findNextJoint(points,b);
+        if (a.Joint) {
+          b = findNeighborJointInPoints(i, a.u1);
+          c = findJointInPoints(i, a.u1);
+          j = getNodesFromPoint(c);
+          k = findk(de.points.get(c), b);
+          // Log.d("1の行先は",""+getNodesFromPoint(c)+","+k);
+          if (j > h) {
+            edges.add(new Edge(h, 1, j, k));
+          }
+        }
+        b=findNeighborJointInPoints(i, a.n2);
+        c=findJointInPoints(i, a.n2);
+        j=getNodesFromPoint(c);
+        k=findk(de.points.get(c), b);
+        //Log.d("2の行先は",""+getNodesFromPoint(c)+","+k);
+        if (j>h) {
+          edges.add(new Edge(h, 2, j, k));
+        }
+        if (a.Joint) {
+          //b=points.get(a.u1);
+          //c=a.findNextJoint(points,b);
+          //b=points.get(a.u2);
+          //c=a.findNextJoint(points,b);
+          b = findNeighborJointInPoints(i, a.u2);
+          c = findJointInPoints(i, a.u2);
+          j = getNodesFromPoint(c);
+          k = findk(de.points.get(c), b);
+          //Log.d("3の行先は",""+getNodesFromPoint(c)+","+k);
+          if (j > h) {
+            edges.add(new Edge(h, 3, j, k));
+          }
+        }
+      }
+    }
+  }
+
+
+  void draw_nodes_edges() {
+    //nodesが空なら直ちにreturnする
+    //
     for (Node n : nodes) {
       if (n.Joint) {
         fill(255, 255, 0);
@@ -563,9 +537,8 @@ class data_graph {
     noFill();
     bezier(hx, hy, ix, iy, kx, ky, jx, jy);
   }
-  
+
   float hypot(float x, float y) {
     return sqrt(x*x+y*y);
   }
-  
 }

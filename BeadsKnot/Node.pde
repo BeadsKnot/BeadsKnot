@@ -1,7 +1,7 @@
 class Node {
     float x;
     float y;
-    float theta;
+    float theta;//ラジアン
     float[] r;//長さ、４つ
     int radius;//円の半径
     float edge_x(int i){
