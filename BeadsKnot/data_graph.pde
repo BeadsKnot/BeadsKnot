@@ -28,7 +28,7 @@ class data_graph {
     get_node_table();
     get_data_nodes_edges();  
     println("data_graph_completeしました");    
-    data_graph_complete=true;
+    data_graph_complete=true; // この辺りの詳細はdrawOptionに任せたい。
     de.extraction_binalized = false;
     de.extraction_complete = false;
     de.extraction_beads = false;
@@ -166,8 +166,7 @@ class data_graph {
     return findNeighborJointInPoints(c, d);
   }
 
-  private int countNeighborJointInPoints(int 
-    j, int c, int count) {
+  private int countNeighborJointInPoints(int j, int c, int count) {
     Bead p=de.points.get(c);
     if (p.Joint||p.midJoint) {
       return count;
@@ -201,28 +200,6 @@ class data_graph {
     return get_half_position(c, d, count-1);
   }
 
-  // deのデータから
-  //nodesやedgesを決める（その４）
-  //Jointつきビーズの番号と、ノードの番号の対応表を作る
-  void get_node_table() {
-    int count=0;
-    for (int i = 0; i < de.points.size(); i++) {
-      Bead vec = de.points.get(i);
-      if (vec.Joint||vec.midJoint) {
-        count++;
-      }
-    }
-    // Log.d("countの数",""+count);
-    table=new int[count];
-    count=0;
-    for (int i = 0; i < de.points.size(); i++) {
-      Bead vec = de.points.get(i);
-      if (vec.Joint||vec.midJoint) {
-        table[count]=i;
-        count++;
-      }
-    }
-  }
 
   int findJointInPoints(int j, int c) {
     // for (int i = 0; i < points.size(); i++) {
@@ -264,114 +241,115 @@ class data_graph {
     return -1;
   }
 
-  /**
-   // modify(); 
-   */
+  //void get_node_table
+  // deのデータからnodesやedgesを決める（その４）
+  //Jointつきビーズの番号と、ノードの番号の対応表を作る
+  void get_node_table() {
+    int count=0;
+    for (int i = 0; i < de.points.size(); i++) {
+      Bead vec = de.points.get(i);
+      if (vec.Joint||vec.midJoint) {
+        count++;
+      }
+    }
+    table=new int[count];
+    count=0;
+    for (int i = 0; i < de.points.size(); i++) {
+      Bead vec = de.points.get(i);
+      if (vec.Joint||vec.midJoint) {
+        table[count]=i;
+        count++;
+      }
+    }
+  }
+
+  // 形を整える。ただし、これが良いとは限らない。
+  // ビーズに戻して物理モデルで整形するという考えもある。
   void modify() {
     //Nodeのr[]を最適化する
     for (Edge edge : edges) {
       edge.scaling_shape_modifier(nodes);
     }
     //Nodeのthetaを最適化する
-    //rotation_shape_modifier(nodes, edges);
+    for (int n=0; n<nodes.size(); n++) {
+      rotation_shape_modifier(n);
+    }
     //Nodeの(x,y)を最適化する
     //nodeCoordinateModifier(nodes, edges);
+    // 描画の範囲を求めて
+    get_disp();
   }
 
-  void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {//円を自動で回転させる
+  //絵のサイズをdisplayに格納する。→適切なサイズで表示される。
+  void get_disp() {
+    float l=0, t=0, r=0, b=0;
+    for (int e=0; e<edges.size (); e++) {
+      Edge ed = edges.get(e);
+      Node ANode=nodes.get(ed.ANodeID);
+      Node BNode=nodes.get(ed.BNodeID);
+      float V1x = ANode.x;
+      float V1y = ANode.y;
+      float V2x = ANode.edge_x(ed.ANodeRID);
+      float V2y = ANode.edge_y(ed.ANodeRID);
+      float V3x = BNode.edge_x(ed.BNodeRID);
+      float V3y = BNode.edge_y(ed.BNodeRID);
+      float V4x = BNode.x;
+      float V4y = BNode.y;
+      for (float step=0.0; step<=1.0; step+=0.05) {    
+        float xx = coordinate_bezier(V1x, V2x, V3x, V4x, step);
+        float yy = coordinate_bezier(V1y, V2y, V3y, V4y, step);
+        if (e==0 && step==0.0) {
+          l=r=xx;
+          t=b=yy;
+        } else {
+          if (xx<l) l=xx;
+          if (r<xx) r=xx;
+          if (yy<t) t=yy;
+          if (b<yy) b=yy;
+        }
+      }
+    }
+    disp.left=l;
+    disp.right=r;
+    disp.top=t;
+    disp.bottom=b;
+    disp.set_rate();
+  }
+
+  void rotation_shape_modifier(int id) {//円を自動で回転させる
+    Node node = nodes.get(id);
     float totalArcLength=0f;
-    for (int n=0; n<nodes.size(); n++) {
+    float theta0 = node.theta;
+    for (int e=0; e<edges.size(); e++) {
+      totalArcLength += edges.get(e).get_arclength(nodes);
     }
-  }
-  void rotation_shape_modifier_old(ArrayList<Node> nodes, ArrayList<Edge> edges) {//円を自動で回転させる
-    float e0, e0p, e0m;
-    for (int h = 0; h < nodes.size (); h ++) {
-      /* Node node=nodes.get(h); */
-      e0 = e0p = e0m = 0;
-      for (int i = 0; i < 4; i ++) {
-        // int i2=node.edges[j];
-        int e1=-1, e2=-1, i1=-1, i2=-1;
-        for (Edge e : edges) {
-          if (h==e.ANodeID&&i==e.ANodeRID) {
-            i1=h;
-            i2=e.BNodeID;
-            e1=i;
-            e2=e.BNodeRID;
-            break;
-          } else if (h==e.BNodeID&&i==e.BNodeRID) {
-            i1=h;
-            i2=e.ANodeID;
-            e1=i;
-            e2=e.ANodeRID;
-            break;
-          }
-        }
-        if (i1!=-1&&i2!=-1&&e1!=-1&&e2!=-1) {
-          Node a1 = nodes.get(i1);
-          Node a2 = nodes.get(i2);
-          float r1=a1.r[e1];
-          float r2=a2.r[e2];
-          float angle1 = (a1.theta+PI*e1/2);
-          float angle2 = (a2.theta+PI*e2/2);
-          float x1=a1.x;
-          float y1=a1.y;
-          float x4=a2.x;
-          float y4=a2.y;
-          float x2=(x1+r1*cos(angle1));
-          float y2=(y1-r1*sin(angle1));
-          float x2p=(x1+r1*cos(angle1+0.05));
-          float y2p=(y1-r1*sin(angle1+0.05));
-          float x2m=(x1+r1*cos(angle1-0.05));
-          float y2m=(y1-r1*sin(angle1-0.05));
-          float x3=(x4+r2*cos(angle2));
-          float y3=(y4-r2*sin(angle2));
-          float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
-          float e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
-          float e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
-          e0 += e11;
-          e0p += e11p;
-          e0m += e11m;
-        }
-      }
-      /*if (e0r < e0) {
-       nodes.get(h).theta += PI;
-       } else */
-      if (e0>e0p && e0m>e0) {
-        nodes.get(h).theta +=0.05;
-      } else if (e0>e0m && e0p>e0) {
-        nodes.get(h).theta -=0.05;
-      } /*else {
-       Log.d("check","do nothing");
-       }*/
+    float totalArcLengthP=0f;
+    float thetaP = theta0 + 0.05f;
+    node.theta = thetaP;
+    for (int e=0; e<edges.size(); e++) {
+      totalArcLengthP += edges.get(e).get_arclength(nodes);
+    }
+    float totalArcLengthM=0f;
+    float thetaM = theta0 - 0.05f;
+    node.theta = thetaM;
+    for (int e=0; e<edges.size(); e++) {
+      totalArcLengthM += edges.get(e).get_arclength(nodes);
+    }
+    //println("arcLength= ", totalArcLength, totalArcLengthP, totalArcLengthM);
+    if (totalArcLength -1.0 > totalArcLengthP) {
+      node.theta = thetaP;
+      return ;
+    } else if (totalArcLength -1.0 > totalArcLengthM) {
+      node.theta = thetaM;
+      return ;
+    } else {
+      node.theta = theta0;
+      return ;
     }
   }
 
-  float get_rangewidth_angle(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-    float ret0 = (PI);
-    float ret1 = 0;
-    float step=(0.05);// step is 1/20
-    float cx = x1;
-    float dx = coordinate_bezier(x1, x2, x3, x4, step);
-    float cy = y1;
-    float dy = coordinate_bezier(y1, y2, y3, y4, step);
-    float ex, ey;
-    for (float i = step*2; i<=1.0; i += step) {
-      ex=coordinate_bezier(x1, x2, x3, x4, i);
-      ey=coordinate_bezier(y1, y2, y3, y4, i);
-      float ang = angle(cx, cy, dx, dy, ex, ey);
-      if (ang < ret0) { // get minimum
-        ret0 = ang;
-      }
-      if (ang > ret1) { // get maximum
-        ret1 = ang;
-      }
-      cx = dx;
-      cy = dy;
-      dx = ex;
-      dy = ey;
-    }
-    return ret1-ret0;
-  }
+
+
 
   float coordinate_bezier(float a, float c, float e, float g, float t) {
     float x1 = naibun(a, c, t);
@@ -381,6 +359,7 @@ class data_graph {
     float x5 = naibun(x2, x3, t);
     return naibun(x4, x5, t);
   }
+
   float angle(float ax, float ay, float bx, float by, float cx, float cy) {
     float ang1 = (atan2(ay-by, ax-bx));
     float ang2 = (atan2(by-cy, bx-cx));
@@ -407,7 +386,7 @@ class data_graph {
     modify();
   }
 
-    // nodesのデータを作る
+  // nodesのデータを作る
   void get_nodes() {
     for (int i = 0; i < de.points.size(); i++) {
       Bead vec = de.points.get(i);
@@ -422,7 +401,7 @@ class data_graph {
     }
   }
 
-    //edgesのデータを作る。
+  //edgesのデータを作る。
   void get_edges(ArrayList<Edge> edges) {
     for (int i=0; i<de.points.size(); i++) {
       Bead a=de.points.get(i);
@@ -477,68 +456,46 @@ class data_graph {
     }
   }
 
-
+  // nodesとedgesを描画する。
   void draw_nodes_edges() {
     //nodesが空なら直ちにreturnする
-    //
+    if (nodes == null || edges == null) return ;
+    for (Edge e : edges) {
+      Node a0=nodes.get(e.ANodeID);
+      Node a1=nodes.get(e.BNodeID);
+      // float hx=(a0.x-disp.left)*disp.rate;
+      float hx=disp.get_winX(a0.x);
+      float hy=disp.get_winY(a0.y);
+      if (e.ANodeRID==1 ||e.ANodeRID==3) {
+        hx = disp.get_winX(a0.edge_rx(e.ANodeRID, 30/disp.rate));
+        hy = disp.get_winY(a0.edge_ry(e.ANodeRID, 30/disp.rate));
+      }
+      float ix=disp.get_winX(a0.edge_x(e.ANodeRID));
+      float iy=disp.get_winY(a0.edge_y(e.ANodeRID));
+      float jx=disp.get_winX(a1.x);
+      float jy=disp.get_winY(a1.y);
+      if (e.BNodeRID==1 || e.BNodeRID==3) {
+        jx = disp.get_winX(a1.edge_rx(e.BNodeRID, 30/disp.rate));
+        jy = disp.get_winY(a1.edge_ry(e.BNodeRID, 30/disp.rate));
+      }
+      float kx=disp.get_winX(a1.edge_x(e.BNodeRID));
+      float ky=disp.get_winY(a1.edge_y(e.BNodeRID));
+
+      stroke( 0, 0, 0);
+      strokeWeight(5);
+      noFill();
+      bezier(hx, hy, ix, iy, kx, ky, jx, jy);
+    }
     for (Node n : nodes) {
       if (n.Joint) {
         fill(255, 255, 0);
       } else {
         fill(255, 0, 255);
       }
-      /*
-        if(n.drawOn) {*/
-      noStroke();
+      stroke(0);
+      strokeWeight(1);
       ellipse(disp.get_winX(n.x), disp.get_winY(n.y), n.radius, n.radius);
-      //}
-    }
-    for (Edge e : edges) {
-      draw_connect_nodes(e);
     }
   }  
-  void draw_connect_nodes(Edge e) {
-    // 旧関数名　connect_nodes
-    //関数名をdrawEdgeBezierにしたい。
-    // スタート地点を移動
-    //Log.d("hとjを表示",""+h+"  "+j);
-    //float wid = r-l;
-    //float hei = b-t;
-    //float rate;
-    //if(wid>hei){
-    //    rate = 1080/wid;
-    //} else {
-    //    rate = 1080/hei;
-    //}
-    Node a0=nodes.get(e.ANodeID);
-    Node a1=nodes.get(e.BNodeID);
-    // float hx=(a0.x-disp.left)*disp.rate;
-    float hx=disp.get_winX(a0.x);
-    //float hy=(a0.y-disp.top)*disp.rate;
-    float hy=disp.get_winY(a0.y);
-    if (e.ANodeRID==1 ||e.ANodeRID==3) {
-      hx = disp.get_winX(a0.edge_rx(e.ANodeRID, 30/disp.rate));
-      hy = disp.get_winY(a0.edge_ry(e.ANodeRID, 30/disp.rate));
-    }
-    //float ix=(a0.edge_x(e.i)-disp.left)*disp.rate;
-    float ix=disp.get_winX(a0.edge_x(e.ANodeRID));
-    float iy=disp.get_winY(a0.edge_y(e.ANodeRID));
-    float jx=disp.get_winX(a1.x);
-    float jy=disp.get_winY(a1.y);
-    if (e.BNodeRID==1 || e.BNodeRID==3) {
-      jx = disp.get_winX(a1.edge_rx(e.BNodeRID, 30/disp.rate));
-      jy = disp.get_winY(a1.edge_ry(e.BNodeRID, 30/disp.rate));
-    }
-    float kx=disp.get_winX(a1.edge_x(e.BNodeRID));
-    float ky=disp.get_winY(a1.edge_y(e.BNodeRID));
 
-    stroke( 0, 0, 0);
-    strokeWeight(5);
-    noFill();
-    bezier(hx, hy, ix, iy, kx, ky, jx, jy);
-  }
-
-  float hypot(float x, float y) {
-    return sqrt(x*x+y*y);
-  }
 }
