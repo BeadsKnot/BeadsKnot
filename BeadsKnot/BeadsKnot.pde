@@ -61,7 +61,7 @@ void keyPressed() {
   }
 
   //if (int(key)==15) {// ctrl+o
-  else if ( key == 'o') {// o
+  else if ( key == 'o' || int(key)==15) {// o // ctrl+o
     selectInput("Select a file to process:", "fileSelected");
   }
   else if (key=='p') {
