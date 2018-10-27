@@ -17,6 +17,8 @@ class data_graph {
   }
 
   void make_data_graph() {//nodesやedgesを決める
+    nodes.clear();
+    edges.clear();
     JointOrientation();
     add_half_point_Joint();
     add_close_point_Joint();
