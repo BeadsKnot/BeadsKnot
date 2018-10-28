@@ -271,13 +271,46 @@ class data_graph {
       edge.scaling_shape_modifier(nodes);
     }
     //Nodeのthetaを最適化する
-    for (int n=0; n<nodes.size(); n++) {
-      rotation_shape_modifier(n);
-    }
+    //for (int n=0; n<nodes.size(); n++) {
+    //  rotation_shape_modifier(n);
+    //}
     //Nodeの(x,y)を最適化する
     //nodeCoordinateModifier(nodes, edges);
-    // 描画の範囲を求めて
+    // 絵の範囲を求めて適切に描画する
     get_disp();
+  }
+
+
+  void rotation_shape_modifier(int id) {//円を自動で回転させる
+    Node node = nodes.get(id);
+    float totalArcLength=0f;
+    float theta0 = node.theta;
+    for (int e=0; e<edges.size(); e++) {
+      totalArcLength += edges.get(e).get_arclength(nodes);
+    }
+    float totalArcLengthP=0f;
+    float thetaP = theta0 + 0.05f;
+    node.theta = thetaP;
+    for (int e=0; e<edges.size(); e++) {
+      totalArcLengthP += edges.get(e).get_arclength(nodes);
+    }
+    float totalArcLengthM=0f;
+    float thetaM = theta0 - 0.05f;
+    node.theta = thetaM;
+    for (int e=0; e<edges.size(); e++) {
+      totalArcLengthM += edges.get(e).get_arclength(nodes);
+    }
+    //println("arcLength= ", totalArcLength, totalArcLengthP, totalArcLengthM);
+    if (totalArcLength -1.0 > totalArcLengthP) {
+      node.theta = thetaP;
+      return ;
+    } else if (totalArcLength -1.0 > totalArcLengthM) {
+      node.theta = thetaM;
+      return ;
+    } else {
+      node.theta = theta0;
+      return ;
+    }
   }
 
   //絵のサイズをdisplayに格納する。→適切なサイズで表示される。
@@ -316,39 +349,6 @@ class data_graph {
     disp.set_rate();
   }
 
-  void rotation_shape_modifier(int id) {//円を自動で回転させる
-    Node node = nodes.get(id);
-    float totalArcLength=0f;
-    float theta0 = node.theta;
-    for (int e=0; e<edges.size(); e++) {
-      totalArcLength += edges.get(e).get_arclength(nodes);
-    }
-    float totalArcLengthP=0f;
-    float thetaP = theta0 + 0.05f;
-    node.theta = thetaP;
-    for (int e=0; e<edges.size(); e++) {
-      totalArcLengthP += edges.get(e).get_arclength(nodes);
-    }
-    float totalArcLengthM=0f;
-    float thetaM = theta0 - 0.05f;
-    node.theta = thetaM;
-    for (int e=0; e<edges.size(); e++) {
-      totalArcLengthM += edges.get(e).get_arclength(nodes);
-    }
-    //println("arcLength= ", totalArcLength, totalArcLengthP, totalArcLengthM);
-    if (totalArcLength -1.0 > totalArcLengthP) {
-      node.theta = thetaP;
-      return ;
-    } else if (totalArcLength -1.0 > totalArcLengthM) {
-      node.theta = thetaM;
-      return ;
-    } else {
-      node.theta = theta0;
-      return ;
-    }
-  }
-
-
 
 
   float coordinate_bezier(float a, float c, float e, float g, float t) {
@@ -384,16 +384,19 @@ class data_graph {
     get_edges(edges);
     //  形を整える。
     modify();
+    // 形を整えた後に、pointsのデータを更新する
+    update_points();
   }
 
   // nodesのデータを作る
   void get_nodes() {
-    for (int i = 0; i < de.points.size(); i++) {
-      Bead vec = de.points.get(i);
-      if (vec.Joint||vec.midJoint) {
-        Node nd=new Node((float)vec.x, (float)vec.y);
-        nd.theta=vec.getTheta(de.points);
-        if (vec.Joint) {
+    for (int p = 0; p < de.points.size(); p++) {
+      Bead pt = de.points.get(p);
+      if (pt.Joint || pt.midJoint) {// ここではtable[]を使っていないが・・・
+        Node nd = new Node(pt.x, pt.y);
+        nd.theta = pt.getTheta(de.points);
+        nd.pointID = p; // これがtableのかわり。
+        if (pt.Joint) {
           nd.Joint=true;
         }
         nodes.add(nd);
@@ -401,7 +404,7 @@ class data_graph {
     }
   }
 
-  //edgesのデータを作る。
+  //edgesのデータを作る。このとき、edgeに付随するbeadのデータも残しておく。
   void get_edges(ArrayList<Edge> edges) {
     for (int i=0; i<de.points.size(); i++) {
       Bead a=de.points.get(i);
@@ -496,6 +499,22 @@ class data_graph {
       strokeWeight(1);
       ellipse(disp.get_winX(n.x), disp.get_winY(n.y), n.radius, n.radius);
     }
-  }  
+  }
+  
+  void      update_points()
+  {
+    for(int e=0; e<edges.size(); e++){
+      Edge ed = edges.get(e);
+      float arclength = ed.get_arclength(nodes);
+      int beads_number = int(arclength / beads_interval) - 1;
+      // edgeの上にある現在のビーズの個数を数える。
+      int count = 0;
+      Bead bd = 
+      
+      
+    }
+    
+    
+  }
 
 }

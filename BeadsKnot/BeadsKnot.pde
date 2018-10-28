@@ -8,6 +8,7 @@ data_graph graph;// data_extractから解析した平面グラフのデータ
 display disp;// 画面表示に関する定数
 EdgeConst ec;// Edgeに関する定数
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
+float beads_interval = 20 ;// ビーズの間隔
 // グローバル変数終了
 
 

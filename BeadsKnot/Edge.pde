@@ -5,9 +5,7 @@ class Edge {
   int ANodeRID;//edge
   int BNodeID;//node
   int BNodeRID;//edge
-
-  float arcLength;
-
+  
   Edge(int _ANodeID, int _ANodeRID, int _BNodeID, int _BNodeRID) {
     ANodeID=_ANodeID;
     ANodeRID=_ANodeRID;
@@ -291,69 +289,6 @@ class Edge {
   }
 
 
-  ////四本の線の長さを変えることで形を整える
-  //void scaling_shape_modifier_old(ArrayList<Node> nodes) {
-  //  // E=min of angle;
-  //  // minimize E
-  //  // if (0<=e1 && e1<4 && 0<=e2 && e2<4 && is_gv_id(i1) && is_gv_id(i2) ) {
-  //  Node a0=nodes.get(ANodeID);
-  //  Node a1=nodes.get(BNodeID);
-  //  float r1=a0.r[ANodeRID];
-  //  float r2=a1.r[BNodeRID];
-  //  float angle1 = (a0.theta+PI*ANodeRID/2);
-  //  // float angle1 = x + r[i] * ( cos(theta+toRadians(i*90)));
-  //  float angle2 = (a1.theta+PI*BNodeRID/2);
-  //  //float angle2 = x + r[i] * ( cos(theta+toRadians(i*90)));
-  //  float x1=a0.x;
-  //  float y1=a0.y;
-  //  float x4=a1.x;
-  //  float y4=a1.y;
-  //  float x2=(x1+r1*cos(angle1));
-  //  float y2=(y1-r1*sin(angle1));
-  //  //float y2 = x + r[i] * ( cos(theta+toRadians(i*90)));
-  //  float x3=(x4+r2*cos(angle2));
-  //  float y3=(y4-r2*sin(angle2));
-  //  //  float y3 = x + r[i] * ( cos(theta+toRadians(i*90)));
-  //  float dst= dist(x1, y1, x4, y4);
-  //  int count=0;
-  //  do {
-  //    float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
-  //    float e21=get_rangewidth_angle(x1, y1, (x2+cos(angle1)), (y2-sin(angle1)), x3, y3, x4, y4);
-  //    float e01=get_rangewidth_angle(x1, y1, (x2-cos(angle1)), (y2+sin(angle1)), x3, y3, x4, y4);
-  //    float e12=get_rangewidth_angle(x1, y1, x2, y2, (x3+cos(angle2)), (y3-sin(angle2)), x4, y4);
-  //    float e10=get_rangewidth_angle(x1, y1, x2, y2, (x3-cos(angle2)), (y3+sin(angle2)), x4, y4);
-  //    if (e11>e01&&r1>10) {
-  //      r1--;
-  //      // if (r1<beadsDistance) {
-  //      //   r1=beadsDistance;
-  //      //}
-  //    } else if (e11>e21) {
-  //      if (r1+1 < dst) {
-  //        r1++;
-  //      }
-  //    } else if (e11>e10&&r2>10) {
-  //      r2--;
-  //      //if (r2<beadsDistance) {
-  //      //  r2=beadsDistance;
-  //      //}
-  //    } else if (e11>e12) {
-  //      if (r2+1 < dst) {
-  //        r2++;
-  //      }
-  //    } else {
-  //      break;
-  //    }
-  //    x2=(x1+r1*cos(angle1));
-  //    y2=(y1-r1*sin(angle1));
-  //    x3=(x4+r2*cos(angle2));
-  //    y3=(y4-r2*sin(angle2));
-  //  } while (++count <10);
-  //  a0.r[ANodeRID]=r1;
-  //  a1.r[BNodeRID]=r2;
-  //}
-  //float dist(float x1, float y1, float x2, float y2) {//2点間の距離
-  //  return (sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)));
-  //}
 
   //円を自動で回転させる
   void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {
@@ -536,6 +471,9 @@ class Edge {
   String getName() {
     return "("+ANodeID+","+ANodeRID+";"+BNodeID+","+BNodeRID+")";
   }
+  
+
+  
 }
 
 class EdgeConst {

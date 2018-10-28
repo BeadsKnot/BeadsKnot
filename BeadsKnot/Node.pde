@@ -4,6 +4,10 @@ class Node {
     float theta;//ラジアン
     float[] r;//長さ、４つ
     int radius;//円の半径
+    boolean Joint;//Jointかどうか
+    boolean drawOn;//描画するかどうか？
+    int pointID;// Bead[] pointsのID
+    
     float edge_x(int i){
         return x + r[i] * cos(theta+radians(i*90));
     }
@@ -16,19 +20,18 @@ class Node {
     float edge_ry(int i,float s){
         return y - s * sin(theta+radians(i*90));
     }
-    boolean Joint;
-    boolean drawOn;
     Node(float _x, float _y){
-        x=_x;
-        y=_y;
-        theta=0;
-        r=new float[4];
-        radius=20;
-        for(int i=0;i<4;i++) {
-            r[i]=5;//線の長さ
-        }
-        Joint=false;
-        drawOn = false;
+      x=_x;
+      y=_y;
+      theta=0;
+      r=new float[4];
+      radius=20;
+      for(int i=0;i<4;i++) {
+          r[i]=5;//線の長さ
+      }
+      Joint=false;
+      drawOn = false;
+      pointID = -1;
     }
     float getR(int i){
         if(0<=i && i<4) return r[i];
