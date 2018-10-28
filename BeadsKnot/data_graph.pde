@@ -508,9 +508,42 @@ class data_graph {
       float arclength = ed.get_arclength(nodes);
       int beads_number = int(arclength / beads_interval) - 1;
       // edgeの上にある現在のビーズの個数を数える。
-      int count = 0;
-      Bead bd = 
-      
+      int beads_count = 0;
+      Node NodeA = nodes.get(ed.ANodeID);
+      Node NodeB = nodes.get(ed.BNodeID);
+      int bead1 = NodeA.pointID;
+      int bead2 = -1;
+      switch(ed.ANodeRID){
+        case 0: 
+        bead2 = de.points.get(bead1).n1;
+        break;
+        case 1: 
+        bead2 = de.points.get(bead1).u1;
+        break;
+        case 2: 
+        bead2 = de.points.get(bead1).n2;
+        break;
+        case 3: 
+        bead2 = de.points.get(bead1).u2;
+        break;
+      }
+      int bead3 = -1;
+      do{
+        int b = de.points.get(bead2).n1;
+        if(b == bead1){
+          bead3 = de.points.get(bead2).n2;
+        } else {
+          bead3 = b;
+        }
+        bead1 = bead2;
+        bead2 = bead3;
+        beads_count ++;
+      }while(bead3 != NodeB.pointID);
+      if(beads_number > beads_count){// 必要数のほうが多い→ビーズの追加が必要
+      }
+      else if(beads_number < beads_count){//現在数のほうが多い→ビーズの削除が必要
+      }
+      //今一度、エッジに乗っているビーズの座標を計算しなおす。
       
     }
     
