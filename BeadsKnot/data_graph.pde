@@ -385,7 +385,7 @@ class data_graph {
     //  形を整える。
     modify();
     // 形を整えた後に、pointsのデータを更新する
-    update_points();
+    //update_points();
   }
 
   // nodesのデータを作る
@@ -501,7 +501,7 @@ class data_graph {
     }
   }
   
-  void      update_points()
+  void update_points()
   {
     for(int e=0; e<edges.size(); e++){
       Edge ed = edges.get(e);
@@ -527,6 +527,7 @@ class data_graph {
         bead2 = de.points.get(bead1).u2;
         break;
       }
+      int bead2_0 = bead2;
       int bead3 = -1;
       do{
         int b = de.points.get(bead2).n1;
@@ -540,6 +541,25 @@ class data_graph {
         beads_count ++;
       }while(bead3 != NodeB.pointID);
       if(beads_number > beads_count){// 必要数のほうが多い→ビーズの追加が必要
+  
+        bead1 = NodeA.pointID;
+        bead2 = bead2_0;
+        for(int count=0; count < beads_number - beads_count; count++){
+          Bead newBd = new Bead(0,0);
+          newBd.n1 = bead1;
+          newBd.n2 = bead2;
+          de.points.add(newBd);
+          int newBdID= de.points.size()-1;
+          switch(ed.ANodeRID){
+            case 0: de.points.get(bead1).n1 = newBdID;break;
+            case 1: de.points.get(bead1).u1 = newBdID;break;
+            case 2: de.points.get(bead1).n2 = newBdID;break;
+            case 3: de.points.get(bead1).u2 = newBdID;break;
+          }
+          if(de.points.get(bead2).n1 == bead1) de.points.get(bead2).n1 = newBdID;
+          else de.points.get(bead2).n2 = newBdID;
+          bead2 = newBdID;
+        }
       }
       else if(beads_number < beads_count){//現在数のほうが多い→ビーズの削除が必要
       }
