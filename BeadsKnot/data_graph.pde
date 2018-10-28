@@ -513,7 +513,6 @@ class data_graph {
       Node NodeB = nodes.get(ed.BNodeID);
       int bead1 = NodeA.pointID;
       int bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号
-      int bead2_0 = bead2;
       int bead3 = -1;
       do {
         int b = de.points.get(bead2).n1;
@@ -529,32 +528,33 @@ class data_graph {
 
       if (beads_number > beads_count) {// 必要数のほうが多い→ビーズの追加が必要
         bead1 = NodeA.pointID;
-        bead2 = bead2_0;
-        for (int count=0; count < beads_number - beads_count; count++) {
+        bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
+        for (int repeat=0; repeat < beads_number - beads_count; repeat++) {
           Bead newBd = new Bead(0, 0);
           newBd.n1 = bead1;
           newBd.n2 = bead2;
           de.points.add(newBd);
           int newBdID= de.points.size()-1;
-          switch(ed.ANodeRID) {
-          case 0: 
-            de.points.get(bead1).n1 = newBdID;
-            break;
-          case 1: 
-            de.points.get(bead1).u1 = newBdID;
-            break;
-          case 2: 
-            de.points.get(bead1).n2 = newBdID;
-            break;
-          case 3: 
-            de.points.get(bead1).u2 = newBdID;
-            break;
-          }
+          de.points.get(bead1).set_un12(ed.ANodeRID, newBdID);
           if (de.points.get(bead2).n1 == bead1) de.points.get(bead2).n1 = newBdID;
           else de.points.get(bead2).n2 = newBdID;
           bead2 = newBdID;
         }
       } else if (beads_number < beads_count) {//現在数のほうが多い→ビーズの削除が必要
+        beads1 = nodes.get(ed.ANodeID).pointId;
+        for(int repeat=0; repeat < beads_count - beads_number; repeat++){
+          beads2 = de.points.get(bead1).get_un12(ed.ANodeRID);
+          if(de.points.get(bead2).n1==bead1)
+            bead3 = de.points.get(bead2).n2;
+          else 
+            bead3 = de.points.get(bead2).n1;
+          de.points.get(bead1).set_un12(ed.ANodeRID, bead3);
+          if(de.points.get(bead3).n1 == bead2)
+            de.points.get(bead3).n1 = bead1;
+          else 
+            de.points.get(bead3).n2 = bead1;
+          de.points.get(bead3).n1 = de.points.get(bead3).n2 = -1;// 使わないもののデータを消す。
+        }
       }
       //今一度、エッジに乗っているビーズの座標を計算しなおす。
     }

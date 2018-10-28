@@ -75,7 +75,7 @@ class data_extract {
       } else {
         stroke(255, 0, 0);
       }
-      if (vec.c<=0||vec.c>=4) {
+      if (vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
       } else {
         //dispをつかって表示を画面サイズに合わせるように座標変換する。
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), vec.c*3+1, vec.c*3+1);//vec.cは1or2or3のはず
