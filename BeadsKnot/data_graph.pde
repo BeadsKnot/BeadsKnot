@@ -31,7 +31,7 @@ class data_graph {
     data_graph_complete=true; // この辺りの詳細はdrawOptionに任せたい。
     de.extraction_binalized = false;
     de.extraction_complete = false;
-    de.extraction_beads = false;
+    de.extraction_beads = true;
   }
 
   // deのデータから
@@ -385,7 +385,7 @@ class data_graph {
     //  形を整える。
     modify();
     // 形を整えた後に、pointsのデータを更新する
-    //update_points();
+    update_points();
   }
 
   // nodesのデータを作る
@@ -506,7 +506,7 @@ class data_graph {
     for (int e=0; e<edges.size(); e++) {
       Edge ed = edges.get(e);
       float arclength = ed.get_arclength(nodes);
-      int beads_number = int(arclength / beads_interval) - 1;
+      int beads_number = int(arclength / beads_interval) - 2;
       // edgeの上にある現在のビーズの個数を数える。
       int beads_count = 0;
       Node NodeA = nodes.get(ed.ANodeID);
@@ -533,6 +533,7 @@ class data_graph {
           Bead newBd = new Bead(0, 0);
           newBd.n1 = bead1;
           newBd.n2 = bead2;
+          newBd.c = 2;
           de.points.add(newBd);
           int newBdID= de.points.size()-1;
           de.points.get(bead1).set_un12(ed.ANodeRID, newBdID);
@@ -541,7 +542,7 @@ class data_graph {
           bead2 = newBdID;
         }
       } else if (beads_number < beads_count) {//現在数のほうが多い→ビーズの削除が必要
-        bead1 = nodes.get(ed.ANodeID).pointId;
+        bead1 = NodeA.pointID;
         for(int repeat=0; repeat < beads_count - beads_number; repeat++){
           bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
           if(de.points.get(bead2).n1==bead1)
@@ -557,7 +558,7 @@ class data_graph {
         }
       }
       //今一度、エッジに乗っているビーズの座標を計算しなおす。
-      Edge ed = edges.get(e);
+      ed = edges.get(e);
       Node ANode=nodes.get(ed.ANodeID);
       Node BNode=nodes.get(ed.BNodeID);
       float V1x = ANode.x;
@@ -568,9 +569,9 @@ class data_graph {
       float V3y = BNode.edge_y(ed.BNodeRID);
       float V4x = BNode.x;
       float V4y = BNode.y;
-      bead1 = nodes.get(ed.ANodeID).pointId;
+      bead1 = nodes.get(ed.ANodeID).pointID;
       bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
-      float step = 1.0f / (beads_number+1);
+      float step = arclength / (beads_number+1);
       int bd=0;
       float arclen=0f;
       float xx0 = V1x;
@@ -580,9 +581,25 @@ class data_graph {
         xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
         yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
         arclen += dist(xx0,yy0,xx,yy);
-        if(arclen<step * (bd+1)){
-          
-        de.points.get(bead2).x 
+        //println("update_points():",arclen,step);
+        if(arclen >= step * (bd+1)){
+          de.points.get(bead2).x = xx; 
+          de.points.get(bead2).y = yy;
+          // println("update_points():",bead2,xx,yy);
+          bd ++;
+          int b = de.points.get(bead2).n1;
+          if (b == bead1) {
+            bead3 = de.points.get(bead2).n2;
+          } else {
+            bead3 = b;
+          }
+          bead1 = bead2;
+          bead2 = bead3;
+          if(bead2 == BNode.pointID)
+            break;
+        }
+        xx0 = xx;
+        yy0 = yy;
       }
     }
   }

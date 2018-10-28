@@ -37,16 +37,12 @@ class Bead {//点のクラス
     switch(rID) {
     case 0: 
       return n1; 
-      break;
     case 1: 
       return u1; 
-      break;
     case 2: 
       return n2; 
-      break;
     case 3: 
       return u2; 
-      break;
     }
     return -1;
   }
@@ -66,5 +62,4 @@ class Bead {//点のクラス
       break;
     }
   }    
-}
 }

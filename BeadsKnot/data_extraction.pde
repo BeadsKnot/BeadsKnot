@@ -68,13 +68,20 @@ class data_extract {
       Bead vec=points.get(i);
       if (vec.Joint) {
         stroke(0, 0, 255);
+        fill(0,0,255);
       } else if (vec.closeJoint) {
         stroke(0, 255, 0);
+        fill(255);
       } else if (vec.midJoint) {
-        stroke(255, 255, 0);
+        stroke(120,120, 0);
+        fill(120,120,0);
       } else {
         stroke(255, 0, 0);
+        fill(255);
       }
+      //if(i==points.size ()-1){
+      //  println(vec.c, vec.n1, vec.n2);
+      //}
       if (vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
       } else {
         //dispをつかって表示を画面サイズに合わせるように座標変換する。
@@ -176,39 +183,25 @@ class data_extract {
     }
   }
 
-  //TODO disp を使って画像を画面に収めるように変数変換する。
   void drawNbhs() {//線を書く
     for (int i=0; i<points.size (); i++) {
-      Bead vec=points.get(i);
-      if (vec.n1!=-1) {
+      Bead pt=points.get(i);
+      if (0<=pt.n1 && pt.n1<points.size()) {
         stroke(255, 0, 0);
-        try { 
-          if (!points.get(vec.n1).Joint) {
-            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n1).x), disp.get_winY(points.get(vec.n1).y));//エラーがでる
-          }
-        }
-        catch (IndexOutOfBoundsException e) {
+        Bead pt2 = points.get(pt.n1);
+        if (! pt2.Joint) {
+          line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
         }
       }
-      if (vec.n2!=-1) {
+      if (0<=pt.n2 && pt.n2<points.size()) {
         stroke(255, 0, 0);
-        try { 
-          if (!points.get(vec.n2).Joint) {
-            line(disp.get_winX(vec.x), disp.get_winY(vec.y), disp.get_winX(points.get(vec.n2).x), disp.get_winY(points.get(vec.n2).y));//エラーがでる
-          }
-          /* process */
-        } 
-        catch (IndexOutOfBoundsException e) {
+        Bead pt2 = points.get(pt.n2);
+        if (! pt2.Joint) {
+          line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
         }
       }
-      // if (vec.u1!=-1) {
-      //stroke(0, 255, 0);
-      //line(vec.x, vec.y, points.get(vec.u1).x, points.get(vec.u1).y);//エラーがでる
-      //}
-      //if (vec.u2!=-1) {
-      //stroke(255, 255, 0);
-      //line(vec.x, vec.y, points.get(vec.u2).x, points.get(vec.u2).y);
-      //}
     }
   }
 
