@@ -541,9 +541,9 @@ class data_graph {
           bead2 = newBdID;
         }
       } else if (beads_number < beads_count) {//現在数のほうが多い→ビーズの削除が必要
-        beads1 = nodes.get(ed.ANodeID).pointId;
+        bead1 = nodes.get(ed.ANodeID).pointId;
         for(int repeat=0; repeat < beads_count - beads_number; repeat++){
-          beads2 = de.points.get(bead1).get_un12(ed.ANodeRID);
+          bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
           if(de.points.get(bead2).n1==bead1)
             bead3 = de.points.get(bead2).n2;
           else 
@@ -557,6 +557,33 @@ class data_graph {
         }
       }
       //今一度、エッジに乗っているビーズの座標を計算しなおす。
+      Edge ed = edges.get(e);
+      Node ANode=nodes.get(ed.ANodeID);
+      Node BNode=nodes.get(ed.BNodeID);
+      float V1x = ANode.x;
+      float V1y = ANode.y;
+      float V2x = ANode.edge_x(ed.ANodeRID);
+      float V2y = ANode.edge_y(ed.ANodeRID);
+      float V3x = BNode.edge_x(ed.BNodeRID);
+      float V3y = BNode.edge_y(ed.BNodeRID);
+      float V4x = BNode.x;
+      float V4y = BNode.y;
+      bead1 = nodes.get(ed.ANodeID).pointId;
+      bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
+      float step = 1.0f / (beads_number+1);
+      int bd=0;
+      float arclen=0f;
+      float xx0 = V1x;
+      float yy0 = V1y;
+      float xx,yy;
+      for(float repeat=0.01f; repeat<=1.0f; repeat += 0.01f){
+        xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
+        yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
+        arclen += dist(xx0,yy0,xx,yy);
+        if(arclen<step * (bd+1)){
+          
+        de.points.get(bead2).x 
+      }
     }
   }
 }

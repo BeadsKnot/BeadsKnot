@@ -116,19 +116,6 @@ class Edge {
     return ret1-ret0;
   }
 
-  /*public void print_get_rangewidth_angle(ArrayList<Node> nodes){
-   Node a0=nodes.get(ANodeID);
-   Node a1=nodes.get(BNodeID);
-   float x1=a0.x;
-   float y1=a0.y;
-   float x2=a0.edge_x(i);
-   float y2=a0.edge_y(i);
-   float x3=a1.edge_x(k);
-   float y3=a1.edge_y(k);
-   float x4=a1.x;
-   float y4=a1.y;
-   Log.d("CHECK",":" +get_rangewidth_angle(x1,y1,x2,y2,x3,y3,x4,y4) + "," );
-   }*/
 
   float atan2Vec(PVector v0, PVector v1) {
     float a = v0.x;
@@ -290,73 +277,73 @@ class Edge {
 
 
 
-  //円を自動で回転させる
-  void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {
-    float e0, e0p, e0m, e0r;
-    for (int h = 0; h < nodes.size (); h ++) {
-      /* Node node=nodes.get(h); */
-      e0 = e0p = e0m = e0r = 0;
-      for (int i = 0; i < 4; i ++) {
-        // int i2=node.edges[BNodeID];
-        int e1=-1, e2=-1, i1=-1, i2=-1;
-        for (Edge e : edges) {
-          if (h==e.ANodeID&&i==e.ANodeRID) {
-            i1=h;
-            i2=e.BNodeID;
-            e1=i;
-            e2=e.BNodeRID;
-            break;
-          } else if (h==e.BNodeID && i==e.BNodeRID) {
-            i1=h;
-            i2=e.ANodeID;
-            e1=i;
-            e2=e.ANodeRID;
-            break;
-          }
-        }
-        if (i1!=-1&&i2!=-1&&e1!=-1&&e2!=-1) {
-          Node a1 = nodes.get(i1);
-          Node a2 = nodes.get(i2);
-          float r1=a1.r[e1];
-          float r2=a2.r[e2];
-          float angle1 = (a1.theta+PI*e1/2);
-          float angle2 = (a2.theta+PI*e2/2);
-          float x1=a1.x;
-          float y1=a1.y;
-          float x4=a2.x;
-          float y4=a2.y;
-          float x2=(x1+r1*cos(angle1));
-          float y2=(y1-r1*sin(angle1));
-          float x2p=(x1+r1*cos(angle1+0.05));
-          float y2p=(y1-r1*sin(angle1+0.05));
-          float x2m=(x1+r1*cos(angle1-0.05));
-          float y2m=(y1-r1*sin(angle1-0.05));
-          float x2r=(x1+10*cos(angle1+PI));
-          float y2r=(y1-10*sin(angle1+PI));
-          float x3=(x4+r2*cos(angle2));
-          float y3=(y4-r2*sin(angle2));
-          float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
-          float e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
-          float e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
-          float e11r=get_rangewidth_angle(x1, y1, x2r, y2r, x3, y3, x4, y4);
-          e0 += e11;
-          e0p += e11p;
-          e0m += e11m;
-          e0r += e11r;
-        }
-      }
-      /*if (e0r < e0) {
-       nodes.get(ANodeID).theta += PI;
-       } else */
-      if (e0>e0p && e0m>e0) {
-        nodes.get(ANodeID).theta +=0.05;
-      } else if (e0>e0m && e0p>e0) {
-        nodes.get(ANodeID).theta -=0.05;
-      } /*else {
-       Log.d("check","do nothing");
-       }*/
-    }
-  }
+  ////円を自動で回転させる
+  //void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {
+  //  float e0, e0p, e0m, e0r;
+  //  for (int h = 0; h < nodes.size (); h ++) {
+  //    /* Node node=nodes.get(h); */
+  //    e0 = e0p = e0m = e0r = 0;
+  //    for (int i = 0; i < 4; i ++) {
+  //      // int i2=node.edges[BNodeID];
+  //      int e1=-1, e2=-1, i1=-1, i2=-1;
+  //      for (Edge e : edges) {
+  //        if (h==e.ANodeID&&i==e.ANodeRID) {
+  //          i1=h;
+  //          i2=e.BNodeID;
+  //          e1=i;
+  //          e2=e.BNodeRID;
+  //          break;
+  //        } else if (h==e.BNodeID && i==e.BNodeRID) {
+  //          i1=h;
+  //          i2=e.ANodeID;
+  //          e1=i;
+  //          e2=e.ANodeRID;
+  //          break;
+  //        }
+  //      }
+  //      if (i1!=-1&&i2!=-1&&e1!=-1&&e2!=-1) {
+  //        Node a1 = nodes.get(i1);
+  //        Node a2 = nodes.get(i2);
+  //        float r1=a1.r[e1];
+  //        float r2=a2.r[e2];
+  //        float angle1 = (a1.theta+PI*e1/2);
+  //        float angle2 = (a2.theta+PI*e2/2);
+  //        float x1=a1.x;
+  //        float y1=a1.y;
+  //        float x4=a2.x;
+  //        float y4=a2.y;
+  //        float x2=(x1+r1*cos(angle1));
+  //        float y2=(y1-r1*sin(angle1));
+  //        float x2p=(x1+r1*cos(angle1+0.05));
+  //        float y2p=(y1-r1*sin(angle1+0.05));
+  //        float x2m=(x1+r1*cos(angle1-0.05));
+  //        float y2m=(y1-r1*sin(angle1-0.05));
+  //        float x2r=(x1+10*cos(angle1+PI));
+  //        float y2r=(y1-10*sin(angle1+PI));
+  //        float x3=(x4+r2*cos(angle2));
+  //        float y3=(y4-r2*sin(angle2));
+  //        float e11=get_rangewidth_angle(x1, y1, x2, y2, x3, y3, x4, y4);
+  //        float e11p=get_rangewidth_angle(x1, y1, x2p, y2p, x3, y3, x4, y4);
+  //        float e11m=get_rangewidth_angle(x1, y1, x2m, y2m, x3, y3, x4, y4);
+  //        float e11r=get_rangewidth_angle(x1, y1, x2r, y2r, x3, y3, x4, y4);
+  //        e0 += e11;
+  //        e0p += e11p;
+  //        e0m += e11m;
+  //        e0r += e11r;
+  //      }
+  //    }
+  //    /*if (e0r < e0) {
+  //     nodes.get(ANodeID).theta += PI;
+  //     } else */
+  //    if (e0>e0p && e0m>e0) {
+  //      nodes.get(ANodeID).theta +=0.05;
+  //    } else if (e0>e0m && e0p>e0) {
+  //      nodes.get(ANodeID).theta -=0.05;
+  //    } /*else {
+  //     Log.d("check","do nothing");
+  //     }*/
+  //  }
+  //}
 
   float getXIntersectionWithInterval(float ox, float oy, float sx, float sy, float tx, float ty) {
     if ((sy-oy)*(ty-oy)>0) {
