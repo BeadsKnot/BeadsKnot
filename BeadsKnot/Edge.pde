@@ -294,7 +294,7 @@ class Edge {
     for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
       xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
       yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
-      println(xx,yy,arclen);
+      //println(xx,yy,arclen);
       arclen += dist(xx0, yy0, xx, yy);
       xx0 = xx;
       yy0 = yy;

@@ -5,6 +5,7 @@ class transform {//形を整えるクラス
   float ln;//自然長を定義 longueur naturel
   transform(data_extract _de){
     de=_de;
+    ln = beads_interval;// グローバル変数
   }
   
   void spring_setup() {

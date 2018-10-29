@@ -71,33 +71,38 @@ class data_graph {
 
   // deのデータから
   //nodesやedgesを決める（その２）
+  //一度全体をクリアして、
   //　エッジの真ん中にあたるビーズをノードにする。
   void add_half_point_Joint() {
-    for (int i = 0; i < de.points.size(); i++) {
-      Bead a = de.points.get(i);
-      if (a.Joint) {
-        int c=findtrueJointInPoints(i, a.n1);
-        if (i<c) {
-          int count = countNeighborJointInPoints(i, a.n1, 0);
-          int half = get_half_position(i, a.n1, count / 2);
+    for (int p = 0; p < de.points.size(); p++) {
+      Bead bd = de.points.get(p);
+      bd.midJoint = false;
+    }
+    for (int p = 0; p < de.points.size(); p++) {
+      Bead bd = de.points.get(p);
+      if (bd.Joint) {
+        int nextJoint=find_next_Joint_in_points(p, bd.n1);
+        if (p<nextJoint) {
+          int count = countNeighborJointInPoints(p, bd.n1, 0);
+          int half = get_half_position(p, bd.n1, int(count * 0.5));
           de.points.get(half).midJoint=true;
         }
-        c=findtrueJointInPoints(i, a.u1);
-        if (i<c) {
-          int count = countNeighborJointInPoints(i, a.u1, 0);
-          int half = get_half_position(i, a.u1, count / 2);
+        nextJoint=find_next_Joint_in_points(p, bd.u1);
+        if (p<nextJoint) {
+          int count = countNeighborJointInPoints(p, bd.u1, 0);
+          int half = get_half_position(p, bd.u1, int(count * 0.5));
           de.points.get(half).midJoint=true;
         }
-        c=findtrueJointInPoints(i, a.n2);
-        if (i<c) {
-          int count = countNeighborJointInPoints(i, a.n2, 0);
-          int half = get_half_position(i, a.n2, count / 2);
+        nextJoint=find_next_Joint_in_points(p, bd.n2);
+        if (p<nextJoint) {
+          int count = countNeighborJointInPoints(p, bd.n2, 0);
+          int half = get_half_position(p, bd.n2, int(count * 0.5));
           de.points.get(half).midJoint=true;
         }
-        c=findtrueJointInPoints(i, a.u2);
-        if (i<c) {
-          int count = countNeighborJointInPoints(i, a.u2, 0);
-          int half = get_half_position(i, a.u2, count / 2);
+        nextJoint=find_next_Joint_in_points(p, bd.u2);
+        if (p<nextJoint) {
+          int count = countNeighborJointInPoints(p, bd.u2, 0);
+          int half = get_half_position(p, bd.u2, int(count * 0.5));
           de.points.get(half).midJoint=true;
         }
       }
@@ -109,30 +114,30 @@ class data_graph {
   //　エッジの端のほうにあるビーズをclosepointにする。
   //　これはPLinkファイルをつくるため。
   void add_close_point_Joint() {//Ten Percent Neighborhood point
-    for (int p_i = 0; p_i < de.points.size(); p_i++) {
-      Bead b_a = de.points.get(p_i);
-      if (b_a.Joint) {
-        //int p_c=findtrueJointInPoints(p_i, b_a.n1);
-        int count = countNeighborJointInPoints(p_i, b_a.n1, 0);
-        int p_close = get_half_position(p_i, b_a.n1, ceil(count*0.1));
+    for (int p = 0; p < de.points.size(); p++) {
+      Bead bd = de.points.get(p);
+      bd.closeJoint = false;
+    }
+    for (int pt = 0; pt < de.points.size(); pt++) {
+      Bead bd = de.points.get(pt);
+      if (bd.Joint) {
+        int count = countNeighborJointInPoints(pt, bd.n1, 0);
+        int p_close = get_half_position(pt, bd.n1, ceil(count*0.1));
         de.points.get(p_close).closeJoint=true;
-        //p_c=findtrueJointInPoints(p_i, b_a.u1);
-        count = countNeighborJointInPoints(p_i, b_a.u1, 0);
-        p_close = get_half_position(p_i, b_a.u1, ceil(count*0.1));
+        count = countNeighborJointInPoints(pt, bd.u1, 0);
+        p_close = get_half_position(pt, bd.u1, ceil(count*0.1));
         de.points.get(p_close).closeJoint=true;
-        //p_c=findtrueJointInPoints(p_i, b_a.n2);
-        count = countNeighborJointInPoints(p_i, b_a.n2, 0);
-        p_close = get_half_position(p_i, b_a.n2, ceil(count*0.1));
+        count = countNeighborJointInPoints(pt, bd.n2, 0);
+        p_close = get_half_position(pt, bd.n2, ceil(count*0.1));
         de.points.get(p_close).closeJoint=true;
-        //p_c=findtrueJointInPoints(p_i, b_a.u2);
-        count = countNeighborJointInPoints(p_i, b_a.u2, 0);
-        p_close = get_half_position(p_i, b_a.u2, ceil(count*0.1));
+        count = countNeighborJointInPoints(pt, bd.u2, 0);
+        p_close = get_half_position(pt, bd.u2, ceil(count*0.1));
         de.points.get(p_close).closeJoint=true;
       }
     }
   }
 
-  int findtrueJointInPoints(int j, int c) {
+  int find_next_Joint_in_points(int j, int c) {
     // for (int i = 0; i < de.points.size(); i++) {
     Bead p=de.points.get(c);
     if (p.Joint) {
@@ -146,7 +151,7 @@ class data_graph {
     } else {
       //println("間違っている");
     }
-    return findtrueJointInPoints(c, d);
+    return find_next_Joint_in_points(c, d);
   }
 
   int findNeighborJointInPoints(int j, int c) {
@@ -386,6 +391,7 @@ class data_graph {
     modify();
     // 形を整えた後に、pointsのデータを更新する
     update_points();
+    add_close_point_Joint();
   }
 
   // nodesのデータを作る
@@ -506,7 +512,6 @@ class data_graph {
     for (int e=0; e<edges.size(); e++) {
       Edge ed = edges.get(e);
       float arclength = ed.get_real_arclength(nodes);
-      println(arclength, ed.get_arclength(nodes));
       int beads_number = int(arclength / beads_interval) - 2;
       // edgeの上にある現在のビーズの個数を数える。
       int beads_count = 0;
@@ -526,7 +531,7 @@ class data_graph {
         bead2 = bead3;
         beads_count ++;
       } while (bead3 != NodeB.pointID);
-      println("必要数,現状数",beads_number, beads_count);
+      //println("必要数,現状数",beads_number, beads_count);
       if (beads_number > beads_count) {// 必要数のほうが多い→ビーズの追加が必要
         bead1 = NodeA.pointID;
         bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
