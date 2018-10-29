@@ -5,7 +5,7 @@ class Edge {
   int ANodeRID;//edge
   int BNodeID;//node
   int BNodeRID;//edge
-  
+
   Edge(int _ANodeID, int _ANodeRID, int _BNodeID, int _BNodeRID) {
     ANodeID=_ANodeID;
     ANodeRID=_ANodeRID;
@@ -276,6 +276,33 @@ class Edge {
   }
 
 
+  float get_real_arclength(ArrayList<Node> nodes) {
+    Node ANode=nodes.get(ANodeID);
+    Node BNode=nodes.get(BNodeID);
+    float V1x = ANode.x;
+    float V1y = ANode.y;
+    float V2x = ANode.edge_x(ANodeRID);
+    float V2y = ANode.edge_y(ANodeRID);
+    float V3x = BNode.edge_x(BNodeRID);
+    float V3y = BNode.edge_y(BNodeRID);
+    float V4x = BNode.x;
+    float V4y = BNode.y;
+    float arclen=0f;
+    float xx0 = V1x;
+    float yy0 = V1y;
+    float xx, yy;
+    for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
+      xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
+      yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
+      println(xx,yy,arclen);
+      arclen += dist(xx0, yy0, xx, yy);
+      xx0 = xx;
+      yy0 = yy;
+    }
+    return arclen;
+  }
+
+
 
   ////円を自動で回転させる
   //void rotation_shape_modifier(ArrayList<Node> nodes, ArrayList<Edge> edges) {
@@ -458,13 +485,11 @@ class Edge {
   String getName() {
     return "("+ANodeID+","+ANodeRID+";"+BNodeID+","+BNodeRID+")";
   }
-  
-
-  
 }
 
 class EdgeConst {
-  EdgeConst(){};
+  EdgeConst() {
+  };
   float[][] len1 = {{147.91724, 158.80765, 162.3324, 162.2876, 161.04608, 159.28922, 157.25934, 154.61673, 149.53748, 141.48767, 135.38705, 132.3147, 130.10965, 127.808685, 124.88284, 121.35672, 118.79715, 118.191345, 119.33679, 121.52466, 123.0058, 123.45752, 122.80316, 122.02042, 120.795105, 118.436615, 115.118195, 111.825134, 109.17355, 107.23453, 105.92224, 104.87497, 104.76669, 107.01047, 115.18564, 130.75687}, 
     {146.90292, 157.893, 163.38995, 163.95944, 162.23407, 159.66425, 156.71213, 151.80127, 139.9563, 119.953766, 102.789215, 94.18259, 90.891785, 90.06433, 90.35562, 91.37833, 93.45883, 97.03003, 101.668, 105.66409, 107.20032, 107.018555, 106.28781, 106.49399, 107.425415, 108.1315, 108.41855, 108.77222, 109.608185, 110.75003, 112.58276, 115.266205, 118.39197, 122.02298, 127.651764, 136.00494}, 
     {178.16525, 194.46225, 204.24362, 206.90024, 206.27505, 204.62756, 202.13629, 195.69968, 177.39139, 143.88358, 109.58359, 87.44977, 77.522675, 75.52313, 76.94565, 79.75601, 83.681274, 88.918976, 94.92096, 99.762085, 101.61075, 100.91525, 98.97592, 97.99536, 98.80481, 100.78226, 103.52042, 106.85675, 110.94766, 115.378174, 121.064545, 128.79895, 136.84299, 144.54605, 153.52814, 164.25845}, 
