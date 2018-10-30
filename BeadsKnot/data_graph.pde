@@ -549,20 +549,20 @@ class data_graph {
         }
       } else if (beads_number < beads_count) {//現在数のほうが多い→ビーズの削除が必要
         bead1 = NodeA.pointID;
-        for(int repeat=0; repeat < beads_count - beads_number; repeat++){
+        for (int repeat=0; repeat < beads_count - beads_number; repeat++) {
           bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
-          if(de.points.get(bead2).n1==bead1)
+          if (de.points.get(bead2).n1==bead1)
             bead3 = de.points.get(bead2).n2;
-          else if(de.points.get(bead2).n2==bead1)
+          else if (de.points.get(bead2).n2==bead1)
             bead3 = de.points.get(bead2).n1;
           else {
             println("error");
             break;
           }
           de.points.get(bead1).set_un12(ed.ANodeRID, bead3);
-          if(de.points.get(bead3).n1 == bead2)
+          if (de.points.get(bead3).n1 == bead2)
             de.points.get(bead3).n1 = bead1;
-          else if(de.points.get(bead3).n2 == bead2) 
+          else if (de.points.get(bead3).n2 == bead2) 
             de.points.get(bead3).n2 = bead1;
           de.points.get(bead2).n1 = de.points.get(bead2).n2 = -1;// 使わないもののデータを消す。
           de.points.get(bead2).x = de.points.get(bead2).y = 100;//ダミーデータ-> 不要
@@ -587,13 +587,13 @@ class data_graph {
       float arclen=0f;
       float xx0 = V1x;
       float yy0 = V1y;
-      float xx,yy;
-      for(float repeat=0.01f; repeat<=1.0f; repeat += 0.01f){
+      float xx, yy;
+      for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
         xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
         yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
-        arclen += dist(xx0,yy0,xx,yy);
+        arclen += dist(xx0, yy0, xx, yy);
         //println("update_points():",arclen,step);
-        if(arclen >= step * (bd+1)){
+        if (arclen >= step * (bd+1)) {
           de.points.get(bead2).x = xx; 
           de.points.get(bead2).y = yy;
           // println("update_points():",bead2,xx,yy);
@@ -606,12 +606,24 @@ class data_graph {
           }
           bead1 = bead2;
           bead2 = bead3;
-          if(bead2 == BNode.pointID)
+          if (bead2 == BNode.pointID)
             break;
         }
         xx0 = xx;
         yy0 = yy;
       }
     }
+  }
+
+  int is_PVector_on_Joint(float vecX, float vecY) {
+    for (int nd=0; nd<nodes.size(); nd++) {
+      int ndID = nodes.get(nd).pointID;
+      Bead bd = de.points.get(ndID);
+      println(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY);
+      if (dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY)<10) {
+        return nd;
+      }
+    }
+    return -1;
   }
 }

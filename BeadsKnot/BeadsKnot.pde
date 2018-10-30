@@ -7,6 +7,7 @@ data_extract data;// 画像解析から読み込んだ線のデータ
 data_graph graph;// data_extractから解析した平面グラフのデータ
 display disp;// 画面表示に関する定数
 EdgeConst ec;// Edgeに関する定数
+drawOption dOpt;// 描画に関するオプション
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 20 ;// ビーズの間隔
 // グローバル変数終了
@@ -21,6 +22,7 @@ void setup() {
   data = new data_extract(extractSize, extractSize, disp);
   graph = new data_graph(data);
   ec = new EdgeConst();
+  dOpt = new drawOption();
 }
 
 void draw() {
@@ -44,10 +46,15 @@ void draw() {
     data.drawPoints();
     data.drawNbhs();
     data.tf.spring();// ばねモデルで動かしたものを表示
+    // 平面グラフのデータもある場合、ばねモデルで動かした結果をNodeにフィードバックする必要がある？
   } 
   // 平面グラフのデータを表示
   else if (graph.data_graph_complete) {
     graph.draw_nodes_edges();
+  }else if(dOpt.data_graph_all_complete){
+    data.drawPoints();
+    data.drawNbhs();
+    data.tf.spring();// ばねモデルで動かしたものを表示
   }
 }
 
@@ -93,14 +100,49 @@ void fileSelected(File selection) {
     }
   }
 }
-void mouseClicked() {
-  println(mouseX, mouseY);
+
+boolean node_dragging=false;
+int dragged_nodeID = -1;
+float node_dragging_min_dist=0f;
+
+void mousePressed() {
+  int ndID = graph.is_PVector_on_Joint(mouseX, mouseY);
+  if(ndID != -1){
+    node_dragging = true;
+    dragged_nodeID = ndID;
+    float mX = disp.getX_fromWin(mouseX);
+    float mY = disp.getY_fromWin(mouseY);
+  }
 }
 
 void mouseDragged(){
-  
+  if(node_dragging){
+    float mX = disp.getX_fromWin(mouseX);
+    float mY = disp.getY_fromWin(mouseY);
+
+    int pt0ID = graph.nodes.get(dragged_nodeID).pointID;
+    Bead pt0 = data.points.get(pt0ID);
+    float x0 = pt0.x;
+    float y0 = pt0.y;
+    node_dragging_min_dist = dist(x0,y0,mX,mY);
+    for(int ndID=0; ndID<graph.nodes.size(); ndID++){
+      int ptID = graph.nodes.get(ndID).pointID;
+      Bead pt = data.points.get(ptID);
+      float x = pt.x;
+      float y = pt.y;
+      float d = dist(mX,mY,x,y);
+      println(d,node_dragging_min_dist);
+      if(d>node_dragging_min_dist){//ボロノイ領域を超えたら処理をしない。
+        return;
+      }
+    }
+    println(mX,mY);
+    pt0.x = mX;
+    pt0.y = mY;
+    // 図全体のmodify();
+  }
 }
 
 void mouseReleased(){
-  
+  node_dragging=false; 
 }

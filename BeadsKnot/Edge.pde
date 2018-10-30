@@ -302,6 +302,33 @@ class Edge {
     return arclen;
   }
 
+  boolean is_PVector_on_edge(ArrayList<Node> nodes,PVector vec) {
+    Node ANode=nodes.get(ANodeID);
+    Node BNode=nodes.get(BNodeID);
+    float V1x = ANode.x;
+    float V1y = ANode.y;
+    float V2x = ANode.edge_x(ANodeRID);
+    float V2y = ANode.edge_y(ANodeRID);
+    float V3x = BNode.edge_x(BNodeRID);
+    float V3y = BNode.edge_y(BNodeRID);
+    float V4x = BNode.x;
+    float V4y = BNode.y;
+    float arclen=0f;
+    float xx0 = V1x;
+    float yy0 = V1y;
+    float xx, yy;
+    for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
+      xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
+      yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
+      //println(xx,yy,arclen);
+      arclen += dist(xx0, yy0, xx, yy);
+      xx0 = xx;
+      yy0 = yy;
+    }
+    return false;
+  }
+  
+  
 
 
   ////円を自動で回転させる

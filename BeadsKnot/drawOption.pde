@@ -2,6 +2,8 @@ class drawOption {
   boolean drawOriginalImage;
   boolean drawThinningImage;
   boolean drawBeadsAndNhds;
+  
+  boolean data_graph_all_complete;
 
   drawOption() {
     changeDrawOption(3);
