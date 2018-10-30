@@ -276,9 +276,9 @@ class data_graph {
       edge.scaling_shape_modifier(nodes);
     }
     //Nodeのthetaを最適化する
-    //for (int n=0; n<nodes.size(); n++) {
-    //  rotation_shape_modifier(n);
-    //}
+    for (int n=0; n<nodes.size(); n++) {
+      rotation_shape_modifier(n);
+    }
     //Nodeの(x,y)を最適化する
     //nodeCoordinateModifier(nodes, edges);
     // 絵の範囲を求めて適切に描画する
@@ -291,21 +291,21 @@ class data_graph {
     float totalArcLength=0f;
     float theta0 = node.theta;
     for (int e=0; e<edges.size(); e++) {
-      totalArcLength += edges.get(e).get_arclength(nodes);
+      totalArcLength += edges.get(e).get_real_arclength(nodes);
     }
     float totalArcLengthP=0f;
     float thetaP = theta0 + 0.05f;
     node.theta = thetaP;
     for (int e=0; e<edges.size(); e++) {
-      totalArcLengthP += edges.get(e).get_arclength(nodes);
+      totalArcLengthP += edges.get(e).get_real_arclength(nodes);
     }
     float totalArcLengthM=0f;
     float thetaM = theta0 - 0.05f;
     node.theta = thetaM;
     for (int e=0; e<edges.size(); e++) {
-      totalArcLengthM += edges.get(e).get_arclength(nodes);
+      totalArcLengthM += edges.get(e).get_real_arclength(nodes);
     }
-    //println("arcLength= ", totalArcLength, totalArcLengthP, totalArcLengthM);
+    println("arcLength= ", totalArcLength, totalArcLengthP, totalArcLengthM);
     if (totalArcLength -1.0 > totalArcLengthP) {
       node.theta = thetaP;
       return ;
@@ -619,7 +619,7 @@ class data_graph {
     for (int nd=0; nd<nodes.size(); nd++) {
       int ndID = nodes.get(nd).pointID;
       Bead bd = de.points.get(ndID);
-      println(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY);
+      //println(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY);
       if (dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY)<10) {
         return nd;
       }

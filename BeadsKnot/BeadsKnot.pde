@@ -127,22 +127,28 @@ void mouseDragged(){
     for(int ndID=0; ndID<graph.nodes.size(); ndID++){
       if(ndID != dragged_nodeID){
         int ptID = graph.nodes.get(ndID).pointID;
-        //println(ndID, ptID);
         Bead pt = data.points.get(ptID);
         float x = pt.x;
         float y = pt.y;
         float d = dist(mX,mY,x,y);
-        //println(d,node_dragging_min_dist);
         if(d < node_dragging_min_dist){//ボロノイ領域を超えたら処理をしない。
           return;
         }
       }
     }
     println(mX,mY);
-    Bead pt0 = data.points.get(graph.nodes.get(dragged_nodeID).pointID);
-    pt0.x = mX;
-    pt0.y = mY;
+    Node nd0 = graph.nodes.get(dragged_nodeID);
+    nd0.x = mX;
+    nd0.y = mY;
+    Bead bd0 = data.points.get(nd0.pointID);
+    bd0.x = mX;
+    bd0.y = mY;
     // 図全体のmodify();
+    graph.modify();
+    // 形を整えた後に、pointsのデータを更新する
+    graph.update_points();
+    graph.add_close_point_Joint();
+
   }
 }
 
