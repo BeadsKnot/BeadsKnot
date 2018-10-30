@@ -103,15 +103,18 @@ void fileSelected(File selection) {
 
 boolean node_dragging=false;
 int dragged_nodeID = -1;
-float node_dragging_min_dist=0f;
+float node_dragging_x0 = 0f;
+float node_dragging_y0 = 0f;
 
 void mousePressed() {
   int ndID = graph.is_PVector_on_Joint(mouseX, mouseY);
   if(ndID != -1){
     node_dragging = true;
     dragged_nodeID = ndID;
-    float mX = disp.getX_fromWin(mouseX);
-    float mY = disp.getY_fromWin(mouseY);
+    int pt0ID = graph.nodes.get(dragged_nodeID).pointID;
+    Bead pt0 = data.points.get(pt0ID);
+    node_dragging_x0 = pt0.x;
+    node_dragging_y0 = pt0.y;
   }
 }
 
@@ -120,23 +123,23 @@ void mouseDragged(){
     float mX = disp.getX_fromWin(mouseX);
     float mY = disp.getY_fromWin(mouseY);
 
-    int pt0ID = graph.nodes.get(dragged_nodeID).pointID;
-    Bead pt0 = data.points.get(pt0ID);
-    float x0 = pt0.x;
-    float y0 = pt0.y;
-    node_dragging_min_dist = dist(x0,y0,mX,mY);
+    float node_dragging_min_dist = dist(node_dragging_x0,node_dragging_y0,mX,mY);
     for(int ndID=0; ndID<graph.nodes.size(); ndID++){
-      int ptID = graph.nodes.get(ndID).pointID;
-      Bead pt = data.points.get(ptID);
-      float x = pt.x;
-      float y = pt.y;
-      float d = dist(mX,mY,x,y);
-      println(d,node_dragging_min_dist);
-      if(d>node_dragging_min_dist){//ボロノイ領域を超えたら処理をしない。
-        return;
+      if(ndID != dragged_nodeID){
+        int ptID = graph.nodes.get(ndID).pointID;
+        //println(ndID, ptID);
+        Bead pt = data.points.get(ptID);
+        float x = pt.x;
+        float y = pt.y;
+        float d = dist(mX,mY,x,y);
+        //println(d,node_dragging_min_dist);
+        if(d < node_dragging_min_dist){//ボロノイ領域を超えたら処理をしない。
+          return;
+        }
       }
     }
     println(mX,mY);
+    Bead pt0 = data.points.get(graph.nodes.get(dragged_nodeID).pointID);
     pt0.x = mX;
     pt0.y = mY;
     // 図全体のmodify();
