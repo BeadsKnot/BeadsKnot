@@ -1,4 +1,4 @@
-class display{
+static class display{
 	float left,top,right,bottom;
 	float win_width,win_height,win_offset;
 	float rate;

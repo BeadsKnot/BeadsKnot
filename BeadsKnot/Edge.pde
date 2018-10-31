@@ -6,11 +6,14 @@ class Edge {
   int BNodeID;//node
   int BNodeRID;//edge
 
+  Bezier bezier;
+
   Edge(int _ANodeID, int _ANodeRID, int _BNodeID, int _BNodeRID) {
     ANodeID=_ANodeID;
     ANodeRID=_ANodeRID;
     BNodeID=_BNodeID;
     BNodeRID=_BNodeRID;
+    bezier = new Bezier();
   }
 
   int getANodeID() {
