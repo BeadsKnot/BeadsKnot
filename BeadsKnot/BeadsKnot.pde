@@ -218,13 +218,15 @@ void fileSelected(File selection) {
   }
 }
 
+//ここにあるものは class mouseDragに引き取ってもらう。
 boolean node_dragging=false;
 int dragged_nodeID = -1;
 float mouseDragX = 0f;
 float mouseDragY = 0f;
 float mousePressX = 0;
 float mousePressY = 0;
-mouseDrag mouse;
+///
+mouseDrag mouse;// これはページ上部へ
 
 void mousePressed() {
   mousePressX = mouseX;
@@ -333,7 +335,7 @@ void mouseReleased() {
               );
             if(r==0){
               // mouse.trace を beadsのデータにする。
-              println("OK");
+              mouse.trace_to_beads(data, graph);
             }
           }
           
