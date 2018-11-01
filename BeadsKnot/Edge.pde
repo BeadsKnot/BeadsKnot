@@ -16,6 +16,7 @@ class Edge {
     bezier = new Bezier();
   }
 
+
   int getANodeID() {
     return ANodeID;
   }
@@ -28,41 +29,41 @@ class Edge {
   int getBNodeRID() {
     return BNodeRID;
   }
-  //　node と node をつなぐ曲線を描く
-  void drawEdgeBezier(ArrayList<Node> nodes, float l, float t, float r, float b) {
-    // 表示サイズを調節
-    float wid = r-l;
-    float hei = b-t;
-    float rate;
-    if (wid>hei) {
-      rate = 1080/wid;
-    } else {
-      rate = 1080/hei;
-    }
-    //
-    Node a0=nodes.get(ANodeID);
-    Node a1=nodes.get(BNodeID);
-    float hx=(a0.x-l)*rate;
-    float hy=(a0.y-t)*rate;
-    if (ANodeRID==1 || ANodeRID==3) {
-      hx = (a0.edge_rx(ANodeRID, 30/rate) - l) * rate;
-      hy = (a0.edge_ry(ANodeRID, 30/rate) - t) * rate;
-    }
-    float ix=(a0.edge_x(ANodeRID)-l)*rate;
-    float iy=(a0.edge_y(ANodeRID)-t)*rate;
-    float jx=(a1.x-l)*rate;
-    float jy=(a1.y-t)*rate;
-    if (BNodeRID==1 || BNodeRID==3) {
-      jx = (a1.edge_rx(BNodeRID, 30/rate)-l)*rate;
-      jy = (a1.edge_ry(BNodeRID, 30/rate)-l)*rate;
-    }
-    float kx=(a1.edge_x(BNodeRID)-l)*rate;
-    float ky=(a1.edge_y(BNodeRID)-t)*rate;
+  ////　node と node をつなぐ曲線を描く
+  //void drawEdgeBezier(ArrayList<Node> nodes, float l, float t, float r, float b) {
+  //  // 表示サイズを調節
+  //  float wid = r-l;
+  //  float hei = b-t;
+  //  float rate;
+  //  if (wid>hei) {
+  //    rate = 1080/wid;
+  //  } else {
+  //    rate = 1080/hei;
+  //  }
+  //  //
+  //  Node a0=nodes.get(ANodeID);
+  //  Node a1=nodes.get(BNodeID);
+  //  float hx=(a0.x-l)*rate;
+  //  float hy=(a0.y-t)*rate;
+  //  if (ANodeRID==1 || ANodeRID==3) {
+  //    hx = (a0.edge_rx(ANodeRID, 30/rate) - l) * rate;
+  //    hy = (a0.edge_ry(ANodeRID, 30/rate) - t) * rate;
+  //  }
+  //  float ix=(a0.edge_x(ANodeRID)-l)*rate;
+  //  float iy=(a0.edge_y(ANodeRID)-t)*rate;
+  //  float jx=(a1.x-l)*rate;
+  //  float jy=(a1.y-t)*rate;
+  //  if (BNodeRID==1 || BNodeRID==3) {
+  //    jx = (a1.edge_rx(BNodeRID, 30/rate)-l)*rate;
+  //    jy = (a1.edge_ry(BNodeRID, 30/rate)-l)*rate;
+  //  }
+  //  float kx=(a1.edge_x(BNodeRID)-l)*rate;
+  //  float ky=(a1.edge_y(BNodeRID)-t)*rate;
 
-    stroke(255, 0, 0, 0);
-    strokeWeight(5);
-    drawCubicBezier(hx, hy, ix, iy, jx, jy, kx, ky);
-  }
+  //  stroke(255, 0, 0, 0);
+  //  strokeWeight(5);
+  //  drawCubicBezier(hx, hy, ix, iy, jx, jy, kx, ky);
+  //}
 
   float naibun(float p, float q, float t) {
     return (p*(1.0-t)+q*t);
@@ -92,69 +93,75 @@ class Edge {
     }
     return ret;
   }
-  float get_rangewidth_angle(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-    float ret0 = (PI);
-    float ret1 = 0;
-    float step=(0.05);// step is 1/20
-    float cx = x1;
-    float dx = coordinate_bezier(x1, x2, x3, x4, step);
-    float cy = y1;
-    float dy = coordinate_bezier(y1, y2, y3, y4, step);
-    float ex, ey;
-    for (float i = step*2; i<=1.0; i += step) {
-      ex=coordinate_bezier(x1, x2, x3, x4, i);
-      ey=coordinate_bezier(y1, y2, y3, y4, i);
-      float ang = angle(cx, cy, dx, dy, ex, ey);
-      if (ang < ret0) { // get minimum
-        ret0 = ang;
-      }
-      if (ang > ret1) { // get maximum
-        ret1 = ang;
-      }
-      cx = dx;
-      cy = dy;
-      dx = ex;
-      dy = ey;
-    }
-    return ret1-ret0;
-  }
 
-
-  float atan2Vec(PVector v0, PVector v1) {
-    float a = v0.x;
-    float c = v0.y;
-    float b = -c;
-    float d = a;
-    float p = v1.x;
-    float q = v1.y;
-    float s = (p * d - b * q) / (a*d - b*c);
-    float t = (a * q - p * c) / (a*d - b*c);
-    float ret = atan2(t, s);
-    if (ret < 0) {
-      ret += 2*PI;
-    }
-    return ret;
+  void set_bezier(ArrayList<Node> nodes) {
+    Node ANode=nodes.get(ANodeID);
+    Node BNode=nodes.get(BNodeID);
+    bezier.set_bezier(ANode, BNode, ANodeRID, BNodeRID);
   }
 
   //四本の線の長さを変えることで形を整える
   // arcLength に値を代入する。
   void scaling_shape_modifier(ArrayList<Node> nodes) {
+    Node nodeA = nodes.get(ANodeID);
+    Node nodeB = nodes.get(BNodeID);
+    scaling_shape_modifier1(nodes);
+    set_bezier(nodes);
+    PVector minMax = bezier.get_curvature_range();
+    for (int repeat=0; repeat<1; repeat++) {
+      Bezier bezierAP = new Bezier(bezier);
+      bezierAP.v2X = nodeA.edge_rx(ANodeRID, nodeA.r[ANodeRID]+1f);
+      bezierAP.v2Y = nodeA.edge_ry(ANodeRID, nodeA.r[ANodeRID]+1f);
+      PVector minMaxAP = bezierAP.get_curvature_range();
+      if (minMax.y-minMax.x >minMaxAP.y - minMaxAP.x) {
+        bezier.v2X = bezierAP.v2X;
+        bezier.v2Y = bezierAP.v2Y;
+        nodeA.r[ANodeRID] += 1f;
+        minMax = bezier.get_curvature_range();
+      } else {
+        Bezier bezierAM = new Bezier(bezier);
+        bezierAM.v2X = nodeA.edge_rx(ANodeRID, nodeA.r[ANodeRID]-1f);
+        bezierAM.v2Y = nodeA.edge_ry(ANodeRID, nodeA.r[ANodeRID]-1f);
+        PVector minMaxAM = bezierAM.get_curvature_range();
+        if (minMax.y-minMax.x >minMaxAM.y - minMaxAM.x) {
+          bezier.v2X = bezierAM.v2X;
+          bezier.v2Y = bezierAM.v2Y;
+          nodeA.r[ANodeRID] -= 1f;
+          minMax = bezier.get_curvature_range();
+        }
+      }
+
+      Bezier bezierBP = new Bezier(bezier);
+      bezierBP.v3X = nodeB.edge_rx(BNodeRID, nodeB.r[BNodeRID]+1f);
+      bezierBP.v3Y = nodeB.edge_ry(BNodeRID, nodeB.r[BNodeRID]+1f);
+      PVector minMaxBP = bezierBP.get_curvature_range();
+      if (minMax.y-minMax.x >minMaxBP.y - minMaxBP.x) {
+        bezier.v3X = bezierBP.v3X;
+        bezier.v3Y = bezierBP.v3Y;
+        nodeB.r[BNodeRID] += 1f;
+        minMax = bezier.get_curvature_range();
+      } else {
+        Bezier bezierBM = new Bezier(bezier);
+        bezierBM.v3X = nodeB.edge_rx(BNodeRID, nodeB.r[BNodeRID]-1f);
+        bezierBM.v3Y = nodeB.edge_ry(BNodeRID, nodeB.r[BNodeRID]-1f);
+        PVector minMaxBM = bezierBM.get_curvature_range();
+        if (minMax.y-minMax.x >minMaxBM.y - minMaxBM.x) {
+          bezier.v3X = bezierBM.v3X;
+          bezier.v3Y = bezierBM.v3Y;
+          nodeB.r[BNodeRID] -= 1f;
+          minMax = bezier.get_curvature_range();
+        }
+      }
+    }
+  }
+
+  void scaling_shape_modifier1(ArrayList<Node> nodes) {
     // 準備
-    Node ANode=nodes.get(ANodeID);
-    Node BNode=nodes.get(BNodeID);
-    PVector V1 = new PVector(ANode.x, ANode.y);
-    PVector V2 = new PVector(ANode.edge_x(ANodeRID), ANode.edge_y(ANodeRID));
-    PVector V3 = new PVector(BNode.edge_x(BNodeRID), BNode.edge_y(BNodeRID));
-    PVector V4 = new PVector(BNode.x, BNode.y);
-    PVector V41 = V4;
-    V41.sub(V1); // V4 - V1
-    PVector V21 = V2;
-    V21.sub(V1); // V2 - V1
-    PVector V34 = V3;
-    V34.sub(V4); // V3 - V4
-    float rate = (V41.mag())/250f;// 250=計測したときのV4-V1の長さ
-    float t1 = degrees(atan2Vec(V21, V41));
-    float t2 = degrees(atan2Vec(V21, V34));
+    set_bezier(nodes);
+    PVector rate_t1t2 = bezier.get_rate_t1t2();
+    float rate = rate_t1t2.x;
+    float t1 = rate_t1t2.y;
+    float t2 = rate_t1t2.z;
     int th1 = int(t1 / 10f);
     int th2 = int(t2 / 10f);
     //println("" + rate + " " + t1 + " " + t2 + " " + th1 + " " + th2);
@@ -182,32 +189,17 @@ class Edge {
     float a21 = ec.len2[(th1 + 1) % 36][th2];
     float a22 = ec.len2[th1][(th2 + 1) % 36];
     float a2 = a20 + t1 * (a21 - a20) + t2 * (a22 - a20);
-    //float a30 = ec.angleRange[th1][th2];
-    //float a31 = ec.angleRange[(th1 + 1) % 36][th2];
-    //float a32 = ec.angleRange[th1][(th2 + 1) % 36];
-    //float a3 = a30 + t1 * (a31 - a30) + t2 * (a32 - a30);
-
-    ANode.r[ANodeRID] = rate * a1;
-    BNode.r[BNodeRID] = rate * a2;
+    nodes.get(ANodeID).r[ANodeRID] = rate * a1;
+    nodes.get(BNodeID).r[BNodeRID] = rate * a2;
   }
 
   float get_angleRange(ArrayList<Node> nodes) {
     // 準備
-    Node ANode=nodes.get(ANodeID);
-    Node BNode=nodes.get(BNodeID);
-    PVector V1 = new PVector(ANode.x, ANode.y);
-    PVector V2 = new PVector(ANode.edge_x(ANodeRID), ANode.edge_y(ANodeRID));
-    PVector V3 = new PVector(BNode.edge_x(BNodeRID), BNode.edge_y(BNodeRID));
-    PVector V4 = new PVector(BNode.x, BNode.y);
-    PVector V41 = V4;
-    V41.sub(V1); // V4 - V1
-    PVector V21 = V2;
-    V21.sub(V1); // V2 - V1
-    PVector V34 = V3;
-    V34.sub(V4); // V3 - V4
-    //float rate = (V41.mag())/250f;// 250=計測したときのV4-V1の長さ
-    float t1 = degrees(atan2Vec(V21, V41));
-    float t2 = degrees(atan2Vec(V21, V34));
+    set_bezier(nodes);
+    PVector rate_t1t2 = bezier.get_rate_t1t2();
+    //float rate = rate_t1t2.x;
+    float t1 = rate_t1t2.y;
+    float t2 = rate_t1t2.z;
     int th1 = int(t1 / 10f);
     int th2 = int(t2 / 10f);
     //println("" + rate + " " + t1 + " " + t2 + " " + th1 + " " + th2);
@@ -234,104 +226,45 @@ class Edge {
     return a3;
   }
 
-  // 最適化されたedgeの弧長を返す。
-  float get_arclength(ArrayList<Node> nodes) {
-    // 準備
-    Node ANode=nodes.get(ANodeID);
-    Node BNode=nodes.get(BNodeID);
-    PVector V1 = new PVector(ANode.x, ANode.y);
-    PVector V2 = new PVector(ANode.edge_x(ANodeRID), ANode.edge_y(ANodeRID));
-    PVector V3 = new PVector(BNode.edge_x(BNodeRID), BNode.edge_y(BNodeRID));
-    PVector V4 = new PVector(BNode.x, BNode.y);
-    PVector V41 = V4;
-    V41.sub(V1); // V4 - V1
-    PVector V21 = V2;
-    V21.sub(V1); // V2 - V1
-    PVector V34 = V3;
-    V34.sub(V4); // V3 - V4
-    float rate = (V41.mag())/250f;// 250=計測したときのV4-V1の長さ
-    float t1 = degrees(atan2Vec(V21, V41));
-    float t2 = degrees(atan2Vec(V21, V34));
-    int th1 = int(t1 / 10f);
-    int th2 = int(t2 / 10f);
-    //println("" + rate + " " + t1 + " " + t2 + " " + th1 + " " + th2);
-    if (th1 == 36)
-    {
-      th1 = 0;
-      t1 -= 360f;
-    }
-    if (th2 == 36)
-    {
-      th2 = 0;
-      t2 -= 360f;
-    }
-    // 端数の処理のため
-    t1 -= 10f * th1;
-    t2 -= 10f * th2;
-    t1 /= 10f;
-    t2 /= 10f;
+  //// 最適化されたedgeの弧長を返す。
+  //float get_arclength(ArrayList<Node> nodes) {
+  //  // 準備
+  //  set_bezier(nodes);
+  //  PVector rate_t1t2 = bezier.get_rate_t1t2();
+  //  float rate = rate_t1t2.x;
+  //  float t1 = rate_t1t2.y;
+  //  float t2 = rate_t1t2.z;
+  //  int th1 = int(t1 / 10f);
+  //  int th2 = int(t2 / 10f);
+  //  //println("" + rate + " " + t1 + " " + t2 + " " + th1 + " " + th2);
+  //  if (th1 == 36)
+  //  {
+  //    th1 = 0;
+  //    t1 -= 360f;
+  //  }
+  //  if (th2 == 36)
+  //  {
+  //    th2 = 0;
+  //    t2 -= 360f;
+  //  }
+  //  // 端数の処理のため
+  //  t1 -= 10f * th1;
+  //  t2 -= 10f * th2;
+  //  t1 /= 10f;
+  //  t2 /= 10f;
 
-    float a40 = ec.arcLen[th1][th2];
-    float a41 = ec.arcLen[(th1 + 1) % 36][th2];
-    float a42 = ec.arcLen[th1][(th2 + 1) % 36];
-    float a4 = a40 + t1 * (a41 - a40) + t2 * (a42 - a40);
-    return a4*rate;
-  }
+  //  float a40 = ec.arcLen[th1][th2];
+  //  float a41 = ec.arcLen[(th1 + 1) % 36][th2];
+  //  float a42 = ec.arcLen[th1][(th2 + 1) % 36];
+  //  float a4 = a40 + t1 * (a41 - a40) + t2 * (a42 - a40);
+  //  return a4*rate;
+  //}
 
 
   float get_real_arclength(ArrayList<Node> nodes) {
-    Node ANode=nodes.get(ANodeID);
-    Node BNode=nodes.get(BNodeID);
-    float V1x = ANode.x;
-    float V1y = ANode.y;
-    float V2x = ANode.edge_x(ANodeRID);
-    float V2y = ANode.edge_y(ANodeRID);
-    float V3x = BNode.edge_x(BNodeRID);
-    float V3y = BNode.edge_y(BNodeRID);
-    float V4x = BNode.x;
-    float V4y = BNode.y;
-    float arclen=0f;
-    float xx0 = V1x;
-    float yy0 = V1y;
-    float xx, yy;
-    for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
-      xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
-      yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
-      //println(xx,yy,arclen);
-      arclen += dist(xx0, yy0, xx, yy);
-      xx0 = xx;
-      yy0 = yy;
-    }
-    return arclen;
+    set_bezier(nodes);
+    return bezier.get_arclength();
   }
-
-  boolean is_PVector_on_edge(ArrayList<Node> nodes,PVector vec) {
-    Node ANode=nodes.get(ANodeID);
-    Node BNode=nodes.get(BNodeID);
-    float V1x = ANode.x;
-    float V1y = ANode.y;
-    float V2x = ANode.edge_x(ANodeRID);
-    float V2y = ANode.edge_y(ANodeRID);
-    float V3x = BNode.edge_x(BNodeRID);
-    float V3y = BNode.edge_y(BNodeRID);
-    float V4x = BNode.x;
-    float V4y = BNode.y;
-    float arclen=0f;
-    float xx0 = V1x;
-    float yy0 = V1y;
-    float xx, yy;
-    for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
-      xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
-      yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
-      //println(xx,yy,arclen);
-      arclen += dist(xx0, yy0, xx, yy);
-      xx0 = xx;
-      yy0 = yy;
-    }
-    return false;
-  }
-  
-  
 
 
   ////円を自動で回転させる

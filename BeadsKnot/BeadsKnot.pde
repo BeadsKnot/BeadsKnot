@@ -9,7 +9,7 @@ display disp;// 画面表示に関する定数
 EdgeConst ec;// Edgeに関する定数
 drawOption dOpt;// 描画に関するオプション
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
-float beads_interval = 20 ;// ビーズの間隔
+float beads_interval = 15 ;// ビーズの間隔
 // グローバル変数終了
 
 
@@ -51,7 +51,7 @@ void draw() {
   // 平面グラフのデータを表示
   else if (graph.data_graph_complete) {
     graph.draw_nodes_edges();
-  }else if(dOpt.data_graph_all_complete){
+  } else if (dOpt.data_graph_all_complete) {
     data.drawPoints();
     data.drawNbhs();
     data.tf.spring();// ばねモデルで動かしたものを表示
@@ -71,13 +71,11 @@ void keyPressed() {
   //if (int(key)==15) {// ctrl+o
   else if ( key == 'o' || int(key)==15) {// o // ctrl+o
     selectInput("Select a file to process:", "fileSelected");
-  }
-  else if (key=='p') {
+  } else if (key=='p') {
     PLink PL=new PLink(data, disp);
     PL.file_output();
-  }
-  else if(key == 'm'){ // modify
-    if(graph.data_graph_complete){
+  } else if (key == 'm') { // modify
+    if (graph.data_graph_complete) {
       graph.modify();
     }
   }
@@ -105,10 +103,14 @@ boolean node_dragging=false;
 int dragged_nodeID = -1;
 float node_dragging_x0 = 0f;
 float node_dragging_y0 = 0f;
+float mousePressX = 0;
+float mousePressY = 0;
 
-void mousePressed() {
+void mousePressed(){
+  mousePressX = mouseX;
+  mousePressY = mouseY;
   int ndID = graph.is_PVector_on_Joint(mouseX, mouseY);
-  if(ndID != -1){
+  if (ndID != -1) {
     node_dragging = true;
     dragged_nodeID = ndID;
     int pt0ID = graph.nodes.get(dragged_nodeID).pointID;
@@ -118,28 +120,36 @@ void mousePressed() {
   }
 }
 
-void mouseDragged(){
-  if(node_dragging){
+void mouseDragged() {
+  if (node_dragging) {
     float mX = disp.getX_fromWin(mouseX);
     float mY = disp.getY_fromWin(mouseY);
 
-    float node_dragging_min_dist = dist(node_dragging_x0,node_dragging_y0,mX,mY);
-    for(int ndID=0; ndID<graph.nodes.size(); ndID++){
-      if(ndID != dragged_nodeID){
+    float node_dragging_min_dist = dist(node_dragging_x0, node_dragging_y0, mX, mY);
+    for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
+      if (ndID != dragged_nodeID) {
         int ptID = graph.nodes.get(ndID).pointID;
         Bead pt = data.points.get(ptID);
         float x = pt.x;
         float y = pt.y;
-        float d = dist(mX,mY,x,y);
-        if(d < node_dragging_min_dist){//ボロノイ領域を超えたら処理をしない。
+        float d = dist(mX, mY, x, y);
+        if (d < node_dragging_min_dist) {//ボロノイ領域を超えたら処理をしない。
           return;
         }
       }
     }
-    println(mX,mY);
+    //println(mX,mY);
     Node nd0 = graph.nodes.get(dragged_nodeID);
     nd0.x = mX;
     nd0.y = mY;
+    //if (keyPressed) {
+    //  if (key == 'r') {
+    //    nd0.theta += 0.1f;
+    //  }
+    //  if (key == 't') {
+    //    nd0.theta -= 0.1f;
+    //  }
+    //}
     Bead bd0 = data.points.get(nd0.pointID);
     bd0.x = mX;
     bd0.y = mY;
@@ -148,10 +158,17 @@ void mouseDragged(){
     // 形を整えた後に、pointsのデータを更新する
     graph.update_points();
     graph.add_close_point_Joint();
-
   }
 }
 
-void mouseReleased(){
-  node_dragging=false; 
+void mouseReleased() {
+  node_dragging=false;
+  
+  if(dist(mouseX, mouseY, mousePressX, mousePressY)<1.0){// クリック
+    if(keyPressed){
+      if(key=='c'){
+        // ノードをクリックしている場合には、クロスチェンジする。
+      }
+    }
+  }
 }
