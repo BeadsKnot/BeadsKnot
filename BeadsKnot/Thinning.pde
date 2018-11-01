@@ -33,7 +33,7 @@ class Thinning {
     DE.getDisplayLTRB();
     println(DE.points.size(), DE.nbhs.size());
     //DE.extraction_binalized = true;
-    DE.extraction_beads = true;
+    Draw.beads();// drawモードの変更
     return false;
   }
 

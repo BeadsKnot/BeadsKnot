@@ -1,32 +1,52 @@
 class drawOption {
-  boolean drawOriginalImage;
-  boolean drawThinningImage;
-  boolean drawBeadsAndNhds;
-  
-  boolean data_graph_all_complete;
+  boolean _original_image;
+  boolean _binarized_image;
+  boolean _thinning_image;
+  boolean _beads;  
+  boolean _data_graph;
+  boolean _free_loop;
 
   drawOption() {
-    changeDrawOption(3);
+    beads();
   }
 
   void setAllOptionFalse() {
-    drawOriginalImage=false;
-    drawThinningImage=false;
-    drawBeadsAndNhds=false;
+    _original_image=false;
+    _binarized_image=false;
+    _thinning_image = false;
+    _beads=false;
+    _data_graph = false;
+    _free_loop = false;
   }
 
-  void changeDrawOption(int i) {
+  void original_image(){
     setAllOptionFalse();
-    switch(i) {
-    case 1:
-      drawOriginalImage=true;
-      break;
-    case 2:
-      drawThinningImage=true;
-      break;
-    case 3:
-      drawBeadsAndNhds=true;
-      break;
-    }
+    _original_image = true;
   }
+ 
+  void binarized_image(){
+    setAllOptionFalse();
+    _binarized_image = true;
+  }
+  
+  void thinning_image(){
+    setAllOptionFalse();
+    _thinning_image = true;
+  }
+  
+  void beads(){
+    setAllOptionFalse();
+    _beads = true;
+  }
+  
+  void data_graph(){
+    setAllOptionFalse();
+    _data_graph = true;
+  }
+  
+  void free_loop(){
+    setAllOptionFalse();
+    _free_loop = true;
+  }
+    
 };

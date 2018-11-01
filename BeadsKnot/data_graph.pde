@@ -7,7 +7,7 @@ class data_graph {
   data_extract de; 
   int[] table;
   display disp;
-  boolean data_graph_complete=false;//->いずれdrawOptionへ移動。
+  //boolean data_graph_complete=false;//->いずれdrawOptionへ移動。
 
   // コンストラクタ
   data_graph(data_extract _de) {
@@ -27,11 +27,8 @@ class data_graph {
     add_close_point_Joint();// half_pointと合流できないか？
     get_node_table();
     get_data_nodes_edges();  
-    println("data_graph_completeしました");    
-    data_graph_complete=true; // この辺りの詳細はdrawOptionに任せたい。
-    de.extraction_binalized = false;
-    de.extraction_complete = false;
-    de.extraction_beads = true;
+    println("data_graphを完了しました");    
+    Draw.data_graph(); // draw option の変更
   }
 
   // deのデータから

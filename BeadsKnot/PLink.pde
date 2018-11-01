@@ -16,7 +16,7 @@ class PLink {
   }
 
   boolean file_output() {//出力する関数
-    outfile = createWriter(file_name+".txt");
+    outfile = createWriter(file_name);
     outfile.println("% Link Projection");
     //成分数
     outfile.println(pCo.size());
@@ -122,16 +122,17 @@ class PLink {
         if (joint_num_i==joint_num_j) {
           if (crs.get(i).over_under==2) {
             pCr.add(new plinkCrossing(crossingCount, crs.get(i).edge_num, crs.get(j).edge_num));
-            println(crossingCount, crs.get(i).edge_num, crs.get(j).edge_num);
+            //println(crossingCount, crs.get(i).edge_num, crs.get(j).edge_num);
             crossingCount++;
           } else if (crs.get(i).over_under==1) {
             pCr.add(new plinkCrossing(crossingCount, crs.get(j).edge_num, crs.get(i).edge_num));
-            println(crossingCount, crs.get(j).edge_num, crs.get(i).edge_num);
+            //println(crossingCount, crs.get(j).edge_num, crs.get(i).edge_num);
             crossingCount++;
           }
         }
       }
     }
+    println("PLink file作成　成功");
   }
 
   pairNum findMidJoint_CloseJointInPoints(pairNum _pn) {//ペアでmidJointとcloseJointを探す関数

@@ -27,7 +27,6 @@ class Square{
 			}
 			kaisa++;
 
-			de.extraction_beads = false;
 			de.nbhs.clear();
 			de.points.clear();
 
@@ -46,7 +45,7 @@ class Square{
 			de.FindJoint();
 
 			de.getDisplayLTRB();
-			de.extraction_beads = true;
+			Draw.beads(); // drawモードの変更
 
 			ofutarisama_flag=de.Ofutarisama();
 			println(ofutarisama_flag, s);
@@ -55,7 +54,7 @@ class Square{
 		} while (kaisa < loopLimit);
 
 		if (ofutarisama_flag) {
-			de.extraction_complete = true;
+			Draw.beads();// drawモードの変更
 			println("extraction is finished. points # ="+de.points.size()+", Nbh # ="+de.nbhs.size());
 			// Joint用のNbhの設置
 			de.addJointToNbhs();
