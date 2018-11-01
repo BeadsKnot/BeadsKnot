@@ -5,10 +5,6 @@ class data_extract {
   int d[][];// ２値化された画像のデータ
   int s;//解析メッシュのサイズ
   display disp;
-  //boolean extraction_binalized;
-  //boolean extraction_beads;
-  //boolean extraction_complete;
-  //boolean data_graph_complete;
 
   ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
   ArrayList<Bead> points=new ArrayList<Bead>();//点を登録

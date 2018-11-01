@@ -45,7 +45,19 @@ void draw() {
   // 平面グラフのデータを表示
   else if (Draw._data_graph) {
     graph.draw_nodes_edges();
-  } 
+  }
+  
+  else if (Draw._free_loop){
+    if(mouse.trace.size()>1){
+      PVector p0 = mouse.trace.get(0);
+      for(int t=1; t<mouse.trace.size(); t++){
+        stroke(128);
+        PVector p1 = mouse.trace.get(t);
+        line(p0.x, p0.y, p1.x, p1.y);
+        p0 = p1;
+      }
+    }
+  }
 }
 
 void keyPressed() {
@@ -199,12 +211,13 @@ float mouseDragX = 0f;
 float mouseDragY = 0f;
 float mousePressX = 0;
 float mousePressY = 0;
+mouseDrag mouse;
 
 void mousePressed() {
   mousePressX = mouseX;
   mousePressY = mouseY;
-  if(!keyPressed){
-    int ndID = graph.is_PVector_on_Joint(mouseX, mouseY);
+  int ndID = graph.is_PVector_on_Joint(mouseX, mouseY);
+    println("clic");
     if (ndID != -1) {//nodeをドラッグする
       node_dragging = true;
       dragged_nodeID = ndID;
@@ -213,9 +226,12 @@ void mousePressed() {
       mouseDragX = pt0.x;
       mouseDragY = pt0.y;
     }
-  } else {// キーを押しながらのクリック・ドラッグ
+  if(keyPressed){// キーを押しながらのクリック・ドラッグ
     if(key == 'n'){
       Draw.free_loop();
+      mouse = new mouseDrag();
+      mouse.prev = new PVector(mouseX, mouseY);
+      mouse.trace.add(mouse.prev);
     }
     
     
@@ -252,6 +268,13 @@ void mouseDragged() {
       graph.modify();
       graph.update_points();
       graph.add_close_point_Joint();
+    }
+  }else {
+    if(key=='n'){
+      if(dist(mouseX,mouseY,mouse.prev.x, mouse.prev.y)>10){
+        mouse.prev = new PVector(mouseX, mouseY);
+        mouse.trace.add(mouse.prev);
+      }
     }
   }
 }

@@ -28,7 +28,7 @@ class data_graph {
     get_node_table();
     get_data_nodes_edges();  
     println("data_graphを完了しました");    
-    Draw.data_graph(); // draw option の変更
+    Draw.beads(); // draw option の変更
   }
 
   // deのデータから
