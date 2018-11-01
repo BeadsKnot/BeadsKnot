@@ -63,17 +63,16 @@ class data_extract {
   }
 
   void drawPoints() {//点をかく
-    stroke(255, 0, 0);
     for (int i=0; i<points.size (); i++) {
       Bead vec=points.get(i);
       if (vec.Joint) {
-        stroke(0, 0, 255);
-        fill(0,0,255);
+        stroke(0);
+        fill(80,255,80);
       } else if (vec.closeJoint) {
         stroke(0, 255, 0);
         fill(255);
       } else if (vec.midJoint) {
-        stroke(120,120, 0);
+        stroke(0);
         fill(120,120,0);
       } else {
         stroke(255, 0, 0);
@@ -187,7 +186,7 @@ class data_extract {
     for (int i=0; i<points.size (); i++) {
       Bead pt=points.get(i);
       if (0<=pt.n1 && pt.n1<points.size()) {
-        stroke(255, 0, 0);
+        stroke(0);
         Bead pt2 = points.get(pt.n1);
         if (! pt2.Joint) {
           line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
@@ -195,7 +194,7 @@ class data_extract {
         }
       }
       if (0<=pt.n2 && pt.n2<points.size()) {
-        stroke(255, 0, 0);
+        stroke(0);
         Bead pt2 = points.get(pt.n2);
         if (! pt2.Joint) {
           line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
