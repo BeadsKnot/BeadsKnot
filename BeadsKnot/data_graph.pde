@@ -658,4 +658,31 @@ class data_graph {
     }
     return -1;
   }
+  
+  // クロスチェンジ
+  void crosschange(int nodeID){
+    Node node = nodes.get(nodeID);// nodeIDが適正であるかどうかをチェックせよ。
+    int pt = node.pointID;
+    Bead bd = de.points.get(pt);
+    int tmp = bd.n1;
+    bd.n1 = bd.u2;
+    bd.u2 = bd.n2;
+    bd.n2 = bd.u1;
+    bd.u1 = tmp;
+    float tmpf = node.r[0];
+    node.r[0] = node.r[3];
+    node.r[3] = node.r[2];
+    node.r[2] = node.r[1];
+    node.r[1] = tmpf;
+    node.theta -= (PI/2);
+    for(int edgeID = 0; edgeID<edges.size(); edgeID++){
+      Edge ed = edges.get(edgeID);
+      if(ed.ANodeID == nodeID){
+        ed.ANodeRID = (ed.ANodeRID+1)%4;
+      } else 
+      if(ed.BNodeID == nodeID){
+        ed.BNodeRID = (ed.BNodeRID+1)%4;
+      }
+    }
+  }
 }

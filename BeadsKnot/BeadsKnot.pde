@@ -165,9 +165,21 @@ void mouseReleased() {
   node_dragging=false;
   
   if(dist(mouseX, mouseY, mousePressX, mousePressY)<1.0){// クリック
+    println("click");
     if(keyPressed){
       if(key=='c'){
         // ノードをクリックしている場合には、クロスチェンジする。
+        for(int nodeID=0; nodeID<graph.nodes.size(); nodeID++){
+          Node node = graph.nodes.get(nodeID);
+          float mX = disp.getX_fromWin(mouseX);
+          float mY = disp.getY_fromWin(mouseY);
+          if(dist(mX,mY, node.x,node.y)<10){
+            println("cross change");
+            if(node.Joint){
+              graph.crosschange(nodeID);
+            }
+          }
+        }
       }
     }
   }
