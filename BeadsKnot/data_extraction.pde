@@ -56,16 +56,19 @@ class data_extract {
 
   void drawPoints() {//点をかく
     for (int i=0; i<points.size (); i++) {
+      float c = 2;
       Bead vec=points.get(i);
       if (vec.Joint) {
         stroke(0);
         fill(80,255,80);
+        c=4;
       } else if (vec.closeJoint) {
         stroke(0, 255, 0);
         fill(255);
       } else if (vec.midJoint) {
         stroke(0);
-        fill(120,120,0);
+        fill(180,255,0);
+        c=3;
       } else {
         stroke(255, 0, 0);
         fill(255);
@@ -76,7 +79,7 @@ class data_extract {
       if (vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
       } else {
         //dispをつかって表示を画面サイズに合わせるように座標変換する。
-        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), vec.c*3+1, vec.c*3+1);//vec.cは1or2or3のはず
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);//vec.cは1or2or3のはず
       }
     }
   }

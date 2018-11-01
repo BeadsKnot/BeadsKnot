@@ -1,4 +1,7 @@
-// usage //<>// //<>//
+import java.awt.*; //<>//
+import javax.swing.*;
+
+// usage //<>//
 // o : ファイル読み込み
 // s : 画像を保存
 
@@ -52,9 +55,19 @@ void draw() {
       PVector p0 = mouse.trace.get(0);
       for(int t=1; t<mouse.trace.size(); t++){
         stroke(128);
+        noFill();
         PVector p1 = mouse.trace.get(t);
         line(p0.x, p0.y, p1.x, p1.y);
         p0 = p1;
+      }
+      if(mouse.trace.size()>3){
+        p0 = mouse.trace.get(0);
+        if(dist(p0.x,p0.y,mouseX, mouseY)<30){
+          stroke(128);
+          fill(255,180,180);
+          ellipse(p0.x,p0.y,60,60);
+        }
+        
       }
     }
   }
@@ -217,7 +230,6 @@ void mousePressed() {
   mousePressX = mouseX;
   mousePressY = mouseY;
   int ndID = graph.is_PVector_on_Joint(mouseX, mouseY);
-    println("clic");
     if (ndID != -1) {//nodeをドラッグする
       node_dragging = true;
       dragged_nodeID = ndID;
@@ -225,6 +237,8 @@ void mousePressed() {
       Bead pt0 = data.points.get(pt0ID);
       mouseDragX = pt0.x;
       mouseDragY = pt0.y;
+    println("ドラッグ開始");
+      return;
     }
   if(keyPressed){// キーを押しながらのクリック・ドラッグ
     if(key == 'n'){
@@ -239,7 +253,6 @@ void mousePressed() {
 }
 
 void mouseDragged() {
-  if(!keyPressed){
     if (node_dragging) {
       float mX = disp.getX_fromWin(mouseX);
       float mY = disp.getY_fromWin(mouseY);
@@ -269,7 +282,7 @@ void mouseDragged() {
       graph.update_points();
       graph.add_close_point_Joint();
     }
-  }else {
+  if(keyPressed){
     if(key=='n'){
       if(dist(mouseX,mouseY,mouse.prev.x, mouse.prev.y)>10){
         mouse.prev = new PVector(mouseX, mouseY);
@@ -277,6 +290,7 @@ void mouseDragged() {
       }
     }
   }
+
 }
 
 void mouseReleased() {
@@ -301,6 +315,31 @@ void mouseReleased() {
       }
     }
   } else {// ドラッグ終了
+    if(keyPressed){
+      if(key=='n'){
+        if(mouse.trace.size()>3){
+          PVector p0 = mouse.trace.get(0);
+          if(dist(p0.x,p0.y,mouseX, mouseY)<30){
+            JPanel panel = new JPanel();    //パネルを作成
+            BoxLayout layout = new BoxLayout( panel, BoxLayout.Y_AXIS );    //メッセージのレイアウトを決定
+            panel.setLayout(layout);    //panelにlayoutを適用
+            panel.add( new JLabel( "よろしいですか" ) );    //メッセージ内容を文字列のコンポーネントとしてパネルに追加
+              int r = JOptionPane.showConfirmDialog( 
+                null,    //親フレームの指定
+                panel,    //パネルの指定
+                "使用しますか？",    //タイトルバーに表示する内容
+                JOptionPane.YES_NO_OPTION,    //オプションタイプをYES,NOにする
+                JOptionPane.INFORMATION_MESSAGE   //メッセージタイプをInformationにする
+              );
+            if(r==0){
+              // mouse.trace を beadsのデータにする。
+              println("OK");
+            }
+          }
+          
+        }
+      }
+    }
     ;
   }
 }
