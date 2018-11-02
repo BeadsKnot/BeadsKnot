@@ -27,12 +27,11 @@ class Thinning {
 
     println("remove_dust()"); remove_dust();
 
-    //println("find_crossing()");
-    //find_crossing();		
+    println("find_crossing()");find_crossing();		
 
     DE.getDisplayLTRB();
-    println(DE.points.size(), DE.nbhs.size());
-    //DE.extraction_binalized = true;
+    //println(DE.points.size(), DE.nbhs.size());
+    
     Draw.beads();// drawモードの変更
     return false;
   }

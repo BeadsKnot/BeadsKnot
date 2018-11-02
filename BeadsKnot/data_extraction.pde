@@ -38,16 +38,15 @@ class data_extract {
 
     bin.getBinarized(image);//２値化してd[][]に格納する
 
-    
     sq.getSquareExtraction();//正方形分割をするときにコメントアウトをはずす
     //th.getThinningExtraction();//thinning ver.にするときにコメントアウトをはずす
   }
 
   int addToPoints(int u, int v, int threshold) {//点を追加する
     // (u,v)は点の座標なので，float型ではないか？
-    for (int i=0; i<points.size (); i++) {
-      if (dist(u, v, points.get(i).x, points.get(i).y ) < threshold-1) {//近くに既存の点がある場合には追加しない
-        return i;
+    for (int pt=0; pt<points.size (); pt++) {
+      if (dist(u, v, points.get(pt).x, points.get(pt).y ) < threshold-1) {//近くに既存の点がある場合には追加しない
+        return pt;
       }
     }
     points.add(new Bead(u, v));
@@ -55,9 +54,9 @@ class data_extract {
   }
 
   void drawPoints() {//点をかく
-    for (int i=0; i<points.size (); i++) {
+    for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
-      Bead vec=points.get(i);
+      Bead vec=points.get(pt);
       if (vec.Joint) {
         stroke(0);
         fill(80,255,80);
@@ -73,13 +72,10 @@ class data_extract {
         stroke(255, 0, 0);
         fill(255);
       }
-      //if(i==points.size ()-1){
-      //  println(vec.c, vec.n1, vec.n2);
-      //}
       if (vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
       } else {
         //dispをつかって表示を画面サイズに合わせるように座標変換する。
-        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);//vec.cは1or2or3のはず
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
       }
     }
   }
@@ -97,6 +93,9 @@ class data_extract {
       return 0;
     }
     if (nn==mm) {
+      return 0;
+    }
+    if(nn<0 || mm<0 || points.size()<=nn || points.size()<=mm){
       return 0;
     }
     float xa=points.get(nn).x;
@@ -178,8 +177,8 @@ class data_extract {
   }
 
   void drawNbhs() {//線を書く
-    for (int i=0; i<points.size (); i++) {
-      Bead pt=points.get(i);
+    for (int ptID=0; ptID<points.size (); ptID++) {
+      Bead pt=points.get(ptID);
       if (0<=pt.n1 && pt.n1<points.size()) {
         stroke(0);
         Bead pt2 = points.get(pt.n1);
