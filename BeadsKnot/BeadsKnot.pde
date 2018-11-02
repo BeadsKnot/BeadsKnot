@@ -11,6 +11,7 @@ data_graph graph;// data_extractから解析した平面グラフのデータ
 display disp;// 画面表示に関する定数
 EdgeConst ec;// Edgeに関する定数
 drawOption Draw;// 描画に関するオプション
+mouseDrag mouse;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 // グローバル変数終了
@@ -26,6 +27,7 @@ void setup() {
   graph = new data_graph(data);
   ec = new EdgeConst();
   Draw = new drawOption();
+  mouse = new mouseDrag();
 }
 
 void draw() {
@@ -214,51 +216,42 @@ void fileSelected(File selection) {
 }
 
 //ここにあるものは class mouseDragに引き取ってもらう。
-boolean node_dragging=false;
-int dragged_nodeID = -1;
-float dragged_theta = 0f;
-float nd_theta = 0f;
-float mouseDragX = 0f;
-float mouseDragY = 0f;
-float mousePressX = 0;
-float mousePressY = 0;
-boolean node_next_dragging =false;
 ///
-mouseDrag mouse;// これはページ上部へ
+// これはページ上部へ
 
 void mousePressed() {
-  mousePressX = mouseX;
-  mousePressY = mouseY;
+  mouse.PressX = mouseX;
+  mouse.PressY = mouseY;
   int ptID = graph.is_PVector_on_points(mouseX, mouseY);
   if (ptID!=-1) {
     if (data.points.get(ptID).Joint || data.points.get(ptID).midJoint) {//nodeをドラッグする
-      node_dragging = true;
+      mouse.node_dragging = true;
       for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
         if (graph.nodes.get(ndID).pointID == ptID) {
-          dragged_nodeID = ndID;
+          mouse.dragged_nodeID = ndID;
         }
       }
-      int pt0ID = graph.nodes.get(dragged_nodeID).pointID;
+      int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
       Bead pt0 = data.points.get(pt0ID);
-      mouseDragX = pt0.x;
-      mouseDragY = pt0.y;
+      mouse.DragX = pt0.x;
+      mouse.DragY = pt0.y;
       println("ドラッグ開始");
       return;
     } else {
       int jt_ndID =graph.next_to_node(ptID); 
       if (jt_ndID!=-1) {//ノードの隣をドラッグした場合
-        node_next_dragging = true;
-        dragged_nodeID = jt_ndID;
-        Node nd = graph.nodes.get(dragged_nodeID);
-        dragged_theta = atan2(mouseY - nd.y,mouseX - nd.x);
-        nd_theta = nd.theta;
+        mouse.node_next_dragging = true;
+        mouse.dragged_nodeID = jt_ndID;
+        Node nd = graph.nodes.get(mouse.dragged_nodeID);
+        mouse.dragged_theta = atan2(mouseY - nd.y,mouseX - nd.x);
+        mouse.nd_theta = nd.theta;
       }
     }
   }
   if (keyPressed) {// キーを押しながらのクリック・ドラッグ
     if (key == 'n') {
       Draw.free_loop();
-      mouse = new mouseDrag();
+      mouse.trace.clear();
       mouse.prev = new PVector(mouseX, mouseY);
       mouse.trace.add(mouse.prev);
     }
@@ -266,13 +259,13 @@ void mousePressed() {
 }
 
 void mouseDragged() {
-  if (node_dragging) {
+  if (mouse.node_dragging) {
     float mX = disp.getX_fromWin(mouseX);
     float mY = disp.getY_fromWin(mouseY);
 
-    float mouseDragmin_dist = dist(mouseDragX, mouseDragY, mX, mY);
+    float mouseDragmin_dist = dist(mouse.DragX, mouse.DragY, mX, mY);
     for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
-      if (ndID != dragged_nodeID) {
+      if (ndID != mouse.dragged_nodeID) {
         int ptID = graph.nodes.get(ndID).pointID;
         Bead pt = data.points.get(ptID);
         float x = pt.x;
@@ -288,7 +281,7 @@ void mouseDragged() {
       }
     }
     //println(mX,mY);
-    Node nd0 = graph.nodes.get(dragged_nodeID);
+    Node nd0 = graph.nodes.get(mouse.dragged_nodeID);
     nd0.x = mX;
     nd0.y = mY;
     Bead bd0 = data.points.get(nd0.pointID);
@@ -299,10 +292,10 @@ void mouseDragged() {
     graph.update_points();
     graph.add_close_point_Joint();
   } else 
-  if(node_next_dragging){
+  if(mouse.node_next_dragging){
     // ノードの隣をドラッグした場合。
-    Node nd = graph.nodes.get(dragged_nodeID);
-    nd.theta = nd_theta - (atan2(mouseY - nd.y,mouseX - nd.x) - dragged_theta)*0.2;
+    Node nd = graph.nodes.get(mouse.dragged_nodeID);
+    nd.theta = mouse.nd_theta - (atan2(mouseY - nd.y,mouseX - nd.x) - mouse.dragged_theta)*0.4;
     graph.modify();
     graph.update_points();
     graph.add_close_point_Joint();
@@ -310,7 +303,7 @@ void mouseDragged() {
   }
   if (keyPressed) {
     if (key=='n') {
-      if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>10) {
+      if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
         mouse.prev = new PVector(mouseX, mouseY);
         mouse.trace.add(mouse.prev);
       }
@@ -319,9 +312,9 @@ void mouseDragged() {
 }
 
 void mouseReleased() {
-  node_dragging=false;
+  mouse.node_dragging=false;
 
-  if (dist(mouseX, mouseY, mousePressX, mousePressY)<1.0) {// クリック
+  if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
     println("click");
     if (keyPressed) {
       if (key=='c') {

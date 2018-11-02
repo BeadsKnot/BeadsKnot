@@ -2,6 +2,16 @@ class mouseDrag {
   ArrayList<PVector> trace;
   PVector prev;
   
+boolean node_dragging=false;
+boolean node_next_dragging =false;
+int dragged_nodeID = -1;
+float dragged_theta = 0f;
+float nd_theta = 0f;
+float DragX = 0f;
+float DragY = 0f;
+float PressX = 0;
+float PressY = 0;
+  
   mouseDrag(){
     trace = new ArrayList<PVector>();
   }

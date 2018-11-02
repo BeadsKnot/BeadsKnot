@@ -41,7 +41,7 @@ class data_graph {
         if (vec.u1<0||vec.u1>=de.points.size()||vec.u2<0||vec.u2>=de.points.size()) {
           return;
         }
-        println(vec.n1, vec.u1, vec.n2, vec.u2);
+        //println(vec.n1, vec.u1, vec.n2, vec.u2);
         Bead vecn1=de.points.get(vec.n1);
         float x0=vecn1.x;
         float y0=vecn1.y;
