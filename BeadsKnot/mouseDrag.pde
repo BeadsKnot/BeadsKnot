@@ -16,6 +16,7 @@ class mouseDrag {
       Bead bd = new Bead(trace.get(tr).x, trace.get(tr).y);
       bd.n1 = (tr+1)%traceNumber;
       bd.n2 = (tr+traceNumber-1)%traceNumber;
+      bd.c = 2;
       data.points.add(bd);
     }
     for(int tr1 = 0; tr1 < traceNumber; tr1+=2){
