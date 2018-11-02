@@ -542,5 +542,4 @@ class data_extract {
     return max(3, int(sum/num));
   }
   
-
 }

@@ -649,13 +649,23 @@ class data_graph {
     for (int nd=0; nd<nodes.size(); nd++) {
       int ndID = nodes.get(nd).pointID;
       Bead bd = de.points.get(ndID);
-      //println(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY);
       if (dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY)<10) {
         return nd;
       }
     }
     return -1;
   }
+
+  int is_PVector_on_points(float vecX, float vecY) {
+    for (int ptID=0; ptID<de.points.size(); ptID++) {
+      Bead bd = de.points.get(ptID);
+      if (dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY)<10) {
+        return ptID;
+      }
+    }
+    return -1;
+  }
+
   
   // クロスチェンジ
   void crosschange(int nodeID){
@@ -683,4 +693,27 @@ class data_graph {
       }
     }
   }
+  
+  int next_to_node(int ptID){
+    int pt1ID = de.points.get(ptID).n1;
+    Bead bd1 = de.points.get(pt1ID);
+    if(bd1.Joint || bd1.midJoint){
+      for(int ndID=0; ndID < nodes.size(); ndID++){
+        if(nodes.get(ndID).pointID == pt1ID){ 
+          return ndID;
+        }
+      }
+    }
+    int pt2ID = de.points.get(ptID).n2;
+    Bead bd2 = de.points.get(pt2ID);
+    if(bd2.Joint || bd2.midJoint){
+      for(int ndID=0; ndID < nodes.size(); ndID++){
+        if(nodes.get(ndID).pointID == pt2ID){ 
+          return ndID;
+        }
+      }
+    }
+    return -1;
+  }
+
 }
