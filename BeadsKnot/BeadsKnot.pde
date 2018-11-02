@@ -239,7 +239,7 @@ void mousePressed() {
       Bead pt0 = data.points.get(pt0ID);
       mouseDragX = pt0.x;
       mouseDragY = pt0.y;
-    println("ドラッグ開始");
+      println("ドラッグ開始");
       return;
     }
   if(keyPressed){// キーを押しながらのクリック・ドラッグ
@@ -269,6 +269,10 @@ void mouseDragged() {
           float d = dist(mX, mY, x, y);
           if (d < mouseDragmin_dist) {//ボロノイ領域を超えたら処理をしない。
             return;
+          }
+          if (d > 1000) {//あまり外側へ行ったら処理をしない。
+            println("*外側へ行きすぎです。");
+            return ;
           }
         }
       }
