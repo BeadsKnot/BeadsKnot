@@ -576,17 +576,21 @@ class data_graph {
       int bead1 = NodeA.pointID;
       int bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号
       int bead3 = -1;
-      do {
-        int b = de.points.get(bead2).n1;
-        if (b == bead1) {
-          bead3 = de.points.get(bead2).n2;
-        } else {
-          bead3 = b;
-        }
-        bead1 = bead2;
-        bead2 = bead3;
-        beads_count ++;
-      } while (bead3 != NodeB.pointID);
+      if(bead2 == NodeB.pointID){
+        beads_count=0;// この行は不要だがつけておく。
+      } else {
+        do {
+          int b = de.points.get(bead2).n1;
+          if (b == bead1) {
+            bead3 = de.points.get(bead2).n2;
+          } else {
+            bead3 = b;
+          }
+          bead1 = bead2;
+          bead2 = bead3;
+          beads_count ++;
+        } while (bead3 != NodeB.pointID);
+      }
       //println("必要数,現状数",beads_number, beads_count);
       if (beads_number > beads_count) {// 必要数のほうが多い→ビーズの追加が必要
         bead1 = NodeA.pointID;
