@@ -16,7 +16,26 @@ float PressY = 0;
     trace = new ArrayList<PVector>();
   }
   
-  
+  void draw_trace(){
+    if (trace.size()>1) {
+      PVector p0 = trace.get(0);
+      for (int t=1; t<trace.size(); t++) {
+        stroke(128);
+        noFill();
+        PVector p1 = trace.get(t);
+        line(p0.x, p0.y, p1.x, p1.y);
+        p0 = p1;
+      }
+      if (trace.size()>3) {
+        p0 = mouse.trace.get(0);
+        if (dist(p0.x, p0.y, mouseX, mouseY)<30) {
+          stroke(128);
+          fill(255, 180, 180);
+          ellipse(p0.x, p0.y, 60, 60);
+        }
+      }
+    }
+  }
   
   void trace_to_beads(data_extract data, data_graph graph){
     data.points.clear();

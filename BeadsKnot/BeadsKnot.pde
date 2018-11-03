@@ -12,6 +12,7 @@ display disp;// 画面表示に関する定数
 EdgeConst ec;// Edgeに関する定数
 drawOption Draw;// 描画に関するオプション
 mouseDrag mouse;
+parts_editing edit;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 // グローバル変数終了
@@ -28,6 +29,7 @@ void setup() {
   ec = new EdgeConst();
   Draw = new drawOption();
   mouse = new mouseDrag();
+  edit = new parts_editing();
 }
 
 void draw() {
@@ -51,28 +53,15 @@ void draw() {
   else if (Draw._data_graph) {
     graph.draw_nodes_edges();
   } else if (Draw._free_loop) {
-    if (mouse.trace.size()>1) {
-      PVector p0 = mouse.trace.get(0);
-      for (int t=1; t<mouse.trace.size(); t++) {
-        stroke(128);
-        noFill();
-        PVector p1 = mouse.trace.get(t);
-        line(p0.x, p0.y, p1.x, p1.y);
-        p0 = p1;
-      }
-      if (mouse.trace.size()>3) {
-        p0 = mouse.trace.get(0);
-        if (dist(p0.x, p0.y, mouseX, mouseY)<30) {
-          stroke(128);
-          fill(255, 180, 180);
-          ellipse(p0.x, p0.y, 60, 60);
-        }
-      }
-    }
+    mouse.draw_trace();
+  } else if(Draw._parts_editing){
+    edit.draw_parts();
   }
 }
 
-void keyPressed() {
+void keyPressed() { 
+  // 'n' -> free_loop モード。
+  // 'e' -> parts_editingモード
   if ( key=='s' || int(key)==19) {
     selectInput("Select a file to save", "saveFileSelect");
   } else if ( key == 'o' || int(key)==15) {// o // ctrl+o
@@ -81,6 +70,12 @@ void keyPressed() {
     if (Draw._data_graph) {
       graph.modify();
     }
+  } else if (key == 'n') {
+    Draw.free_loop();
+    mouse.trace.clear();// 絵のクリア
+  } else if (key == 'e') {
+    Draw.parts_editing();
+    edit.beads.clear();
   }
 }
 
@@ -215,148 +210,133 @@ void fileSelected(File selection) {
   }
 }
 
-//ここにあるものは class mouseDragに引き取ってもらう。
-///
-// これはページ上部へ
 
 void mousePressed() {
   mouse.PressX = mouseX;
   mouse.PressY = mouseY;
-  int ptID = graph.is_PVector_on_points(mouseX, mouseY);
-  if (ptID!=-1) {
-    if (data.points.get(ptID).Joint || data.points.get(ptID).midJoint) {//nodeをドラッグする
-      mouse.node_dragging = true;
-      for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
-        if (graph.nodes.get(ndID).pointID == ptID) {
-          mouse.dragged_nodeID = ndID;
+  if (Draw._beads) {
+    int ptID = graph.is_PVector_on_points(mouseX, mouseY);
+    if (ptID!=-1) {
+      if (data.points.get(ptID).Joint || data.points.get(ptID).midJoint) {//nodeをドラッグする
+        mouse.node_dragging = true;
+        for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
+          if (graph.nodes.get(ndID).pointID == ptID) {
+            mouse.dragged_nodeID = ndID;
+          }
+        }
+        int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
+        Bead pt0 = data.points.get(pt0ID);
+        mouse.DragX = pt0.x;
+        mouse.DragY = pt0.y;
+        println("ドラッグ開始");
+        return;
+      } else {
+        int jt_ndID =graph.next_to_node(ptID); 
+        if (jt_ndID!=-1) {//ノードの隣をドラッグした場合
+          mouse.node_next_dragging = true;
+          mouse.dragged_nodeID = jt_ndID;
+          Node nd = graph.nodes.get(mouse.dragged_nodeID);
+          mouse.dragged_theta = atan2(mouseY - nd.y, mouseX - nd.x);
+          mouse.nd_theta = nd.theta;
         }
       }
-      int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
-      Bead pt0 = data.points.get(pt0ID);
-      mouse.DragX = pt0.x;
-      mouse.DragY = pt0.y;
-      println("ドラッグ開始");
-      return;
-    } else {
-      int jt_ndID =graph.next_to_node(ptID); 
-      if (jt_ndID!=-1) {//ノードの隣をドラッグした場合
-        mouse.node_next_dragging = true;
-        mouse.dragged_nodeID = jt_ndID;
-        Node nd = graph.nodes.get(mouse.dragged_nodeID);
-        mouse.dragged_theta = atan2(mouseY - nd.y,mouseX - nd.x);
-        mouse.nd_theta = nd.theta;
-      }
     }
+  } else if (Draw._free_loop) {
+    mouse.prev = new PVector(mouseX, mouseY);
+    mouse.trace.add(mouse.prev);
   }
-  if (keyPressed) {// キーを押しながらのクリック・ドラッグ
-    if (key == 'n') {
-      Draw.free_loop();
-      mouse.trace.clear();
+}
+
+void mouseDragged() {
+  if (Draw._beads) {
+    if (mouse.node_dragging) {
+      float mX = disp.getX_fromWin(mouseX);
+      float mY = disp.getY_fromWin(mouseY);
+
+      float mouseDragmin_dist = dist(mouse.DragX, mouse.DragY, mX, mY);
+      for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
+        if (ndID != mouse.dragged_nodeID) {
+          int ptID = graph.nodes.get(ndID).pointID;
+          Bead pt = data.points.get(ptID);
+          float x = pt.x;
+          float y = pt.y;
+          float d = dist(mX, mY, x, y);
+          if (d < mouseDragmin_dist) {//ボロノイ領域を超えたら処理をしない。
+            return;
+          }
+          if (d > 1000) {//あまり外側へ行ったら処理をしない。
+            println("*外側へ行きすぎです。");
+            return ;
+          }
+        }
+      }
+      //println(mX,mY);
+      Node nd0 = graph.nodes.get(mouse.dragged_nodeID);
+      nd0.x = mX;
+      nd0.y = mY;
+      Bead bd0 = data.points.get(nd0.pointID);
+      bd0.x = mX;
+      bd0.y = mY;
+      // 図全体のmodify();
+      graph.modify();
+      graph.update_points();
+      graph.add_close_point_Joint();
+    } else if (mouse.node_next_dragging) {
+      // ノードの隣をドラッグした場合。
+      Node nd = graph.nodes.get(mouse.dragged_nodeID);
+      nd.theta = mouse.nd_theta - (atan2(mouseY - nd.y, mouseX - nd.x) - mouse.dragged_theta)*0.4;
+      graph.modify();
+      graph.update_points();
+      graph.add_close_point_Joint();
+    }
+  } else if (Draw._free_loop) {
+    if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
       mouse.prev = new PVector(mouseX, mouseY);
       mouse.trace.add(mouse.prev);
     }
   }
 }
 
-void mouseDragged() {
-  if (mouse.node_dragging) {
-    float mX = disp.getX_fromWin(mouseX);
-    float mY = disp.getY_fromWin(mouseY);
-
-    float mouseDragmin_dist = dist(mouse.DragX, mouse.DragY, mX, mY);
-    for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
-      if (ndID != mouse.dragged_nodeID) {
-        int ptID = graph.nodes.get(ndID).pointID;
-        Bead pt = data.points.get(ptID);
-        float x = pt.x;
-        float y = pt.y;
-        float d = dist(mX, mY, x, y);
-        if (d < mouseDragmin_dist) {//ボロノイ領域を超えたら処理をしない。
-          return;
-        }
-        if (d > 1000) {//あまり外側へ行ったら処理をしない。
-          println("*外側へ行きすぎです。");
-          return ;
-        }
-      }
-    }
-    //println(mX,mY);
-    Node nd0 = graph.nodes.get(mouse.dragged_nodeID);
-    nd0.x = mX;
-    nd0.y = mY;
-    Bead bd0 = data.points.get(nd0.pointID);
-    bd0.x = mX;
-    bd0.y = mY;
-    // 図全体のmodify();
-    graph.modify();
-    graph.update_points();
-    graph.add_close_point_Joint();
-  } else 
-  if(mouse.node_next_dragging){
-    // ノードの隣をドラッグした場合。
-    Node nd = graph.nodes.get(mouse.dragged_nodeID);
-    nd.theta = mouse.nd_theta - (atan2(mouseY - nd.y,mouseX - nd.x) - mouse.dragged_theta)*0.4;
-    graph.modify();
-    graph.update_points();
-    graph.add_close_point_Joint();
-    
-  }
-  if (keyPressed) {
-    if (key=='n') {
-      if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
-        mouse.prev = new PVector(mouseX, mouseY);
-        mouse.trace.add(mouse.prev);
-      }
-    }
-  }
-}
-
 void mouseReleased() {
-  mouse.node_dragging=false;
-
-  if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
-    println("click");
-    if (keyPressed) {
-      if (key=='c') {
-        // ノードをクリックしている場合には、クロスチェンジする。
-        for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
-          Node node = graph.nodes.get(nodeID);
-          float mX = disp.getX_fromWin(mouseX);
-          float mY = disp.getY_fromWin(mouseY);
-          if (dist(mX, mY, node.x, node.y)<10) {
-            println("cross change");
-            if (node.Joint) {
-              graph.crosschange(nodeID);
-            }
+  if (Draw._beads) {
+    mouse.node_dragging=false;
+    mouse.node_next_dragging = false;
+    if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
+      println("click");
+      // ノードをクリックしている場合には、クロスチェンジする。
+      for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
+        Node node = graph.nodes.get(nodeID);
+        float mX = disp.getX_fromWin(mouseX);
+        float mY = disp.getY_fromWin(mouseY);
+        if (dist(mX, mY, node.x, node.y)<10) {
+          println("cross change");
+          if (node.Joint) {
+            graph.crosschange(nodeID);
           }
         }
       }
     }
-  } else {// ドラッグ終了
-    if (keyPressed) {
-      if (key=='n') {
-        if (mouse.trace.size()>3) {
-          PVector p0 = mouse.trace.get(0);
-          if (dist(p0.x, p0.y, mouseX, mouseY)<30) {
-            JPanel panel = new JPanel();    //パネルを作成
-            BoxLayout layout = new BoxLayout( panel, BoxLayout.Y_AXIS );    //メッセージのレイアウトを決定
-            panel.setLayout(layout);    //panelにlayoutを適用
-            panel.add( new JLabel( "よろしいですか" ) );    //メッセージ内容を文字列のコンポーネントとしてパネルに追加
-            int r = JOptionPane.showConfirmDialog( 
-              null, //親フレームの指定
-              panel, //パネルの指定
-              "使用しますか？", //タイトルバーに表示する内容
-              JOptionPane.YES_NO_OPTION, //オプションタイプをYES,NOにする
-              JOptionPane.INFORMATION_MESSAGE   //メッセージタイプをInformationにする
-              );
-            if (r==0) {
-              // mouse.trace を beadsのデータにする。
-              mouse.trace_to_beads(data, graph);
-            }
-          }
+  } else if (Draw._free_loop) {
+    if (mouse.trace.size()>3) {// ドラッグ終了
+      PVector p0 = mouse.trace.get(0);
+      if (dist(p0.x, p0.y, mouseX, mouseY)<30) {
+        JPanel panel = new JPanel();    //パネルを作成
+        BoxLayout layout = new BoxLayout( panel, BoxLayout.Y_AXIS );    //メッセージのレイアウトを決定
+        panel.setLayout(layout);    //panelにlayoutを適用
+        panel.add( new JLabel( "よろしいですか" ) );    //メッセージ内容を文字列のコンポーネントとしてパネルに追加
+        int r = JOptionPane.showConfirmDialog( 
+          null, //親フレームの指定
+          panel, //パネルの指定
+          "使用しますか？", //タイトルバーに表示する内容
+          JOptionPane.YES_NO_OPTION, //オプションタイプをYES,NOにする
+          JOptionPane.INFORMATION_MESSAGE   //メッセージタイプをInformationにする
+          );
+        if (r==0) {
+          // mouse.trace を beadsのデータにする。
+          mouse.trace_to_beads(data, graph);
+          Draw.beads();
         }
       }
     }
-    ;
   }
 }

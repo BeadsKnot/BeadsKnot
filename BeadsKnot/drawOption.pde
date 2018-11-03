@@ -5,6 +5,7 @@ class drawOption {
   boolean _beads;  
   boolean _data_graph;
   boolean _free_loop;
+  boolean _parts_editing;
 
   drawOption() {
     beads();
@@ -17,36 +18,42 @@ class drawOption {
     _beads=false;
     _data_graph = false;
     _free_loop = false;
+    _parts_editing = false;
   }
 
-  void original_image(){
+
+  void original_image() {
     setAllOptionFalse();
     _original_image = true;
   }
- 
-  void binarized_image(){
+
+  void binarized_image() {
     setAllOptionFalse();
     _binarized_image = true;
   }
-  
-  void thinning_image(){
+
+  void thinning_image() {
     setAllOptionFalse();
     _thinning_image = true;
   }
-  
-  void beads(){
+
+  void beads() {
     setAllOptionFalse();
     _beads = true;
   }
-  
-  void data_graph(){
+
+  void data_graph() {
     setAllOptionFalse();
     _data_graph = true;
   }
-  
-  void free_loop(){
+
+  void free_loop() {
     setAllOptionFalse();
     _free_loop = true;
   }
-    
+
+  void parts_editing() {
+    setAllOptionFalse();
+    _parts_editing = true;
+  }
 };
