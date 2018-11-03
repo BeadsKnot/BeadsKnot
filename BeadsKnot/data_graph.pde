@@ -230,20 +230,23 @@ class data_graph {
 
 
   int findJointInPoints(int j, int c) {
-    // for (int i = 0; i < points.size(); i++) {
-    Bead p=de.points.get(c);
-    if (p.Joint||p.midJoint) {
-      return c;
+    for (int count = 0; count < de.points.size(); count++) {
+      Bead p=de.points.get(c);
+      if (p.Joint||p.midJoint) {
+        return c;
+      }
+      int d=0;
+      if (p.n1==j) {
+        d=p.n2;
+      } else if (p.n2==j) {
+        d=p.n1;
+      } else {
+        println("間違っている","");
+      } 
+      j=c;
+      c=d;
     }
-    int d=0;
-    if (p.n1==j) {
-      d=p.n2;
-    } else if (p.n2==j) {
-      d=p.n1;
-    } else {
-      println("間違っている","");
-    }
-    return findJointInPoints(c, d);
+    return -1;
   }
 
   int findk(Bead joint, int j) {
