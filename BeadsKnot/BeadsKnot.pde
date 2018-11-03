@@ -338,5 +338,22 @@ void mouseReleased() {
         }
       }
     }
+  } else if (Draw._parts_editing){
+    if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
+      boolean hit = false;
+      for(int bdID=0; bdID < edit.beads.size(); bdID++){
+        Bead bd = edit.beads.get(bdID);
+        if(dist(bd.x,bd.y,mouseX, mouseY) < 20f){//もしノードが近くにある場合は
+          edit.deleteBead(bdID);// bdID 番のノードを無効にする。
+          hit = true;
+          break;
+        } 
+      }
+      if(! hit){//ノードが近くにない場合には
+        //ノードを新設(ジョイント一つに周辺4つ。)
+        edit.createJoint(mouseX, mouseY);//隣接関係を設定する。
+      }
+      
+    }
   }
 }
