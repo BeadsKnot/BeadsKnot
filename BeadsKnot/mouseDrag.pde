@@ -2,6 +2,7 @@ class mouseDrag {
   ArrayList<PVector> trace;
   PVector prev;
   
+boolean free_dragging=false;
 boolean node_dragging=false;
 boolean node_next_dragging =false;
 int dragged_nodeID = -1;

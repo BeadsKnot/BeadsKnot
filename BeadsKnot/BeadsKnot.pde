@@ -54,7 +54,7 @@ void draw() {
     graph.draw_nodes_edges();
   } else if (Draw._free_loop) {
     mouse.draw_trace();
-  } else if(Draw._parts_editing){
+  } else if (Draw._parts_editing) {
     edit.draw_parts();
   }
 }
@@ -244,6 +244,17 @@ void mousePressed() {
   } else if (Draw._free_loop) {
     mouse.prev = new PVector(mouseX, mouseY);
     mouse.trace.add(mouse.prev);
+  } else if (Draw._parts_editing) {
+    for (int bdID=0; bdID < edit.beads.size(); bdID++) {
+      Bead bd = edit.beads.get(bdID);
+      if (bd.c <2 && dist(bd.x, bd.y, mouseX, mouseY) < 10f) {//もしおひとりさまのノードが近くにある場合は
+        mouse.prev = new PVector(mouseX, mouseY);
+        mouse.trace.clear();
+        mouse.trace.add(mouse.prev);
+        mouse.node_next_dragging=true; // ドラッグ開始
+        break;
+      }
+    }
   }
 }
 
@@ -294,6 +305,13 @@ void mouseDragged() {
       mouse.prev = new PVector(mouseX, mouseY);
       mouse.trace.add(mouse.prev);
     }
+  } else if (Draw._parts_editing) {
+    if (mouse.free_dragging) {
+      if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
+        mouse.prev = new PVector(mouseX, mouseY);
+        mouse.trace.add(mouse.prev);
+      }
+    }
   }
 }
 
@@ -317,6 +335,7 @@ void mouseReleased() {
       }
     }
   } else if (Draw._free_loop) {
+    mouse.free_dragging=false;
     if (mouse.trace.size()>3) {// ドラッグ終了
       PVector p0 = mouse.trace.get(0);
       if (dist(p0.x, p0.y, mouseX, mouseY)<30) {
@@ -338,22 +357,54 @@ void mouseReleased() {
         }
       }
     }
-  } else if (Draw._parts_editing){
+  } else if (Draw._parts_editing) {
     if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
       boolean hit = false;
-      for(int bdID=0; bdID < edit.beads.size(); bdID++){
+      for (int bdID=0; bdID < edit.beads.size(); bdID++) {
         Bead bd = edit.beads.get(bdID);
-        if(dist(bd.x,bd.y,mouseX, mouseY) < 20f){//もしノードが近くにある場合は
+        if (dist(bd.x, bd.y, mouseX, mouseY) < 10f) {//もしノードが近くにある場合は
           edit.deleteBead(bdID);// bdID 番のノードを無効にする。
           hit = true;
           break;
-        } 
+        } else if (dist(bd.x, bd.y, mouseX, mouseY) < 20f) {//もしノードが近くにある場合は
+          hit = true;
+        }
       }
-      if(! hit){//ノードが近くにない場合には
+      if (! hit) {//ノードが近くにない場合には
         //ノードを新設(ジョイント一つに周辺4つ。)
         edit.createJoint(mouseX, mouseY);//隣接関係を設定する。
       }
-      
+    } else { // ドラッグ終了
+      if (mouse.node_next_dragging) {// おひとり様からドラッグを開始した場合。
+        if (mouse.trace.size()>1) {// あまり近かったら何もしない。
+          boolean OK = false;
+          for(int bdID=0; bdID<edit.beads.size(); bdID++){
+            Bead bd = edit.beads.get(bdID);
+            if (dist(bd.x, bd.y, mouseX, mouseY)<20) {
+              OK = true;
+              break;
+            }
+          }
+          if(OK){
+            //JPanel panel = new JPanel();    //パネルを作成
+            //BoxLayout layout = new BoxLayout( panel, BoxLayout.Y_AXIS );    //メッセージのレイアウトを決定
+            //panel.setLayout(layout);    //panelにlayoutを適用
+            //panel.add( new JLabel( "よろしいですか" ) );    //メッセージ内容を文字列のコンポーネントとしてパネルに追加
+            //int r = JOptionPane.showConfirmDialog( 
+            //  null, //親フレームの指定
+            //  panel, //パネルの指定
+            //  "使用しますか？", //タイトルバーに表示する内容
+            //  JOptionPane.YES_NO_OPTION, //オプションタイプをYES,NOにする
+            //  JOptionPane.INFORMATION_MESSAGE   //メッセージタイプをInformationにする
+            //  );
+            //if (r==0) {
+              //mouse.trace_to_parts_editing(data, edit);
+              Draw.beads();
+            }
+          }
+        }
+      }
     }
+    mouse.free_dragging=false;
   }
 }

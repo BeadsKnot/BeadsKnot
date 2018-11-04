@@ -1,7 +1,7 @@
 class parts_editing {
 
   ArrayList<Bead> beads;
-
+  
   parts_editing() {
     beads = new ArrayList<Bead>();
   }
@@ -12,6 +12,7 @@ class parts_editing {
   }
 
   void draw_beads() {
+    strokeWeight(1);
     for (int bdID=0; bdID<beads.size (); bdID++) {
       Bead bd=beads.get(bdID);
       int c = 2;
@@ -33,6 +34,7 @@ class parts_editing {
   }
 
   void draw_nhd() {
+    strokeWeight(2);
     for (int bdID=0; bdID<beads.size (); bdID++) {
       Bead bd=beads.get(bdID);
       if (0<= bd.n1 && bd.n1<beads.size()) {
