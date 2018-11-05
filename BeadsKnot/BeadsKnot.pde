@@ -398,7 +398,7 @@ void mouseReleased() {
             //  JOptionPane.INFORMATION_MESSAGE   //メッセージタイプをInformationにする
             //  );
             //if (r==0) {
-              //mouse.trace_to_parts_editing(data, edit);
+              mouse.trace_to_parts_editing(edit);
               Draw.beads();
             }
           }

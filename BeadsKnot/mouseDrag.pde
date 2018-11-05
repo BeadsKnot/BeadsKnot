@@ -39,6 +39,7 @@ float PressY = 0;
   }
   
   void trace_to_beads(data_extract data, data_graph graph){
+    ArrayList<PVector> meets = new ArrayList<PVector>();
     data.points.clear();
     int traceNumber = trace.size();
     // まず1列のbeadの列を作る。
@@ -49,8 +50,8 @@ float PressY = 0;
       bd.c = 2;
       data.points.add(bd);
     }
-    for(int tr1 = 0; tr1 < traceNumber; tr1+=2){
-      for(int tr2 = tr1+1; tr2 < traceNumber; tr2+=2){
+    for(int tr1 = 0; tr1 < traceNumber; tr1++){
+      for(int tr2 = tr1+1; tr2 < traceNumber; tr2++){
         int difference = (tr2-tr1+2*traceNumber)%traceNumber;
         if(2 < difference && difference < traceNumber -2){
           float x1 = trace.get(tr1).x;
@@ -84,6 +85,8 @@ float PressY = 0;
             int jt = (tr1+1)%traceNumber;
             int jt2 = (tr2+1)%traceNumber;
             println(jt,"meets",jt2);
+            boolean OK=true;
+            meets.add(new PVector(jt, jt2));
             Bead jtBead = data.points.get(jt);
             Bead jt2Bead = data.points.get(jt2);
             jtBead.Joint = true;
@@ -101,5 +104,12 @@ float PressY = 0;
     }
     graph.make_data_graph();
     println("complete mouse-trace to beads"); 
+  }
+  
+  void trace_to_parts_editing(parts_editing edit){
+    // まず、traceをすべてbeadに置き換える。（両端は除く）
+    ;
+    //そののちに、既存のビーズ列、自分自身との交差を判定し、jointを追加する。
+    ;
   }
 };
