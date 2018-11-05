@@ -169,6 +169,7 @@ float PressY = 0;
       data.points.clear();
       for(int bdID=0; bdID<edit.beads.size(); bdID++){
         Bead bd = edit.beads.get(bdID);
+        if(bd.c==4) bd.c=2;
         data.points.add(bd);
       }
       graph.make_data_graph();
