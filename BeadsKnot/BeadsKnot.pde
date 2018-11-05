@@ -391,20 +391,7 @@ void mouseReleased() {
             }
           }
           if (OK) {
-            //JPanel panel = new JPanel();    //パネルを作成
-            //BoxLayout layout = new BoxLayout( panel, BoxLayout.Y_AXIS );    //メッセージのレイアウトを決定
-            //panel.setLayout(layout);    //panelにlayoutを適用
-            //panel.add( new JLabel( "よろしいですか" ) );    //メッセージ内容を文字列のコンポーネントとしてパネルに追加
-            //int r = JOptionPane.showConfirmDialog( 
-            //  null, //親フレームの指定
-            //  panel, //パネルの指定
-            //  "使用しますか？", //タイトルバーに表示する内容
-            //  JOptionPane.YES_NO_OPTION, //オプションタイプをYES,NOにする
-            //  JOptionPane.INFORMATION_MESSAGE   //メッセージタイプをInformationにする
-            //  );
-            //if (r==0) {
-            mouse.trace_to_parts_editing(edit, endBdID);
-            Draw.beads();
+            mouse.trace_to_parts_editing(data, graph, edit, endBdID);
           }
         }
         mouse.free_dragging=false;

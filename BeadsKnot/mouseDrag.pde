@@ -117,14 +117,17 @@ float PressY = 0;
     println("complete mouse-trace to beads"); 
   }
   
-  void trace_to_parts_editing(parts_editing edit, int endBeadID){
+  void trace_to_parts_editing(data_extract data, data_graph graph, parts_editing edit, int endBeadID){
     // まず、traceをすべてbeadに置き換える。（両端は除く）
+    println("end_path");
     int startBeadID = dragged_BeadID;
     Bead startBead = edit.beads.get(startBeadID);
     if(startBead.c==1){
       startBead.n2 = edit.beads.size();
+      startBead.c = 2;
     } else {
       startBead.n1 = edit.beads.size();
+      startBead.c = 1;
     }
     for(int trID=1; trID<trace.size();trID++){
       PVector tr = trace.get(trID);
@@ -140,16 +143,35 @@ float PressY = 0;
       }
       newBd.n1 = prevBeadID;
       newBd.n2 = nextBeadID;
+      newBd.c = 2;
+      println(prevBeadID, nextBeadID);
       edit.beads.add(newBd);
     }
     Bead endBead = edit.beads.get(endBeadID);
     if(endBead.c==1){
       endBead.n2 = edit.beads.size()-1;
+      endBead.c = 2;
     } else {
       endBead.n1 = edit.beads.size()-1;
+      endBead.c = 1;
     }
     //dragge_BeadID - endBeadID;
     //そののちに、既存のビーズ列、自分自身との交差を判定し、jointを追加する。
-    ;
+    boolean OK=true;
+    for(int bdID=0; bdID<edit.beads.size(); bdID++){
+      if(edit.beads.get(bdID).c<2){
+        OK=false;
+      }
+    }
+    if(OK){
+      data.points.clear();
+      for(int bdID=0; bdID<edit.beads.size(); bdID++){
+        Bead bd = edit.beads.get(bdID);
+        data.points.add(bd);
+      }
+      graph.make_data_graph();
+      Draw.beads();
+    
+    }
   }
 };

@@ -1,7 +1,7 @@
 class parts_editing {
 
   ArrayList<Bead> beads;
-  
+
   parts_editing() {
     beads = new ArrayList<Bead>();
   }
@@ -40,7 +40,7 @@ class parts_editing {
       if (0<= bd.n1 && bd.n1<beads.size()) {
         Bead next = beads.get(bd.n1);
         if (next.Joint || next.midJoint) {
-          if(next.n1 == bdID || next.n2 == bdID){
+          if (next.n1 == bdID || next.n2 == bdID) {
             stroke(0);
           } else {
             stroke(255, 180, 255);
@@ -53,7 +53,7 @@ class parts_editing {
       if (0<= bd.n2 && bd.n2<beads.size()) {
         Bead next = beads.get(bd.n2);
         if (next.Joint || next.midJoint) {
-          if(next.n1 == bdID || next.n2 == bdID){
+          if (next.n1 == bdID || next.n2 == bdID) {
             stroke(0);
           } else {
             stroke(255, 180, 255);
