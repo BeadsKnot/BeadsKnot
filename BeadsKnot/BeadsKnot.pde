@@ -56,6 +56,7 @@ void draw() {
     mouse.draw_trace();
   } else if (Draw._parts_editing) {
     edit.draw_parts();
+    mouse.draw_trace();
   }
 }
 
@@ -251,7 +252,9 @@ void mousePressed() {
         mouse.prev = new PVector(mouseX, mouseY);
         mouse.trace.clear();
         mouse.trace.add(mouse.prev);
+        mouse.dragged_BeadID= bdID;
         mouse.node_next_dragging=true; // ドラッグ開始
+        println("start path.");
         break;
       }
     }
@@ -306,7 +309,7 @@ void mouseDragged() {
       mouse.trace.add(mouse.prev);
     }
   } else if (Draw._parts_editing) {
-    if (mouse.free_dragging) {
+    if (mouse.node_next_dragging) {
       if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
         mouse.prev = new PVector(mouseX, mouseY);
         mouse.trace.add(mouse.prev);
@@ -376,16 +379,18 @@ void mouseReleased() {
       }
     } else { // ドラッグ終了
       if (mouse.node_next_dragging) {// おひとり様からドラッグを開始した場合。
-        if (mouse.trace.size()>1) {// あまり近かったら何もしない。
+        if (mouse.trace.size()>2) {// あまり近かったら何もしない。
           boolean OK = false;
-          for(int bdID=0; bdID<edit.beads.size(); bdID++){
+          int endBdID=-1;
+          for (int bdID=0; bdID<edit.beads.size(); bdID++) {
             Bead bd = edit.beads.get(bdID);
             if (dist(bd.x, bd.y, mouseX, mouseY)<20) {
+              endBdID = bdID;
               OK = true;
               break;
             }
           }
-          if(OK){
+          if (OK) {
             //JPanel panel = new JPanel();    //パネルを作成
             //BoxLayout layout = new BoxLayout( panel, BoxLayout.Y_AXIS );    //メッセージのレイアウトを決定
             //panel.setLayout(layout);    //panelにlayoutを適用
@@ -398,13 +403,12 @@ void mouseReleased() {
             //  JOptionPane.INFORMATION_MESSAGE   //メッセージタイプをInformationにする
             //  );
             //if (r==0) {
-              mouse.trace_to_parts_editing(edit);
-              Draw.beads();
-            }
+            mouse.trace_to_parts_editing(edit, endBdID);
+            Draw.beads();
           }
         }
+        mouse.free_dragging=false;
       }
     }
-    mouse.free_dragging=false;
   }
 }
