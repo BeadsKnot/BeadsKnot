@@ -483,7 +483,7 @@ class data_graph {
         int k=findk(de.points.get(c), b);
         int h=getNodesFromPoint (i);
         //Log.d("0の行先は",""+getNodesFromPoint(c)+","+k);
-        if (j>h) {
+        if ((j > h) || (j==h && k>0)) {
           edges.add(new Edge(h, 0, j, k));
         }
         //b=points.get(a.n2);
@@ -494,7 +494,7 @@ class data_graph {
           j = getNodesFromPoint(c);
           k = findk(de.points.get(c), b);
           // Log.d("1の行先は",""+getNodesFromPoint(c)+","+k);
-          if (j > h) {
+        if ((j > h) || (j==h && k>1)) {
             edges.add(new Edge(h, 1, j, k));
           }
         }
@@ -503,7 +503,7 @@ class data_graph {
         j=getNodesFromPoint(c);
         k=findk(de.points.get(c), b);
         //Log.d("2の行先は",""+getNodesFromPoint(c)+","+k);
-        if (j>h) {
+        if ((j > h) || (j==h && k>2)) {
           edges.add(new Edge(h, 2, j, k));
         }
         if (a.Joint) {
