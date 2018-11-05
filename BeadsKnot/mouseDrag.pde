@@ -155,6 +155,7 @@ float PressY = 0;
       endBead.n1 = edit.beads.size()-1;
       endBead.c = 1;
     }
+    println("endBead.c="+endBead.c);
     //dragge_BeadID - endBeadID;
     //そののちに、既存のビーズ列、自分自身との交差を判定し、jointを追加する。
     boolean OK=true;
@@ -164,6 +165,7 @@ float PressY = 0;
       }
     }
     if(OK){
+      println("complete figure");
       data.points.clear();
       for(int bdID=0; bdID<edit.beads.size(); bdID++){
         Bead bd = edit.beads.get(bdID);

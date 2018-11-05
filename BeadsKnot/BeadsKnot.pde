@@ -76,6 +76,7 @@ void keyPressed() {
     mouse.trace.clear();// 絵のクリア
   } else if (key == 'e') {
     Draw.parts_editing();
+    mouse.trace.clear();
     edit.beads.clear();
   }
 }
@@ -384,7 +385,7 @@ void mouseReleased() {
           int endBdID=-1;
           for (int bdID=0; bdID<edit.beads.size(); bdID++) {
             Bead bd = edit.beads.get(bdID);
-            if (dist(bd.x, bd.y, mouseX, mouseY)<20) {
+            if (bd.c<2 && dist(bd.x, bd.y, mouseX, mouseY)<15) {
               endBdID = bdID;
               OK = true;
               break;
