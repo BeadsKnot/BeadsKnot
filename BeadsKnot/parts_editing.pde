@@ -103,6 +103,7 @@ class parts_editing {
       for (int r=0; r<4; r++) {
         if (bd1.get_un12(r)==bdID) {
           bd1.set_un12(r, -1);
+          bd1.c --;
         }
       }
     }
@@ -113,6 +114,7 @@ class parts_editing {
       for (int r=0; r<4; r++) {
         if (bd1.get_un12(r)==bdID) {
           bd1.set_un12(r, -1);
+          bd1.c --;
         }
       }
     }
@@ -123,6 +125,7 @@ class parts_editing {
       for (int r=0; r<4; r++) {
         if (bd1.get_un12(r)==bdID) {
           bd1.set_un12(r, -1);
+          bd1.c --;
         }
       }
     }
@@ -133,6 +136,7 @@ class parts_editing {
       for (int r=0; r<4; r++) {
         if (bd1.get_un12(r)==bdID) {
           bd1.set_un12(r, -1);
+          bd1.c --;
         }
       }
     }
