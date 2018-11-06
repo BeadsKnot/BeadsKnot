@@ -48,6 +48,17 @@ void draw() {
     data.drawNbhs();
     data.drawPoints();
     //    data.tf.spring();// ばねモデルで動かしたものを表示
+    if(mouse.node_next_dragging){
+      //ビーズ周りのガイドを表示する。
+      Node nd = graph.nodes.get(mouse.dragged_nodeID);
+      float x = disp.get_winX(nd.x);
+      float y = disp.get_winY(nd.y);
+      float t = nd.theta;
+      stroke(255,0,0);
+      strokeWeight(1);
+      line(x+100*sin(t), y+100*cos(t),x-100*sin(t), y-100*cos(t));
+      line(x+100*cos(t), y-100*sin(t),x-100*cos(t), y+100*sin(t));
+    }
   } 
   // 平面グラフのデータを表示
   else if (Draw._data_graph) {
@@ -238,7 +249,7 @@ void mousePressed() {
           mouse.node_next_dragging = true;
           mouse.dragged_nodeID = jt_ndID;
           Node nd = graph.nodes.get(mouse.dragged_nodeID);
-          mouse.dragged_theta = atan2(mouseY - nd.y, mouseX - nd.x);
+          mouse.dragged_theta = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
           mouse.nd_theta = nd.theta;
         }
       }
@@ -299,7 +310,8 @@ void mouseDragged() {
     } else if (mouse.node_next_dragging) {
       // ノードの隣をドラッグした場合。
       Node nd = graph.nodes.get(mouse.dragged_nodeID);
-      nd.theta = mouse.nd_theta - (atan2(mouseY - nd.y, mouseX - nd.x) - mouse.dragged_theta)*0.4;
+      //println(atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)));
+      nd.theta = mouse.nd_theta - (atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.2;
       graph.modify();
       graph.update_points();
       graph.add_close_point_Joint();
