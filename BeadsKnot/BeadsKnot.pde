@@ -32,6 +32,12 @@ void setup() {
   edit = new parts_editing();
 }
 
+void message(String msg){
+  textSize(28);
+  fill(80);
+  text(msg,0,30);
+}
+
 void draw() {
   background(255);
   if (Draw._binarized_image) {// 二値化したデータを表示
@@ -64,8 +70,10 @@ void draw() {
   else if (Draw._data_graph) {
     graph.draw_nodes_edges();
   } else if (Draw._free_loop) {
+    message("Draw a free loop.");
     mouse.draw_trace();
   } else if (Draw._parts_editing) {
+    message("A crossing by a click, connecting two crossings by mouse-drag.");
     edit.draw_parts();
     mouse.draw_trace();
   }
