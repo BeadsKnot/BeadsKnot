@@ -80,25 +80,25 @@ class data_graph {
       Bead bd = de.points.get(p);
       if (bd.Joint) {
         int nextJoint=find_next_Joint_in_points(p, bd.n1);
-        if (p<nextJoint) {
+        if (p<=nextJoint) {
           int count = countNeighborJointInPoints(p, bd.n1);
           int half = get_half_position(p, bd.n1, int(count * 0.5));
           de.points.get(half).midJoint=true;
         }
         nextJoint=find_next_Joint_in_points(p, bd.u1);
-        if (p<nextJoint) {
+        if (p<=nextJoint) {
           int count = countNeighborJointInPoints(p, bd.u1);
           int half = get_half_position(p, bd.u1, int(count * 0.5));
           de.points.get(half).midJoint=true;
         }
         nextJoint=find_next_Joint_in_points(p, bd.n2);
-        if (p<nextJoint) {
+        if (p<=nextJoint) {
           int count = countNeighborJointInPoints(p, bd.n2);
           int half = get_half_position(p, bd.n2, int(count * 0.5));
           de.points.get(half).midJoint=true;
         }
         nextJoint=find_next_Joint_in_points(p, bd.u2);
-        if (p<nextJoint) {
+        if (p<=nextJoint) {
           int count = countNeighborJointInPoints(p, bd.u2);
           int half = get_half_position(p, bd.u2, int(count * 0.5));
           de.points.get(half).midJoint=true;
@@ -302,11 +302,11 @@ class data_graph {
       edge.scaling_shape_modifier(nodes);
     }
     //Nodeのthetaを最適化する
-    for (int repeat=0; repeat < 1; repeat ++) {
-      for (int n=0; n<nodes.size(); n++) {
-        rotation_shape_modifier(n);
-      }
-    }
+    //for (int repeat=0; repeat < 1; repeat ++) {
+    //  for (int n=0; n<nodes.size(); n++) {
+    //    rotation_shape_modifier(n);
+    //  }
+    //}
     //Nodeの(x,y)を最適化する
     //nodeCoordinateModifier(nodes, edges);
     // 絵の範囲を求めて適切に描画する
