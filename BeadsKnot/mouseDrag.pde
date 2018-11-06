@@ -28,11 +28,11 @@ float PressY = 0;
         line(p0.x, p0.y, p1.x, p1.y);
         p0 = p1;
       }
-      if (trace.size()>3) {
+      if (free_dragging && trace.size()>3) {
         p0 = mouse.trace.get(0);
         if (dist(p0.x, p0.y, mouseX, mouseY)<30) {
           stroke(128);
-          fill(255, 180, 180);
+          fill(255, 0, 0, 40);
           ellipse(p0.x, p0.y, 60, 60);
         }
       }
@@ -106,6 +106,7 @@ float PressY = 0;
               jt2Bead.n1 = -1;
               jt2Bead.n2 = -1;
               jt2Bead.x = jt2Bead.y = -1f;
+              jt2Bead.c = 0;
               data.points.get(tr2).n1 = jt;
               data.points.get((tr2+2)%traceNumber).n2 = jt;
             }
@@ -158,6 +159,8 @@ float PressY = 0;
     println("endBead.c="+endBead.c);
     //dragge_BeadID - endBeadID;
     //そののちに、既存のビーズ列、自分自身との交差を判定し、jointを追加する。
+    
+    //終了条件の確認
     boolean OK=true;
     for(int bdID=0; bdID<edit.beads.size(); bdID++){
       if(edit.beads.get(bdID).c<2){

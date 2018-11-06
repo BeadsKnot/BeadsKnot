@@ -257,6 +257,7 @@ void mousePressed() {
   } else if (Draw._free_loop) {
     mouse.prev = new PVector(mouseX, mouseY);
     mouse.trace.add(mouse.prev);
+    mouse.free_dragging = true;
   } else if (Draw._parts_editing) {
     for (int bdID=0; bdID < edit.beads.size(); bdID++) {
       Bead bd = edit.beads.get(bdID);
@@ -311,7 +312,7 @@ void mouseDragged() {
       // ノードの隣をドラッグした場合。
       Node nd = graph.nodes.get(mouse.dragged_nodeID);
       //println(atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)));
-      nd.theta = mouse.nd_theta - (atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.2;
+      nd.theta = mouse.nd_theta - (atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.25;
       graph.modify();
       graph.update_points();
       graph.add_close_point_Joint();
@@ -407,7 +408,8 @@ void mouseReleased() {
             mouse.trace_to_parts_editing(data, graph, edit, endBdID);
           }
         }
-        mouse.free_dragging=false;
+        
+        mouse.node_next_dragging=false; // ドラッグ終了
       }
     }
   }
