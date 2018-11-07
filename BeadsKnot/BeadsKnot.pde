@@ -34,7 +34,22 @@ void setup() {
 
 void draw() {
   background(255);
-  if (Draw._binarized_image) {// 二値化したデータを表示
+  if(Draw._menu){
+    textSize(28);
+    stroke(0);
+    int y = 60;
+    text("e : input by editor",30,y);
+    y += 40;
+    text("n : input by free loop",30,y);
+    y += 40;
+    text("o : open file (png, jpg, gif, txt)",30,y);
+    y += 40;
+    text("s : save file (png, txt)",30,y);
+    y += 40;
+    text("m : see menu",30,y);
+    y += 40;
+  }
+  else if (Draw._binarized_image) {// 二値化したデータを表示
     loadPixels();
     for (int x=0; x<data.w; x++) {
       for (int y=0; y<data.h; y++) {
@@ -337,7 +352,7 @@ void mouseReleased() {
     mouse.node_dragging=false;
     mouse.node_next_dragging = false;
     if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
-      println("click");
+      println("beads-mode : click");
       // ノードをクリックしている場合には、クロスチェンジする。
       for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
         Node node = graph.nodes.get(nodeID);
@@ -348,6 +363,81 @@ void mouseReleased() {
           if (node.Joint) {
             graph.crosschange(nodeID);
           }
+          break;
+        }
+      }
+      for(int beadID=0; beadID<data.points.size(); beadID++){
+        Bead bd = data.points.get(beadID);
+        float mX = disp.getX_fromWin(mouseX);
+        float mY = disp.getY_fromWin(mouseY);
+        if(dist(mX, mY, bd.x, bd.y)<10){
+          if( ! bd.Joint ){  
+            if( ! bd.midJoint ){// 普通のビーズの場合には、両端を調べたうえでmidJointにする。
+              int bdn1ID = bd.n1;
+              int bdn2ID = bd.n2;
+              // 両端がJointかmidJointだったら何もしない。
+              Bead bdn1 = data.points.get(bdn1ID);
+              Bead bdn2 = data.points.get(bdn2ID);
+              if(bdn1.Joint || bdn1.midJoint || bdn2.Joint || bdn2.midJoint){
+                break ;
+              }
+              // bdをmidJointにする
+              bd.midJoint = true;
+              // ノードを一つ新規追加する
+              Node newNd = new Node(bd.x, bd.y);
+              newNd.theta = -atan2(bdn1.y - bd.y,bdn1.x - bd.x);
+              newNd.pointID = beadID;
+              graph.nodes.add(newNd);
+              int newNdID = graph.nodes.size()-1;
+              // bdからn1方向に次のJoint, midJointを探す。
+              int nodeBeadN1 = graph.findJointInPoints(beadID, bdn1ID);
+              // bdからn2方向に次のJoint, midJointを探す。
+              int nodeBeadN2 = graph.findJointInPoints(beadID, bdn2ID);
+              int nodeN1=-1, nodeN2 = -1;
+              // 対応するノードの番号を探す
+              for(int nodeID=0; nodeID<graph.nodes.size(); nodeID++){
+                Node nd = graph.nodes.get(nodeID);
+                if(nd.pointID == nodeBeadN1)  nodeN1 = nodeID;
+                if(nd.pointID == nodeBeadN2)  nodeN2 = nodeID;
+              }
+              //このノードを両端とするエッジを探す。
+              //int thisEdgeID = -1;
+              
+              for(int edgeID=0; edgeID<graph.edges.size(); edgeID++){
+                Edge ed = graph.edges.get(edgeID);
+                
+                if(ed.ANodeID == nodeN1 && ed.BNodeID == nodeN2){
+                  //thisEdgeID = edgeID;
+                  //エッジを新規追加する。
+                  Edge newEdge = new Edge(newNdID, 2, ed.BNodeID, ed.BNodeRID);
+                  graph.edges.add(newEdge);
+                  //このエッジの情報を書き直す。
+                  ed.BNodeID = newNdID;
+                  ed.BNodeRID = 0;
+                  graph.modify();
+                  println("midJoint追加完了1");
+                  break;
+                }
+                else if(ed.ANodeID == nodeN2 && ed.BNodeID == nodeN1){
+                  //thisEdgeID = edgeID;
+                  //エッジを新規追加する。
+                  Edge newEdge = new Edge(newNdID, 0, ed.BNodeID, ed.BNodeRID);
+                  graph.edges.add(newEdge);
+                  //このエッジの情報を書き直す。
+                  ed.BNodeID = newNdID;
+                  ed.BNodeRID = 2;
+              // modifyする。
+                  graph.modify();
+                  println("midJoint追加完了2");
+                  break;
+                }
+              }
+                  
+            }              
+          } else {//ミッドジョイントの場合には、普通のビーズへ変更する。
+            
+          }
+          break;
         }
       }
     }

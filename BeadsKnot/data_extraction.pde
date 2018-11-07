@@ -76,6 +76,8 @@ class data_extract {
       } else {
         //dispをつかって表示を画面サイズに合わせるように座標変換する。
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
+        //fill(0);
+        //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
       }
     }
   }
