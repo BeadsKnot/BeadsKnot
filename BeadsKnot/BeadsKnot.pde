@@ -32,30 +32,29 @@ void setup() {
   edit = new parts_editing();
 }
 
-void message(String msg){
+void message(String msg) {
   textSize(28);
   fill(80);
-  text(msg,0,30);
+  text(msg, 0, 30);
 }
 
 void draw() {
   background(255);
-  if(Draw._menu){
+  if (Draw._menu) {
     textSize(28);
     stroke(0);
     int y = 60;
-    text("e : input by editor",30,y);
+    text("e : input by editor", 30, y);
     y += 40;
-    text("n : input by free loop",30,y);
+    text("n : input by free loop", 30, y);
     y += 40;
-    text("o : open file (png, jpg, gif, txt)",30,y);
+    text("o : open file (png, jpg, gif, txt)", 30, y);
     y += 40;
-    text("s : save file (png, txt)",30,y);
+    text("s : save file (png, txt)", 30, y);
     y += 40;
-    text("m : see menu",30,y);
+    text("m : see menu", 30, y);
     y += 40;
-  }
-  else if (Draw._binarized_image) {// 二値化したデータを表示
+  } else if (Draw._binarized_image) {// 二値化したデータを表示
     loadPixels();
     for (int x=0; x<data.w; x++) {
       for (int y=0; y<data.h; y++) {
@@ -69,16 +68,16 @@ void draw() {
     data.drawNbhs();
     data.drawPoints();
     //    data.tf.spring();// ばねモデルで動かしたものを表示
-    if(mouse.node_next_dragging){
+    if (mouse.node_next_dragging) {
       //ビーズ周りのガイドを表示する。
       Node nd = graph.nodes.get(mouse.dragged_nodeID);
       float x = disp.get_winX(nd.x);
       float y = disp.get_winY(nd.y);
       float t = nd.theta;
-      stroke(255,0,0);
+      stroke(255, 0, 0);
       strokeWeight(1);
-      line(x+100*sin(t), y+100*cos(t),x-100*sin(t), y-100*cos(t));
-      line(x+100*cos(t), y-100*sin(t),x-100*cos(t), y+100*sin(t));
+      line(x+100*sin(t), y+100*cos(t), x-100*sin(t), y-100*cos(t));
+      line(x+100*cos(t), y-100*sin(t), x-100*cos(t), y+100*sin(t));
     }
   } 
   // 平面グラフのデータを表示
@@ -367,33 +366,34 @@ void mouseReleased() {
         float mX = disp.getX_fromWin(mouseX);
         float mY = disp.getY_fromWin(mouseY);
         if (dist(mX, mY, node.x, node.y)<10) {
-          println("cross change");
           if (node.Joint) {
+            println("cross change");
             graph.crosschange(nodeID);
           }
           break;
         }
       }
-      for(int beadID=0; beadID<data.points.size(); beadID++){
+      // Joint以外をクリックした場合には、miJointの増減を行う。
+      for (int beadID=0; beadID<data.points.size(); beadID++) {
         Bead bd = data.points.get(beadID);
         float mX = disp.getX_fromWin(mouseX);
         float mY = disp.getY_fromWin(mouseY);
-        if(dist(mX, mY, bd.x, bd.y)<10){
-          if( ! bd.Joint ){  
-            if( ! bd.midJoint ){// 普通のビーズの場合には、両端を調べたうえでmidJointにする。
+        if (dist(mX, mY, bd.x, bd.y)<10) {
+          if ( ! bd.Joint ) {  
+            if ( ! bd.midJoint ) {// 普通のビーズの場合には、両端を調べたうえでmidJointにする。
               int bdn1ID = bd.n1;
               int bdn2ID = bd.n2;
               // 両端がJointかmidJointだったら何もしない。
               Bead bdn1 = data.points.get(bdn1ID);
               Bead bdn2 = data.points.get(bdn2ID);
-              if(bdn1.Joint || bdn1.midJoint || bdn2.Joint || bdn2.midJoint){
+              if (bdn1.Joint || bdn1.midJoint || bdn2.Joint || bdn2.midJoint) {
                 break ;
               }
               // bdをmidJointにする
               bd.midJoint = true;
               // ノードを一つ新規追加する
               Node newNd = new Node(bd.x, bd.y);
-              newNd.theta = -atan2(bdn1.y - bd.y,bdn1.x - bd.x);
+              newNd.theta = -atan2(bdn1.y - bd.y, bdn1.x - bd.x);
               newNd.pointID = beadID;
               graph.nodes.add(newNd);
               int newNdID = graph.nodes.size()-1;
@@ -403,18 +403,18 @@ void mouseReleased() {
               int nodeBeadN2 = graph.findJointInPoints(beadID, bdn2ID);
               int nodeN1=-1, nodeN2 = -1;
               // 対応するノードの番号を探す
-              for(int nodeID=0; nodeID<graph.nodes.size(); nodeID++){
+              for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
                 Node nd = graph.nodes.get(nodeID);
-                if(nd.pointID == nodeBeadN1)  nodeN1 = nodeID;
-                if(nd.pointID == nodeBeadN2)  nodeN2 = nodeID;
+                if (nd.pointID == nodeBeadN1)  nodeN1 = nodeID;
+                if (nd.pointID == nodeBeadN2)  nodeN2 = nodeID;
               }
               //このノードを両端とするエッジを探す。
               //int thisEdgeID = -1;
-              
-              for(int edgeID=0; edgeID<graph.edges.size(); edgeID++){
+
+              for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {
                 Edge ed = graph.edges.get(edgeID);
-                
-                if(ed.ANodeID == nodeN1 && ed.BNodeID == nodeN2){
+
+                if (ed.ANodeID == nodeN1 && ed.BNodeID == nodeN2) {
                   //thisEdgeID = edgeID;
                   //エッジを新規追加する。
                   Edge newEdge = new Edge(newNdID, 2, ed.BNodeID, ed.BNodeRID);
@@ -425,8 +425,7 @@ void mouseReleased() {
                   graph.modify();
                   println("midJoint追加完了1");
                   break;
-                }
-                else if(ed.ANodeID == nodeN2 && ed.BNodeID == nodeN1){
+                } else if (ed.ANodeID == nodeN2 && ed.BNodeID == nodeN1) {
                   //thisEdgeID = edgeID;
                   //エッジを新規追加する。
                   Edge newEdge = new Edge(newNdID, 0, ed.BNodeID, ed.BNodeRID);
@@ -434,18 +433,74 @@ void mouseReleased() {
                   //このエッジの情報を書き直す。
                   ed.BNodeID = newNdID;
                   ed.BNodeRID = 2;
-              // modifyする。
+                  // modifyする。
                   graph.modify();
                   println("midJoint追加完了2");
                   break;
                 }
               }
-                  
-            }              
-          } else {//ミッドジョイントの場合には、普通のビーズへ変更する。
-            
+            } else {//ミッドジョイントの場合には、普通のビーズへ変更する。
+              // 　クリックしたビーズのIDを得る。
+              //Bead bd = data.points.get(beadID);
+              //そのビーズのノード番号を得る nodeID
+              int nodeID = -1;
+              for (int ndID = 0; ndID<graph.nodes.size(); ndID ++) {
+                if (graph.nodes.get(ndID).pointID == beadID) {
+                  nodeID = ndID;
+                  break;
+                }
+              }
+              //bdからn1方向にたどったJoint,midJointoを探す。そしてそのノード番号を探す。 nodeN1
+              int bdn1ID = bd.n1;
+              int nodeBeadN1 = graph.findJointInPoints(beadID, bdn1ID);
+              //bdからn2方向にたどったJoint,midJointoを探す。そしてそのノード番号を探す。 nodeN2
+              int bdn2ID = bd.n2;
+              int nodeBeadN2 = graph.findJointInPoints(beadID, bdn2ID);
+              int nodeN1=-1, nodeN2 = -1;
+              // 対応するノードの番号を探す
+              for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
+                Node nd = graph.nodes.get(ndID);
+                if (nd.pointID == nodeBeadN1)  nodeN1 = ndID;
+                if (nd.pointID == nodeBeadN2)  nodeN2 = ndID;
+              }
+              //nodeIDとnodeN1IDを両端とするエッジedgeN1をみつける
+              //nodeIDとnodeN2を両端とするエッジedgeN2とを見つける。
+              Edge edgeN1= null;
+              int edgeN2ID = -1;
+              int ANode=-1, ANodeR=-1, BNode=-1, BNodeR=-1;
+              for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {
+                Edge ed = graph.edges.get(edgeID);
+                if (ed.ANodeID == nodeID && ed.BNodeID == nodeN1) {
+                  edgeN1 = ed;
+                  ANode = ed.BNodeID;
+                  ANodeR = ed.BNodeRID;
+                } else if (ed.BNodeID == nodeID && ed.ANodeID == nodeN1) {
+                  edgeN1 = ed;
+                  ANode = ed.ANodeID;
+                  ANodeR = ed.ANodeRID;
+                } else if (ed.ANodeID == nodeID && ed.BNodeID == nodeN2) {
+                  edgeN2ID = edgeID;
+                  BNode = ed.BNodeID;
+                  BNodeR = ed.BNodeRID;
+                } else if (ed.BNodeID == nodeID && ed.ANodeID == nodeN2) {
+                  edgeN2ID = edgeID;
+                  BNode = ed.ANodeID;
+                  BNodeR = ed.ANodeRID;
+                }
+              }
+              if(edgeN1 != null){
+                //そのビーズのmidJointをfalseにする。
+                bd.midJoint = false;
+                //エッジを合流し、一つをedgesから消す。
+                edgeN1.ANodeID = ANode;
+                edgeN1.ANodeRID = ANodeR;
+                edgeN1.BNodeID = BNode;
+                edgeN1.BNodeRID = BNodeR;
+                graph.edges.remove(edgeN2ID);
+              }
+            }
+            break;
           }
-          break;
         }
       }
     }
@@ -506,7 +561,7 @@ void mouseReleased() {
             mouse.trace_to_parts_editing(data, graph, edit, endBdID);
           }
         }
-        
+
         mouse.node_next_dragging=false; // ドラッグ終了
       }
     }
