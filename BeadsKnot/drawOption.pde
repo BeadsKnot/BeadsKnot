@@ -1,4 +1,5 @@
 class drawOption {
+  boolean _menu;
   boolean _original_image;
   boolean _binarized_image;
   boolean _thinning_image;
@@ -8,10 +9,11 @@ class drawOption {
   boolean _parts_editing;
 
   drawOption() {
-    beads();
+    menu();
   }
 
   void setAllOptionFalse() {
+    _menu = false;
     _original_image=false;
     _binarized_image=false;
     _thinning_image = false;
@@ -21,6 +23,10 @@ class drawOption {
     _parts_editing = false;
   }
 
+  void menu(){
+    setAllOptionFalse();
+    _menu = true;
+  }
 
   void original_image() {
     setAllOptionFalse();
