@@ -9,6 +9,7 @@ int dragged_nodeID = -1;
 int dragged_BeadID = -1;
 float dragged_theta = 0f;
 float nd_theta = 0f;
+float nd_theta_branch = 0f;
 float DragX = 0f;
 float DragY = 0f;
 float PressX = 0;

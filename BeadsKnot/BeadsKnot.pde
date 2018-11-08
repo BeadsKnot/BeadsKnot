@@ -273,6 +273,7 @@ void mousePressed() {
           Node nd = graph.nodes.get(mouse.dragged_nodeID);
           mouse.dragged_theta = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
           mouse.nd_theta = nd.theta;
+          mouse.nd_theta_branch =0f;
         }
       }
     }
@@ -334,7 +335,11 @@ void mouseDragged() {
       // ノードの隣をドラッグした場合。
       Node nd = graph.nodes.get(mouse.dragged_nodeID);
       //println(atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)));
-      nd.theta = mouse.nd_theta - (atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.25;
+      float atanPre = atan2(pmouseY - disp.get_winY(nd.y), pmouseX - disp.get_winX(nd.x));
+      float atanNow = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
+      if(atanPre>atanNow+PI*3/2) mouse.nd_theta_branch += (2*PI);
+      else if(atanPre+PI*3/2<atanNow) mouse.nd_theta_branch -= (2*PI);
+      nd.theta = mouse.nd_theta - (mouse.nd_theta_branch + atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.25;
       graph.modify();
       graph.update_points();
       graph.add_close_point_Joint();
