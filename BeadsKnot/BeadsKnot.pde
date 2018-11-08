@@ -42,7 +42,7 @@ void draw() {
   background(255);
   if (Draw._menu) {
     textSize(28);
-    stroke(0);
+    fill(0);
     int y = 60;
     text("e : input by editor", 30, y);
     y += 40;
@@ -50,7 +50,7 @@ void draw() {
     y += 40;
     text("o : open file (png, jpg, gif, txt)", 30, y);
     y += 40;
-    text("s : save file (png, txt)", 30, y);
+    text("s : save file (png, txt, lnk)", 30, y);
     y += 40;
     text("m : see menu", 30, y);
     y += 40;

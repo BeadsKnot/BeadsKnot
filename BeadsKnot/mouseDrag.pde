@@ -121,7 +121,7 @@ float PressY = 0;
   
   void trace_to_parts_editing(data_extract data, data_graph graph, parts_editing edit, int endBeadID){
     // まず、traceをすべてbeadに置き換える。（両端は除く）
-    println("end_path");
+    println("traceをbeadsに変換");
     int startBeadID = dragged_BeadID;
     Bead startBead = edit.beads.get(startBeadID);
     if(startBead.c==1){
@@ -157,7 +157,6 @@ float PressY = 0;
       endBead.n1 = edit.beads.size()-1;
       endBead.c = 1;
     }
-    println("endBead.c="+endBead.c);
     //dragge_BeadID - endBeadID;
     //そののちに、既存のビーズ列、自分自身との交差を判定し、jointを追加する。
     
