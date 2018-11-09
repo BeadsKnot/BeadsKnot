@@ -18,8 +18,8 @@ class transform {//形を整えるクラス
       dx[i]=0;
       dy[i]=0;
     }
-    for (int i=0; i<de.nbhs.size (); i++) {
-      calc_spring(de.nbhs.get(i).a, de.nbhs.get(i).b, ln);//Nbh[n,m]みたいな感じになる
+    for (int i=0; i<de.nbhds.size (); i++) {
+      calc_spring(de.nbhds.get(i).a, de.nbhds.get(i).b, ln);//Nbh[n,m]みたいな感じになる
     }
     for (int i=0; i<de.points.size (); i++) {//double spring scheme
       Bead vec=de.points.get(i);

@@ -27,7 +27,7 @@ class Square{
 			}
 			kaisa++;
 
-			de.nbhs.clear();
+			de.nbhds.clear();
 			de.points.clear();
 
 			for (int y=0; y<de.h; y+=s) {
@@ -37,11 +37,11 @@ class Square{
 			}
 
 			//cancelLoop();がいるらしい。
-			de.countNbhs();
+			de.countNbhds();
 			de.removeThrone();
-			de.countNbhs();
+			de.countNbhds();
 			de.fillGap();
-			de.countNbhs();
+			de.countNbhds();
 			de.FindJoint();
 
 			de.getDisplayLTRB();
@@ -55,9 +55,9 @@ class Square{
 
 		if (ofutarisama_flag) {
 			Draw.beads();// drawモードの変更
-			println("extraction is finished. points # ="+de.points.size()+", Nbh # ="+de.nbhs.size());
+			println("extraction is finished. points # ="+de.points.size()+", Nbh # ="+de.nbhds.size());
 			// Joint用のNbhの設置
-			de.addJointToNbhs();
+			de.addJointToNbhds();
 			// dispのデータを書き換える。
 			de.getDisplayLTRB();
 			// バネモデルの初期化
@@ -123,19 +123,19 @@ class Square{
 		        	v4=de.addToPoints((int)(x+l), y+s,s);
 		        }
 		        if (p1&&p2) {
-		        	de.addToNbhs(v1, v2);
+		        	de.addToNbhds(v1, v2);
 		        }
 		        if (p2&&p3) {
-		        	de.addToNbhs(v2, v3);
+		        	de.addToNbhds(v2, v3);
 		        }
 		        if (p1&&p4) {
-		        	de.addToNbhs(v1, v4);
+		        	de.addToNbhds(v1, v4);
 		        }
 		        if (p1&&p3) {
-		        	de.addToNbhs(v1, v3);
+		        	de.addToNbhds(v1, v3);
 		        }
 		        if (p2&&p4) {
-		        	de.addToNbhs(v2, v4);
+		        	de.addToNbhds(v2, v4);
 		        }
 		    } else {
 		    	float a=(num*XY-X*Y)/((num*YY)-(Y*Y));
@@ -161,19 +161,19 @@ class Square{
 		        	v4=de.addToPoints(x+s, (int)(y+l),s);
 		        }
 		        if (p1&&p2) {
-		        	de.addToNbhs(v1, v2);
+		        	de.addToNbhds(v1, v2);
 		        }
 		        if (p2&&p3) {
-		        	de.addToNbhs(v2, v3);
+		        	de.addToNbhds(v2, v3);
 		        }
 		        if (p1&&p4) {
-		        	de.addToNbhs(v1, v4);
+		        	de.addToNbhds(v1, v4);
 		        }
 		        if (p1&&p3) {
-		        	de.addToNbhs(v1, v3);
+		        	de.addToNbhds(v1, v3);
 		        }
 		        if (p2&&p4) {
-		        	de.addToNbhs(v2, v4);
+		        	de.addToNbhds(v2, v4);
 		        }
 		    }
 

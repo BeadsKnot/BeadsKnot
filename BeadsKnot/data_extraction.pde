@@ -6,7 +6,7 @@ class data_extract {
   int s;//解析メッシュのサイズ
   display disp;
 
-  ArrayList<Nbh> nbhs=new ArrayList<Nbh>();//線を登録
+  ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
   ArrayList<Bead> points=new ArrayList<Bead>();//点を登録
   transform tf;
   Binarization bin;
@@ -82,16 +82,16 @@ class data_extract {
     }
   }
 
-  int addToNbhs(int nn, int mm) {//線を追加する
+  int addToNbhds(int nn, int mm) {//線を追加する
     if (nn!=mm && connected(nn, mm)==1) {
-      nbhs.add(new Nbh(nn, mm));
+      nbhds.add(new Nbhd(nn, mm));
     }
     return 1;
   }
 
   int connected(int nn, int mm) {//線がつながっているかチェックする
     // nn,mmはpointsのなかの番号
-    if ( duplicateNbhs(nn, mm)==1) {//重複したら
+    if ( duplicateNbhds(nn, mm)==1) {//重複したら
       return 0;
     }
     if (nn==mm) {
@@ -178,7 +178,7 @@ class data_extract {
     }
   }
 
-  void drawNbhs() {//線を書く
+  void drawNbhds() {//線を書く
     for (int ptID=0; ptID<points.size (); ptID++) {
       Bead pt=points.get(ptID);
       if (0<=pt.n1 && pt.n1<points.size()) {
@@ -200,12 +200,12 @@ class data_extract {
     }
   }
 
-  void countNbhs() {//線を数える
+  void countNbhds() {//線を数える
     for (Bead vec : points) {
       vec.c=0;
       vec.n1=vec.n2=vec.u1=vec.u2=-1;//正常でない値
     }
-    for (Nbh n : nbhs) {
+    for (Nbhd n : nbhds) {
       // points.get(n.a).c++;
       //points.get(n.b).c++;
       Bead vec_1=points.get(n.a);
@@ -256,15 +256,15 @@ class data_extract {
     disp.set_rate();
   }
 
-  void addJointToNbhs() {//jointに関しての線を追加
+  void addJointToNbhds() {//jointに関しての線を追加
     for (int u=0; u<points.size (); u++) {
       Bead vec=points.get(u);
       if (vec.Joint) {
-        if (duplicateNbhs(u, vec.u1)==0) {
-          nbhs.add(new Nbh(u, vec.u1));
+        if (duplicateNbhds(u, vec.u1)==0) {
+          nbhds.add(new Nbhd(u, vec.u1));
         }
-        if (duplicateNbhs(u, vec.u2)==0) {
-          nbhs.add(new Nbh(u, vec.u2));
+        if (duplicateNbhds(u, vec.u2)==0) {
+          nbhds.add(new Nbhd(u, vec.u2));
         }
         // addToNbhs(u, vec.u1);
         //addToNbhs(u, vec.u2);
@@ -273,8 +273,8 @@ class data_extract {
     }
   }
 
-  int duplicateNbhs(int nn, int mm) {//線が重複しているかどうかを調べる
-    for (Nbh n : nbhs) {
+  int duplicateNbhds(int nn, int mm) {//線が重複しているかどうかを調べる
+    for (Nbhd n : nbhds) {
       if (nn==n.a&&mm==n.b) {
         return 1;
       }
@@ -287,14 +287,14 @@ class data_extract {
 
   void removePoint(int u) {//点を消す
     points.remove(u);
-    for (int i=nbhs.size ()-1; i>=0; i--) {
-      Nbh n=nbhs.get(i);
+    for (int i=nbhds.size ()-1; i>=0; i--) {
+      Nbhd n=nbhds.get(i);
       if (n.a==u||n.b==u) {
-        nbhs.remove(i);
+        nbhds.remove(i);
       }
     }
-    for (int i=nbhs.size ()-1; i>=0; i--) {
-      Nbh n=nbhs.get(i);
+    for (int i=nbhds.size ()-1; i>=0; i--) {
+      Nbhd n=nbhds.get(i);
       if (n.a>u) {
         n.a--;
       }
@@ -325,8 +325,8 @@ class data_extract {
   void removeThrone() {//とげを除く
     for (int u=0; u<points.size (); u++) {
       if ( points.get(u).c==1) {
-        for (int i=nbhs.size ()-1; i>=0; i--) {
-          Nbh n=nbhs.get(i);
+        for (int i=nbhds.size ()-1; i>=0; i--) {
+          Nbhd n=nbhds.get(i);
           if (n.a==u) {
             if (points.get(n.b).c==3) {
               removePoint(u);
@@ -362,12 +362,12 @@ class data_extract {
           }
         }
         if (points.get(num).c==1) {//最小の距離の点がおひとりさま
-          addToNbhs(u, num);
+          addToNbhds(u, num);
           //なにかする//TODO 「なにかする」という古いメッセージの意味を考える。
           points.get(num).c++;
           points.get(u).c++;
         } else if (points.get(num).c==0) {//最小の距離の点が孤立
-          addToNbhs(u, num);
+          addToNbhds(u, num);
           points.get(num).c++;
           points.get(u).c++;
         }
@@ -375,10 +375,10 @@ class data_extract {
     }
   }
   /*
-  void get_nbh() {//となりの隣の内容をgetする
-   //for (Nbh n : nbhs) {
-   for (int i=0; i<nbhs.size (); i++) {
-   Nbh n=nbhs.get(i);
+  void get_nbhd() {//となりの隣の内容をgetする
+   //for (Nbhd n : nbhds) {
+   for (int i=0; i<nbhds.size (); i++) {
+   Nbh n=nbhds.get(i);
    if (n.a!=n.b) {
    if (points.get(n.a).n1==-1) {
    points.get(n.a).n1=n.b;
@@ -541,6 +541,29 @@ class data_extract {
     }
     println("thickness = "+sum/num);
     return max(3, int(sum/num));
+  }
+  
+  Nbhd find_Joint_midJoint(Nbhd nbhd){
+    int j=nbhd.a;
+    int c=nbhd.b;
+    for (int count = 0; count < points.size(); count++) {
+      Bead p=points.get(c);
+      if (p.Joint || p.midJoint) {
+        return new Nbhd(j,c);
+      }
+      int d=0;
+      if (p.n1==j) {
+        d=p.n2;
+      } else if (p.n2==j) {
+        d=p.n1;
+      } else {
+        println("find_Joint_midJoint : 間違っている");
+        return new Nbhd(0,0); 
+      }
+      j = c;
+      c = d;
+    }
+    return new Nbhd(0,0); 
   }
   
 }

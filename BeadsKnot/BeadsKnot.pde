@@ -65,7 +65,7 @@ void draw() {
   }
   //data_extractの内容を描画する場合。
   if (Draw._beads) {
-    data.drawNbhs();
+    data.drawNbhds();
     data.drawPoints();
     //    data.tf.spring();// ばねモデルで動かしたものを表示
     if (mouse.node_next_dragging) {

@@ -3,25 +3,25 @@ class Thinning {
   int w, h;
   int d_new[][];
 
-  ArrayList<Nbh> cross;
+  ArrayList<Nbhd> cross;
 
   Thinning(data_extract _de) {
     DE=_de;
     w=DE.w;
     h=DE.h;
     d_new = new int[w][h];
-    cross = new ArrayList<Nbh>();
+    cross = new ArrayList<Nbhd>();
   }
 
   boolean getThinningExtraction() {
     w=DE.w;
     h=DE.h;
-    DE.nbhs.clear();
+    DE.nbhds.clear();
     DE.points.clear();
     // int de.d[w][h] を仮定してよい。
     get_edge_data_thinning();
 
-    DE.countNbhs();//NbhsからBeadsのn1,n2,u1,u2を決める。
+    DE.countNbhds();//NbhsからBeadsのn1,n2,u1,u2を決める。
 
     println("cancel_loop()"); cancel_loop() ;
 
@@ -234,7 +234,7 @@ class Thinning {
     if (!is_Beads_id(i1) || !is_Beads_id(i2)) {
       return false;
     }
-    for (Nbh n : DE.nbhs) {
+    for (Nbhd n : DE.nbhds) {
       if ( n.a==i1 && n.b==i2 ) {
         return  false;
       } else if ( n.a==i2 && n.b==i1 ) {
@@ -245,7 +245,7 @@ class Thinning {
       return  false;
     }
     //float d=abs(points.get(i1).x-points.get(i2).x)+abs(points.get(i1).y-points.get(i2).y);
-    DE.nbhs.add(new Nbh(i1, i2));
+    DE.nbhds.add(new Nbhd(i1, i2));
     return true;
   }
 
@@ -279,7 +279,7 @@ class Thinning {
     pt_prev = new int[pointsSize];
     pt_left = new boolean[pointsSize];
     pt_treated = new boolean[pointsSize];
-    nbh_left = new boolean[DE.nbhs.size()];
+    nbh_left = new boolean[DE.nbhds.size()];
     pt_nhd = new int[pointsSize][4];
     pt_row = new int[pointsSize][4];
     for (int p=0; p<pointsSize; p++) {
@@ -291,8 +291,8 @@ class Thinning {
       pt_nhd[p][0]=pt_nhd[p][1]=pt_nhd[p][2]=pt_nhd[p][3]=-1;
       pt_row[p][0]=pt_row[p][1]=pt_row[p][2]=pt_row[p][3]=-1;
     }
-    for (int n=0; n<DE.nbhs.size (); n++) {
-      Nbh u = DE.nbhs.get(n);
+    for (int n=0; n<DE.nbhds.size (); n++) {
+      Nbhd u = DE.nbhds.get(n);
       for (int i=0; i<4; i++) {
         if (pt_nhd[u.a][i]<0) {
           pt_nhd[u.a][i] = u.b;
@@ -462,10 +462,10 @@ class Thinning {
       if (v.u1>p) v.u1--;
       if (v.u2>p) v.u2--;
     }
-    for (int i=DE.nbhs.size ()-1; i>=0; i--) {
-      Nbh r = DE.nbhs.get(i) ;
+    for (int i=DE.nbhds.size ()-1; i>=0; i--) {
+      Nbhd r = DE.nbhds.get(i) ;
       if (r.a==p || r.b==p) {
-        DE.nbhs.remove(i);
+        DE.nbhds.remove(i);
       } else {
         if (r.a>p) r.a--;
         if (r.b>p) r.b--;
@@ -534,7 +534,7 @@ class Thinning {
           }
         }
         if (minJ>=0) {
-          cross.add(new Nbh(i, minJ));
+          cross.add(new Nbhd(i, minJ));
         }
       }
     }
@@ -594,12 +594,12 @@ class Thinning {
 
   void find_crosspt_from_cross_new() {
     for (int j=0; j<cross.size (); j++) {
-      Nbh cj = cross.get(j);
+      Nbhd cj = cross.get(j);
       int m=0, max=DE.points.size();
       int maxk=-1;
       for (int k=0; k<cross.size (); k++) {
         if (j != k) {
-          Nbh ck = cross.get(k);
+          Nbhd ck = cross.get(k);
           m = find_near_points(cj.b, ck.b, 10);
           if (0<=m && m<max) {
             max = m;
@@ -608,7 +608,7 @@ class Thinning {
         }
       }
       if (j<maxk) {
-        Nbh ck = cross.get(maxk);
+        Nbhd ck = cross.get(maxk);
         Bead v=DE.points.get(ck.b);
         v.Joint=true;
         v.u1=cj.a;

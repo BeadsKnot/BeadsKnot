@@ -1,6 +1,6 @@
-class Nbh {//線のクラス
+class Nbhd {//線のクラス
   int a, b;
-  Nbh(int aa, int bb) {
+  Nbhd(int aa, int bb) {
     a=aa;
     b=bb;
   }
