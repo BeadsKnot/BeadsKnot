@@ -566,4 +566,22 @@ class data_extract {
     return new Nbhd(0,0); 
   }
   
+  Nbhd turn_left(Nbhd nbhd){
+    Bead p=points.get(nbhd.b);
+    if(p.Joint){
+      if(p.n1==nbhd.a){
+        return new Nbhd(nbhd.b, p.u2);
+      } else 
+      if(p.u1==nbhd.a){
+        return new Nbhd(nbhd.b, p.n1);
+      } else 
+      if(p.n2==nbhd.a){
+        return new Nbhd(nbhd.b, p.u1);
+      } else 
+      if(p.u2==nbhd.a){
+        return new Nbhd(nbhd.b, p.n2);
+      } 
+    }
+    return new Nbhd(0,0); 
+  }
 }
