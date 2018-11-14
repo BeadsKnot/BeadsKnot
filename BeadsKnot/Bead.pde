@@ -4,12 +4,12 @@ class Bead {//点のクラス
   int c;
   int n1;
   int n2;
-  int u1;
-  int u2;
-  boolean Joint;
-  boolean midJoint;
-  boolean closeJoint;
-  boolean treated;
+  int u1;//underのお隣//pointsの番号
+  int u2;//underのお隣
+  boolean Joint;//crossingかどうか
+  boolean midJoint;//crossingとcrossingの間のBeads
+  boolean closeJoint;//crossingのやや隣
+  boolean treated;//画像解析のときのみ使用
   Bead(float _x, float _y) {
     x=_x;
     y=_y;
