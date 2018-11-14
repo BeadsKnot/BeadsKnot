@@ -1,6 +1,6 @@
 class data_extract {
-// 画像からの読みとり
-// ビーズとそれをつなぐNbhからなる。
+  // 画像からの読みとり
+  // ビーズとそれをつなぐNbhからなる。
   int w, h;// 解析画面の大きさ
   int d[][];// ２値化された画像のデータ
   int s;//解析メッシュのサイズ
@@ -59,14 +59,14 @@ class data_extract {
       Bead vec=points.get(pt);
       if (vec.Joint) {
         stroke(0);
-        fill(80,255,80);
+        fill(80, 255, 80);
         c=4;
       } else if (vec.closeJoint) {
         stroke(0, 255, 0);
         fill(255);
       } else if (vec.midJoint) {
         stroke(0);
-        fill(180,255,0);
+        fill(180, 255, 0);
         c=3;
       } else {
         stroke(255, 0, 0);
@@ -97,7 +97,7 @@ class data_extract {
     if (nn==mm) {
       return 0;
     }
-    if(nn<0 || mm<0 || points.size()<=nn || points.size()<=mm){
+    if (nn<0 || mm<0 || points.size()<=nn || points.size()<=mm) {
       return 0;
     }
     float xa=points.get(nn).x;
@@ -186,7 +186,7 @@ class data_extract {
         Bead pt2 = points.get(pt.n1);
         if (! pt2.Joint) {
           line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
         }
       }
       if (0<=pt.n2 && pt.n2<points.size()) {
@@ -542,14 +542,14 @@ class data_extract {
     println("thickness = "+sum/num);
     return max(3, int(sum/num));
   }
-  
-  Nbhd find_Joint_midJoint(Nbhd nbhd){
+
+  Nbhd find_Joint_midJoint(Nbhd nbhd) {
     int j=nbhd.a;
     int c=nbhd.b;
     for (int count = 0; count < points.size(); count++) {
       Bead p=points.get(c);
       if (p.Joint || p.midJoint) {
-        return new Nbhd(j,c);
+        return new Nbhd(j, c);
       }
       int d=0;
       if (p.n1==j) {
@@ -558,30 +558,32 @@ class data_extract {
         d=p.n1;
       } else {
         println("find_Joint_midJoint : 間違っている");
-        return new Nbhd(0,0); 
+        return new Nbhd(0, 0);
       }
       j = c;
       c = d;
     }
-    return new Nbhd(0,0); 
+    return new Nbhd(0, 0);
   }
-  
-  Nbhd turn_left(Nbhd nbhd){
+
+  Nbhd turn_left(Nbhd nbhd) {
     Bead p=points.get(nbhd.b);
-    if(p.Joint){
-      if(p.n1==nbhd.a){
+    if (p.Joint) {
+      if (p.n1==nbhd.a) {
         return new Nbhd(nbhd.b, p.u2);
       } else 
-      if(p.u1==nbhd.a){
+      if (p.u1==nbhd.a) {
         return new Nbhd(nbhd.b, p.n1);
       } else 
-      if(p.n2==nbhd.a){
+      if (p.n2==nbhd.a) {
         return new Nbhd(nbhd.b, p.u1);
       } else 
-      if(p.u2==nbhd.a){
+      if (p.u2==nbhd.a) {
         return new Nbhd(nbhd.b, p.n2);
-      } 
+      }
     }
-    return new Nbhd(0,0); 
+    return new Nbhd(0, 0);
   }
+
+
 }
