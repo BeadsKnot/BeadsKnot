@@ -111,6 +111,8 @@ void keyPressed() {
     Draw.parts_editing();
     mouse.trace.clear();
     edit.beads.clear();
+  } else if(key == 'r'){
+   data.draw_region(new Nbhd(4,5));
   }
 }
 

@@ -76,8 +76,8 @@ class data_extract {
       } else {
         //dispをつかって表示を画面サイズに合わせるように座標変換する。
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
-        //fill(0);
-        //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+        fill(0);
+        text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
       }
     }
   }
@@ -586,4 +586,57 @@ class data_extract {
   }
 
 
+  void draw_region(Nbhd nbhd) {
+    int a = nbhd.a;
+    int b = nbhd.b;
+    int c = -1;
+    int repeatmax = points.size();
+    Bead ptA = points.get(a);
+    fill(120,120,255);
+    beginShape();
+    vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
+    for (int repeat=0; repeat < repeatmax; repeat++) {
+      // go straight
+      if ( ! ptA.Joint) {
+        if (ptA.n1 == b) {
+          c = ptA.n2;
+        } else 
+        if (ptA.n2 == b) {
+          c = ptA.n1;
+        } else {
+          println("error");
+          return ;
+        }
+        b = a;
+        a = c;
+      }      
+      // if on joint, go left
+      else {
+        if (ptA.n1 == b) {
+          c = ptA.u2;
+        } else 
+        if (ptA.u1 == b) {
+          c = ptA.n1;
+        } else 
+        if (ptA.n2 == b) {
+          c = ptA.u1;
+        } else 
+        if (ptA.u2 == b) {
+          c = ptA.n1;
+        } else {
+          println("error");
+          return ;
+        }
+        b = a;
+        a = c;
+      }
+      ptA = points.get(a);
+      vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
+      if (nbhd.a == a) {
+
+        break;
+      }
+    }
+    endShape(CLOSE);
+  }
 }
