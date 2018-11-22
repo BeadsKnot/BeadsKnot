@@ -76,8 +76,12 @@ class data_extract {
       } else {
         //dispをつかって表示を画面サイズに合わせるように座標変換する。
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
-        fill(0);
-        text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+        if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
+          fill(0);
+          text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          //if(vec.Joint){
+          //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
+        }//}
       }
     }
   }
@@ -592,7 +596,7 @@ class data_extract {
     int c = -1;
     int repeatmax = points.size();
     Bead ptA = points.get(a);
-    fill(120,120,255);
+    fill(120, 120, 255);
     beginShape();
     vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
     for (int repeat=0; repeat < repeatmax; repeat++) {
@@ -604,7 +608,7 @@ class data_extract {
         if (ptA.n2 == b) {
           c = ptA.n1;
         } else {
-          println("error");
+          println("draw_region : error");
           return ;
         }
         b = a;
@@ -624,7 +628,7 @@ class data_extract {
         if (ptA.u2 == b) {
           c = ptA.n1;
         } else {
-          println("error");
+          println("draw_region : error");
           return ;
         }
         b = a;
@@ -638,5 +642,40 @@ class data_extract {
       }
     }
     endShape(CLOSE);
+  }
+
+  Nbhd get_near_nbhd() {//（マウスポジションの真右にあって）マウスの位置に近いNbhdを見つける。
+    int a=-1, b=-1;
+    float maxX=9999f;
+    for (int p = 0; p<points.size(); p++) {
+      Bead bead = points.get(p);
+      float x0 = disp.get_winX(bead.x);
+      float y0 = disp.get_winY(bead.y);
+      if (bead.Joint) {
+      } else {
+        int n1 = bead.n1;// n2, u1, u2についても同じことをする。
+        Bead bead1 = points.get(n1);
+        float x1 = disp.get_winX(bead1.x);
+        float y1 = disp.get_winY(bead1.y);
+        if (mouseX < x0 || mouseX< x1) {
+          if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
+            float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+            if (xx>mouseX && xx<maxX) {
+              maxX = xx;
+              a = n1;
+              b = p;
+            }
+          } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
+            float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+            if (xx>mouseX && xx<maxX) {
+              maxX = xx;
+              a = p;
+              b = n1;
+            }
+          }
+        }
+      }
+    }
+    return new Nbhd(a,b);
   }
 }
