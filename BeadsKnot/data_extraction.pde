@@ -252,6 +252,32 @@ class data_extract {
             Bead pt1=points.get(n1);
             Bead pt2=points.get(u2);
             line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            pt1=points.get(n2);
+            pt2=points.get(u1);
+            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+          } else {
+            Bead pt1=points.get(n1);
+            Bead pt2=points.get(u1);
+            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            pt1=points.get(n2);
+            pt2=points.get(u2);
+            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+          }
+        } else {
+          if (points.get(u1).orientation<points.get(u2).orientation) {
+            Bead pt1=points.get(n2);
+            Bead pt2=points.get(u2);
+            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            pt1=points.get(n1);
+            pt2=points.get(u1);
+            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+          } else {
+            Bead pt1=points.get(n2);
+            Bead pt2=points.get(u1);
+            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            pt1=points.get(n1);
+            pt2=points.get(u2);
+            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
         }
       } else {
