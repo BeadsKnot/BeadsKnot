@@ -7,6 +7,7 @@ class drawOption {
   boolean _data_graph;
   boolean _free_loop;
   boolean _parts_editing;
+  boolean _smoothing;
 
   drawOption() {
     menu();
@@ -21,9 +22,10 @@ class drawOption {
     _data_graph = false;
     _free_loop = false;
     _parts_editing = false;
+    _smoothing=false;
   }
 
-  void menu(){
+  void menu() {
     setAllOptionFalse();
     _menu = true;
   }
@@ -61,5 +63,10 @@ class drawOption {
   void parts_editing() {
     setAllOptionFalse();
     _parts_editing = true;
+  }
+
+  void smoothing() {
+    setAllOptionFalse();
+    _smoothing=true;
   }
 };

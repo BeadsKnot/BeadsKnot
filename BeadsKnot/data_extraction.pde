@@ -78,7 +78,42 @@ class data_extract {
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
-          text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          //if(vec.Joint){
+          //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
+        }//}
+      }
+    }
+  }
+
+  void draw_smoothing_Points() {//点をかく
+    for (int pt=0; pt<points.size (); pt++) {
+      float c = 2;
+      Bead vec=points.get(pt);
+      if (vec.Joint) {
+        stroke(0);
+        fill(80, 255, 80);
+        c=0;
+      } else if (vec.closeJoint) {
+        stroke(0, 255, 0);
+        fill(255);
+      } else if (vec.midJoint) {
+        stroke(0);
+        fill(180, 255, 0);
+        c=3;
+      } else {
+        stroke(255, 0, 0);
+        fill(255);
+      }
+      if (c<=0||vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
+      } else {
+        //dispをつかって表示を画面サイズに合わせるように座標変換する。
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
+        if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
+          fill(0);
+          //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
         }//}
@@ -199,6 +234,42 @@ class data_extract {
         if (! pt2.Joint) {
           line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
             disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+        }
+      }
+    }
+  }
+
+  void draw_smoothing_Nbhds() {//Jointの周りだけつなげ方を変える//jointも消す
+    for (int ptID=0; ptID<points.size (); ptID++) {
+      Bead pt=points.get(ptID);
+      if (pt.Joint) {
+        int n1=pt.n1;
+        int n2=pt.n2;
+        int u1=pt.u1;
+        int u2=pt.u2;
+        if (points.get(n1).orientation<points.get(n2).orientation) {
+          if (points.get(u1).orientation<points.get(u2).orientation) {
+            Bead pt1=points.get(n1);
+            Bead pt2=points.get(u2);
+            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+          }
+        }
+      } else {
+        if (0<=pt.n1 && pt.n1<points.size()) {
+          stroke(0);
+          Bead pt2 = points.get(pt.n1);
+          if (! pt2.Joint) {
+            line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+          }
+        }
+        if (0<=pt.n2 && pt.n2<points.size()) {
+          stroke(0);
+          Bead pt2 = points.get(pt.n2);
+          if (! pt2.Joint) {
+            line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+          }
         }
       }
     }
@@ -676,6 +747,6 @@ class data_extract {
         }
       }
     }
-    return new Nbhd(a,b);
+    return new Nbhd(a, b);
   }
 }

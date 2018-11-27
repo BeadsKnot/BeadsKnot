@@ -13,6 +13,7 @@ EdgeConst ec;// Edgeに関する定数
 drawOption Draw;// 描画に関するオプション
 mouseDrag mouse;
 parts_editing edit;
+orientation orie;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 // グローバル変数終了
@@ -30,7 +31,10 @@ void setup() {
   Draw = new drawOption();
   mouse = new mouseDrag();
   edit = new parts_editing();
+  orie=new orientation(data, graph);
 }
+
+
 
 void message(String msg) {
   textSize(28);
@@ -90,6 +94,11 @@ void draw() {
     message("A crossing by a click, connecting two crossings by mouse-drag.");
     edit.draw_parts();
     mouse.draw_trace();
+  } else if (Draw._smoothing) {
+    //smoothingの関数を呼び出す
+    data.draw_smoothing_Nbhds();
+    data.draw_smoothing_Points();
+    //drawNbhdsを変える
   }
 }
 
@@ -115,6 +124,10 @@ void keyPressed() {
   //else if(key == 'r'){
   // data.draw_region(new Nbhd(4,5));
   //}
+  if (keyCode==ENTER) {
+    //orie.decide_orientation();
+    Draw.smoothing();
+  }
 }
 
 void saveFileSelect(File selection) {
@@ -340,8 +353,8 @@ void mouseDragged() {
       //println(atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)));
       float atanPre = atan2(pmouseY - disp.get_winY(nd.y), pmouseX - disp.get_winX(nd.x));
       float atanNow = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
-      if(atanPre>atanNow+PI*3/2) mouse.nd_theta_branch += (2*PI);
-      else if(atanPre+PI*3/2<atanNow) mouse.nd_theta_branch -= (2*PI);
+      if (atanPre>atanNow+PI*3/2) mouse.nd_theta_branch += (2*PI);
+      else if (atanPre+PI*3/2<atanNow) mouse.nd_theta_branch -= (2*PI);
       nd.theta = mouse.nd_theta - (mouse.nd_theta_branch + atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.25;
       graph.modify();
       graph.update_points();
@@ -496,7 +509,7 @@ void mouseReleased() {
                   BNodeR = ed.ANodeRID;
                 }
               }
-              if(edgeN1 != null){
+              if (edgeN1 != null) {
                 //そのビーズのmidJointをfalseにする。
                 bd.midJoint = false;
                 //エッジを合流し、一つをedgesから消す。
