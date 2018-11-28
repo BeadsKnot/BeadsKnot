@@ -125,7 +125,7 @@ void keyPressed() {
   // data.draw_region(new Nbhd(4,5));
   //}
   if (keyCode==ENTER) {
-    //orie.decide_orientation();
+    orie.decide_orientation();
     Draw.smoothing();
   }
 }

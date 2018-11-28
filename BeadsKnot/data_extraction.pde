@@ -87,7 +87,7 @@ class data_extract {
     }
   }
 
-  void draw_smoothing_Points() {//点をかく
+  void draw_smoothing_Points() {//交点を割いたバージョンの点をかく
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
       Bead vec=points.get(pt);
@@ -251,33 +251,69 @@ class data_extract {
           if (points.get(u1).orientation<points.get(u2).orientation) {
             Bead pt1=points.get(n1);
             Bead pt2=points.get(u2);
-            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            float ax=disp.get_winX(pt1.x);
+            float ay=disp.get_winY(pt1.y);
+            float bx=disp.get_winX(pt2.x);
+            float by=disp.get_winY(pt2.y);
+            line(ax, ay, bx, by);
             pt1=points.get(n2);
             pt2=points.get(u1);
-            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            float cx=disp.get_winX(pt1.x);
+            float cy=disp.get_winY(pt1.y);
+            float dx=disp.get_winX(pt2.x);
+            float dy=disp.get_winY(pt2.y);
+            line(cx, cy, dx, dy);
+            line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           } else {
             Bead pt1=points.get(n1);
             Bead pt2=points.get(u1);
-            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            float ax=disp.get_winX(pt1.x);
+            float ay=disp.get_winY(pt1.y);
+            float bx=disp.get_winX(pt2.x);
+            float by=disp.get_winY(pt2.y);
+            line(ax, ay, bx, by);
             pt1=points.get(n2);
             pt2=points.get(u2);
-            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            float cx=disp.get_winX(pt1.x);
+            float cy=disp.get_winY(pt1.y);
+            float dx=disp.get_winX(pt2.x);
+            float dy=disp.get_winY(pt2.y);
+            line(cx, cy, dx, dy);
+            line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           }
         } else {
           if (points.get(u1).orientation<points.get(u2).orientation) {
             Bead pt1=points.get(n2);
             Bead pt2=points.get(u2);
-            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            float ax=disp.get_winX(pt1.x);
+            float ay=disp.get_winY(pt1.y);
+            float bx=disp.get_winX(pt2.x);
+            float by=disp.get_winY(pt2.y);
+            line(ax, ay, bx, by );
             pt1=points.get(n1);
             pt2=points.get(u1);
-            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            float cx=disp.get_winX(pt1.x);
+            float cy=disp.get_winY(pt1.y);
+            float dx=disp.get_winX(pt2.x);
+            float dy=disp.get_winY(pt2.y);
+            line(cx, cy, dx, dy );
+            line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           } else {
             Bead pt1=points.get(n2);
             Bead pt2=points.get(u1);
-            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            float ax=disp.get_winX(pt1.x);
+            float ay=disp.get_winY(pt1.y);
+            float bx=disp.get_winX(pt2.x);
+            float by=disp.get_winY(pt2.y);
+            line(ax, ay, bx, by );
             pt1=points.get(n1);
             pt2=points.get(u2);
-            line(disp.get_winX(pt1.x), disp.get_winY(pt1.y), disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            float cx=disp.get_winX(pt1.x);
+            float cy=disp.get_winY(pt1.y);
+            float dx=disp.get_winX(pt2.x);
+            float dy=disp.get_winY(pt2.y);
+            line(cx, cy, dx, dy );
+            line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           }
         }
       } else {
