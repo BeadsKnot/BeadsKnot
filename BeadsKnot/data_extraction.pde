@@ -97,7 +97,14 @@ class data_extract {
       int u2=vec.u2;
       if (vec.Joint) {
         stroke(0);
-        fill(255, 255, 0);/////////ここの色を変える//negative
+        if (points.get(n1).orientation>points.get(n2).orientation) {//n1のほうが大きいとき
+          if (points.get(n1).x>vec.x&&points.get(n1).y<vec.y) {
+            fill(255, 255, 0);
+            // } else {
+          } else {//n2のほうが大きいとき
+            fill(0, 255, 255);  /////////ここの色を変える//negative
+          }
+        }
         c=4;
       } else if (vec.closeJoint) {
         stroke(0, 255, 0);

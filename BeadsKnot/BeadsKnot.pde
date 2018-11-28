@@ -133,6 +133,7 @@ void keyPressed() {
     Draw.smoothing();
   }
   if (keyCode==SHIFT) {
+    orie.decide_orientation();
     Draw.posinega();
   }
 }
