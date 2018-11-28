@@ -1,25 +1,25 @@
 class mouseDrag {
   ArrayList<PVector> trace;
   PVector prev;
-  
-boolean free_dragging=false;
-boolean node_dragging=false;
-boolean node_next_dragging =false;
-int dragged_nodeID = -1;
-int dragged_BeadID = -1;
-float dragged_theta = 0f;
-float nd_theta = 0f;
-float nd_theta_branch = 0f;
-float DragX = 0f;
-float DragY = 0f;
-float PressX = 0;
-float PressY = 0;
-  
-  mouseDrag(){
+
+  boolean free_dragging=false;
+  boolean node_dragging=false;
+  boolean node_next_dragging =false;
+  int dragged_nodeID = -1;
+  int dragged_BeadID = -1;
+  float dragged_theta = 0f;
+  float nd_theta = 0f;
+  float nd_theta_branch = 0f;
+  float DragX = 0f;
+  float DragY = 0f;
+  float PressX = 0;
+  float PressY = 0;
+
+  mouseDrag() {
     trace = new ArrayList<PVector>();
   }
-  
-  void draw_trace(){
+
+  void draw_trace() {
     if (trace.size()>1) {
       PVector p0 = trace.get(0);
       for (int t=1; t<trace.size(); t++) {
@@ -39,23 +39,23 @@ float PressY = 0;
       }
     }
   }
-  
-  void trace_to_beads(data_extract data, data_graph graph){
+
+  void trace_to_beads(data_extract data, data_graph graph) {
     ArrayList<PVector> meets = new ArrayList<PVector>();
     data.points.clear();
     int traceNumber = trace.size();
     // まず1列のbeadの列を作る。
-    for(int tr = 0; tr < traceNumber; tr++){
+    for (int tr = 0; tr < traceNumber; tr++) {
       Bead bd = new Bead(trace.get(tr).x, trace.get(tr).y);
       bd.n1 = (tr+1)%traceNumber;
       bd.n2 = (tr+traceNumber-1)%traceNumber;
       bd.c = 2;
       data.points.add(bd);
     }
-    for(int tr1 = 0; tr1 < traceNumber; tr1++){
-      for(int tr2 = tr1+1; tr2 < traceNumber; tr2++){
+    for (int tr1 = 0; tr1 < traceNumber; tr1++) {
+      for (int tr2 = tr1+1; tr2 < traceNumber; tr2++) {
         int difference = (tr2-tr1+2*traceNumber)%traceNumber;
-        if(2 < difference && difference < traceNumber -2){
+        if (2 < difference && difference < traceNumber -2) {
           float x1 = trace.get(tr1).x;
           float y1 = trace.get(tr1).y;
           float x2 = trace.get((tr1+2)%traceNumber).x;
@@ -77,27 +77,27 @@ float PressY = 0;
           float s1 = p * d - b * q;  // s = s1/st
           float t1 = a * q - p * c;  // t = t1/st
           float st = a * d - b * c; 
-          if( st < 0 ){
+          if ( st < 0 ) {
             st *= -1;
             s1 *= -1;
             t1 *= -1;
           }
-          if(0 < s1 && s1 < st && 0 < t1 && t1 < st){
+          if (0 < s1 && s1 < st && 0 < t1 && t1 < st) {
             //trace.get(tr1+1) と trace.get(tr2+1)とを合流してJointにする。
             int jt = (tr1+1)%traceNumber;
             int jt2 = (tr2+1)%traceNumber;
             boolean OK=true;
-            for(int mt=0; mt<meets.size(); mt++){
+            for (int mt=0; mt<meets.size(); mt++) {
               int js=int(meets.get(mt).x);
               int js2 = int(meets.get(mt).y);
-              if(abs(jt-js)<=2 && abs(jt2-js2)<=2){
-                println(jt,js,jt2,js2);
+              if (abs(jt-js)<=2 && abs(jt2-js2)<=2) {
+                println(jt, js, jt2, js2);
                 OK = false;
                 break;
               }
             }
-            if(OK){
-              println(jt,"meets",jt2);
+            if (OK) {
+              println(jt, "meets", jt2);
               meets.add(new PVector(jt, jt2));
               Bead jtBead = data.points.get(jt);
               Bead jt2Bead = data.points.get(jt2);
@@ -116,31 +116,31 @@ float PressY = 0;
       }
     }
     graph.make_data_graph();
-    println("complete mouse-trace to beads"); 
+    println("complete mouse-trace to beads");
   }
-  
-  void trace_to_parts_editing(data_extract data, data_graph graph, parts_editing edit, int endBeadID){
+
+  void trace_to_parts_editing(data_extract data, data_graph graph, parts_editing edit, int endBeadID) {
     // まず、traceをすべてbeadに置き換える。（両端は除く）
     println("traceをbeadsに変換");
     int startBeadID = dragged_BeadID;
     Bead startBead = edit.beads.get(startBeadID);
-    if(startBead.c==1){
+    if (startBead.c==1) {
       startBead.n2 = edit.beads.size();
       startBead.c = 2;
     } else {
       startBead.n1 = edit.beads.size();
       startBead.c = 1;
     }
-    for(int trID=1; trID<trace.size();trID++){
+    for (int trID=1; trID<trace.size(); trID++) {
       PVector tr = trace.get(trID);
       Bead newBd = new Bead(tr.x, tr.y);
 
       int prevBeadID = edit.beads.size()-1;
-      if(trID==1){
-        prevBeadID = startBeadID;  
+      if (trID==1) {
+        prevBeadID = startBeadID;
       }
       int nextBeadID = edit.beads.size()+1;
-      if(trID == trace.size()-1){
+      if (trID == trace.size()-1) {
         nextBeadID = endBeadID;
       }
       newBd.n1 = prevBeadID;
@@ -150,7 +150,7 @@ float PressY = 0;
       edit.beads.add(newBd);
     }
     Bead endBead = edit.beads.get(endBeadID);
-    if(endBead.c==1){
+    if (endBead.c==1) {
       endBead.n2 = edit.beads.size()-1;
       endBead.c = 2;
     } else {
@@ -159,25 +159,24 @@ float PressY = 0;
     }
     //dragge_BeadID - endBeadID;
     //そののちに、既存のビーズ列、自分自身との交差を判定し、jointを追加する。
-    
+
     //終了条件の確認
     boolean OK=true;
-    for(int bdID=0; bdID<edit.beads.size(); bdID++){
-      if(edit.beads.get(bdID).c<2){
+    for (int bdID=0; bdID<edit.beads.size(); bdID++) {
+      if (edit.beads.get(bdID).c<2) {
         OK=false;
       }
     }
-    if(OK){
+    if (OK) {
       println("complete figure");
       data.points.clear();
-      for(int bdID=0; bdID<edit.beads.size(); bdID++){
+      for (int bdID=0; bdID<edit.beads.size(); bdID++) {
         Bead bd = edit.beads.get(bdID);
-        if(bd.c==4) bd.c=2;
+        if (bd.c==4) bd.c=2;
         data.points.add(bd);
       }
       graph.make_data_graph();
       Draw.beads();
-    
     }
   }
 };

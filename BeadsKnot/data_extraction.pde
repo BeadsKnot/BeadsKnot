@@ -87,6 +87,43 @@ class data_extract {
     }
   }
 
+  void draw_posinega_Points() {//positiveとnegativeを考慮して点をかく
+    for (int pt=0; pt<points.size (); pt++) {
+      float c = 2;
+      Bead vec=points.get(pt);
+      int n1=vec.n1;
+      int n2=vec.n2;
+      int u1=vec.u1;
+      int u2=vec.u2;
+      if (vec.Joint) {
+        stroke(0);
+        fill(255, 255, 0);/////////ここの色を変える//negative
+        c=4;
+      } else if (vec.closeJoint) {
+        stroke(0, 255, 0);
+        fill(255);
+      } else if (vec.midJoint) {
+        stroke(0);
+        fill(180, 255, 0);
+        c=3;
+      } else {
+        stroke(255, 0, 0);
+        fill(255);
+      }
+      if (vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
+      } else {
+        //dispをつかって表示を画面サイズに合わせるように座標変換する。
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
+        if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
+          fill(0);
+          //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          //if(vec.Joint){
+          //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
+        }//}
+      }
+    }
+  }
   void draw_smoothing_Points() {//交点を割いたバージョンの点をかく
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;

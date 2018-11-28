@@ -94,10 +94,10 @@ void draw() {
     message("A crossing by a click, connecting two crossings by mouse-drag.");
     edit.draw_parts();
     mouse.draw_trace();
-     } else if (Draw._posinega) {
+  } else if (Draw._posinega) {
     //posinegaの関数を呼び出す
-   
-  }
+    data.drawNbhds();
+    data.draw_posinega_Points();
   } else if (Draw._smoothing) {
     //smoothingの関数を呼び出す
     data.draw_smoothing_Nbhds();
@@ -131,6 +131,9 @@ void keyPressed() {
   if (keyCode==ENTER) {
     orie.decide_orientation();
     Draw.smoothing();
+  }
+  if (keyCode==SHIFT) {
+    Draw.posinega();
   }
 }
 

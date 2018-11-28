@@ -1,4 +1,4 @@
-class data_graph {
+class data_graph { //<>//
   //データのグラフ構造
   //nodeとedgeからなる
 
@@ -573,9 +573,9 @@ class data_graph {
       //print(e+":");
       Edge ed = edges.get(e);
       //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
-      float arclength = ed.get_real_arclength(nodes); //<>//
+      float arclength = ed.get_real_arclength(nodes);
       int beads_number = int(arclength / beads_interval) - 2;
-      if(beads_number<7) beads_number=7;
+      if (beads_number<7) beads_number=7;
       // edgeの上にある現在のビーズの個数を数える。
       int beads_count = 0;
       Node NodeA = nodes.get(ed.ANodeID);

@@ -11,6 +11,8 @@ class parts_editing {
     draw_beads();
   }
 
+ 
+
   void draw_beads() {
     strokeWeight(1);
     for (int bdID=0; bdID<beads.size (); bdID++) {
@@ -32,6 +34,8 @@ class parts_editing {
       ellipse(bd.x, bd.y, c*3+1, c*3+1);
     }
   }
+
+
 
   void draw_nhd() {
     strokeWeight(2);
@@ -142,12 +146,12 @@ class parts_editing {
     }
     //bd0.x = bd0.y = -1;// 圏外
     beads.remove(bdID);//本当に消す
-    for(int b=0; b<beads.size(); b++){
+    for (int b=0; b<beads.size(); b++) {
       Bead bd = beads.get(b);
-      if(bd.n1>bdID) bd.n1 --;
-      if(bd.n2>bdID) bd.n2 --;
-      if(bd.u1>bdID) bd.u1 --;
-      if(bd.u2>bdID) bd.u2 --;
+      if (bd.n1>bdID) bd.n1 --;
+      if (bd.n2>bdID) bd.n2 --;
+      if (bd.u1>bdID) bd.u1 --;
+      if (bd.u2>bdID) bd.u2 --;
     }
   }
 }
