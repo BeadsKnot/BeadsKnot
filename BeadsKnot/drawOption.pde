@@ -7,6 +7,7 @@ class drawOption {
   boolean _data_graph;
   boolean _free_loop;
   boolean _parts_editing;
+  boolean _posinega;
   boolean _smoothing;
 
   drawOption() {
@@ -22,6 +23,7 @@ class drawOption {
     _data_graph = false;
     _free_loop = false;
     _parts_editing = false;
+    _posinega=false;
     _smoothing=false;
   }
 
@@ -63,6 +65,11 @@ class drawOption {
   void parts_editing() {
     setAllOptionFalse();
     _parts_editing = true;
+  }
+
+  void posinega() {
+    setAllOptionFalse();
+    _posinega=true;
   }
 
   void smoothing() {

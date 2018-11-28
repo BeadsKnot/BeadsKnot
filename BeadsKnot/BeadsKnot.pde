@@ -94,6 +94,10 @@ void draw() {
     message("A crossing by a click, connecting two crossings by mouse-drag.");
     edit.draw_parts();
     mouse.draw_trace();
+     } else if (Draw._posinega) {
+    //posinegaの関数を呼び出す
+   
+  }
   } else if (Draw._smoothing) {
     //smoothingの関数を呼び出す
     data.draw_smoothing_Nbhds();
@@ -265,7 +269,8 @@ void fileSelected(File selection) {
 void mousePressed() {
   mouse.PressX = mouseX;
   mouse.PressY = mouseY;
-  if (Draw._beads) {
+  //if (Draw._beads) {
+  if (Draw._beads||Draw._smoothing) {
     int ptID = graph.is_PVector_on_points(mouseX, mouseY);
     if (ptID!=-1) {
       if (data.points.get(ptID).Joint || data.points.get(ptID).midJoint) {//nodeをドラッグする
@@ -314,7 +319,8 @@ void mousePressed() {
 }
 
 void mouseDragged() {
-  if (Draw._beads) {
+  //if (Draw._beads) {
+  if (Draw._beads||Draw._smoothing) {
     if (mouse.node_dragging) {
       float mX = disp.getX_fromWin(mouseX);
       float mY = disp.getY_fromWin(mouseY);

@@ -95,9 +95,10 @@ class data_extract {
         stroke(0);
         fill(80, 255, 80);
         c=0;
-      } else if (vec.closeJoint) {
-        stroke(0, 255, 0);
-        fill(255);
+        //} else if (vec.closeJoint) {
+        //  //stroke(0, 255, 0);
+        //  stroke(0);
+        //  fill(255);
       } else if (vec.midJoint) {
         stroke(0);
         fill(180, 255, 0);
@@ -255,6 +256,7 @@ class data_extract {
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
+            strokeWeight(1);
             line(ax, ay, bx, by);
             pt1=points.get(n2);
             pt2=points.get(u1);
@@ -263,6 +265,7 @@ class data_extract {
             float dx=disp.get_winX(pt2.x);
             float dy=disp.get_winY(pt2.y);
             line(cx, cy, dx, dy);
+            strokeWeight(3);
             line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           } else {
             Bead pt1=points.get(n1);
@@ -271,6 +274,7 @@ class data_extract {
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
+            strokeWeight(1);
             line(ax, ay, bx, by);
             pt1=points.get(n2);
             pt2=points.get(u2);
@@ -279,6 +283,7 @@ class data_extract {
             float dx=disp.get_winX(pt2.x);
             float dy=disp.get_winY(pt2.y);
             line(cx, cy, dx, dy);
+            strokeWeight(3);
             line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           }
         } else {
@@ -289,6 +294,7 @@ class data_extract {
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
+            strokeWeight(1);
             line(ax, ay, bx, by );
             pt1=points.get(n1);
             pt2=points.get(u1);
@@ -297,6 +303,7 @@ class data_extract {
             float dx=disp.get_winX(pt2.x);
             float dy=disp.get_winY(pt2.y);
             line(cx, cy, dx, dy );
+            strokeWeight(3);
             line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           } else {
             Bead pt1=points.get(n2);
@@ -305,6 +312,7 @@ class data_extract {
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
+            strokeWeight(1);
             line(ax, ay, bx, by );
             pt1=points.get(n1);
             pt2=points.get(u2);
@@ -313,6 +321,7 @@ class data_extract {
             float dx=disp.get_winX(pt2.x);
             float dy=disp.get_winY(pt2.y);
             line(cx, cy, dx, dy );
+            strokeWeight(3);
             line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           }
         }
@@ -321,6 +330,7 @@ class data_extract {
           stroke(0);
           Bead pt2 = points.get(pt.n1);
           if (! pt2.Joint) {
+            strokeWeight(1);
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
               disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
