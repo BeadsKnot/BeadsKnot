@@ -83,6 +83,9 @@ void draw() {
       line(x+100*sin(t), y+100*cos(t), x-100*sin(t), y-100*cos(t));
       line(x+100*cos(t), y-100*sin(t), x-100*cos(t), y+100*sin(t));
     }
+    Nbhd nh = data.get_near_nbhd();
+    data.draw_region(nh);
+    //println(nh.a, nh.b);
   } 
   // 平面グラフのデータを表示
   else if (Draw._data_graph) {

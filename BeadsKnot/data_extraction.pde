@@ -781,6 +781,8 @@ class data_extract {
     int a = nbhd.a;
     int b = nbhd.b;
     int c = -1;
+    if(a==-1 || b==-1) return;
+    
     int repeatmax = points.size();
     Bead ptA = points.get(a);
     fill(120, 120, 255);
@@ -863,6 +865,6 @@ class data_extract {
         }
       }
     }
-    return new Nbhd(a, b);
+    return new Nbhd(b, a);
   }
 }
