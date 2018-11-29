@@ -785,7 +785,7 @@ class data_extract {
     
     int repeatmax = points.size();
     Bead ptA = points.get(a);
-    fill(120, 120, 255);
+    fill(120, 120, 255, 50);
     beginShape();
     vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
     for (int repeat=0; repeat < repeatmax; repeat++) {
@@ -815,7 +815,7 @@ class data_extract {
           c = ptA.u1;
         } else 
         if (ptA.u2 == b) {
-          c = ptA.n1;
+          c = ptA.n2;
         } else {
           println("draw_region : error");
           return ;
@@ -830,7 +830,7 @@ class data_extract {
         break;
       }
     }
-    endShape(CLOSE);
+    endShape();
   }
 
   Nbhd get_near_nbhd() {//（マウスポジションの真右にあって）マウスの位置に近いNbhdを見つける。
@@ -843,23 +843,25 @@ class data_extract {
       if (bead.Joint) {
       } else {
         int n1 = bead.n1;// n2, u1, u2についても同じことをする。
-        Bead bead1 = points.get(n1);
-        float x1 = disp.get_winX(bead1.x);
-        float y1 = disp.get_winY(bead1.y);
-        if (mouseX < x0 || mouseX< x1) {
-          if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
-            float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-            if (xx>mouseX && xx<maxX) {
-              maxX = xx;
-              a = n1;
-              b = p;
-            }
-          } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
-            float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-            if (xx>mouseX && xx<maxX) {
-              maxX = xx;
-              a = p;
-              b = n1;
+        if(n1 != -1){
+          Bead bead1 = points.get(n1);
+          float x1 = disp.get_winX(bead1.x);
+          float y1 = disp.get_winY(bead1.y);
+          if (mouseX < x0 || mouseX< x1) {
+            if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
+              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mouseX && xx<maxX) {
+                maxX = xx;
+                a = n1;
+                b = p;
+              }
+            } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
+              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mouseX && xx<maxX) {
+                maxX = xx;
+                a = p;
+                b = n1;
+              }
             }
           }
         }
