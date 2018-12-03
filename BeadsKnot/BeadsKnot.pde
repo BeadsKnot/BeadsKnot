@@ -133,11 +133,12 @@ void keyPressed() {
   if (keyCode==ENTER) {
     orie.decide_orientation();
     Draw.smoothing();
+   
   }
-  if (keyCode==SHIFT) {
-    orie.decide_orientation();
-    Draw.posinega();
-  }
+  //if (keyCode==SHIFT) {
+  //  orie.decide_orientation();
+  //  Draw.posinega();
+  //}
 }
 
 void saveFileSelect(File selection) {

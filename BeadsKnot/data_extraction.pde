@@ -184,10 +184,69 @@ class data_extract {
 
 
   void draw_smoothing_Points() {//交点を割いたバージョンの点をかく
+    //positiveが赤色
+    //negativeが青色
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
       Bead vec=points.get(pt);
+      int n1=vec.n1;
+      int n2=vec.n2;
+      int u1=vec.u1;
+      int u2=vec.u2;
       if (vec.Joint) {
+        if (points.get(n1).orientation>points.get(n2).orientation) {
+          if (points.get(u1).orientation>points.get(u2).orientation) {
+            if (points.get(n2).orientation==1) {
+              //fill(0, 0, 255);//negative
+              noStroke();
+              fill(0, 0, 255, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
+            } else {
+              //fill(255, 0, 0);//positive
+              noStroke();
+              fill(255, 0, 0, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
+            }
+          } else {
+            if (points.get(n2).orientation==1) {
+              //fill(255, 0, 0);//positive
+              noStroke();
+              fill(255, 0, 0, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
+            } else {
+              //fill(0, 0, 255);//negative
+              noStroke();
+              fill(0, 0, 255, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
+            }
+          }
+        } else {
+          if (points.get(u1).orientation>points.get(u2).orientation) {
+            if (points.get(n1).orientation==1) {
+              //fill(255, 0, 0);//positive
+              noStroke();
+              fill(255, 0, 0, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
+            } else {
+              //fill(0, 0, 255);//negative
+              noStroke();
+              fill(0, 0, 255, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
+            }
+          } else {
+            if (points.get(n1).orientation==1) {
+              //fill(0, 0, 255);//negative
+              noStroke();
+              fill(0, 0, 255, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
+            } else {
+              //fill(255, 0, 0);//positive
+              noStroke();
+              fill(255, 0, 0, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
+            }
+          }
+        }
         stroke(0);
         fill(80, 255, 80);
         c=0;
@@ -348,77 +407,117 @@ class data_extract {
           if (points.get(u1).orientation<points.get(u2).orientation) {
             Bead pt1=points.get(n1);
             Bead pt2=points.get(u2);
+            Bead pt3=points.get(n2);
+            Bead pt4=points.get(u1);
             float ax=disp.get_winX(pt1.x);
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
-            strokeWeight(1);
-            line(ax, ay, bx, by);
-            pt1=points.get(n2);
-            pt2=points.get(u1);
-            float cx=disp.get_winX(pt1.x);
-            float cy=disp.get_winY(pt1.y);
-            float dx=disp.get_winX(pt2.x);
-            float dy=disp.get_winY(pt2.y);
-            line(cx, cy, dx, dy);
-            strokeWeight(3);
-            line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
+            // pt1=points.get(n2);
+            //pt2=points.get(u1);
+            float cx=disp.get_winX(pt3.x);
+            float cy=disp.get_winY(pt3.y);
+            float dx=disp.get_winX(pt4.x);
+            float dy=disp.get_winY(pt4.y);
+            if (points.get(n1).orientation==1) {
+              strokeWeight(1);
+              line(ax, ay, dx, dy);
+              line(cx, cy, bx, by);
+              strokeWeight(3);
+              line((ax+dx)/2, (ay+dy)/2, (cx+bx)/2, (cy+by)/2);//Hの横棒
+            } else {
+              strokeWeight(1);
+              line(ax, ay, bx, by);
+              line(cx, cy, dx, dy);
+              strokeWeight(3);
+              line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
+            }
           } else {
             Bead pt1=points.get(n1);
             Bead pt2=points.get(u1);
+            Bead pt3=points.get(n2);
+            Bead pt4=points.get(u2);
             float ax=disp.get_winX(pt1.x);
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
-            strokeWeight(1);
-            line(ax, ay, bx, by);
-            pt1=points.get(n2);
-            pt2=points.get(u2);
-            float cx=disp.get_winX(pt1.x);
-            float cy=disp.get_winY(pt1.y);
-            float dx=disp.get_winX(pt2.x);
-            float dy=disp.get_winY(pt2.y);
-            line(cx, cy, dx, dy);
-            strokeWeight(3);
-            line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
+            //pt1=points.get(n2);
+            //pt2=points.get(u2);
+            float cx=disp.get_winX(pt3.x);
+            float cy=disp.get_winY(pt3.y);
+            float dx=disp.get_winX(pt4.x);
+            float dy=disp.get_winY(pt4.y);
+            if (points.get(n1).orientation==1) {
+              strokeWeight(1);
+              line(ax, ay, dx, dy);
+              line(cx, cy, bx, by);
+              strokeWeight(3);
+              line((ax+dx)/2, (ay+dy)/2, (cx+bx)/2, (cy+by)/2);//Hの横棒
+            } else {
+              strokeWeight(1);
+              line(ax, ay, bx, by);
+              line(cx, cy, dx, dy);
+              strokeWeight(3);
+              line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
+            }
           }
         } else {
           if (points.get(u1).orientation<points.get(u2).orientation) {
             Bead pt1=points.get(n2);
             Bead pt2=points.get(u2);
+            Bead pt3=points.get(n1);
+            Bead pt4=points.get(u1);
             float ax=disp.get_winX(pt1.x);
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
-            strokeWeight(1);
-            line(ax, ay, bx, by );
-            pt1=points.get(n1);
-            pt2=points.get(u1);
-            float cx=disp.get_winX(pt1.x);
-            float cy=disp.get_winY(pt1.y);
-            float dx=disp.get_winX(pt2.x);
-            float dy=disp.get_winY(pt2.y);
-            line(cx, cy, dx, dy );
-            strokeWeight(3);
-            line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
+            //pt1=points.get(n1);
+            //pt2=points.get(u1);
+            float cx=disp.get_winX(pt3.x);
+            float cy=disp.get_winY(pt3.y);
+            float dx=disp.get_winX(pt4.x);
+            float dy=disp.get_winY(pt4.y);
+            if (points.get(n2).orientation==1) {
+              strokeWeight(1);
+              line(ax, ay, dx, dy );
+              line(cx, cy, bx, by );
+              strokeWeight(3);
+              line((ax+dx)/2, (ay+dy)/2, (cx+bx)/2, (cy+by)/2);//Hの横棒
+            } else {
+              strokeWeight(1);
+              line(ax, ay, bx, by );
+              line(cx, cy, dx, dy );
+              strokeWeight(3);
+              line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
+            }
           } else {
             Bead pt1=points.get(n2);
             Bead pt2=points.get(u1);
+            Bead pt3=points.get(n1);
+            Bead pt4=points.get(u2);
             float ax=disp.get_winX(pt1.x);
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
-            strokeWeight(1);
-            line(ax, ay, bx, by );
-            pt1=points.get(n1);
-            pt2=points.get(u2);
-            float cx=disp.get_winX(pt1.x);
-            float cy=disp.get_winY(pt1.y);
-            float dx=disp.get_winX(pt2.x);
-            float dy=disp.get_winY(pt2.y);
-            line(cx, cy, dx, dy );
-            strokeWeight(3);
-            line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
+            //pt1=points.get(n1);
+            //pt2=points.get(u2);
+            float cx=disp.get_winX(pt3.x);
+            float cy=disp.get_winY(pt3.y);
+            float dx=disp.get_winX(pt4.x);
+            float dy=disp.get_winY(pt4.y);
+            if (points.get(n2).orientation==1) {
+              strokeWeight(1);
+              line(ax, ay, dx, dy );
+              line(cx, cy, bx, by );
+              strokeWeight(3);
+              line((ax+dx)/2, (ay+dy)/2, (cx+bx)/2, (cy+by)/2);//Hの横棒
+            } else {
+              strokeWeight(1);
+              line(ax, ay, bx, by );
+              line(cx, cy, dx, dy );
+              strokeWeight(3);
+              line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
+            }
           }
         }
       } else {
