@@ -69,6 +69,8 @@ void draw() {
   }
   //data_extractの内容を描画する場合。
   if (Draw._beads) {
+    Nbhd nh = data.get_near_nbhd();
+    data.draw_region(nh);
     data.drawNbhds();
     data.drawPoints();
     //    data.tf.spring();// ばねモデルで動かしたものを表示
