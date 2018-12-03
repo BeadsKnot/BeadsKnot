@@ -41,7 +41,7 @@ class orientation {
       //}
       //if (de.points.get(new_joint.b).n2==new_joint.a) {
       //  if (new_joint.b==nd.pointID) {//new_joint.bが一番最初のJointに来たら終わり
-      println(beads_start, beads_first, beads_next, beads_second);
+      // println(beads_start, beads_first, beads_next, beads_second);
       if (beads_second==beads_next&&beads_first==beads_start) {
         return;
         // }

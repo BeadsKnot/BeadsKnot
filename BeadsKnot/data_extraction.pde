@@ -88,6 +88,16 @@ class data_extract {
   }
 
   void draw_posinega_Points() {//positiveとnegativeを考慮して点をかく
+    //positiveが黄色
+    //negativeが青色
+    int i=0;//Jointの数を格納する変数
+    int j=0;
+    for (int pt=0; pt<points.size (); pt++) {
+      Bead vec=points.get(pt);
+      if (vec.Joint) {
+        i++;
+      }
+    }
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
       Bead vec=points.get(pt);
@@ -97,12 +107,89 @@ class data_extract {
       int u2=vec.u2;
       if (vec.Joint) {
         stroke(0);
-        if (points.get(n1).orientation>points.get(n2).orientation) {//n1のほうが大きいとき
-          if (points.get(n1).x>vec.x&&points.get(n1).y<vec.y) {
-            fill(255, 255, 0);
-            // } else {
-          } else {//n2のほうが大きいとき
-            fill(0, 255, 255);  /////////ここの色を変える//negative
+        if (points.get(vec.n1).orientation>points.get(vec.n2).orientation) {
+          if (points.get(vec.u1).orientation>points.get(vec.u2).orientation) {
+            //n1>n2
+            //u1>u2
+            if ((points.get(n1).y<=vec.y)) {
+              if (points.get(n1).x>points.get(u1).x) {
+                fill(255, 255, 0);//positive
+                //} else if (points.get(n1).y<points.get(u1).y) {
+                //  fill(255, 255, 0);//positive
+                //} else {
+                //  fill(0, 255, 255);//negative
+              }
+            } else {
+              if (points.get(n1).y>points.get(u1).y) {
+                fill(255, 255, 0);//positive
+                //} else if (points.get(n1).x<points.get(u1).x) {
+                //  fill(255, 255, 0);//positive
+                //} else {
+                //  fill(0, 255, 255);//negative
+              }
+            }
+          } else {
+            //n1>n2
+            //u2>u1
+            if ((points.get(n1).y<=vec.y)) {
+              if (points.get(n1).x>points.get(u2).x) {
+                fill(255, 255, 0);//positive
+                //} else if (points.get(n1).y<points.get(u2).y) {
+                //  fill(255, 255, 0);//positive
+                //} else {
+                //  fill(0, 255, 255);//negative
+              }
+            } else {
+              if (points.get(n1).y>points.get(u2).y) {
+                fill(255, 255, 0);//positive
+                //} else if (points.get(n1).x<points.get(u2).x) {
+                //  fill(255, 255, 0);//positive
+                //} else {
+                //  fill(0, 255, 255);//negative
+              }
+            }
+          }
+        } else { 
+          if (points.get(vec.u1).orientation>points.get(vec.u2).orientation) {
+            //n2>n1
+            //u1>u2
+            if ((points.get(n2).y<=vec.y)) {
+              if (points.get(n2).x>points.get(u1).x) {
+                fill(255, 255, 0);//positive
+                //} else if (points.get(n2).y<points.get(u1).y) {
+                //  fill(255, 255, 0);//positive
+                //} else {
+                //  fill(0, 255, 255);//negative
+              }
+            } else {
+              if (points.get(n2).y>points.get(u1).y) {
+                fill(255, 255, 0);//positive
+                //} else if (points.get(n2).x<points.get(u1).x) {
+                //  fill(255, 255, 0);//positive
+                //} else {
+                //  fill(0, 255, 255);//negative
+              }
+            }
+          } else {
+            //n2>n1
+            //u2>u1
+            if ((points.get(n2).y<=vec.y)) {
+              if (points.get(n2).x>points.get(u2).x) {
+                fill(255, 255, 0);//positive
+                //} else if (points.get(n2).y<points.get(u2).y) {
+                //  fill(255, 255, 0);//positive
+                //} else {
+                //  fill(0, 255, 255);//negative
+              }
+            } else {
+              if (points.get(n2).y>points.get(u2).y) {
+                fill(255, 255, 0);//positive
+                //} else if (points.get(n2).x<points.get(u2).x) {
+                //  fill(255, 255, 0);//positive
+                //} else {
+                //  fill(0, 255, 255);//negative
+              }
+            }
           }
         }
         c=4;
@@ -131,6 +218,9 @@ class data_extract {
       }
     }
   }
+
+
+
   void draw_smoothing_Points() {//交点を割いたバージョンの点をかく
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;

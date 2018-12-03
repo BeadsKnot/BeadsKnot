@@ -146,7 +146,7 @@ class mouseDrag {
       newBd.n1 = prevBeadID;
       newBd.n2 = nextBeadID;
       newBd.c = 2;
-      println(prevBeadID, nextBeadID);
+      //println(prevBeadID, nextBeadID);
       edit.beads.add(newBd);
     }
     Bead endBead = edit.beads.get(endBeadID);
