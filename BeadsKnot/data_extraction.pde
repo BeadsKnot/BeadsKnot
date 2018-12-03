@@ -88,16 +88,8 @@ class data_extract {
   }
 
   void draw_posinega_Points() {//positiveとnegativeを考慮して点をかく
-    //positiveが黄色
+    //positiveが赤色
     //negativeが青色
-    int i=0;//Jointの数を格納する変数
-    int j=0;
-    for (int pt=0; pt<points.size (); pt++) {
-      Bead vec=points.get(pt);
-      if (vec.Joint) {
-        i++;
-      }
-    }
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
       Bead vec=points.get(pt);
@@ -106,92 +98,62 @@ class data_extract {
       int u1=vec.u1;
       int u2=vec.u2;
       if (vec.Joint) {
-        stroke(0);
-        if (points.get(vec.n1).orientation>points.get(vec.n2).orientation) {
-          if (points.get(vec.u1).orientation>points.get(vec.u2).orientation) {
-            //n1>n2
-            //u1>u2
-            if ((points.get(n1).y<=vec.y)) {
-              if (points.get(n1).x>points.get(u1).x) {
-                fill(255, 255, 0);//positive
-                //} else if (points.get(n1).y<points.get(u1).y) {
-                //  fill(255, 255, 0);//positive
-                //} else {
-                //  fill(0, 255, 255);//negative
-              }
+        // stroke(0);
+        if (points.get(n1).orientation>points.get(n2).orientation) {
+          if (points.get(u1).orientation>points.get(u2).orientation) {
+            if (points.get(n2).orientation==1) {
+              //fill(0, 0, 255);//negative
+              noStroke();
+              fill(0, 0, 255, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
             } else {
-              if (points.get(n1).y>points.get(u1).y) {
-                fill(255, 255, 0);//positive
-                //} else if (points.get(n1).x<points.get(u1).x) {
-                //  fill(255, 255, 0);//positive
-                //} else {
-                //  fill(0, 255, 255);//negative
-              }
+              //fill(255, 0, 0);//positive
+              noStroke();
+              fill(255, 0, 0, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
             }
           } else {
-            //n1>n2
-            //u2>u1
-            if ((points.get(n1).y<=vec.y)) {
-              if (points.get(n1).x>points.get(u2).x) {
-                fill(255, 255, 0);//positive
-                //} else if (points.get(n1).y<points.get(u2).y) {
-                //  fill(255, 255, 0);//positive
-                //} else {
-                //  fill(0, 255, 255);//negative
-              }
+            if (points.get(n2).orientation==1) {
+              //fill(255, 0, 0);//positive
+              noStroke();
+              fill(255, 0, 0, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
             } else {
-              if (points.get(n1).y>points.get(u2).y) {
-                fill(255, 255, 0);//positive
-                //} else if (points.get(n1).x<points.get(u2).x) {
-                //  fill(255, 255, 0);//positive
-                //} else {
-                //  fill(0, 255, 255);//negative
-              }
+              //fill(0, 0, 255);//negative
+              noStroke();
+              fill(0, 0, 255, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
             }
           }
-        } else { 
-          if (points.get(vec.u1).orientation>points.get(vec.u2).orientation) {
-            //n2>n1
-            //u1>u2
-            if ((points.get(n2).y<=vec.y)) {
-              if (points.get(n2).x>points.get(u1).x) {
-                fill(255, 255, 0);//positive
-                //} else if (points.get(n2).y<points.get(u1).y) {
-                //  fill(255, 255, 0);//positive
-                //} else {
-                //  fill(0, 255, 255);//negative
-              }
+        } else {
+          if (points.get(u1).orientation>points.get(u2).orientation) {
+            if (points.get(n1).orientation==1) {
+              //fill(255, 0, 0);//positive
+              noStroke();
+              fill(255, 0, 0, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
             } else {
-              if (points.get(n2).y>points.get(u1).y) {
-                fill(255, 255, 0);//positive
-                //} else if (points.get(n2).x<points.get(u1).x) {
-                //  fill(255, 255, 0);//positive
-                //} else {
-                //  fill(0, 255, 255);//negative
-              }
+              //fill(0, 0, 255);//negative
+              noStroke();
+              fill(0, 0, 255, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
             }
           } else {
-            //n2>n1
-            //u2>u1
-            if ((points.get(n2).y<=vec.y)) {
-              if (points.get(n2).x>points.get(u2).x) {
-                fill(255, 255, 0);//positive
-                //} else if (points.get(n2).y<points.get(u2).y) {
-                //  fill(255, 255, 0);//positive
-                //} else {
-                //  fill(0, 255, 255);//negative
-              }
+            if (points.get(n1).orientation==1) {
+              //fill(0, 0, 255);//negative
+              noStroke();
+              fill(0, 0, 255, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
             } else {
-              if (points.get(n2).y>points.get(u2).y) {
-                fill(255, 255, 0);//positive
-                //} else if (points.get(n2).x<points.get(u2).x) {
-                //  fill(255, 255, 0);//positive
-                //} else {
-                //  fill(0, 255, 255);//negative
-              }
+              //fill(255, 0, 0);//positive
+              noStroke();
+              fill(255, 0, 0, 25);
+              ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
             }
           }
         }
+        stroke(0);
+        fill(80, 255, 80);
         c=4;
       } else if (vec.closeJoint) {
         stroke(0, 255, 0);
@@ -871,8 +833,8 @@ class data_extract {
     int a = nbhd.a;
     int b = nbhd.b;
     int c = -1;
-    if(a==-1 || b==-1) return;
-    
+    if (a==-1 || b==-1) return;
+
     int repeatmax = points.size();
     Bead ptA = points.get(a);
     fill(120, 120, 255, 50);
@@ -933,7 +895,7 @@ class data_extract {
       if (bead.Joint) {
       } else {
         int n1 = bead.n1;// n2, u1, u2についても同じことをする。
-        if(n1 != -1){
+        if (n1 != -1) {
           Bead bead1 = points.get(n1);
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
