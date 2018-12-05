@@ -984,6 +984,113 @@ class data_extract {
     endShape();
   }
 
+  void draw_smoothing_region(Nbhd nbhd) {
+    int a = nbhd.a;
+    int b = nbhd.b;
+    int c = -1;
+    if (a==-1 || b==-1) return;
+
+    int repeatmax = points.size();
+    Bead ptA = points.get(a);
+    Bead ptB = points.get(b);
+    if (ptA.orientation<ptB.orientation) {
+      ptA=points.get(b);
+      ptB=points.get(a);
+      c=a;
+      a=b;
+      b=c;
+    }
+    fill(120, 120, 255, 50);
+    beginShape();
+    vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
+    for (int repeat=0; repeat < repeatmax; repeat++) {
+      // go straight
+      if ( ! ptA.Joint) {
+        if (ptA.n1 == b) {
+          c = ptA.n2;
+        } else 
+        if (ptA.n2 == b) {
+          c = ptA.n1;
+        } else {
+          println("draw_region : error");
+          return ;
+        }
+        b = a;
+        a = c;
+      }      
+      // if on joint, go left
+      else {
+        int n1=ptA.n1;
+        int n2=ptA.n2;
+        int u1=ptA.u1;
+        int u2=ptA.u2;
+        int n1o=points.get(n1).orientation;
+        int n2o=points.get(n2).orientation;
+        int u1o=points.get(u1).orientation;
+        int u2o=points.get(u2).orientation;
+        if ((n1o<n2o)&&(u1o<u2o)) {
+          if (ptA.n1 == b) {
+            c = ptA.u2;
+          } else 
+          if (ptA.u1 == b) {
+            c = ptA.n2;
+          } else {
+            println("draw_region : error");
+            return ;
+          }
+          b = a;
+          a = c;
+        }
+        if ((n1o<n2o)&&(u1o>u2o)) {
+          if (ptA.n1 == b) {
+            c = ptA.u1;
+          } else 
+          if (ptA.u2 == b) {
+            c = ptA.n2;
+          } else {
+            println("draw_region : error");
+            return ;
+          }
+          b = a;
+          a = c;
+        }
+        if ((n1o>n2o)&&(u1o<u2o)) {
+          if (ptA.n2 == b) {
+            c = ptA.u2;
+          } else 
+          if (ptA.u1 == b) {
+            c = ptA.n1;
+          } else {
+            println("draw_region : error");
+            return ;
+          }
+          b = a;
+          a = c;
+        }
+        if ((n1o>n2o)&&(u1o>u2o)) {
+          if (ptA.n2 == b) {
+            c = ptA.u1;
+          } else 
+          if (ptA.u2 == b) {
+            c = ptA.n1;
+          } else {
+            println("draw_region : error");
+            return ;
+          }
+          b = a;
+          a = c;
+        }
+      }
+      ptA = points.get(a);
+      vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
+      if (nbhd.a == a) {
+
+        break;
+      }
+    }
+    endShape();
+  }
+
   Nbhd get_near_nbhd() {//（マウスポジションの真右にあって）マウスの位置に近いNbhdを見つける。
     int a=-1, b=-1;
     float maxX=9999f;
@@ -1012,6 +1119,29 @@ class data_extract {
                 maxX = xx;
                 a = p;
                 b = n1;
+              }
+            }
+          }
+        }
+        int n2 = bead.n2;// n2, u1, u2についても同じことをする。
+        if (n2 != -1) {
+          Bead bead2 = points.get(n2);
+          float x1 = disp.get_winX(bead2.x);
+          float y1 = disp.get_winY(bead2.y);
+          if (mouseX < x0 || mouseX< x1) {
+            if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
+              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mouseX && xx<maxX) {
+                maxX = xx;
+                a = n2;
+                b = p;
+              }
+            } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
+              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mouseX && xx<maxX) {
+                maxX = xx;
+                a = p;
+                b = n2;
               }
             }
           }

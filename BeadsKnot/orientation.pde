@@ -43,6 +43,8 @@ class orientation {
       //  if (new_joint.b==nd.pointID) {//new_joint.bが一番最初のJointに来たら終わり
       // println(beads_start, beads_first, beads_next, beads_second);
       if (beads_second==beads_next&&beads_first==beads_start) {
+        ori_id++;
+        de.points.get(beads_next).orientation=ori_id;
         return;
         // }
       }

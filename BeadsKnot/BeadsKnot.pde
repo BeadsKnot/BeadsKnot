@@ -102,6 +102,8 @@ void draw() {
     data.draw_posinega_Points();
   } else if (Draw._smoothing) {
     //smoothingの関数を呼び出す
+    Nbhd nh = data.get_near_nbhd();
+    data.draw_smoothing_region(nh);
     data.draw_smoothing_Nbhds();
     data.draw_smoothing_Points();
     //drawNbhdsを変える
@@ -130,10 +132,10 @@ void keyPressed() {
   //else if(key == 'r'){
   // data.draw_region(new Nbhd(4,5));
   //}
+
   if (keyCode==ENTER) {
     orie.decide_orientation();
     Draw.smoothing();
-   
   }
   //if (keyCode==SHIFT) {
   //  orie.decide_orientation();
