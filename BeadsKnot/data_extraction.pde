@@ -930,9 +930,7 @@ class data_extract {
       if ( ! ptA.Joint) {
         if (ptA.n1 == b) {
           c = ptA.n2;
-        } else 
-
-        if (ptA.n2 == b) {
+        } else if (ptA.n2 == b) {
           c = ptA.n1;
         } else {
           println("draw_region : error");
@@ -940,12 +938,12 @@ class data_extract {
         }
         b = a;
         a = c;
-        ptA = points.get(a);
+        // ptA = points.get(a);
         vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
         if (nbhd.a == a) {
           break;
         }
-      }      
+      }
       // if on joint, go left
       else {
         int n1=ptA.n1;
@@ -959,11 +957,13 @@ class data_extract {
         if ((n1o<n2o)&&(u1o<u2o)) {
           if (ptA.n1 == b) {
             c = ptA.u2;
+            //println(ptA.n1, ptA.u1, b);
           } else 
           if (ptA.u1 == b) {
             c = ptA.n2;
+            //println(ptA.n1, ptA.u1, b);
           } else {
-            println("draw_region : error");
+            println("draw_region : error", ptA.n1, ptA.u1, b);
             return ;
           }
           b = a;
@@ -1008,18 +1008,12 @@ class data_extract {
           b = a;
           a = c;
         }
-        //ここで何かしらの条件が必要
-        ptA = points.get(a);
-        vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
-        if (nbhd.a == a) {
-          break;
-        }
+        //vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
       }
-      //ptA = points.get(a);
-      //vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
-      //if (nbhd.a == a) {
-      //  break;
-      //}
+      ptA = points.get(a);
+      if (nbhd.a == a) {
+        break;
+      }
     }
     endShape();
   }
@@ -1075,6 +1069,52 @@ class data_extract {
                 maxX = xx;
                 a = p;
                 b = n2;
+              }
+            }
+          }
+        }
+        int u1 = bead.u1;// n2, u1, u2についても同じことをする。
+        if (u1 != -1) {
+          Bead bead1 = points.get(u1);
+          float x1 = disp.get_winX(bead1.x);
+          float y1 = disp.get_winY(bead1.y);
+          if (mouseX < x0 || mouseX< x1) {
+            if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
+              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mouseX && xx<maxX) {
+                maxX = xx;
+                a = u1;
+                b = p;
+              }
+            } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
+              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mouseX && xx<maxX) {
+                maxX = xx;
+                a = p;
+                b = u1;
+              }
+            }
+          }
+        }
+        int u2 = bead.u2;// n2, u1, u2についても同じことをする。
+        if (u2 != -1) {
+          Bead bead2 = points.get(u2);
+          float x1 = disp.get_winX(bead2.x);
+          float y1 = disp.get_winY(bead2.y);
+          if (mouseX < x0 || mouseX< x1) {
+            if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
+              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mouseX && xx<maxX) {
+                maxX = xx;
+                a = u2;
+                b = p;
+              }
+            } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
+              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mouseX && xx<maxX) {
+                maxX = xx;
+                a = p;
+                b = u2;
               }
             }
           }
