@@ -136,6 +136,8 @@ void keyPressed() {
   if (keyCode==ENTER) {
     orie.decide_orientation();
     Draw.smoothing();
+  } else if (keyCode==SHIFT) {
+    Draw._beads=true;
   }
   //if (keyCode==SHIFT) {
   //  orie.decide_orientation();
