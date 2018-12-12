@@ -933,7 +933,7 @@ class data_extract {
         } else if (ptA.n2 == b) {
           c = ptA.n1;
         } else {
-          println("draw_region : error");
+          println("draw_smoothing_region : error");
           return ;
         }
         b = a;
@@ -960,7 +960,7 @@ class data_extract {
           } else if (ptA.u1 == b) {
             c = ptA.n2;
           } else {
-            println("draw_region : error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
+            println("draw_smoothing_region : error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
             return ;
           }
           b = a;
@@ -972,7 +972,7 @@ class data_extract {
           } else  if (ptA.u2 == b) {
             c = ptA.n2;
           } else {
-            println("draw_region : error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
+            println("draw_smoothing_region : error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
             return ;
           }
           b = a;
@@ -984,7 +984,7 @@ class data_extract {
           } else if (ptA.u1 == b) {
             c = ptA.n1;
           } else {
-            println("draw_region : error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
+            println("draw_smoothing_region : error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
             return ;
           }
           b = a;
@@ -996,7 +996,7 @@ class data_extract {
           } else if (ptA.u2 == b) {
             c = ptA.n1;
           } else {
-            println("draw_region : error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
+            println("draw_smoothing_region : error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
             return ;
           }
           b = a;
