@@ -915,6 +915,28 @@ class data_extract {
     int repeatmax = points.size();
     Bead ptA = points.get(a);
     Bead ptB = points.get(b);
+    if(ptA.Joint){
+      int n1 = ptB.n1;
+      int n2 = ptB.n2;
+      if(n1 != a){
+        a = n1;
+      } else {
+        a = n2;
+      }
+ ptA = points.get(a);
+
+    }
+    else if(ptB.Joint){
+      int n1 = ptA.n1;
+      int n2 = ptA.n2;
+      if(n1 != b){
+        b = n1;
+      } else {
+        b = n2;
+      }
+      ptB = points.get(b);
+    }
+    
     if (ptA.orientation<ptB.orientation) {
       ptA=points.get(b);
       ptB=points.get(a);
@@ -933,7 +955,7 @@ class data_extract {
         } else if (ptA.n2 == b) {
           c = ptA.n1;
         } else {
-          println("draw_smoothing_region : error");
+          println("draw_smoothing_region 1: error");
           return ;
         }
         b = a;
@@ -960,7 +982,7 @@ class data_extract {
           } else if (ptA.u1 == b) {
             c = ptA.n2;
           } else {
-            println("draw_smoothing_region : error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
+            println("draw_smoothing_region 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
             return ;
           }
           b = a;
@@ -972,7 +994,7 @@ class data_extract {
           } else  if (ptA.u2 == b) {
             c = ptA.n2;
           } else {
-            println("draw_smoothing_region : error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
+            println("draw_smoothing_region 3: error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
             return ;
           }
           b = a;
@@ -984,7 +1006,7 @@ class data_extract {
           } else if (ptA.u1 == b) {
             c = ptA.n1;
           } else {
-            println("draw_smoothing_region : error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
+            println("draw_smoothing_region 4: error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
             return ;
           }
           b = a;
@@ -996,7 +1018,7 @@ class data_extract {
           } else if (ptA.u2 == b) {
             c = ptA.n1;
           } else {
-            println("draw_smoothing_region : error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
+            println("draw_smoothing_region 5: error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
             return ;
           }
           b = a;
