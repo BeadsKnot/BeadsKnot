@@ -5,6 +5,7 @@ class mouseDrag {
   boolean free_dragging=false;
   boolean node_dragging=false;
   boolean node_next_dragging =false;
+  boolean new_curve=false;
   int dragged_nodeID = -1;
   int dragged_BeadID = -1;
   float dragged_theta = 0f;

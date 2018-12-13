@@ -915,28 +915,26 @@ class data_extract {
     int repeatmax = points.size();
     Bead ptA = points.get(a);
     Bead ptB = points.get(b);
-    if(ptA.Joint){
+    if (ptA.Joint) {
       int n1 = ptB.n1;
       int n2 = ptB.n2;
-      if(n1 != a){
+      if (n1 != a) {
         a = n1;
       } else {
         a = n2;
       }
- ptA = points.get(a);
-
-    }
-    else if(ptB.Joint){
+      ptA = points.get(a);
+    } else if (ptB.Joint) {
       int n1 = ptA.n1;
       int n2 = ptA.n2;
-      if(n1 != b){
+      if (n1 != b) {
         b = n1;
       } else {
         b = n2;
       }
       ptB = points.get(b);
     }
-    
+
     if (ptA.orientation<ptB.orientation) {
       ptA=points.get(b);
       ptB=points.get(a);
@@ -1138,5 +1136,16 @@ class data_extract {
       }
     }
     return new Nbhd(b, a);
+  }
+
+  int findArcFromPoints(int startID, int endID) {
+    //startIDのビーズから初めてn1方向とn2方向の両方を調べる
+    //自己交差があればやめる
+    //両方ダメなら-1を返す
+    //成功すればn1は1、n2は2を返す
+    //両方成功したら1を返す
+    //たどる途中でovercrossingとundercrossingが混ざったらやめる
+    //たどっているときにoverなのかunderなのかを保存しておく必要がある
+    return 0;
   }
 }

@@ -84,6 +84,8 @@ void draw() {
       strokeWeight(1);
       line(x+100*sin(t), y+100*cos(t), x-100*sin(t), y-100*cos(t));
       line(x+100*cos(t), y-100*sin(t), x-100*cos(t), y+100*sin(t));
+    } else if (mouse.new_curve) {
+      mouse.draw_trace();
     }
   } 
   // 平面グラフのデータを表示
@@ -306,6 +308,11 @@ void mousePressed() {
           mouse.dragged_theta = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
           mouse.nd_theta = nd.theta;
           mouse.nd_theta_branch =0f;
+        } else {//ノードでもなくノードの隣でもないところでクリックをしたときの処理
+          mouse.prev = new PVector(mouseX, mouseY);
+          mouse.trace.clear();
+          mouse.trace.add(mouse.prev);
+          mouse.new_curve=true;
         }
       }
     }
@@ -376,6 +383,11 @@ void mouseDragged() {
       graph.modify();
       graph.update_points();
       graph.add_close_point_Joint();
+    } else if (mouse.new_curve) {
+      if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
+        mouse.prev = new PVector(mouseX, mouseY);
+        mouse.trace.add(mouse.prev);
+      }
     }
   } else if (Draw._free_loop) {
     if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
@@ -538,6 +550,23 @@ void mouseReleased() {
               }
             }
             break;
+          }
+        }
+      }
+    } else {
+      //クリックでなくドラッグの場合
+      //jointでないところで終わりにする
+      if (mouse.new_curve) {
+        mouse.new_curve=false;
+        int ptID = graph.is_PVector_on_points(mouseX, mouseY);
+        if (ptID==-1) {
+          return;
+        } else {
+          Bead pt=data.points.get(ptID);
+          if (pt.Joint) {////////////////////////////////midJointやJointの隣も含むか要検討
+            return;
+          } else {
+            println("ここで作業をする");
           }
         }
       }
