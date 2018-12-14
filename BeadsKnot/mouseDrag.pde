@@ -183,38 +183,37 @@ class mouseDrag {
                     float y3 = edit.beads.get(bd1n1).y;
                     float x4 = edit.beads.get(bd1n2).x;
                     float y4 = edit.beads.get(bd1n2).y;
-        //  // (x2-x1)s+x1 = (x4-x3)t+x3 
-        //  // (y2-y1)s+y1 = (y4-y3)t+y3
-        //  //   (x2-x1)s - (x4-x3)t = +x3-x1 
-        //  //   (y2-y1)s - (y4-y3)t = +y3-y1
-        //  float a = x2 - x1;
-        //  float b = -x4 + x3;
-        //  float c = y2 - y1;
-        //  float d = -y4 + y3;
-        //  float p = x3 - x1;
-        //  float q = y3 - y1;
-        //  float s1 = p * d - b * q;  // s = s1/st
-        //  float t1 = a * q - p * c;  // t = t1/st
-        //  float st = a * d - b * c; 
-        //  if ( st < 0 ) {
-        //    st *= -1;
-        //    s1 *= -1;
-        //    t1 *= -1;
-        //  }
-        //  if (0 < s1 && s1 < st && 0 < t1 && t1 < st) {
-        //    //trace.get(tr1+1) と trace.get(tr2+1)とを合流してJointにする。
-        //    int jt = (tr1+1)%traceNumber;
-        //    int jt2 = (tr2+1)%traceNumber;
-        //    boolean OK=true;
-        //    for (int mt=0; mt<meets.size(); mt++) {
-        //      int js=int(meets.get(mt).x);
-        //      int js2 = int(meets.get(mt).y);
-        //      if (abs(jt-js)<=2 && abs(jt2-js2)<=2) {
-        //        println(jt, js, jt2, js2);
-        //        OK = false;
-        //        break;
-        //      }
-        //    }
+                    //   (x2-x1)s - (x4-x3)t = +x3-x1 
+                    //   (y2-y1)s - (y4-y3)t = +y3-y1
+                    float a = x2 - x1;
+                    float b = -x4 + x3;
+                    float c = y2 - y1;
+                    float d = -y4 + y3;
+                    float p = x3 - x1;
+                    float q = y3 - y1;
+                    float s1 = p * d - b * q;  // s = s1/st
+                    float t1 = a * q - p * c;  // t = t1/st
+                    float st = a * d - b * c; 
+                    if ( st < 0 ) {
+                      st *= -1;
+                      s1 *= -1;
+                      t1 *= -1;
+                    }
+                    if (-0.01 < s1 && s1 < st*1.01 && -0.01 < t1 && t1 < st*1.01) {
+                      //trace.get(tr1+1) と trace.get(tr2+1)とを合流してJointにする。
+                      // 合流する点がJointに極めて近いときはどうするか？
+                      int jt = (tr1+1)%traceNumber;
+                      int jt2 = (tr2+1)%traceNumber;
+                      boolean OK=true;
+                      for (int mt=0; mt<meets.size(); mt++) {
+                        int js=int(meets.get(mt).x);
+                        int js2 = int(meets.get(mt).y);
+                        if (abs(jt-js)<=2 && abs(jt2-js2)<=2) {
+                          println(jt, js, jt2, js2);
+                          OK = false;
+                          break;
+                        }
+                      }
         //    if (OK) {
         //      println(jt, "meets", jt2);
         //      meets.add(new PVector(jt, jt2));
