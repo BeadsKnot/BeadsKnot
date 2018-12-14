@@ -125,14 +125,14 @@ class mouseDrag {
     println("traceをbeadsに変換");
     int startBeadID = dragged_BeadID;
     Bead startBead = edit.beads.get(startBeadID);
-    if (startBead.c==1) {
+    if (startBead.c==1) {//スタートビーズのデータを整える
       startBead.n2 = edit.beads.size();
       startBead.c = 2;
     } else {
       startBead.n1 = edit.beads.size();
       startBead.c = 1;
     }
-    for (int trID=1; trID<trace.size(); trID++) {
+    for (int trID=1; trID<trace.size(); trID++) {//traceをひとつひとつbeadに置き換える
       PVector tr = trace.get(trID);
       Bead newBd = new Bead(tr.x, tr.y);
 
@@ -160,8 +160,82 @@ class mouseDrag {
     }
     //dragge_BeadID - endBeadID;
     //そののちに、既存のビーズ列、自分自身との交差を判定し、jointを追加する。
-
-    //終了条件の確認
+    for (int bdID1 = startBeadID; bdID1<=endBeadID; bdID1++) {
+      Bead bd1 = edit.beads.get(bdID1);
+      if(bd1.c>=2){
+        int beadsNumber = edit.beads.size();
+        for (int bdID2=0; bdID2<beadsNumber; bdID2++) {
+          Bead bd2 = edit.beads.get(bdID2);
+          if(bdID2<bdID1 && bd2.c>=2){
+            int bd1n1 = bd1.n1;
+            int bd1n2 = bd1.n2;
+            int bd2n1 = bd2.n1;
+            int bd2n2 = bd2.n2;
+            if(bd1n1!=-1 && bd1n2!=-1 && bd2n1!=-1 && bd2n2!=-1){
+              if(bd1n1!=bd2n1 && bd1n1!=bdID2 && bd1n1!=bd2n2){
+                if(bdID1!=bd2n1 && bdID1!=bdID2 && bdID1!=bd2n2){
+                  if(bd1n2!=bd2n1 && bd1n2!=bdID2 && bd1n2!=bd2n2){
+                    float x1 = edit.beads.get(bd1n1).x;
+                    float y1 = edit.beads.get(bd1n1).y;
+                    float x2 = edit.beads.get(bd1n2).x;
+                    float y2 = edit.beads.get(bd1n2).y;
+                    float x3 = edit.beads.get(bd1n1).x;
+                    float y3 = edit.beads.get(bd1n1).y;
+                    float x4 = edit.beads.get(bd1n2).x;
+                    float y4 = edit.beads.get(bd1n2).y;
+        //  // (x2-x1)s+x1 = (x4-x3)t+x3 
+        //  // (y2-y1)s+y1 = (y4-y3)t+y3
+        //  //   (x2-x1)s - (x4-x3)t = +x3-x1 
+        //  //   (y2-y1)s - (y4-y3)t = +y3-y1
+        //  float a = x2 - x1;
+        //  float b = -x4 + x3;
+        //  float c = y2 - y1;
+        //  float d = -y4 + y3;
+        //  float p = x3 - x1;
+        //  float q = y3 - y1;
+        //  float s1 = p * d - b * q;  // s = s1/st
+        //  float t1 = a * q - p * c;  // t = t1/st
+        //  float st = a * d - b * c; 
+        //  if ( st < 0 ) {
+        //    st *= -1;
+        //    s1 *= -1;
+        //    t1 *= -1;
+        //  }
+        //  if (0 < s1 && s1 < st && 0 < t1 && t1 < st) {
+        //    //trace.get(tr1+1) と trace.get(tr2+1)とを合流してJointにする。
+        //    int jt = (tr1+1)%traceNumber;
+        //    int jt2 = (tr2+1)%traceNumber;
+        //    boolean OK=true;
+        //    for (int mt=0; mt<meets.size(); mt++) {
+        //      int js=int(meets.get(mt).x);
+        //      int js2 = int(meets.get(mt).y);
+        //      if (abs(jt-js)<=2 && abs(jt2-js2)<=2) {
+        //        println(jt, js, jt2, js2);
+        //        OK = false;
+        //        break;
+        //      }
+        //    }
+        //    if (OK) {
+        //      println(jt, "meets", jt2);
+        //      meets.add(new PVector(jt, jt2));
+        //      Bead jtBead = data.points.get(jt);
+        //      Bead jt2Bead = data.points.get(jt2);
+        //      jtBead.Joint = true;
+        //      jtBead.u1 = jt2Bead.n1;
+        //      jtBead.u2 = jt2Bead.n2;
+        //      jt2Bead.n1 = -1;
+        //      jt2Bead.n2 = -1;
+        //      jt2Bead.x = jt2Bead.y = -1f;
+        //      jt2Bead.c = 0;
+        //      data.points.get(tr2).n1 = jt;
+        //      data.points.get((tr2+2)%traceNumber).n2 = jt;
+        //    }
+        //  }
+        //}
+        //終了条件の確認
+      }
+      }
+    }
     boolean OK=true;
     for (int bdID=0; bdID<edit.beads.size(); bdID++) {
       if (edit.beads.get(bdID).c<2) {

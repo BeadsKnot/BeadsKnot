@@ -96,7 +96,7 @@ class parts_editing {
     beads.add(bd);
   }
 
-  void deleteBead(int bdID) {//クリックするとビーズを消すことができる。
+  void deleteBead(int bdID) {
     Bead bd0 = beads.get(bdID);
     int bd0ID=bd0.n1;
     if (0<= bd0ID && bd0ID<beads.size()) {
