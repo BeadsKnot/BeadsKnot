@@ -17,7 +17,7 @@ orientation orie;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 // グローバル変数終了
-
+int startID;
 
 void setup() {
   int extractSize=1000;
@@ -285,6 +285,7 @@ void mousePressed() {
   //if (Draw._beads) {
   if (Draw._beads||Draw._smoothing) {
     int ptID = graph.is_PVector_on_points(mouseX, mouseY);
+    startID=ptID;
     if (ptID!=-1) {
       if (data.points.get(ptID).Joint || data.points.get(ptID).midJoint) {//nodeをドラッグする
         mouse.node_dragging = true;
@@ -566,7 +567,16 @@ void mouseReleased() {
           if (pt.Joint) {////////////////////////////////midJointやJointの隣も含むか要検討
             return;
           } else {
-            println("ここで作業をする");
+            //println("ここで作業をする");
+            //startIDはmouseX
+            //endIDはmouseY
+            if (data.findArcFromPoints(startID, ptID)==1) {
+              println("OK");
+            } else if (data.findArcFromPoints(startID, ptID)==2) {
+            } else if (data.findArcFromPoints(startID, ptID)==-1) {
+            } else {//0のとき
+              println("ここで作業をする");
+            }
           }
         }
       }
