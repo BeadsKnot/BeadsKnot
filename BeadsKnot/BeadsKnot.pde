@@ -1,4 +1,4 @@
-import java.awt.*; //<>// //<>//
+import java.awt.*; //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -629,7 +629,7 @@ void mouseReleased() {
           for (int bdID=0; bdID<edit.beads.size(); bdID++) {
             Bead bd = edit.beads.get(bdID);
             if (bd.c<2 && dist(bd.x, bd.y, mouseX, mouseY)<15) {
-              endBdID = bdID;
+              endBdID = bdID;//終了地点のビーズIDを特定する。
               OK = true;
               break;
             }
