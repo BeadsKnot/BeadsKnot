@@ -39,7 +39,7 @@ class parts_editing {
     strokeWeight(2);
     for (int bdID=0; bdID<beads.size (); bdID++) {
       Bead bd=beads.get(bdID);
-      if (0<= bd.n1 && bd.n1<beads.size()) {
+      if (0<= bd.n1 && bd.n1<beads.size() && beads.get(bd.n1).c>=0) {
         Bead next = beads.get(bd.n1);
         if (next.Joint || next.midJoint) {
           if (next.n1 == bdID || next.n2 == bdID) {
@@ -52,7 +52,7 @@ class parts_editing {
         }
         line(bd.x, bd.y, next.x, next.y);
       }
-      if (0<= bd.n2 && bd.n2<beads.size()) {
+      if (0<= bd.n2 && bd.n2<beads.size() && beads.get(bd.n2).c>=0) {
         Bead next = beads.get(bd.n2);
         if (next.Joint || next.midJoint) {
           if (next.n1 == bdID || next.n2 == bdID) {
