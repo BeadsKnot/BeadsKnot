@@ -1140,27 +1140,25 @@ class data_extract {
 
   int findArcFromPoints(int startID, int endID) {
     //引数はpointのID
-    Bead st = points.get(startID);
+    //Bead st = points.get(startID);
     Bead en = points.get(endID);
-    Bead st_n1=points.get(st.n1);
-    Bead st_n2=points.get(st.n2);
-    Bead en_n1=points.get(en.n1);
-    Bead en_n2=points.get(st.n2);
-    Bead c=st;
+    //Bead st1 = points.get(st.n1);
+    //Bead st2 = points.get(st.n2);
+    //Bead st2_pre = points.get(st.n2);
+    int stock_startID=startID;//a
+    int c=-1;
     int repeatmax = points.size();
+    Bead st=points.get(stock_startID);
     for (int repeat=0; repeat < repeatmax; repeat++) {
       //startIDのビーズから初めてn1方向とn2方向の両方を調べる
       // go straight
-      //  //ptAがst
-      if ( ! st.Joint) {
-        if (c==en) {
-          return 1;
-        } else {
-          c=st_n2;
-        }
+      if (stock_startID!=endID) {
+        c=st.n2;
+        stock_startID=c;
+        st=points.get(c);
+      } else {
+        return 2;
       }
-
-
 
       // if on joint, n1->n2, u1->u2, n2->n1, u2->u1
       //Jointだったときに何かしらの処理をすることで自己交差をしているか判定
