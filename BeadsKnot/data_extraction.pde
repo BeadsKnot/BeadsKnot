@@ -78,8 +78,8 @@ class data_extract {
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
-          //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
         }//}
@@ -1140,29 +1140,53 @@ class data_extract {
 
   int findArcFromPoints(int startID, int endID) {
     //引数はpointのID
-    //Bead st = points.get(startID);
-    Bead en = points.get(endID);
-    //Bead st1 = points.get(st.n1);
-    //Bead st2 = points.get(st.n2);
-    //Bead st2_pre = points.get(st.n2);
-    int stock_startID=startID;//a
-    int c=-1;
+    Bead st = points.get(startID);
+    Bead pre_st=st;
+    int a=st.n1;
+    int b=st.n2;
+    int c=st.u1;
+    int d=st.u2;
+    println("初期a="+a, "初期b="+b, "c="+c, "d="+d);
+    Bead node1=st;
+    Bead node2=st;
+    int prev_a=a;
+    int prev_b=b;
+    //Bead en = points.get(endID);
     int repeatmax = points.size();
-    Bead st=points.get(stock_startID);
     for (int repeat=0; repeat < repeatmax; repeat++) {
       //startIDのビーズから初めてn1方向とn2方向の両方を調べる
       // go straight
-      if (stock_startID!=endID) {
-        c=st.n2;
-        stock_startID=c;
-        st=points.get(c);
-      } else {
+      // int stn1=st.n1;
+      if (a==endID) {
+        return 1;
+      } else if (b==endID) {
         return 2;
+      } else {//aもbもendIDでないとき
+        node1=points.get(a);
+        node2=points.get(b);
       }
-
+      println("a="+a, "b="+b);
+      prev_a=a;
+      prev_b=b;
+      a=node1.n1; 
+      b=node2.n2;
+      if (prev_a==a) {
+        println("N");
+        a=node1.n2;
+      } else {
+        a=node1.n1;
+      }
+      if (prev_b==b) {
+        println("G");
+        b=node2.n1;
+      } else {
+        b=node2.n2;
+      }
       // if on joint, n1->n2, u1->u2, n2->n1, u2->u1
       //Jointだったときに何かしらの処理をすることで自己交差をしているか判定
     }
+
+
     //startIDのビーズから初めてn1方向とn2方向の両方を調べる
     //自己交差があればやめる
     //両方ダメなら-1を返す
