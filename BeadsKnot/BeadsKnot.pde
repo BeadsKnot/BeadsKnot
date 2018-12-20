@@ -568,14 +568,15 @@ void mouseReleased() {
             return;
           } else {
             //println("ここで作業をする");
-            //startIDはmouseX
+            //startIDはptID
             //endIDはmouseY
             println(startID, ptID);
-            if (data.findArcFromPoints(startID, ptID)==1) {
+            int i=data.findArcFromPoints(startID, ptID);
+            if (i==1) {
               println("1");
-            } else if (data.findArcFromPoints(startID, ptID)==2) {
+            } else if (i==2) {
               println("2");
-            } else if (data.findArcFromPoints(startID, ptID)==-1) {
+            } else if (i==-1) {
               println("できませんでした");
             } else {//0のとき
               println("ここで作業をする");

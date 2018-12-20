@@ -1,4 +1,4 @@
-class data_extract {
+class data_extract { //<>// //<>//
   // 画像からの読みとり
   // ビーズとそれをつなぐNbhからなる。
   int w, h;// 解析画面の大きさ
@@ -1146,13 +1146,16 @@ class data_extract {
     int b=st.n2;
     Bead node1=st;
     Bead node2=st;
-    int prev_a=-1;
-    int prev_b=-1;
-    int pre_prev_a=-1;
-    int pre_prev_b=-1;
+    int prev_a=startID;
+    int prev_b=startID;
+    int pre_prev_a=startID;
+    int pre_prev_b=startID;
     int repeatmax = points.size();
-    boolean OKa=false;
-    boolean OKb=false;
+    boolean J1_over=false;
+    boolean J1_under=false;
+    boolean J2_over=false;
+    boolean J2_under=false;
+
     for (int repeat=0; repeat < repeatmax; repeat++) {
       //startIDのビーズから初めてn1方向とn2方向の両方を調べる
       // go straight
@@ -1163,74 +1166,67 @@ class data_extract {
       prev_b=b;
 
       if (a==endID) {
-        return 1;
+        if (J1_over&&J1_under) {
+          return -1;
+        } else {
+          return 1;
+        }
       } else if (b==endID) {
-        return 2;
+        if(J2_over&&J2_under) {
+          return -1;
+        } else {
+          return 2;
+        }
       } else {//aもbもendIDでないとき
         node1=points.get(a);
         node2=points.get(b);
       }
 
       if (node1.Joint) {
-        OKa=true;
-        println("J1");
-        if (node1.n1==pre_prev_a||node1.n1==prev_a||node1.n1==a) {
+        if (node1.n1==pre_prev_a) {
           a=node1.n2;
-          //println("n1");
-        } else if (node1.n2==pre_prev_a||node1.n2==prev_a||node1.n2==a) {
+          J1_over=true;
+        } else if (node1.n2==pre_prev_a) {
           a=node1.n1;
-          //println("n2");
-        } else if (node1.u1==pre_prev_a||node1.u1==prev_a||node1.u1==a) {
+          J1_over=true;
+        } else if (node1.u1==pre_prev_a) {
           a=node1.u2;
-          //println("u1");
-        } else if (node1.u2==pre_prev_a||node1.u2==prev_a||node1.u2==a) {
+          J1_under=true;
+        } else if (node1.u2==pre_prev_a) {
           a=node1.u1;
-          //println("u2");
+          J1_under=true;
         }
       } else {
-        OKa=false;
+        a=node1.n1;
+        if (pre_prev_a==a) {
+          a=node1.n2;
+        }
       }
       if (node2.Joint) {
-        println("J2");
-        OKb=true;
-        if (node2.n1==pre_prev_b||node2.n1==prev_b||node2.n1==b) {
+        if (node2.n1==pre_prev_b) {
           b=node2.n2;
-          //println("n1");
-        } else if (node2.n2==pre_prev_b||node2.n2==prev_b||node2.n2==b) {
+          J2_over=true;
+        } else if (node2.n2==pre_prev_b) {
           b=node2.n1;
-          //println("n2");
-        } else if (node2.u1==pre_prev_b||node2.u1==prev_b||node2.u1==b) {
+          J2_over=true;
+        } else if (node2.u1==pre_prev_b) {
           b=node2.u2;
-          //println("u1");
-        } else if (node2.u2==pre_prev_b||node2.u2==prev_b||node2.u2==b) {
+          J2_under=true;
+        } else if (node2.u2==pre_prev_b) {
           b=node2.u1;
-          //println("u2");
+          J2_under=true;
         }
       } else {
-        OKb=false;
-      }
-      if (!OKa) {
-        a=node1.n1;
-      }
-      if (!OKb) {
         b=node2.n2;
+        if (pre_prev_b==b) {
+          b=node2.n1;
+        }
       }
-
-      if (a==startID||prev_a==a||pre_prev_a==a) {
-        a=node1.n2;
-      }
-      if (b==startID||prev_b==b||pre_prev_b==b) {
-        b=node2.n1;
-      }
-
       // if on joint, n1->n2, u1->u2, n2->n1, u2->u1
       //Jointだったときに何かしらの処理をすることで自己交差をしているか判定
 
       // println("pre_prev_a="+pre_prev_a, "prev_a="+prev_a, "a="+a, "pre_prev_b="+pre_prev_b, "prev_b="+prev_b, "b="+b);
     }
-
-
-
     //startIDのビーズから初めてn1方向とn2方向の両方を調べる
     //自己交差があればやめる
     //両方ダメなら-1を返す
