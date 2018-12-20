@@ -1144,7 +1144,6 @@ class data_extract {
     Bead en = points.get(endID);
     int a=st.n1;
     int b=st.n2;
-    println("初期a="+a, "初期b="+b);
     Bead node1=st;
     Bead node2=st;
     int prev_a=-1;
@@ -1152,10 +1151,17 @@ class data_extract {
     int pre_prev_a=-1;
     int pre_prev_b=-1;
     int repeatmax = points.size();
-    println(a, b);
+    boolean OKa=false;
+    boolean OKb=false;
     for (int repeat=0; repeat < repeatmax; repeat++) {
       //startIDのビーズから初めてn1方向とn2方向の両方を調べる
       // go straight
+
+      pre_prev_a=prev_a;
+      pre_prev_b=prev_b;
+      prev_a=a;
+      prev_b=b;
+
       if (a==endID) {
         return 1;
       } else if (b==endID) {
@@ -1165,61 +1171,64 @@ class data_extract {
         node2=points.get(b);
       }
 
- 
-
-      a=node1.n1;
-      b=node2.n2;
-      if (a==startID||a==pre_prev_a) {
-        a=node1.n2;
-      } 
-      if (b==startID||pre_prev_b==b) {
-        b=node2.n1;
-      }
-      println("pre_prev_a="+pre_prev_a, "prev_a="+prev_a, "a="+a, "pre_prev_b="+pre_prev_b, "prev_b="+prev_b, "b="+b);
-
-     if (node1.Joint) {
+      if (node1.Joint) {
+        OKa=true;
         println("J1");
         if (node1.n1==pre_prev_a||node1.n1==prev_a||node1.n1==a) {
           a=node1.n2;
-          println("n1");
+          //println("n1");
         } else if (node1.n2==pre_prev_a||node1.n2==prev_a||node1.n2==a) {
           a=node1.n1;
-          println("n2");
+          //println("n2");
         } else if (node1.u1==pre_prev_a||node1.u1==prev_a||node1.u1==a) {
           a=node1.u2;
-          println("u1");
+          //println("u1");
         } else if (node1.u2==pre_prev_a||node1.u2==prev_a||node1.u2==a) {
           a=node1.u1;
-          println("u2");
+          //println("u2");
         }
+      } else {
+        OKa=false;
       }
       if (node2.Joint) {
         println("J2");
-
+        OKb=true;
         if (node2.n1==pre_prev_b||node2.n1==prev_b||node2.n1==b) {
           b=node2.n2;
-          println("n1");
+          //println("n1");
         } else if (node2.n2==pre_prev_b||node2.n2==prev_b||node2.n2==b) {
           b=node2.n1;
-          println("n2");
+          //println("n2");
         } else if (node2.u1==pre_prev_b||node2.u1==prev_b||node2.u1==b) {
           b=node2.u2;
-          println("u1");
+          //println("u1");
         } else if (node2.u2==pre_prev_b||node2.u2==prev_b||node2.u2==b) {
           b=node2.u1;
-          println("u2");
-          //}
+          //println("u2");
         }
+      } else {
+        OKb=false;
+      }
+      if (!OKa) {
+        a=node1.n1;
+      }
+      if (!OKb) {
+        b=node2.n2;
+      }
+
+      if (a==startID||prev_a==a||pre_prev_a==a) {
+        a=node1.n2;
+      }
+      if (b==startID||prev_b==b||pre_prev_b==b) {
+        b=node2.n1;
       }
 
       // if on joint, n1->n2, u1->u2, n2->n1, u2->u1
       //Jointだったときに何かしらの処理をすることで自己交差をしているか判定
 
-      pre_prev_a=prev_a;
-      pre_prev_b=prev_b;
-      prev_a=a;
-      prev_b=b;
+      // println("pre_prev_a="+pre_prev_a, "prev_a="+prev_a, "a="+a, "pre_prev_b="+pre_prev_b, "prev_b="+prev_b, "b="+b);
     }
+
 
 
     //startIDのビーズから初めてn1方向とn2方向の両方を調べる
@@ -1229,21 +1238,6 @@ class data_extract {
     //両方成功したら1を返す
     //たどる途中でovercrossingとundercrossingが混ざったらやめる
     //たどっているときにoverなのかunderなのかを保存しておく必要がある
-    return 0;
+    return -1;
   }
-
-  //int func(int pointID_J, int pointID) {
-  //  Bead pJ=points.get(pointID_J);
-  //  if (pJ.n1==pointID) {
-  //    return pJ.n2;
-  //  } else if (pJ.n2==pointID) {
-  //    return pJ.n1;
-  //  } else if (pJ.u1==pointID) {
-  //    return pJ.u2;
-  //  } else if (pJ.u2==pointID) {
-  //    return pJ.u1;
-  //  }
-
-  //  return -1;
-  //}
 }

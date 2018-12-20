@@ -576,6 +576,7 @@ void mouseReleased() {
             } else if (data.findArcFromPoints(startID, ptID)==2) {
               println("2");
             } else if (data.findArcFromPoints(startID, ptID)==-1) {
+              println("できませんでした");
             } else {//0のとき
               println("ここで作業をする");
             }
