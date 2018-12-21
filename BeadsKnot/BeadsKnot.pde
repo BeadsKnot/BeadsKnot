@@ -17,6 +17,7 @@ orientation orie;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
+int count=0;
 // グローバル変数終了
 
 void setup() {
@@ -69,8 +70,8 @@ void draw() {
   }
   //data_extractの内容を描画する場合。
   if (Draw._beads) {
-    Nbhd nh = data.get_near_nbhd();
-    data.draw_region(nh);
+    /////////////////////////////////////////////////////Nbhd nh = data.get_near_nbhd();
+    //////////////////////////////////////////////////// data.draw_region(nh);
     data.drawNbhds();
     data.drawPoints();
     //    data.tf.spring();// ばねモデルで動かしたものを表示
@@ -569,7 +570,7 @@ void mouseReleased() {
           } else {
             //println("ここで作業をする");
             //startIDはptID
-            //endIDはmouseY
+            //endID
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
             if (i==1) {
@@ -581,6 +582,13 @@ void mouseReleased() {
             } else {//0のとき
               println("ここで作業をする");
             }
+            //println(count);//間にbeadsの数。ただしstartIDとptIDは含まない
+            data.extinguish_points(i, startID, ptID);
+            //ここで線をビーズにする 
+            //Bead startBeads=data.points.get(startID);
+            //Bead endBeads=data.points.get(ptID);
+            //mouse.trace_to_parts_editing2(i, startBeads, endBeads);
+            //traceからもらってくればよい
           }
         }
       }

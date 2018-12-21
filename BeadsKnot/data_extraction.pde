@@ -57,103 +57,37 @@ class data_extract { //<>// //<>//
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
       Bead vec=points.get(pt);
-      if (vec.Joint) {
-        stroke(0);
-        fill(80, 255, 80);
-        c=4;
-      } else if (vec.closeJoint) {
-        stroke(0, 255, 0);
-        fill(255);
-      } else if (vec.midJoint) {
-        stroke(0);
-        fill(180, 255, 0);
-        c=3;
-      } else {
-        stroke(255, 0, 0);
-        fill(255);
-      }
-      if (vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
-      } else {
-        //dispをつかって表示を画面サイズに合わせるように座標変換する。
-        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
-        if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
-          fill(0);
-          text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
-          //if(vec.Joint){
-          //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
-        }//}
+      if (vec.n1!=-1&&vec.n2!=-1) {
+        if (vec.Joint) {
+          stroke(0);
+          fill(80, 255, 80);
+          c=4;
+        } else if (vec.closeJoint) {
+          stroke(0, 255, 0);
+          fill(255);
+        } else if (vec.midJoint) {
+          stroke(0);
+          fill(180, 255, 0);
+          c=3;
+        } else {
+          stroke(255, 0, 0);
+          fill(255);
+        }
+        if (vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
+        } else {
+          //dispをつかって表示を画面サイズに合わせるように座標変換する。
+          ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
+          if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
+            fill(0);
+            text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+            ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+            //if(vec.Joint){
+            //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
+          }//}
+        }
       }
     }
   }
-
-  //void draw_posinega_Points() {//positiveとnegativeを考慮して点をかく
-  //  //positiveが赤色
-  //  //negativeが青色
-  //  for (int pt=0; pt<points.size (); pt++) {
-  //    float c = 2;
-  //    Bead vec=points.get(pt);
-  //    int n1=vec.n1;
-  //    int n2=vec.n2;
-  //    int u1=vec.u1;
-  //    int u2=vec.u2;
-  //    if (vec.Joint) {
-  //      // stroke(0);
-  //      if (points.get(n1).orientation>points.get(n2).orientation) {
-  //        if (points.get(u1).orientation>points.get(u2).orientation) {
-  //          //fill(255, 0, 0);//positive
-  //          noStroke();
-  //          fill(255, 0, 0, 25);
-  //          ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
-  //        } else {
-  //          //fill(0, 0, 255);//negative
-  //          noStroke();
-  //          fill(0, 0, 255, 25);
-  //          ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
-  //        }
-  //      } else {
-  //        if (points.get(u1).orientation>points.get(u2).orientation) {
-  //          //fill(0, 0, 255);//negative
-  //          noStroke();
-  //          fill(0, 0, 255, 25);
-  //          ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
-  //        } else {
-  //          //fill(255, 0, 0);//positive
-  //          noStroke();
-  //          fill(255, 0, 0, 25);
-  //          ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
-  //        }
-  //      }
-  //      stroke(0);
-  //      fill(80, 255, 80);
-  //      c=4;
-  //    } else if (vec.closeJoint) {
-  //      stroke(0, 255, 0);
-  //      fill(255);
-  //    } else if (vec.midJoint) {
-  //      stroke(0);
-  //      fill(180, 255, 0);
-  //      c=3;
-  //    } else {
-  //      stroke(255, 0, 0);
-  //      fill(255);
-  //    }
-  //    if (vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
-  //    } else {
-  //      //dispをつかって表示を画面サイズに合わせるように座標変換する。
-  //      ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
-  //      if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
-  //        fill(0);
-  //        //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-  //        text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
-  //        //if(vec.Joint){
-  //        //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
-  //      }//}
-  //    }
-  //  }
-  //}
-
-
 
   void draw_smoothing_Points() {//交点を割いたバージョンの点をかく
     //positiveが赤色
@@ -320,6 +254,7 @@ class data_extract { //<>// //<>//
   void drawNbhds() {//線を書く
     for (int ptID=0; ptID<points.size (); ptID++) {
       Bead pt=points.get(ptID);
+      //if (pt.n1!=-1&&pt.n2!=-1) {
       if (0<=pt.n1 && pt.n1<points.size()) {
         stroke(0);
         Bead pt2 = points.get(pt.n1);
@@ -336,6 +271,7 @@ class data_extract { //<>// //<>//
             disp.get_winX(pt2.x), disp.get_winY(pt2.y));
         }
       }
+      //}
     }
   }
 
@@ -1155,7 +1091,8 @@ class data_extract { //<>// //<>//
     boolean J1_under=false;
     boolean J2_over=false;
     boolean J2_under=false;
-
+    int counta=0;
+    int countb=0;
     for (int repeat=0; repeat < repeatmax; repeat++) {
       //startIDのビーズから初めてn1方向とn2方向の両方を調べる
       // go straight
@@ -1169,17 +1106,21 @@ class data_extract { //<>// //<>//
         if (J1_over&&J1_under) {
           return -1;
         } else {
+          count=counta;
           return 1;
         }
       } else if (b==endID) {
-        if(J2_over&&J2_under) {
+        if (J2_over&&J2_under) {
           return -1;
         } else {
+          count=countb;
           return 2;
         }
       } else {//aもbもendIDでないとき
         node1=points.get(a);
+        counta++;
         node2=points.get(b);
+        countb++;
       }
 
       if (node1.Joint) {
@@ -1235,5 +1176,25 @@ class data_extract { //<>// //<>//
     //たどる途中でovercrossingとundercrossingが混ざったらやめる
     //たどっているときにoverなのかunderなのかを保存しておく必要がある
     return -1;
+  }
+
+
+  void extinguish_points(int i, int startID, int endID) {
+    //    n1=-1,n2=-1,u1=-1,u2=-1にする
+    Bead st = points.get(startID);
+    Bead en = points.get(endID);
+    int repeatmax = points.size();
+    if (i==1) {
+      //for (int repeat=0; repeat < repeatmax; repeat++) {
+      //pre_st1=st1.n1;
+      st=points.get(st.n1);
+      st.n1=-1;
+      //}
+    } else if (i==2) {
+      //  // for (int repeat=0; repeat < repeatmax; repeat++) {
+      st=points.get(st.n2);
+      st.n2=-1;
+      //  //}
+    }
   }
 }
