@@ -583,7 +583,7 @@ void mouseReleased() {
               println("ここで作業をする");
             }
             //println(count);//間にbeadsの数。ただしstartIDとptIDは含まない
-            data.extinguish_points(i, startID, ptID);
+            //data.extinguish_points(i, startID, ptID);
             //ここで線をビーズにする 
             //Bead startBeads=data.points.get(startID);
             //Bead endBeads=data.points.get(ptID);
