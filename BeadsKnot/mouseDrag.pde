@@ -307,7 +307,7 @@ class mouseDrag { //<>//
       endBd.c=2;
       s_next=startBd.n1;
       e_next=endBd.n1;
-      println("3");
+      //println("3");
     } else if (startBd.c==1&&endBd.c==1&&i==2) {
       startBd.c=2;
       endBd.c=2;

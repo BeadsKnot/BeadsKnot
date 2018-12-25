@@ -574,9 +574,9 @@ void mouseReleased() {
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
             if (i==1) {
-              println("1");
+              //println("1");
             } else if (i==2) {
-              println("2");
+              //println("2");
             } else if (i==-1) {
               println("できませんでした");
             } else {//0のとき

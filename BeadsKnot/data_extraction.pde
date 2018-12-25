@@ -1077,7 +1077,7 @@ class data_extract { //<>// //<>//
   int findArcFromPoints(int startID, int endID) {
     //引数はpointのID
     Bead st = points.get(startID);
-    Bead en = points.get(endID);
+    //Bead en = points.get(endID);
     int a=st.n1;
     int b=st.n2;
     Bead node1=st;
@@ -1181,20 +1181,66 @@ class data_extract { //<>// //<>//
 
   void extinguish_points(int i, int startID, int endID) {
     //    n1=-1,n2=-1,u1=-1,u2=-1にする
+    int between_beads[]=new int[count];
+    int j=0;
     Bead st = points.get(startID);
-    Bead en = points.get(endID);
+    int a=st.n1;
+    int b=st.n2;
+    Bead node1=st;
+    Bead node2=st;
+    int prev_a=startID;
+    int prev_b=startID;
+    int pre_prev_a=startID;
+    int pre_prev_b=startID;
     int repeatmax = points.size();
+    //boolean J1_over=false;
+    //boolean J1_under=false;
+    //boolean J2_over=false;
+    //boolean J2_under=false;
+    //int counta=0;
+    //int countb=0;
+    //startIDのビーズから初めてn1方向とn2方向の両方を調べる
+    // go straight
+
+
     if (i==1) {
-      //for (int repeat=0; repeat < repeatmax; repeat++) {
-      //pre_st1=st1.n1;
-      st=points.get(st.n1);
-      st.n1=-1;
-      //}
+      println(a);
+      for (int repeat=0; repeat < repeatmax; repeat++) {
+        pre_prev_a=prev_a;
+        prev_a=a;
+        if (a==endID) {
+          return;
+        } else {
+          node1=points.get(a);
+          a=node1.n1;
+          if (pre_prev_a==a) {
+            a=node1.n2;
+          }
+          println(a);
+          int d=a;
+          d=-1;
+        }
+      }
+      //st.n1=-1;
     } else if (i==2) {
-      //  // for (int repeat=0; repeat < repeatmax; repeat++) {
-      st=points.get(st.n2);
-      st.n2=-1;
-      //  //}
+      println(b);
+      for (int repeat=0; repeat < repeatmax; repeat++) {
+        pre_prev_b=prev_b;
+        prev_b=b;
+        if (b==endID) {
+          return;
+        } else {
+          node2=points.get(b);
+          b=node2.n2;
+          if (pre_prev_b==b) {
+            b=node2.n1;
+          }
+          println(b);
+        }
+      }
+      //st.n2=-1;
+    } else {
+      return;
     }
   }
 }
