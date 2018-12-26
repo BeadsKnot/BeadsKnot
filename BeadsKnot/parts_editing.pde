@@ -154,7 +154,7 @@ class parts_editing { //<>//
     //  if (bd.u1>bdID) bd.u1 --;
     //  if (bd.u2>bdID) bd.u2 --;
     //}
-    
+
     restore_beads();
   }
 
@@ -211,7 +211,7 @@ class parts_editing { //<>//
       bd.u1 = n[2];
       bd.u2 = n[3];
       bd.c=c;
-      if(c<=2 && bd.Joint){
+      if (c<=2 && bd.Joint) {
         bd.Joint=false;
       }
     }
@@ -223,16 +223,9 @@ class parts_editing { //<>//
     println("pointslength", pointslength);
     for (int ptID = 0; ptID < pointslength; ptID++) {
       Bead pt = de.points.get(ptID);
-      int c = pt.c;
-      if (pt.Joint) {
-        println("Joint", ptID, pt.n1, pt.n2, pt.u1, pt.u2);
-      } else if (c == 2) {
-      } else if (c == 3) {
-        println("trivalent", ptID, pt.n1, pt.n2, pt.u1, pt.u2);
-      } else if (c == 1) {
-        println("end", ptID, pt.n1, pt.n2, pt.u1, pt.u2);
-      }
+      beads.add(pt);
     }
+    restore_beads();
     de.points.clear();
     de.nbhds.clear();
     Draw.parts_editing();
