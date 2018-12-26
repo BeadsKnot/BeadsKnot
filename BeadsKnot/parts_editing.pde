@@ -152,4 +152,13 @@ class parts_editing {
       if (bd.u2>bdID) bd.u2 --;
     }
   }
+  
+  void points_to_beads(data_extract de){
+    beads.clear();
+    int pointslength = de.points.size();
+    println("pointslength",pointslength);
+    de.points.clear();
+    de.nbhds.clear();
+    Draw.parts_editing();
+  }
 }

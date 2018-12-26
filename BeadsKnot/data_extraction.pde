@@ -25,7 +25,7 @@ class data_extract { //<>// //<>//
   }
 
   // imageデータの解析
-  void make_data_extraction(PImage image) {
+  boolean make_data_extraction(PImage image) {
     //もと画像が横長の場合，縦長の場合に応じて変える。
     // オフセットを50 に取っている。
     float ratio = 1.0 * image.width / image.height;
@@ -38,8 +38,11 @@ class data_extract { //<>// //<>//
 
     bin.getBinarized(image);//２値化してd[][]に格納する
 
-    sq.getSquareExtraction();//正方形分割をするときにコメントアウトをはずす
+    if(sq.getSquareExtraction()){//正方形分割
+      return true;
+    }
     //th.getThinningExtraction();//thinning ver.にするときにコメントアウトをはずす
+    return false;
   }
 
   int addToPoints(int u, int v, int threshold) {//点を追加する
