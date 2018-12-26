@@ -1,4 +1,4 @@
-class parts_editing {
+class parts_editing { //<>//
 
   ArrayList<Bead> beads;
 
@@ -20,10 +20,14 @@ class parts_editing {
         stroke(0);
         fill(255, 180, 0);
         c=3;
-      } else if (bd.Joint || bd.midJoint) {
+      } else if (bd.Joint) {
         stroke(0);
         fill(80, 255, 80);
-        c=3;
+        if (bd.c == 4) {
+          c=2;
+        } else {
+          c=3;
+        }
       } else {
         stroke(255, 0, 0);
         fill(255);
@@ -33,15 +37,13 @@ class parts_editing {
     }
   }
 
-
-
   void draw_nhd() {
     strokeWeight(2);
     for (int bdID=0; bdID<beads.size (); bdID++) {
       Bead bd=beads.get(bdID);
       if (0<= bd.n1 && bd.n1<beads.size() && beads.get(bd.n1).c>=0) {
         Bead next = beads.get(bd.n1);
-        if (next.Joint || next.midJoint) {
+        if (next.Joint) {
           if (next.n1 == bdID || next.n2 == bdID) {
             stroke(0);
           } else {
@@ -54,7 +56,7 @@ class parts_editing {
       }
       if (0<= bd.n2 && bd.n2<beads.size() && beads.get(bd.n2).c>=0) {
         Bead next = beads.get(bd.n2);
-        if (next.Joint || next.midJoint) {
+        if (next.Joint) {
           if (next.n1 == bdID || next.n2 == bdID) {
             stroke(0);
           } else {
@@ -151,12 +153,52 @@ class parts_editing {
       if (bd.u1>bdID) bd.u1 --;
       if (bd.u2>bdID) bd.u2 --;
     }
+    // 枝の番号(n1,n2,u1,u2)を整備する。
+    for (int b=0; b<beads.size(); b++) {
+      Bead bd = beads.get(b);
+      int c, n[];
+      c=0;
+      n=new int[4];
+      if (bd.n1>=0 && bd.n1<beads.size()) {
+        n[c] = bd.n1;
+        c++;
+      }
+      if (bd.n2>=0 && bd.n2<beads.size()) {
+        n[c] = bd.n2;
+        c++;
+      }
+      if (bd.u1>=0 && bd.u1<beads.size()) {
+        n[c] = bd.u1;
+        c++;
+      }
+      if (bd.u2>=0 && bd.u2<beads.size()) {
+        n[c] = bd.u2;
+        c++;
+      }
+      bd.n1 = n[0];
+      bd.n2 = n[1];
+      bd.u1 = n[2];
+      bd.u2 = n[3];
+      bd.c=c;
+    }
   }
-  
-  void points_to_beads(data_extract de){
+
+  void points_to_beads(data_extract de) {
     beads.clear();
     int pointslength = de.points.size();
-    println("pointslength",pointslength);
+    println("pointslength", pointslength);
+    for (int ptID = 0; ptID < pointslength; ptID++) {
+      Bead pt = de.points.get(ptID);
+      int c = pt.c;
+      if (pt.Joint) {
+        println("Joint", ptID, pt.n1, pt.n2, pt.u1, pt.u2);
+      } else if (c == 2) {
+      } else if (c == 3) {
+        println("trivalent", ptID, pt.n1, pt.n2, pt.u1, pt.u2);
+      } else if (c == 1) {
+        println("end", ptID, pt.n1, pt.n2, pt.u1, pt.u2);
+      }
+    }
     de.points.clear();
     de.nbhds.clear();
     Draw.parts_editing();

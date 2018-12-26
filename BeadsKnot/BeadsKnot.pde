@@ -194,8 +194,8 @@ void fileSelected(File selection) {
     String extension=file_name.substring(file_name_length-3);
     if (extension.equals("png")==true||extension.equals("jpg")==true||extension.equals("gif")==true) {
       PImage image = loadImage(selection.getAbsolutePath());
-      if(data.make_data_extraction(image)){
-        graph.make_data_graph();//成功した場合、
+      if(data.make_data_extraction(image)){//一発で成功した場合
+        graph.make_data_graph();
       }
       file_name=file_name.substring(0, file_name_length-4);
     } else {// BeadsKnot オリジナルファイル形式の場合

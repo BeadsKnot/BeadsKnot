@@ -11,7 +11,7 @@ class Square {
     s = 10;
   }
 
-  boolean getSquareExtraction() {
+  int getSquareExtraction() {
     s = de.thickness();//d[][]から線の太さを見積もる
     if (s<5) s=5;
     w = de.w;
@@ -61,7 +61,7 @@ class Square {
       de.getDisplayLTRB();
       // バネモデルの初期化
       de.tf.spring_setup();
-      return true;
+      return 1;// 文句なく成功
     } else {
       JPanel panel = new JPanel();    //パネルを作成
       BoxLayout layout = new BoxLayout( panel, BoxLayout.Y_AXIS );    //メッセージのレイアウトを決定
@@ -77,7 +77,7 @@ class Square {
       if (r==0) {
         // beads を parts_editingのデータにする。
         edit.points_to_beads(data);
-        return true;
+        return 2;// 条件付き成功
       } else {
         println("extraction failed.");
         // beadsを一度消す。
@@ -85,7 +85,7 @@ class Square {
         de.points.clear();
         // Thinningに向かうかどうかは別途考える。
         Draw.menu();
-        return false;
+        return 0;// 失敗
       }
     }
   }

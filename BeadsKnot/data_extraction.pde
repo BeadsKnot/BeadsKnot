@@ -38,10 +38,14 @@ class data_extract { //<>// //<>//
 
     bin.getBinarized(image);//２値化してd[][]に格納する
 
-    if(sq.getSquareExtraction()){//正方形分割
+    int result = sq.getSquareExtraction();//正方形分割
+    if(result == 1){
       return true;
     }
-    //th.getThinningExtraction();//thinning ver.にするときにコメントアウトをはずす
+    if(result == 0){
+      //th.getThinningExtraction();//thinning ver.にするときにコメントアウトをはずす
+    }
+    // result = 2の時は手作業モードへと進む。
     return false;
   }
 
