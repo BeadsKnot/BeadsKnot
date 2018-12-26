@@ -194,11 +194,11 @@ void fileSelected(File selection) {
     String extension=file_name.substring(file_name_length-3);
     if (extension.equals("png")==true||extension.equals("jpg")==true||extension.equals("gif")==true) {
       PImage image = loadImage(selection.getAbsolutePath());
-      data.make_data_extraction(image);
-      graph.make_data_graph();
-      String remove_extension=file_name.substring(0, file_name_length-4);
-      file_name=remove_extension;
-    } else {
+      if(data.make_data_extraction(image)){//一発で成功した場合
+        graph.make_data_graph();
+      }
+      file_name=file_name.substring(0, file_name_length-4);
+    } else {// BeadsKnot オリジナルファイル形式の場合
       BufferedReader reader = createReader(file_name);
       String line = null;
       int version = -1;
@@ -625,7 +625,7 @@ void mouseReleased() {
           edit.deleteBead(bdID);// bdID 番のノードを無効にする。
           hit = true;
           break;
-        } else if (dist(bd.x, bd.y, mouseX, mouseY) < 20f) {//もしノードが近くにある場合は
+        } else if (dist(bd.x, bd.y, mouseX, mouseY) < 35f) {//もしノードが近くにある場合は
           hit = true;
         }
       }

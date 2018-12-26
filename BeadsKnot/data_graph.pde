@@ -79,29 +79,37 @@ class data_graph { //<>// //<>//
     for (int p = 0; p < de.points.size(); p++) {
       Bead bd = de.points.get(p);
       if (bd.Joint) {
-        int nextJoint=find_next_Joint_in_points(p, bd.n1);
-        if (p<=nextJoint) {
-          int count = countNeighborJointInPoints(p, bd.n1);
-          int half = get_half_position(p, bd.n1, int(count * 0.5));
-          de.points.get(half).midJoint=true;
+        if (0<=bd.n1 && bd.n1<de.points.size()) {
+          int nextJoint=find_next_Joint_in_points(p, bd.n1);
+          if (p<=nextJoint) {
+            int count = countNeighborJointInPoints(p, bd.n1);
+            int half = get_half_position(p, bd.n1, int(count * 0.5));
+            de.points.get(half).midJoint=true;
+          }
         }
-        nextJoint=find_next_Joint_in_points(p, bd.u1);
-        if (p<=nextJoint) {
-          int count = countNeighborJointInPoints(p, bd.u1);
-          int half = get_half_position(p, bd.u1, int(count * 0.5));
-          de.points.get(half).midJoint=true;
+        if (0<=bd.u1 && bd.u1<de.points.size()) {
+          int nextJoint=find_next_Joint_in_points(p, bd.u1);
+          if (p<=nextJoint) {
+            int count = countNeighborJointInPoints(p, bd.u1);
+            int half = get_half_position(p, bd.u1, int(count * 0.5));
+            de.points.get(half).midJoint=true;
+          }
         }
-        nextJoint=find_next_Joint_in_points(p, bd.n2);
-        if (p<=nextJoint) {
-          int count = countNeighborJointInPoints(p, bd.n2);
-          int half = get_half_position(p, bd.n2, int(count * 0.5));
-          de.points.get(half).midJoint=true;
+        if (0<=bd.n2 && bd.n2<de.points.size()) {
+          int nextJoint=find_next_Joint_in_points(p, bd.n2);
+          if (p<=nextJoint) {
+            int count = countNeighborJointInPoints(p, bd.n2);
+            int half = get_half_position(p, bd.n2, int(count * 0.5));
+            de.points.get(half).midJoint=true;
+          }
         }
-        nextJoint=find_next_Joint_in_points(p, bd.u2);
-        if (p<=nextJoint) {
-          int count = countNeighborJointInPoints(p, bd.u2);
-          int half = get_half_position(p, bd.u2, int(count * 0.5));
-          de.points.get(half).midJoint=true;
+        if (0<=bd.u2 && bd.u2<de.points.size()) {
+          int nextJoint=find_next_Joint_in_points(p, bd.u2);
+          if (p<=nextJoint) {
+            int count = countNeighborJointInPoints(p, bd.u2);
+            int half = get_half_position(p, bd.u2, int(count * 0.5));
+            de.points.get(half).midJoint=true;
+          }
         }
       }
     }
@@ -138,6 +146,7 @@ class data_graph { //<>// //<>//
   int find_next_Joint_in_points(int j, int c) {
     //print("find_next_Joint_in_points:", j, c);
     for (int count = 0; count < de.points.size(); count++) {
+      //print("("+j+","+c+")");
       Bead p=de.points.get(c);
       if (p.Joint) {
         //println();
@@ -149,6 +158,7 @@ class data_graph { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
+        // println();
         println("find_next_Joint_in_points : 間違っている");
         return -1;
       }
@@ -205,7 +215,7 @@ class data_graph { //<>// //<>//
     //print("countNeighborJointInPoints",j,c);
     for (int count = 1; count < de.points.size(); count++) {
       Bead p=de.points.get(c);
-      if (p.Joint||p.midJoint) {
+      if (p.Joint) {
         return count;
       }
       int d=0;
@@ -733,20 +743,24 @@ class data_graph { //<>// //<>//
 
   int next_to_node(int ptID) {
     int pt1ID = de.points.get(ptID).n1;
-    Bead bd1 = de.points.get(pt1ID);
-    if (bd1.Joint || bd1.midJoint) {
-      for (int ndID=0; ndID < nodes.size(); ndID++) {
-        if (nodes.get(ndID).pointID == pt1ID) { 
-          return ndID;
+    if (0<=pt1ID && pt1ID<de.points.size()) {
+      Bead bd1 = de.points.get(pt1ID);
+      if (bd1.Joint || bd1.midJoint) {
+        for (int ndID=0; ndID < nodes.size(); ndID++) {
+          if (nodes.get(ndID).pointID == pt1ID) { 
+            return ndID;
+          }
         }
       }
     }
     int pt2ID = de.points.get(ptID).n2;
-    Bead bd2 = de.points.get(pt2ID);
-    if (bd2.Joint || bd2.midJoint) {
-      for (int ndID=0; ndID < nodes.size(); ndID++) {
-        if (nodes.get(ndID).pointID == pt2ID) { 
-          return ndID;
+    if (0<=pt2ID && pt2ID<de.points.size()) {
+      Bead bd2 = de.points.get(pt2ID);
+      if (bd2.Joint || bd2.midJoint) {
+        for (int ndID=0; ndID < nodes.size(); ndID++) {
+          if (nodes.get(ndID).pointID == pt2ID) { 
+            return ndID;
+          }
         }
       }
     }
