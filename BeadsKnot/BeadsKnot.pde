@@ -625,7 +625,7 @@ void mouseReleased() {
           edit.deleteBead(bdID);// bdID 番のノードを無効にする。
           hit = true;
           break;
-        } else if (dist(bd.x, bd.y, mouseX, mouseY) < 20f) {//もしノードが近くにある場合は
+        } else if (dist(bd.x, bd.y, mouseX, mouseY) < 35f) {//もしノードが近くにある場合は
           hit = true;
         }
       }

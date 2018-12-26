@@ -1,4 +1,4 @@
-class mouseDrag { //<>//
+class mouseDrag { //<>// //<>//
   ArrayList<PVector> trace;
   PVector prev;
 
@@ -274,9 +274,12 @@ class mouseDrag { //<>//
     }
     boolean OK=true;//図が完了しているかどうかのフラグ。
     for (int bdID=0; bdID<edit.beads.size(); bdID++) {
-      if (edit.beads.get(bdID).c>=0 && edit.beads.get(bdID).c<2) {
-        OK=false;
-        return;
+      Bead bd = edit.beads.get(bdID);
+      if (bd.n1!=-1 || bd.n2!=-1 || bd.u1!=-1 || bd.u2!=-1) { 
+        if (bd.c!=2 && bd.c!=4) {
+          OK=false;
+          return;
+        }
       }
     }
     if (OK) {
@@ -284,11 +287,13 @@ class mouseDrag { //<>//
       data.points.clear();
       for (int bdID=0; bdID<edit.beads.size(); bdID++) {
         Bead bd = edit.beads.get(bdID);
-        if (bd.c==4) {
-          bd.c=2;
-          bd.Joint = true;
-        }
-        data.points.add(bd);
+          if (bd.c==4) {
+            bd.c=2;
+            bd.Joint = true;
+          } else if (bd.c==2){
+            bd.Joint = false;
+          }
+          data.points.add(bd);
       }
       graph.make_data_graph();
       Draw.beads();

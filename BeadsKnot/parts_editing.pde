@@ -80,19 +80,19 @@ class parts_editing { //<>//
     bd.c = 4;
     bd.Joint=true;
     beads.add(bd);
-    bd=new Bead(_x+15, _y);
+    bd=new Bead(_x+30, _y);
     bd.n1 = bdID;
     bd.c = 1;
     beads.add(bd);
-    bd=new Bead(_x-15, _y);
+    bd=new Bead(_x-30, _y);
     bd.n1 = bdID;
     bd.c = 1;
     beads.add(bd);
-    bd=new Bead(_x, _y+15);
+    bd=new Bead(_x, _y+30);
     bd.n1 = bdID;
     bd.c = 1;
     beads.add(bd);
-    bd=new Bead(_x, _y-15);
+    bd=new Bead(_x, _y-30);
     bd.n1 = bdID;
     bd.c = 1;
     beads.add(bd);
@@ -144,42 +144,76 @@ class parts_editing { //<>//
         }
       }
     }
-    //bd0.x = bd0.y = -1;// 圏外
-    beads.remove(bdID);//本当に消す
-    for (int b=0; b<beads.size(); b++) {
-      Bead bd = beads.get(b);
-      if (bd.n1>bdID) bd.n1 --;
-      if (bd.n2>bdID) bd.n2 --;
-      if (bd.u1>bdID) bd.u1 --;
-      if (bd.u2>bdID) bd.u2 --;
-    }
+    bd0.x = bd0.y = -1;// 圏外
+    bd0.c = -1;
+    //beads.remove(bdID);//本当に消す
+    //for (int b=0; b<beads.size(); b++) {
+    //  Bead bd = beads.get(b);
+    //  if (bd.n1>bdID) bd.n1 --;
+    //  if (bd.n2>bdID) bd.n2 --;
+    //  if (bd.u1>bdID) bd.u1 --;
+    //  if (bd.u2>bdID) bd.u2 --;
+    //}
+    
+    restore_beads();
+  }
+
+  void restore_beads() {
     // 枝の番号(n1,n2,u1,u2)を整備する。
     for (int b=0; b<beads.size(); b++) {
       Bead bd = beads.get(b);
       int c, n[];
       c=0;
       n=new int[4];
+      n[0]=n[1]=n[2]=n[3]=-1;
       if (bd.n1>=0 && bd.n1<beads.size()) {
-        n[c] = bd.n1;
-        c++;
+        Bead bd1 = beads.get(bd.n1);
+        for (int r=0; r<4; r++) {
+          if (bd1.get_un12(r)==b) {
+            n[c] = bd.n1;
+            c++;
+            break;
+          }
+        }
       }
       if (bd.n2>=0 && bd.n2<beads.size()) {
-        n[c] = bd.n2;
-        c++;
+        Bead bd1 = beads.get(bd.n2);
+        for (int r=0; r<4; r++) {
+          if (bd1.get_un12(r)==b) {
+            n[c] = bd.n2;
+            c++;
+            break;
+          }
+        }
       }
       if (bd.u1>=0 && bd.u1<beads.size()) {
-        n[c] = bd.u1;
-        c++;
+        Bead bd1 = beads.get(bd.u1);
+        for (int r=0; r<4; r++) {
+          if (bd1.get_un12(r)==b) {
+            n[c] = bd.u1;
+            c++;
+            break;
+          }
+        }
       }
       if (bd.u2>=0 && bd.u2<beads.size()) {
-        n[c] = bd.u2;
-        c++;
+        Bead bd1 = beads.get(bd.u2);
+        for (int r=0; r<4; r++) {
+          if (bd1.get_un12(r)==b) {
+            n[c] = bd.u2;
+            c++;
+            break;
+          }
+        }
       }
       bd.n1 = n[0];
       bd.n2 = n[1];
       bd.u1 = n[2];
       bd.u2 = n[3];
       bd.c=c;
+      if(c<=2 && bd.Joint){
+        bd.Joint=false;
+      }
     }
   }
 
