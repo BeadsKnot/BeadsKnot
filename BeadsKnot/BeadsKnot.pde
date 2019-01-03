@@ -347,6 +347,10 @@ void mouseDragged() {
       float mY = disp.getY_fromWin(mouseY);
 
       float mouseDragmin_dist = dist(mouse.DragX, mouse.DragY, mX, mY);
+      if (mouseDragmin_dist  * disp.rate > 1000) {//あまり外側へ行ったら処理をしない。
+        println("*外側へ行きすぎです。");
+        return ;
+      }
       for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
         if (ndID != mouse.dragged_nodeID) {
           int ptID = graph.nodes.get(ndID).pointID;
@@ -356,10 +360,6 @@ void mouseDragged() {
           float d = dist(mX, mY, x, y);
           if (d < mouseDragmin_dist) {//ボロノイ領域を超えたら処理をしない。
             return;
-          }
-          if (d > 1000) {//あまり外側へ行ったら処理をしない。
-            println("*外側へ行きすぎです。");
-            return ;
           }
         }
       }
