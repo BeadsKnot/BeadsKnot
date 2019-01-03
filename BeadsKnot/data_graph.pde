@@ -704,13 +704,16 @@ class data_graph { //<>// //<>//
   }
 
   int is_PVector_on_points(float vecX, float vecY) {
+    int retID=-1;
+    float minDist = width+height;
     for (int ptID=0; ptID<de.points.size(); ptID++) {
       Bead bd = de.points.get(ptID);
-      if (dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY)<10) {
-        return ptID;
+      float d = dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY); 
+      if (d<10 && d<minDist) {
+        retID = ptID;
       }
     }
-    return -1;
+    return retID;
   }
 
 
