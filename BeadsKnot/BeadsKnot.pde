@@ -385,6 +385,8 @@ void mouseDragged() {
       nd.theta = mouse.nd_theta - (mouse.nd_theta_branch + atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.25;
       graph.modify();
       graph.update_points();
+      //デバッグのための調査（1行）→　満足すべき結果を得た。
+      //println(graph.get_curvatureRange_squareSum_at(mouse.dragged_nodeID));
       graph.add_close_point_Joint();
     } else if (mouse.new_curve) {
       if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {

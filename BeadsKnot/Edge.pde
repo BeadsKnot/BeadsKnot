@@ -105,9 +105,11 @@ class Edge {
   void scaling_shape_modifier(ArrayList<Node> nodes) {
     Node nodeA = nodes.get(ANodeID);
     Node nodeB = nodes.get(BNodeID);
+    //データベースによるrの値の最適近似
     scaling_shape_modifier1(nodes);
     set_bezier(nodes);
     PVector minMax = bezier.get_curvature_range();
+    //意味があるかはわからないが、rを変化させて、curvature_rangeを小さくするように試みる。
     for (int repeat=0; repeat<1; repeat++) {
       Bezier bezierAP = new Bezier(bezier);
       bezierAP.v2X = nodeA.edge_rx(ANodeRID, nodeA.r[ANodeRID]+1f);

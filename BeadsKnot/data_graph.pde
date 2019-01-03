@@ -324,6 +324,20 @@ class data_graph { //<>// //<>//
     get_disp();
   }
 
+  // id: nodeのid
+  float get_curvatureRange_squareSum_at(int id){
+    float  totalRangeAngle = 0f;
+    for (int e=0; e<edges.size(); e++) {
+      Edge ee = edges.get(e);
+      if (ee.ANodeID == id || ee.BNodeID== id) {
+        ee.set_bezier(nodes);
+        PVector minmax = ee.bezier.get_curvature_range();
+        totalRangeAngle += (minmax.y - minmax.x)*(minmax.y - minmax.x);
+      }
+    }
+    return totalRangeAngle;
+  }
+
   //Nodeのthetaを最適化する
   void rotation_shape_modifier(int id) {
     Node node = nodes.get(id);
