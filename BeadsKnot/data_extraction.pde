@@ -5,6 +5,7 @@ class data_extract { //<>// //<>//
   int d[][];// ２値化された画像のデータ
   int s;//解析メッシュのサイズ
   display disp;
+  int between_beads[];
 
   ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
   ArrayList<Bead> points=new ArrayList<Bead>();//点を登録
@@ -85,6 +86,8 @@ class data_extract { //<>// //<>//
             //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
           }//}
         }
+      } else {
+        //println("点を消します");
       }
     }
   }
@@ -255,22 +258,32 @@ class data_extract { //<>// //<>//
     for (int ptID=0; ptID<points.size (); ptID++) {
       Bead pt=points.get(ptID);
       //if (pt.n1!=-1&&pt.n2!=-1) {
-      if (0<=pt.n1 && pt.n1<points.size()) {
-        stroke(0);
-        Bead pt2 = points.get(pt.n1);
-        if (! pt2.Joint) {
-          line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+      if ( pt.n1<points.size()) {
+        if (0<=pt.n1) {
+          stroke(0);
+          Bead pt2 = points.get(pt.n1);
+          if (! pt2.Joint) {
+            line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+          }
+        } else {
+          // println("a");
         }
       }
-      if (0<=pt.n2 && pt.n2<points.size()) {
-        stroke(0);
-        Bead pt2 = points.get(pt.n2);
-        if (! pt2.Joint) {
-          line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+      if (pt.n2<points.size()) {
+        if (0<=pt.n2) {
+          stroke(0);
+          Bead pt2 = points.get(pt.n2);
+          if (! pt2.Joint) {
+            line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+          }
         }
+      } else {
+        //println("b");
       }
+      //} else {
+      //println("線を消します");
       //}
     }
   }
@@ -1181,7 +1194,6 @@ class data_extract { //<>// //<>//
 
   void extinguish_points(int i, int startID, int endID) {
     //    n1=-1,n2=-1,u1=-1,u2=-1にする
-    int between_beads[]=new int[count];
     int j=0;
     Bead st = points.get(startID);
     int a=st.n1;
@@ -1193,54 +1205,91 @@ class data_extract { //<>// //<>//
     int pre_prev_a=startID;
     int pre_prev_b=startID;
     int repeatmax = points.size();
-    //boolean J1_over=false;
-    //boolean J1_under=false;
-    //boolean J2_over=false;
-    //boolean J2_under=false;
-    //int counta=0;
-    //int countb=0;
-    //startIDのビーズから初めてn1方向とn2方向の両方を調べる
-    // go straight
 
+    between_beads=new int[count];
+    //for (int ii=0; ii<count; ii++) {
+    //  between_beads[ii]=0;
+    //}
+    for (int repeat=0; repeat < repeatmax; repeat++) {
+      //startIDのビーズから初めてn1方向とn2方向の両方を調べる
+      // go straight
 
-    if (i==1) {
-      println(a);
-      for (int repeat=0; repeat < repeatmax; repeat++) {
-        pre_prev_a=prev_a;
-        prev_a=a;
+      pre_prev_a=prev_a;
+      pre_prev_b=prev_b;
+      prev_a=a;
+      prev_b=b;
+
+      if (i==1) {
         if (a==endID) {
           return;
         } else {
           node1=points.get(a);
+        }
+        if (node1.Joint) {
+          if (node1.n1==pre_prev_a) {
+            a=node1.n2;
+          } else if (node1.n2==pre_prev_a) {
+            a=node1.n1;
+          } else if (node1.u1==pre_prev_a) {
+            a=node1.u2;
+          } else if (node1.u2==pre_prev_a) {
+            a=node1.u1;
+          }
+        } else {
           a=node1.n1;
           if (pre_prev_a==a) {
             a=node1.n2;
           }
-          println(a);
-          int d=a;
-          d=-1;
         }
-      }
-      //st.n1=-1;
-    } else if (i==2) {
-      println(b);
-      for (int repeat=0; repeat < repeatmax; repeat++) {
-        pre_prev_b=prev_b;
-        prev_b=b;
+        between_beads[j]=prev_a;
+        j=j+1;
+        //if (j==count-1) {
+        //  return;
+        //}
+        //println(prev_a);
+        //}
+      } else if (i==2) {
         if (b==endID) {
           return;
         } else {
           node2=points.get(b);
+        }
+        if (node2.Joint) {
+          if (node2.n1==pre_prev_b) {
+            b=node2.n2;
+          } else if (node2.n2==pre_prev_b) {
+            b=node2.n1;
+          } else if (node2.u1==pre_prev_b) {
+            b=node2.u2;
+          } else if (node2.u2==pre_prev_b) {
+            b=node2.u1;
+          }
+        } else {
           b=node2.n2;
           if (pre_prev_b==b) {
             b=node2.n1;
           }
-          println(b);
-        }
+        }  
+        between_beads[j]=prev_b;
+        j=j+1;
+        //if (j==count-1) {
+        //  return;
+        //}
+        //println(prev_a);
       }
-      //st.n2=-1;
-    } else {
-      return;
+    }
+  }
+  void extinguish() {
+    //int repeatmax = points.size();
+    for (int ii=0; ii<count; ii++) {
+      //  println("between_beads["+ii+"]"+data.between_beads[ii]);
+      int a=data.between_beads[ii];
+      Bead pt=points.get(a);
+      pt.n1=-1;
+      pt.n2=-1;
+      //for (int repeat=0; repeat < repeatmax; repeat++) {
+      //  if(points.get(a)
+      //}
     }
   }
 }

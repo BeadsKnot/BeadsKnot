@@ -18,6 +18,7 @@ String file_name="test";// 読み込んだファイル名を使って保存フ�
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
 int count=0;
+
 // グローバル変数終了
 
 void setup() {
@@ -574,20 +575,24 @@ void mouseReleased() {
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
             if (i==1) {
-              //println("1");
+              println("1");
             } else if (i==2) {
-              //println("2");
+              println("2");
             } else if (i==-1) {
               println("できませんでした");
             } else {//0のとき
               println("ここで作業をする");
             }
-            //println(count);//間にbeadsの数。ただしstartIDとptIDは含まない
-            //data.extinguish_points(i, startID, ptID);
+            println(count);//間にbeadsの数。ただしstartIDとptIDは含まない
+            data.extinguish_points(i, startID, ptID);
+            data.extinguish(); 
             //ここで線をビーズにする 
             //Bead startBeads=data.points.get(startID);
             //Bead endBeads=data.points.get(ptID);
-            //mouse.trace_to_parts_editing2(i, startBeads, endBeads);
+           // mouse.trace_to_parts_editing2(i, startID, ptID);
+           
+            
+            
             //traceからもらってくればよい
           }
         }
