@@ -5,7 +5,7 @@ class data_extract { //<>// //<>//
   int d[][];// ２値化された画像のデータ
   int s;//解析メッシュのサイズ
   display disp;
-  int between_beads[];
+  int between_beads[];//消すためのbeadsのpointの番号を入れておく配列
 
   ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
   ArrayList<Bead> points=new ArrayList<Bead>();//点を登録
@@ -40,10 +40,10 @@ class data_extract { //<>// //<>//
     bin.getBinarized(image);//２値化してd[][]に格納する
 
     int result = sq.getSquareExtraction();//正方形分割
-    if(result == 1){
+    if (result == 1) {
       return true;
     }
-    if(result == 0){
+    if (result == 0) {
       //th.getThinningExtraction();//thinning ver.にするときにコメントアウトをはずす
     }
     // result = 2の時は手作業モードへと進む。
@@ -65,35 +65,32 @@ class data_extract { //<>// //<>//
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
       Bead vec=points.get(pt);
-      if (vec.n1!=-1&&vec.n2!=-1) {
-        if (vec.Joint) {
-          stroke(0);
-          fill(80, 255, 80);
-          c=4;
-        } else if (vec.closeJoint) {
-          stroke(0, 255, 0);
-          fill(255);
-        } else if (vec.midJoint) {
-          stroke(0);
-          fill(180, 255, 0);
-          c=3;
-        } else {
-          stroke(255, 0, 0);
-          fill(255);
-        }
-        if (vec.c<=0 || vec.c>=4 || vec.n1==-1 || vec.n2==-1) {
-        } else {
-          //dispをつかって表示を画面サイズに合わせるように座標変換する。
-          ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
-          if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
-            fill(0);
-            text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-            ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
-            //if(vec.Joint){
-            //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
-          }//}
-        }
+      if (vec.Joint) {
+        stroke(0);
+        fill(80, 255, 80);
+        c=4;
+      } else if (vec.closeJoint) {
+        stroke(0, 255, 0);
+        fill(255);
+      } else if (vec.midJoint) {
+        stroke(0);
+        fill(180, 255, 0);
+        c=3;
       } else {
+        stroke(255, 0, 0);
+        fill(255);
+      }
+      if (vec.c<=0 || vec.c>=4 || (vec.n1==-1 && vec.n2==-1)) {
+      } else {
+        //dispをつかって表示を画面サイズに合わせるように座標変換する。
+        ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
+        if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
+          fill(0);
+          text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          //if(vec.Joint){
+          //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
+        }//}
         //println("点を消します");
       }
     }
@@ -1214,9 +1211,7 @@ class data_extract { //<>// //<>//
     int repeatmax = points.size();
 
     between_beads=new int[count];
-    //for (int ii=0; ii<count; ii++) {
-    //  between_beads[ii]=0;
-    //}
+
     for (int repeat=0; repeat < repeatmax; repeat++) {
       //startIDのビーズから初めてn1方向とn2方向の両方を調べる
       // go straight
@@ -1228,6 +1223,7 @@ class data_extract { //<>// //<>//
 
       if (i==1) {
         if (a==endID) {
+          pre_endID=pre_prev_a;
           return;
         } else {
           node1=points.get(a);
@@ -1253,10 +1249,9 @@ class data_extract { //<>// //<>//
         //if (j==count-1) {
         //  return;
         //}
-        //println(prev_a);
-        //}
       } else if (i==2) {
         if (b==endID) {
+          pre_endID=pre_prev_b;
           return;
         } else {
           node2=points.get(b);
@@ -1282,21 +1277,16 @@ class data_extract { //<>// //<>//
         //if (j==count-1) {
         //  return;
         //}
-        //println(prev_a);
       }
     }
   }
-  void extinguish() {
-    //int repeatmax = points.size();
+  void extinguish() {//between_beadsの情報をもとにbeadsを消す
     for (int ii=0; ii<count; ii++) {
-      //  println("between_beads["+ii+"]"+data.between_beads[ii]);
-      int a=data.between_beads[ii];
+      //println("between_beads["+ii+"]"+data.between_beads[ii]);
+      int a=between_beads[ii];
       Bead pt=points.get(a);
       pt.n1=-1;
       pt.n2=-1;
-      //for (int repeat=0; repeat < repeatmax; repeat++) {
-      //  if(points.get(a)
-      //}
     }
   }
 }

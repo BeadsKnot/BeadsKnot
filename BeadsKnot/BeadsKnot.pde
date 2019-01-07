@@ -18,6 +18,7 @@ String file_name="test";// 読み込んだファイル名を使って保存フ�
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
 int count=0;
+int pre_endID=0;
 
 // グローバル変数終了
 
@@ -195,7 +196,7 @@ void fileSelected(File selection) {
     String extension=file_name.substring(file_name_length-3);
     if (extension.equals("png")==true||extension.equals("jpg")==true||extension.equals("gif")==true) {
       PImage image = loadImage(selection.getAbsolutePath());
-      if(data.make_data_extraction(image)){//一発で成功した場合
+      if (data.make_data_extraction(image)) {//一発で成功した場合
         graph.make_data_graph();
       }
       file_name=file_name.substring(0, file_name_length-4);
@@ -316,6 +317,7 @@ void mousePressed() {
           mouse.trace.clear();
           mouse.trace.add(mouse.prev);
           mouse.new_curve=true;
+          mouse.free_dragging = true;
         }
       }
     }
@@ -583,16 +585,34 @@ void mouseReleased() {
             } else {//0のとき
               println("ここで作業をする");
             }
-            println(count);//間にbeadsの数。ただしstartIDとptIDは含まない
+            // println(count);//間のbeadsの数。ただしstartIDとptIDは含まない
             data.extinguish_points(i, startID, ptID);
             data.extinguish(); 
+            Bead bds=data.points.get(startID);
+            Bead bde=data.points.get(ptID);
+            bds.c=1;
+            bde.c=1;
+            println(pre_endID);
+            if (i==1) {
+              bds.n1=-1;
+              if (bde.n2==pre_endID) {
+                bde.n2=-1;
+              } else {
+                bde.n1=-1;
+              }
+            } else if (i==2) {
+              bds.n2=-1;
+              if (bde.n2==pre_endID) {
+                bde.n2=-1;
+              } else {
+                bde.n1=-1;
+              }
+            }
+            data.fillGap() ;
             //ここで線をビーズにする 
-            //Bead startBeads=data.points.get(startID);
-            //Bead endBeads=data.points.get(ptID);
-           // mouse.trace_to_parts_editing2(i, startID, ptID);
-           
-            
-            
+            // mouse.trace_to_parts_editing2(startID, ptID);
+            // println(edit.beads.size());
+            // mouse.trace_to_parts_editing2(data, startID, ptID);
             //traceからもらってくればよい
           }
         }
@@ -616,6 +636,7 @@ void mouseReleased() {
           );
         if (r==0) {
           // mouse.trace を beadsのデータにする。
+
           mouse.trace_to_beads(data, graph);
           Draw.beads();
         }
@@ -652,10 +673,10 @@ void mouseReleased() {
             }
           }
           if (OK) {
+            println(edit.beads.size());
             mouse.trace_to_parts_editing(data, graph, edit, endBdID);
           }
         }
-
         mouse.node_next_dragging=false; // ドラッグ終了
       }
     }
