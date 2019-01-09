@@ -306,27 +306,26 @@ class mouseDrag { //<>// //<>//
     //if (trace.size()<6) {
     //  println("traceの長さが短すぎる");
     //}
-    for (int i=0; i<data.points.size(); i++) {
-      Bead bd = data.points.get(i);
-      if (bd.Joint) {
-        for (int j=3; j<trace.size()-3; j++) {
-          PVector tr = trace.get(j);
-          float d = dist(tr.x, tr.y, bd.x, bd.y);
-          if (d<45) {// ビーズ３つ分の間隔
-            println("traceの位置が不正");
-            return;
-          }
-        }
-      }
-    }
+    //for (int i=0; i<data.points.size(); i++) {
+    //  Bead bd = data.points.get(i);
+    //  if (bd.Joint) {
+    //    for (int j=3; j<trace.size()-3; j++) {
+    //      PVector tr = trace.get(j);
+    //      float d = dist(tr.x, tr.y, bd.x, bd.y);
+    //      if (d<45) {// ビーズ３つ分の間隔
+    //        println("traceの位置が不正");
+    //        return;
+    //      }
+    //    }
+    //  }
+    //}
     // まず、traceをすべてbeadに置き換える。（両端は除く）
     println("traceをbeadsに変換");
-    println(data.points.size());
     // int startBeadID = dragged_BeadID;
     int traceStartBeadID = 0;
     Bead startBead = data.points.get(startID);
     if (startBead.c==1) {//スタートビーズのデータを整える
-      startBead.n1 = data.points.size();
+      startBead.n2 = data.points.size();
       startBead.c = 2;
       //} else if (startBead.c==0) {// 想定として、 c は0か1
       //  startBead.n1 = data.points.size();
@@ -343,14 +342,14 @@ class mouseDrag { //<>// //<>//
     traceStartBeadID = data.points.size();// 追加されるべき最初のbeadの番号
     for (int trID=1; trID<trace.size()-1; trID++) {//traceをひとつひとつbeadに置き換える
       PVector tr = trace.get(trID);
-      Bead newBd = new Bead(tr.x, tr.y);
+      Bead newBd = new Bead(disp.getX_fromWin(tr.x), disp.getY_fromWin(tr.y));
 
       int prevBeadID =data.points.size()-1;
       if (trID==1) {
         prevBeadID = startID;
       }
       int nextBeadID =data.points.size()+1;
-      if (trID == trace.size()) {
+      if (trID == trace.size()-2) {
         nextBeadID = endBeadID;
       }
       newBd.n1 = prevBeadID;

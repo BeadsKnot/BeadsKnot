@@ -17,8 +17,8 @@ orientation orie;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
-int count=0;
-int pre_endID=0;
+int count_for_distinguishing_edge=0;//edgeを消すためのcountの数
+
 
 // グローバル変数終了
 
@@ -572,8 +572,8 @@ void mouseReleased() {
             return;
           } else {
             //println("ここで作業をする");
-            //startIDはptID
-            //endID
+            //startID
+            //endIDはptID
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
             if (i==1) {
@@ -586,33 +586,12 @@ void mouseReleased() {
               println("ここで作業をする");
             }
             // println(count);//間のbeadsの数。ただしstartIDとptIDは含まない
-            data.extinguish_points(i, startID, ptID);
-            data.extinguish(); 
-            Bead bds=data.points.get(startID);
-            Bead bde=data.points.get(ptID);
-            bds.c=1;
-            bde.c=1;
-            println(pre_endID);
-            if (i==1) {
-              bds.n1=-1;
-              if (bde.n2==pre_endID) {
-                bde.n2=-1;
-              } else {
-                bde.n1=-1;
-              }
-            } else if (i==2) {
-              bds.n2=-1;
-              if (bde.n2==pre_endID) {
-                bde.n2=-1;
-              } else {
-                bde.n1=-1;
-              }
-            }
-            data.fillGap() ;
+            data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
+            data.extinguish(count_for_distinguishing_edge); 
+            //println(pre_endID);
+            data.extinguish_startID_and_endID(i, startID, ptID);
             //ここで線をビーズにする 
-            // mouse.trace_to_parts_editing2(startID, ptID);
-            // println(edit.beads.size());
-            // mouse.trace_to_parts_editing2(data, startID, ptID);
+            mouse.trace_to_parts_editing2(data, startID, ptID);
             //traceからもらってくればよい
           }
         }

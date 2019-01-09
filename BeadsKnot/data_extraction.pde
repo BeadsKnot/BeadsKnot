@@ -6,6 +6,7 @@ class data_extract { //<>// //<>//
   int s;//解析メッシュのサイズ
   display disp;
   int between_beads[];//消すためのbeadsのpointの番号を入れておく配列
+  int pre_endID=0;//消すときにendIDにとってのn1を消すのかn2を消すのかを調べるために使う
 
   ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
   ArrayList<Bead> points=new ArrayList<Bead>();//点を登録
@@ -86,7 +87,8 @@ class data_extract { //<>// //<>//
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
-          text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
+
           ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
@@ -1123,14 +1125,14 @@ class data_extract { //<>// //<>//
         if (J1_over&&J1_under) {
           return -1;
         } else {
-          count=counta;
+          count_for_distinguishing_edge=counta;
           return 1;
         }
       } else if (b==endID) {
         if (J2_over&&J2_under) {
           return -1;
         } else {
-          count=countb;
+          count_for_distinguishing_edge=countb;
           return 2;
         }
       } else {//aもbもendIDでないとき
@@ -1196,7 +1198,7 @@ class data_extract { //<>// //<>//
   }
 
 
-  void extinguish_points(int i, int startID, int endID) {
+  void extinguish_points(int i, int count, int startID, int endID) {
     //    n1=-1,n2=-1,u1=-1,u2=-1にする
     int j=0;
     Bead st = points.get(startID);
@@ -1280,13 +1282,39 @@ class data_extract { //<>// //<>//
       }
     }
   }
-  void extinguish() {//between_beadsの情報をもとにbeadsを消す
+  void extinguish(int count) {//between_beadsの情報をもとにbeadsを消す
     for (int ii=0; ii<count; ii++) {
       //println("between_beads["+ii+"]"+data.between_beads[ii]);
       int a=between_beads[ii];
       Bead pt=points.get(a);
       pt.n1=-1;
       pt.n2=-1;
+    }
+  }
+  void extinguish_startID_and_endID(int i,int startID,int endID) {
+    Bead bds=data.points.get(startID);
+    Bead bde=data.points.get(endID);
+    bds.c=1;
+    bde.c=1;
+      if (i==1) {
+      bds.n1=bds.n2;
+      bds.n2=-1;
+      //bds.c=1;
+      if (bde.n2==pre_endID) {
+        bde.n2=-1;
+      } else {
+        bde.n1=bde.n2;
+        bde.n2=-1;
+      }
+    } else if (i==2) {
+      bds.n2=-1;
+      //bds.c=1;
+      if (bde.n2==pre_endID) {
+        bde.n2=-1;
+      } else {
+        bde.n1=bde.n2;
+        bde.n2=-1;
+      }
     }
   }
 }
