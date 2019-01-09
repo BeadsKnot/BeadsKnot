@@ -313,11 +313,12 @@ class data_graph { //<>// //<>//
       edge.scaling_shape_modifier(nodes);
     }
     //Nodeのthetaを最適化する
-    //for (int repeat=0; repeat < 1; repeat ++) {
-    //  for (int n=0; n<nodes.size(); n++) {
-    //    rotation_shape_modifier(n);
-    //  }
-    //}
+    for (int repeat=0; repeat < 10; repeat ++) {
+      for (int n=0; n<nodes.size(); n++) {
+        rotation_shape_modifier(n);
+        graph.update_points();
+      }
+    }
     //Nodeの(x,y)を最適化する
     //nodeCoordinateModifier(nodes, edges);
     // 絵の範囲を求めて適切に描画する
@@ -341,60 +342,20 @@ class data_graph { //<>// //<>//
   //Nodeのthetaを最適化する
   void rotation_shape_modifier(int id) {
     Node node = nodes.get(id);
-    float totalRangeAngle=0f;
     float theta0 = node.theta;
-    float Min = 0f, Max = 0f;
-    Min = 9999f;
-    Max = -9999f;
-    for (int e=0; e<edges.size(); e++) {
-      Edge ed = edges.get(e);
-      if (ed.ANodeID == id || ed.BNodeID== id) {
-        ed.set_bezier(nodes);
-        PVector minmax = ed.bezier.get_curvature_range();
-        if (Min>minmax.x) Min = minmax.x;
-        if (Max<minmax.y) Max = minmax.y;
-        //        totalRangeAngle += (minmax.y - minmax.x);
-      }
-    }
-    totalRangeAngle = Max - Min;
+    float totalCurvatureRange = get_curvatureRange_squareSum_at(id);
 
-    float totalRangeAngleP=0f;
     float thetaP = theta0 + 0.05f;
     node.theta = thetaP;
-    Min = 9999f;
-    Max = -9999f;
-    for (int e=0; e<edges.size(); e++) {
-      Edge ed = edges.get(e);
-      if (ed.ANodeID == id || ed.BNodeID== id) {
-        ed.set_bezier(nodes);
-        PVector minmax = ed.bezier.get_curvature_range();
-        if (Min>minmax.x) Min = minmax.x;
-        if (Max<minmax.y) Max = minmax.y;
-        //        totalRangeAngleP += (minmax.y - minmax.x);
-      }
-    }
-    totalRangeAngleP = Max - Min;
-
-    float totalRangeAngleM=0f;
-    float thetaM = theta0 - 0.05f;
+    float totalCurvatureRangeP = get_curvatureRange_squareSum_at(id);
+    
+    float thetaM = theta0 + 0.05f;
     node.theta = thetaM;
-    Min = 9999f;
-    Max = -9999f;
-    for (int e=0; e<edges.size(); e++) {
-      Edge ed = edges.get(e);
-      if (ed.ANodeID == id || ed.BNodeID== id) {
-        ed.set_bezier(nodes);
-        PVector minmax = ed.bezier.get_curvature_range();
-        if (Min>minmax.x) Min = minmax.x;
-        if (Max<minmax.y) Max = minmax.y;
-        //        totalRangeAngleM += (minmax.y - minmax.x);
-      }
-    }
-    totalRangeAngleM = Max - Min;
-    //println("RangeAngle= ", totalRangeAngle, totalRangeAngleP, totalRangeAngleM);
-    if (totalRangeAngle  > totalRangeAngleP) {
+    float totalCurvatureRangeM = get_curvatureRange_squareSum_at(id);
+    
+    if (totalCurvatureRange  > totalCurvatureRangeP) {
       node.theta = thetaP;
-    } else if (totalRangeAngle -1.0 > totalRangeAngleM) {
+    } else if (totalCurvatureRange > totalCurvatureRangeM) {
       node.theta = thetaM;
     } else {
       node.theta = theta0;

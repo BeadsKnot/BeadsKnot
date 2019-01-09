@@ -304,12 +304,12 @@ void mousePressed() {
       } else {
         int jt_ndID =graph.next_to_node(ptID); 
         if (jt_ndID!=-1) {//ノードの隣をドラッグした場合
-          mouse.node_next_dragging = true;
-          mouse.dragged_nodeID = jt_ndID;
-          Node nd = graph.nodes.get(mouse.dragged_nodeID);
-          mouse.dragged_theta = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
-          mouse.nd_theta = nd.theta;
-          mouse.nd_theta_branch =0f;
+//          mouse.node_next_dragging = true;
+//          mouse.dragged_nodeID = jt_ndID;
+//          Node nd = graph.nodes.get(mouse.dragged_nodeID);
+//          mouse.dragged_theta = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
+//          mouse.nd_theta = nd.theta;
+//          mouse.nd_theta_branch =0f;
         } else {//ノードでもなくノードの隣でもないところでクリックをしたときの処理
           startID=graph.is_PVector_on_points(mouseX, mouseY);
           mouse.prev = new PVector(mouseX, mouseY);
@@ -374,20 +374,20 @@ void mouseDragged() {
       graph.modify();
       graph.update_points();
       graph.add_close_point_Joint();
-    } else if (mouse.node_next_dragging) {
-      // ノードの隣をドラッグした場合。
-      Node nd = graph.nodes.get(mouse.dragged_nodeID);
-      //println(atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)));
-      float atanPre = atan2(pmouseY - disp.get_winY(nd.y), pmouseX - disp.get_winX(nd.x));
-      float atanNow = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
-      if (atanPre>atanNow+PI*3/2) mouse.nd_theta_branch += (2*PI);
-      else if (atanPre+PI*3/2<atanNow) mouse.nd_theta_branch -= (2*PI);
-      nd.theta = mouse.nd_theta - (mouse.nd_theta_branch + atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.25;
-      graph.modify();
-      graph.update_points();
-      //デバッグのための調査（1行）→　満足すべき結果を得た。
-      //println(graph.get_curvatureRange_squareSum_at(mouse.dragged_nodeID));
-      graph.add_close_point_Joint();
+//    } else if (mouse.node_next_dragging) {
+//      // ノードの隣をドラッグした場合。
+//      Node nd = graph.nodes.get(mouse.dragged_nodeID);
+//      //println(atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)));
+//      float atanPre = atan2(pmouseY - disp.get_winY(nd.y), pmouseX - disp.get_winX(nd.x));
+//      float atanNow = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
+//      if (atanPre>atanNow+PI*3/2) mouse.nd_theta_branch += (2*PI);
+//      else if (atanPre+PI*3/2<atanNow) mouse.nd_theta_branch -= (2*PI);
+//      nd.theta = mouse.nd_theta - (mouse.nd_theta_branch + atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.25;
+//      graph.modify();
+//      graph.update_points();
+//      //デバッグのための調査（1行）→　満足すべき結果を得た。
+//      //println(graph.get_curvatureRange_squareSum_at(mouse.dragged_nodeID));
+//      graph.add_close_point_Joint();
     } else if (mouse.new_curve) {
       if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
         mouse.prev = new PVector(mouseX, mouseY);
