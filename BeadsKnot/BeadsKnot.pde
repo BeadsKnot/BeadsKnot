@@ -563,6 +563,7 @@ void mouseReleased() {
       //jointでないところで終わりにする
       if (mouse.new_curve) {
         mouse.new_curve=false;
+        //endIDをptIDとしている
         int ptID = graph.is_PVector_on_points(mouseX, mouseY);
         if (ptID==-1) {
           return;
@@ -572,14 +573,12 @@ void mouseReleased() {
             return;
           } else {
             //println("ここで作業をする");
-            //startID
-            //endIDはptID
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
             if (i==1) {
-              println("1");
+             // println("1");
             } else if (i==2) {
-              println("2");
+              //println("2");
             } else if (i==-1) {
               println("できませんでした");
             } else {//0のとき
@@ -588,10 +587,8 @@ void mouseReleased() {
             // println(count);//間のbeadsの数。ただしstartIDとptIDは含まない
             data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
             data.extinguish(count_for_distinguishing_edge); 
-            //println(pre_endID);
             data.extinguish_startID_and_endID(i, startID, ptID);
-            //ここで線をビーズにする 
-            mouse.trace_to_parts_editing2(data, startID, ptID);
+            mouse.trace_to_parts_editing2(data, startID, ptID);//ここで線をビーズにする 
             //traceからもらってくればよい
           }
         }

@@ -302,25 +302,8 @@ class mouseDrag { //<>// //<>//
 
 
   void trace_to_parts_editing2(data_extract data, int startID, int endBeadID) {
-    //そもそも、traceがJointの近くを通っていたら、作業しない。
-    //if (trace.size()<6) {
-    //  println("traceの長さが短すぎる");
-    //}
-    //for (int i=0; i<data.points.size(); i++) {
-    //  Bead bd = data.points.get(i);
-    //  if (bd.Joint) {
-    //    for (int j=3; j<trace.size()-3; j++) {
-    //      PVector tr = trace.get(j);
-    //      float d = dist(tr.x, tr.y, bd.x, bd.y);
-    //      if (d<45) {// ビーズ３つ分の間隔
-    //        println("traceの位置が不正");
-    //        return;
-    //      }
-    //    }
-    //  }
-    //}
     // まず、traceをすべてbeadに置き換える。（両端は除く）
-    println("traceをbeadsに変換");
+    //println("traceをbeadsに変換");
     // int startBeadID = dragged_BeadID;
     int traceStartBeadID = 0;
     Bead startBead = data.points.get(startID);
@@ -355,7 +338,6 @@ class mouseDrag { //<>// //<>//
       newBd.n1 = prevBeadID;
       newBd.n2 = nextBeadID;
       newBd.c = 2;
-      //println(prevBeadID, nextBeadID);
       data.points.add(newBd);
     }
     if (endBead.c==1) {

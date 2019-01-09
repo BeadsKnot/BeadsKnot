@@ -1136,6 +1136,8 @@ class data_extract { //<>// //<>//
           return 2;
         }
       } else {//aもbもendIDでないとき
+        ////////////////////////////////////////この辺でエラーが出やすい
+        //aが-1になるとエラーがでる
         node1=points.get(a);
         counta++;
         node2=points.get(b);
@@ -1289,14 +1291,34 @@ class data_extract { //<>// //<>//
       Bead pt=points.get(a);
       pt.n1=-1;
       pt.n2=-1;
+      if (pt.Joint) {
+        if (ii>0) {
+          int pre_a=between_beads[ii-1];
+          if (pt.u1==pre_a||pt.u2==pre_a) {//undercrossingだったら
+            pt.u1=-1;
+            pt.u2=-1;
+            pt.Joint=false;
+            pt.c=2;
+            println("通過したJointはUnderCrossingでした");
+          } else {//overcrossingだったら
+            pt.n1=pt.u1;
+            pt.n2=pt.u2;
+            pt.Joint=false;
+            pt.c=2;
+            println("通過したJointはOverCrossingでした");
+          }
+        } else {
+          return;
+        }
+      }
     }
   }
-  void extinguish_startID_and_endID(int i,int startID,int endID) {
+  void extinguish_startID_and_endID(int i, int startID, int endID) {
     Bead bds=data.points.get(startID);
     Bead bde=data.points.get(endID);
     bds.c=1;
     bde.c=1;
-      if (i==1) {
+    if (i==1) {
       bds.n1=bds.n2;
       bds.n2=-1;
       //bds.c=1;
