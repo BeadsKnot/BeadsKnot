@@ -31,7 +31,7 @@ class mouseDrag { //<>// //<>//
         p0 = p1;
       }
       if (free_dragging && trace.size()>3) {
-        p0 = mouse.trace.get(0);
+        p0 = trace.get(0);
         if (dist(p0.x, p0.y, mouseX, mouseY)<30) {
           stroke(128);
           fill(255, 0, 0, 40);
@@ -287,13 +287,13 @@ class mouseDrag { //<>// //<>//
       data.points.clear();
       for (int bdID=0; bdID<edit.beads.size(); bdID++) {
         Bead bd = edit.beads.get(bdID);
-          if (bd.c==4) {
-            bd.c=2;
-            bd.Joint = true;
-          } else if (bd.c==2){
-            bd.Joint = false;
-          }
-          data.points.add(bd);
+        if (bd.c==4) {
+          bd.c=2;
+          bd.Joint = true;
+        } else if (bd.c==2) {
+          bd.Joint = false;
+        }
+        data.points.add(bd);
       }
       graph.make_data_graph();
       Draw.beads();
@@ -301,162 +301,51 @@ class mouseDrag { //<>// //<>//
   }
 
 
-  void trace_to_parts_editing2(int i, Bead startBd, Bead endBd) {
+  void trace_to_parts_editing2(data_extract data, int startID, int endBeadID) {
     // まず、traceをすべてbeadに置き換える。（両端は除く）
+    //println("traceをbeadsに変換");
+    // int startBeadID = dragged_BeadID;
     int traceStartBeadID = 0;
-    int s_next=0;
-    int e_next=0;
-    println("traceをbeadsに変換");
-    if (startBd.c==1&&endBd.c==1&&i==1) {
-      startBd.c=2;
-      endBd.c=2;
-      s_next=startBd.n1;
-      e_next=endBd.n1;
-      //println("3");
-    } else if (startBd.c==1&&endBd.c==1&&i==2) {
-      startBd.c=2;
-      endBd.c=2;
-      s_next=startBd.n2;
-      e_next=endBd.n2;
+    Bead startBead = data.points.get(startID);
+    if (startBead.c==1) {//スタートビーズのデータを整える
+      startBead.n2 = data.points.size();
+      startBead.c = 2;
+      //} else if (startBead.c==0) {// 想定として、 c は0か1
+      //  startBead.n1 = data.points.size();
+      //  startBead.c = 1;
     } else {
-      println("Beadの異常");
-      return;
+      //それ以外なら、即刻辞める
+      println("startBeadの異常");
+      return ;
     }
+    Bead endBead = data.points.get(endBeadID);
+    if (endBead.c!=1 && endBead.c!=0) {//エンドビーズについてもおかしなところがあれば即刻辞める
+      return ;
+    }
+    traceStartBeadID = data.points.size();// 追加されるべき最初のbeadの番号
+    for (int trID=1; trID<trace.size()-1; trID++) {//traceをひとつひとつbeadに置き換える
+      PVector tr = trace.get(trID);
+      Bead newBd = new Bead(disp.getX_fromWin(tr.x), disp.getY_fromWin(tr.y));
 
-    //traceStartBeadID = edit.beads.size();// 追加されるべき最初のbeadの番号
-    //for (int trID=1; trID<trace.size()-1; trID++) {//traceをひとつひとつbeadに置き換える
-    //  PVector tr = trace.get(trID);
-    //  Bead newBd = new Bead(tr.x, tr.y);
-
-    //  int prevBeadID = edit.beads.size()-1;
-    //  if (trID==1) {
-    //    prevBeadID = startBeadID;
-    //  }
-    //  int nextBeadID = edit.beads.size()+1;
-    //  if (trID == trace.size()-2) {
-    //    nextBeadID = endBeadID;
-    //  }
-    //  newBd.n1 = prevBeadID;
-    //  newBd.n2 = nextBeadID;
-    //  newBd.c = 2;
-    //  //println(prevBeadID, nextBeadID);
-    //  edit.beads.add(newBd);
-    //}
-    //if (endBead.c==1) {
-    //  endBead.n2 = edit.beads.size()-1;
-    //  endBead.c = 2;
-    //} else if (endBead.c==0) {
-    //  endBead.n1 = edit.beads.size()-1;
-    //  endBead.c = 1;
-    //}
-    ////そののちに、既存のビーズ列、自分自身との交差を判定し、jointを追加する。
-    //ArrayList<PVector> meets = new ArrayList<PVector>();
-    //int beadsNumber = edit.beads.size();
-    //for (int bdID1 = traceStartBeadID; bdID1<beadsNumber; bdID1++) {
-    //  Bead bd1 = edit.beads.get(bdID1);
-    //  if (bd1.c>=2) {
-    //    for (int bdID2=0; bdID2<beadsNumber; bdID2++) {
-    //      Bead bd2 = edit.beads.get(bdID2);
-    //      if (bdID2<bdID1 && bd2.c>=2) {
-    //        int bd1n1 = bd1.n1;
-    //        int bd1n2 = bd1.n2;
-    //        int bd2n1 = bd2.n1;
-    //        int bd2n2 = bd2.n2;
-    //        if (bd1n1!=-1 && bd1n2!=-1 && bd2n1!=-1 && bd2n2!=-1
-    //          && bd1n1!=bd2n1 && bd1n1!=bdID2 && bd1n1!=bd2n2
-    //          && bdID1!=bd2n1 && bdID1!=bdID2 && bdID1!=bd2n2
-    //          && bd1n2!=bd2n1 && bd1n2!=bdID2 && bd1n2!=bd2n2) {
-    //          float x1 = edit.beads.get(bd1n1).x;
-    //          float y1 = edit.beads.get(bd1n1).y;
-    //          float x2 = edit.beads.get(bd1n2).x;
-    //          float y2 = edit.beads.get(bd1n2).y;
-    //          float x3 = edit.beads.get(bd2n1).x;
-    //          float y3 = edit.beads.get(bd2n1).y;
-    //          float x4 = edit.beads.get(bd2n2).x;
-    //          float y4 = edit.beads.get(bd2n2).y;
-    //          //   (x2-x1)s - (x4-x3)t = +x3-x1 
-    //          //   (y2-y1)s - (y4-y3)t = +y3-y1
-    //          float a = x2 - x1;
-    //          float b = -x4 + x3;
-    //          float c = y2 - y1;
-    //          float d = -y4 + y3;
-    //          float p = x3 - x1;
-    //          float q = y3 - y1;
-    //          float s1 = p * d - b * q;  // s = s1/st
-    //          float t1 = a * q - p * c;  // t = t1/st
-    //          float st = a * d - b * c; 
-    //          if ( st < 0 ) {
-    //            st *= -1;
-    //            s1 *= -1;
-    //            t1 *= -1;
-    //          }
-    //          if (0 < s1 && s1 < st && 0 < t1 && t1 < st) {
-    //            //trace.get(tr1+1) と trace.get(tr2+1)とを合流してJointにする。
-    //            // 合流する点がJointに極めて近いときは失敗扱いにしたいが、
-    //            //そもそもtraceがJointの近くを通らないことを保証しているので、信じることにする。
-    //            //Jointの二重登録を避けるための作業。
-    //            boolean localOK = true;
-    //            for (int mt=0; mt<meets.size(); mt++) {
-    //              int js1 = int(meets.get(mt).x);
-    //              int js2 = int(meets.get(mt).y);
-    //              if (js1== bd1n1 || js1== bdID1 || js1== bd1n2 
-    //                || js1== bd2n1 || js1== bdID2 || js1== bd2n2
-    //                || js2== bd1n1 || js2== bdID1 || js2== bd1n2
-    //                || js2== bd2n1 || js2== bdID2 || js2== bd2n2) {
-    //                println(bdID1, bdID2, js1, js2);
-    //                localOK = false;
-    //                break;
-    //              }
-    //            }
-    //            if (localOK) {
-    //              println(bdID1, "meets", bdID2);
-    //              meets.add(new PVector(bdID1, bdID2));
-    //              bd1 = edit.beads.get(bdID1);
-    //              bd2 = edit.beads.get(bdID2);
-    //              bd1.Joint = true;
-    //              bd1.u1 = bd2n1;
-    //              bd1.u2 = bd2n2;
-    //              bd1.c = 4;
-    //              bd2.n1 = -1;
-    //              bd2.n2 = -1;
-    //              bd2.x = bd2.y = -1f;
-    //              bd2.c = -1;
-    //              Bead bd21 = edit.beads.get(bd2n1);
-    //              if (bd21.n1 == bdID2) bd21.n1 = bdID1;
-    //              else if (bd21.n2 == bdID2) bd21.n2 = bdID1;
-    //              Bead bd22 = edit.beads.get(bd2n2);
-    //              if (bd22.n1 == bdID2) bd22.n1 = bdID1;
-    //              else if (bd22.n2 == bdID2) bd22.n2 = bdID1;
-    //            }
-    //            //  }
-    //            //}
-    //            //終了条件の確認
-    //          }
-    //        }
-    //      }
-    //    }
-    //  }
-    //}
-    //boolean OK=true;//図が完了しているかどうかのフラグ。
-    //for (int bdID=0; bdID<edit.beads.size(); bdID++) {
-    //  if (edit.beads.get(bdID).c>=0 && edit.beads.get(bdID).c<2) {
-    //    OK=false;
-    //    return;
-    //  }
-    //}
-    //if (OK) {
-    //  println("complete figure");
-    //  data.points.clear();
-    //  for (int bdID=0; bdID<edit.beads.size(); bdID++) {
-    //    Bead bd = edit.beads.get(bdID);
-    //    if (bd.c==4) {
-    //      bd.c=2;
-    //      bd.Joint = true;
-    //    }
-    //    data.points.add(bd);
-    //  }
-    //  graph.make_data_graph();
-    //  Draw.beads();
-    //}// OK=falseならば、図が未完成なので、さらなるトレースを待つ。
+      int prevBeadID =data.points.size()-1;
+      if (trID==1) {
+        prevBeadID = startID;
+      }
+      int nextBeadID =data.points.size()+1;
+      if (trID == trace.size()-2) {
+        nextBeadID = endBeadID;
+      }
+      newBd.n1 = prevBeadID;
+      newBd.n2 = nextBeadID;
+      newBd.c = 2;
+      data.points.add(newBd);
+    }
+    if (endBead.c==1) {
+      endBead.n2 = data.points.size()-1;
+      endBead.c = 2;
+      //} else if (endBead.c==0) {
+      //  endBead.n1 = data.points.size()-1;
+      //  endBead.c = 1;
+    }
   }
 };

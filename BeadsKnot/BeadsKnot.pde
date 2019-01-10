@@ -17,7 +17,9 @@ orientation orie;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
-int count=0;
+int count_for_distinguishing_edge=0;//edgeを消すためのcountの数
+
+
 // グローバル変数終了
 
 void setup() {
@@ -292,30 +294,30 @@ void mousePressed() {
         for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
           if (graph.nodes.get(ndID).pointID == ptID) {
             mouse.dragged_nodeID = ndID;
-            int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
-            Bead pt0 = data.points.get(pt0ID);
-            mouse.DragX = pt0.x;
-            mouse.DragY = pt0.y;
-            println("ドラッグ開始");
-            return;
           }
         }
+        int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
+        Bead pt0 = data.points.get(pt0ID);
+        mouse.DragX = pt0.x;
+        mouse.DragY = pt0.y;
+        println("ドラッグ開始");
         return;
       } else {
         int jt_ndID =graph.next_to_node(ptID); 
         if (jt_ndID!=-1) {//ノードの隣をドラッグした場合
-//          mouse.node_next_dragging = true;
-//          mouse.dragged_nodeID = jt_ndID;
-//          Node nd = graph.nodes.get(mouse.dragged_nodeID);
-//          mouse.dragged_theta = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
-//          mouse.nd_theta = nd.theta;
-//          mouse.nd_theta_branch =0f;
+          mouse.node_next_dragging = true;
+          mouse.dragged_nodeID = jt_ndID;
+          Node nd = graph.nodes.get(mouse.dragged_nodeID);
+          mouse.dragged_theta = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
+          mouse.nd_theta = nd.theta;
+          mouse.nd_theta_branch =0f;
         } else {//ノードでもなくノードの隣でもないところでクリックをしたときの処理
           startID=graph.is_PVector_on_points(mouseX, mouseY);
           mouse.prev = new PVector(mouseX, mouseY);
           mouse.trace.clear();
           mouse.trace.add(mouse.prev);
           mouse.new_curve=true;
+          mouse.free_dragging = true;
         }
       }
     }
@@ -347,10 +349,6 @@ void mouseDragged() {
       float mY = disp.getY_fromWin(mouseY);
 
       float mouseDragmin_dist = dist(mouse.DragX, mouse.DragY, mX, mY);
-      if (mouseDragmin_dist  * disp.rate > 1000) {//あまり外側へ行ったら処理をしない。
-        println("*外側へ行きすぎです。");
-        return ;
-      }
       for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
         if (ndID != mouse.dragged_nodeID) {
           int ptID = graph.nodes.get(ndID).pointID;
@@ -360,6 +358,10 @@ void mouseDragged() {
           float d = dist(mX, mY, x, y);
           if (d < mouseDragmin_dist) {//ボロノイ領域を超えたら処理をしない。
             return;
+          }
+          if (d > 1000) {//あまり外側へ行ったら処理をしない。
+            println("*外側へ行きすぎです。");
+            return ;
           }
         }
       }
@@ -374,20 +376,18 @@ void mouseDragged() {
       graph.modify();
       graph.update_points();
       graph.add_close_point_Joint();
-//    } else if (mouse.node_next_dragging) {
-//      // ノードの隣をドラッグした場合。
-//      Node nd = graph.nodes.get(mouse.dragged_nodeID);
-//      //println(atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)));
-//      float atanPre = atan2(pmouseY - disp.get_winY(nd.y), pmouseX - disp.get_winX(nd.x));
-//      float atanNow = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
-//      if (atanPre>atanNow+PI*3/2) mouse.nd_theta_branch += (2*PI);
-//      else if (atanPre+PI*3/2<atanNow) mouse.nd_theta_branch -= (2*PI);
-//      nd.theta = mouse.nd_theta - (mouse.nd_theta_branch + atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.25;
-//      graph.modify();
-//      graph.update_points();
-//      //デバッグのための調査（1行）→　満足すべき結果を得た。
-//      //println(graph.get_curvatureRange_squareSum_at(mouse.dragged_nodeID));
-//      graph.add_close_point_Joint();
+    } else if (mouse.node_next_dragging) {
+      // ノードの隣をドラッグした場合。
+      Node nd = graph.nodes.get(mouse.dragged_nodeID);
+      //println(atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)));
+      float atanPre = atan2(pmouseY - disp.get_winY(nd.y), pmouseX - disp.get_winX(nd.x));
+      float atanNow = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
+      if (atanPre>atanNow+PI*3/2) mouse.nd_theta_branch += (2*PI);
+      else if (atanPre+PI*3/2<atanNow) mouse.nd_theta_branch -= (2*PI);
+      nd.theta = mouse.nd_theta - (mouse.nd_theta_branch + atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x)) - mouse.dragged_theta)*0.25;
+      graph.modify();
+      graph.update_points();
+      graph.add_close_point_Joint();
     } else if (mouse.new_curve) {
       if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
         mouse.prev = new PVector(mouseX, mouseY);
@@ -563,6 +563,7 @@ void mouseReleased() {
       //jointでないところで終わりにする
       if (mouse.new_curve) {
         mouse.new_curve=false;
+        //endIDをptIDとしている
         int ptID = graph.is_PVector_on_points(mouseX, mouseY);
         if (ptID==-1) {
           return;
@@ -572,12 +573,10 @@ void mouseReleased() {
             return;
           } else {
             //println("ここで作業をする");
-            //startIDはptID
-            //endID
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
             if (i==1) {
-              //println("1");
+             // println("1");
             } else if (i==2) {
               //println("2");
             } else if (i==-1) {
@@ -585,12 +584,11 @@ void mouseReleased() {
             } else {//0のとき
               println("ここで作業をする");
             }
-            //println(count);//間にbeadsの数。ただしstartIDとptIDは含まない
-            //data.extinguish_points(i, startID, ptID);
-            //ここで線をビーズにする 
-            //Bead startBeads=data.points.get(startID);
-            //Bead endBeads=data.points.get(ptID);
-            //mouse.trace_to_parts_editing2(i, startBeads, endBeads);
+            // println(count);//間のbeadsの数。ただしstartIDとptIDは含まない
+            data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
+            data.extinguish(count_for_distinguishing_edge); 
+            data.extinguish_startID_and_endID(i, startID, ptID);
+            mouse.trace_to_parts_editing2(data, startID, ptID);//ここで線をビーズにする 
             //traceからもらってくればよい
           }
         }
@@ -614,6 +612,7 @@ void mouseReleased() {
           );
         if (r==0) {
           // mouse.trace を beadsのデータにする。
+
           mouse.trace_to_beads(data, graph);
           Draw.beads();
         }
@@ -650,10 +649,10 @@ void mouseReleased() {
             }
           }
           if (OK) {
+            println(edit.beads.size());
             mouse.trace_to_parts_editing(data, graph, edit, endBdID);
           }
         }
-
         mouse.node_next_dragging=false; // ドラッグ終了
       }
     }
