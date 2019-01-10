@@ -45,11 +45,10 @@ class data_extract { //<>// //<>//
       return true;
     }
 
-    if(result == 0){
-      if(th.getThinningExtraction()){//thinning ver.
+    if (result == 0) {
+      if (th.getThinningExtraction()) {//thinning ver.
         return true;
       }
-
     }
     // result = 2の時は手作業モードへと進む。
     return false;
@@ -85,7 +84,7 @@ class data_extract { //<>// //<>//
         stroke(255, 0, 0);
         fill(255);
       }
-      if (vec.c<=0 || vec.c>=4 || (vec.n1==-1 && vec.n2==-1)) {
+      if (vec.c<=0 || vec.c>=4 || (vec.n1==-1 && vec.n2==-1) || next_to_undercrossing(pt)) {
       } else {
         //dispをつかって表示を画面サイズに合わせるように座標変換する。
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
@@ -266,35 +265,37 @@ class data_extract { //<>// //<>//
 
   void drawNbhds() {//線を書く
     for (int ptID=0; ptID<points.size (); ptID++) {
-      Bead pt=points.get(ptID);
-      //if (pt.n1!=-1&&pt.n2!=-1) {
-      if ( pt.n1<points.size()) {
-        if (0<=pt.n1) {
-          stroke(0);
-          Bead pt2 = points.get(pt.n1);
-          if (! pt2.Joint) {
-            line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+      if (!next_to_undercrossing(ptID)) {
+        Bead pt=points.get(ptID);
+        //if (pt.n1!=-1&&pt.n2!=-1) {
+        if ( pt.n1<points.size() && !next_to_undercrossing(pt.n1)) {
+          if (0<=pt.n1) {
+            stroke(0);
+            Bead pt2 = points.get(pt.n1);
+            if (! pt2.Joint) {
+              line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+                disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            }
+          } else {
+            // println("a");
+          }
+        }
+        if (pt.n2<points.size() && !next_to_undercrossing(pt.n2)) {
+          if (0<=pt.n2) {
+            stroke(0);
+            Bead pt2 = points.get(pt.n2);
+            if (! pt2.Joint) {
+              line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+                disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            }
           }
         } else {
-          // println("a");
+          //println("b");
         }
+        //} else {
+        //println("線を消します");
+        //}
       }
-      if (pt.n2<points.size()) {
-        if (0<=pt.n2) {
-          stroke(0);
-          Bead pt2 = points.get(pt.n2);
-          if (! pt2.Joint) {
-            line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
-          }
-        }
-      } else {
-        //println("b");
-      }
-      //} else {
-      //println("線を消します");
-      //}
     }
   }
 
@@ -1342,5 +1343,25 @@ class data_extract { //<>// //<>//
         bde.n2=-1;
       }
     }
+  }
+
+
+  boolean next_to_undercrossing(int ptID) {
+    if(0> ptID || ptID>=points.size()) return false; 
+    int pt1ID = points.get(ptID).n1;
+    if (0<=pt1ID && pt1ID<points.size()) {
+      Bead bd1 = points.get(pt1ID);
+      if (bd1.Joint && (bd1.u1==ptID || bd1.u2==ptID) ) {
+        return true;
+      }
+    }
+    int pt2ID = points.get(ptID).n2;
+    if (0<=pt2ID && pt2ID<points.size()) {
+      Bead bd2 = points.get(pt2ID);
+      if (bd2.Joint  && (bd2.u1==ptID || bd2.u2==ptID)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
