@@ -66,11 +66,11 @@ class Square {
       JPanel panel = new JPanel();    //パネルを作成
       BoxLayout layout = new BoxLayout( panel, BoxLayout.Y_AXIS );    //メッセージのレイアウトを決定
       panel.setLayout(layout);    //panelにlayoutを適用
-      panel.add( new JLabel( "失敗しましたが、手作業で補いますか？" ) );    //メッセージ内容を文字列のコンポーネントとしてパネルに追加
+      panel.add( new JLabel( "[はい]手作業で補う。[いいえ]別法で読み込む" ) );    //メッセージ内容を文字列のコンポーネントとしてパネルに追加
       int r = JOptionPane.showConfirmDialog( 
         null, //親フレームの指定
         panel, //パネルの指定
-        "手作業で補いますか？", //タイトルバーに表示する内容
+        "手作業で補うなら[はい]", //タイトルバーに表示する内容
         JOptionPane.YES_NO_OPTION, //オプションタイプをYES,NOにする
         JOptionPane.INFORMATION_MESSAGE   //メッセージタイプをInformationにする
         );
@@ -83,8 +83,7 @@ class Square {
         // beadsを一度消す。
         de.nbhds.clear();
         de.points.clear();
-        // Thinningに向かうかどうかは別途考える。
-        Draw.menu();
+        //Draw.menu();
         return 0;// 失敗
       }
     }

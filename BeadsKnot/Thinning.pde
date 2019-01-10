@@ -23,18 +23,44 @@ class Thinning {
 
     DE.countNbhds();//NbhsからBeadsのn1,n2,u1,u2を決める。
 
-    println("cancel_loop()"); cancel_loop() ;
+    println("cancel_loop()"); 
+    cancel_loop() ;
 
-    println("remove_dust()"); remove_dust();
+    println("remove_dust()"); 
+    remove_dust();
 
-    println("find_crossing()");find_crossing();		
+    println("find_crossing()");
+    find_crossing();		
 
+
+    println("画面サイズ調整");
     DE.getDisplayLTRB();
-    //println(DE.points.size(), DE.nbhs.size());
-    
-    Draw.beads();// drawモードの変更
-    return false;
+    println("jointに関しての線を追加");
+    DE.addJointToNbhds();
+
+    println(DE.points.size(), DE.nbhds.size());
+    //もし問題なければtrueを返し、問題が残っていれば、parts_editingモードにする。
+
+    if(thinning_finish()){
+      Draw.beads();// drawモードの変更
+      println("成功");
+      return true;
+    } else {
+      println("失敗なので、手作業モードへ移ります。");
+      edit.points_to_beads(data);
+      return false; 
+    }
   }
+
+  boolean thinning_finish() {//みんなお二人様だったか確認
+    for (Bead vec : DE.points) {
+      if (!vec.Joint && vec.c!=2) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 
   //////////////////////////////////
   void get_edge_data_thinning() {
@@ -482,7 +508,7 @@ class Thinning {
   void remove_dust() {
     int pointsSize = DE.points.size();
     pt_left = new boolean[pointsSize];
-    for(int i=0; i<pointsSize; i++){
+    for (int i=0; i<pointsSize; i++) {
       pt_left[i] = true;
     }
     for (int u=0; u<DE.points.size(); u++) {
@@ -493,7 +519,7 @@ class Thinning {
       if (vec0.c == 1 && is_Beads_id(vec0.n1)) {
         int a_prev = u;
         int a_now = vec0.n1;
-        if(DE.points.get(a_now).c == 1){
+        if (DE.points.get(a_now).c == 1) {
           pt_left[a_prev]=false;
           pt_left[a_now]=false;
         }

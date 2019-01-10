@@ -44,8 +44,12 @@ class data_extract { //<>// //<>//
     if (result == 1) {
       return true;
     }
-    if (result == 0) {
-      //th.getThinningExtraction();//thinning ver.にするときにコメントアウトをはずす
+
+    if(result == 0){
+      if(th.getThinningExtraction()){//thinning ver.
+        return true;
+      }
+
     }
     // result = 2の時は手作業モードへと進む。
     return false;
@@ -486,7 +490,7 @@ class data_extract { //<>// //<>//
           nbhds.add(new Nbhd(u, vec.u2));
         }
         // addToNbhs(u, vec.u1);
-        //addToNbhs(u, vec.u2);
+        // addToNbhs(u, vec.u2);
         // println(u, vec.u1);
       }
     }
