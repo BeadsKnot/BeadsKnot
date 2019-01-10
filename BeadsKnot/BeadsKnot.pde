@@ -294,14 +294,14 @@ void mousePressed() {
         for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
           if (graph.nodes.get(ndID).pointID == ptID) {
             mouse.dragged_nodeID = ndID;
+            int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
+            Bead pt0 = data.points.get(pt0ID);
+            mouse.DragX = pt0.x;
+            mouse.DragY = pt0.y;
+            println("ドラッグ開始");
+            return;
           }
         }
-        int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
-        Bead pt0 = data.points.get(pt0ID);
-        mouse.DragX = pt0.x;
-        mouse.DragY = pt0.y;
-        println("ドラッグ開始");
-        return;
       } else {
         int jt_ndID =graph.next_to_node(ptID); 
         if (jt_ndID!=-1) {//ノードの隣をドラッグした場合
@@ -576,7 +576,7 @@ void mouseReleased() {
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
             if (i==1) {
-             // println("1");
+              // println("1");
             } else if (i==2) {
               //println("2");
             } else if (i==-1) {
