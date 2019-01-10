@@ -230,6 +230,7 @@ void fileSelected(File selection) {
                 nd.r[2] = float(pieces[5]);
                 nd.r[3] = float(pieces[6]);
                 nd.pointID = n;
+                nd.Joint=false;
                 graph.nodes.add(nd);
                 Bead bd = new Bead(float(pieces[0]), float(pieces[1]));
                 bd.c = 2;
@@ -263,6 +264,7 @@ void fileSelected(File selection) {
                   bd.midJoint=true;
                 } else {
                   bd.Joint = true;
+                  graph.nodes.get(n).Joint = true;
                 }
               }
             }
