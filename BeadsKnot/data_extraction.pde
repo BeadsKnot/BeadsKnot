@@ -74,9 +74,9 @@ class data_extract { //<>// //<>//
         stroke(0);
         fill(80, 255, 80);
         c=4;
-      } else if (vec.closeJoint) {
-        stroke(0, 255, 0);
-        fill(255);
+      //} else if (vec.closeJoint) {
+      //  stroke(0, 255, 0);
+      //  fill(255);
       } else if (vec.midJoint) {
         stroke(0);
         fill(180, 255, 0);
