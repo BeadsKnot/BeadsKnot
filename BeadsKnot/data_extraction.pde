@@ -7,6 +7,7 @@ class data_extract { //<>// //<>//
   display disp;
   int between_beads[];//消すためのbeadsのpointの番号を入れておく配列
   int pre_endID=0;//消すときにendIDにとってのn1を消すのかn2を消すのかを調べるために使う
+  boolean over_crossing=true;//overならtrue,underならfalse
 
   ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
   ArrayList<Bead> points=new ArrayList<Bead>();//点を登録
@@ -45,11 +46,10 @@ class data_extract { //<>// //<>//
       return true;
     }
 
-    if(result == 0){
-      if(th.getThinningExtraction()){//thinning ver.
+    if (result == 0) {
+      if (th.getThinningExtraction()) {//thinning ver.
         return true;
       }
-
     }
     // result = 2の時は手作業モードへと進む。
     return false;
@@ -91,8 +91,8 @@ class data_extract { //<>// //<>//
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
-          text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
-
+          //text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
           ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
@@ -1303,12 +1303,14 @@ class data_extract { //<>// //<>//
             pt.u2=-1;
             pt.Joint=false;
             pt.c=2;
+            over_crossing=false;
             println("通過したJointはUnderCrossingでした");
           } else {//overcrossingだったら
             pt.n1=pt.u1;
             pt.n2=pt.u2;
             pt.Joint=false;
             pt.c=2;
+            over_crossing=true;
             println("通過したJointはOverCrossingでした");
           }
         } else {
