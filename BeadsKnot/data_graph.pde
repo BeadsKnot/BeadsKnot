@@ -326,7 +326,7 @@ class data_graph { //<>// //<>//
   }
 
   // id: nodeのid
-  float get_curvatureRange_squareSum_at(int id){
+  float get_curvatureRange_squareSum_at(int id) {
     float  totalRangeAngle = 0f;
     for (int e=0; e<edges.size(); e++) {
       Edge ee = edges.get(e);
@@ -348,11 +348,11 @@ class data_graph { //<>// //<>//
     float thetaP = theta0 + 0.05f;
     node.theta = thetaP;
     float totalCurvatureRangeP = get_curvatureRange_squareSum_at(id);
-    
+
     float thetaM = theta0 + 0.05f;
     node.theta = thetaM;
     float totalCurvatureRangeM = get_curvatureRange_squareSum_at(id);
-    
+
     if (totalCurvatureRange  > totalCurvatureRangeP) {
       node.theta = thetaP;
     } else if (totalCurvatureRange > totalCurvatureRangeM) {
@@ -466,7 +466,7 @@ class data_graph { //<>// //<>//
         int b=findNeighborJointInPoints(i, a.n1);
         int c=findJointInPoints(i, a.n1);
         int j=getNodesFromPoint(c);
-        int k=findk(de.points.get(c), b);
+        int k=findk(de.points.get(c), b);//////////////////////////////////////////////エラーがでる
         int h=getNodesFromPoint (i);
         //Log.d("0の行先は",""+getNodesFromPoint(c)+","+k);
         if ((j > h) || (j==h && k>0)) {
@@ -478,7 +478,7 @@ class data_graph { //<>// //<>//
           b = findNeighborJointInPoints(i, a.u1);
           c = findJointInPoints(i, a.u1);
           j = getNodesFromPoint(c);
-          k = findk(de.points.get(c), b);
+          k = findk(de.points.get(c), b);//////////////////////////////////////////////エラーがでる
           // Log.d("1の行先は",""+getNodesFromPoint(c)+","+k);
           if ((j > h) || (j==h && k>1)) {
             edges.add(new Edge(h, 1, j, k));

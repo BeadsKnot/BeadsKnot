@@ -421,17 +421,24 @@ class mouseDrag { //<>// //<>//
                     bd1.Joint = true;
                     bd1.u1 = bd2n1;
                     bd1.u2 = bd2n2;
-                    //bd2.c = 4;
+                    // bd1.c = 4;
                     bd2.n1 = -1;
                     bd2.n2 = -1;
                     bd2.x = bd2.y = -1f;
                     bd2.c = -1;
+
                     Bead bd11 = data.points.get(bd2n1);
-                    if (bd11.n1 == bdID2) bd11.n1 = bdID1;
-                    else if (bd11.n2 == bdID2) bd11.n2 = bdID1;
+                    if (bd11.n1 == bdID2) {
+                      bd11.n1 = bdID1;
+                    } else if (bd11.n2 == bdID2) {
+                      bd11.n2 = bdID1;
+                    }
                     Bead bd12 = data.points.get(bd2n2);
-                    if (bd12.n1 == bdID2) bd12.n1 = bdID1;
-                    else if (bd12.n2 == bdID2) bd12.n2 = bdID1;
+                    if (bd12.n1 == bdID2) {
+                      bd12.n1 = bdID1;
+                    } else if (bd12.n2 == bdID2) {
+                      bd12.n2 = bdID1;
+                    }
                   } else {
                     bd2.c=2;
                     bd2.Joint = true;
@@ -442,12 +449,19 @@ class mouseDrag { //<>// //<>//
                     bd1.n2 = -1;
                     bd1.x = bd1.y = -1f;
                     bd1.c = -1;
+
                     Bead bd11 = data.points.get(bd1n1);
-                    if (bd11.n1 == bdID1) bd11.n1 = bdID2;
-                    else if (bd11.n2 == bdID1) bd11.n2 = bdID2;
+                    if (bd11.n1 == bdID1) {
+                      bd11.n1 = bdID2;
+                    } else if (bd11.n2 == bdID1) {
+                      bd11.n2 = bdID2;
+                    }
                     Bead bd12 = data.points.get(bd1n2);
-                    if (bd12.n1 == bdID1) bd12.n1 = bdID2;
-                    else if (bd12.n2 == bdID1) bd12.n2 = bdID2;
+                    if (bd12.n1 == bdID1) {
+                      bd12.n1 = bdID2;
+                    } else if (bd12.n2 == bdID1) {
+                      bd12.n2 = bdID2;
+                    }
                   }
                 }
                 //  }
@@ -471,19 +485,20 @@ class mouseDrag { //<>// //<>//
     //}
     //if (OK) {
     //  println("complete figure");
-    //  //data.points.clear();
-    //  for (int bdID=0; bdID<data.points.size(); bdID++) {
-    //    Bead bd = data.points.get(bdID);
-    //    if (bd.c==4) {
-    //      bd.c=2;
-    //      bd.Joint = true;
-    //    } else if (bd.c==2) {
-    //      bd.Joint = false;
-    //    }
-    //    //data.points.add(bd);
+    //  edit.beads.clear();
+    //for (int bdID=0; bdID<data.points.size(); bdID++) {
+    //  Bead bd = data.points.get(bdID);
+    //  if (bd.c==4) {
+    //    bd.c=2;
+    //    bd.Joint = true;
+    //  } else if (bd.c==2) {
+    //    bd.Joint = false;
     //  }
-    //  //graph.make_data_graph();
-    //  //Draw.beads();
+    //}
+    //    edit.beads.add(bd);
+    //  }
+    graph.make_data_graph();
+    Draw.beads();
     //}// OK=falseならば、図が未完成なので、さらなるトレースを待つ。
   }
 };
