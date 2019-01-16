@@ -301,10 +301,10 @@ class mouseDrag { //<>// //<>//
   }
 
 
-  void trace_to_parts_editing2(data_extract data, int startID, int endBeadID) {
+  void trace_to_parts_editing2(data_extract data, int dragged_BeadID, int endBeadID) {
     // まず、traceをすべてbeadに置き換える。（両端は除く）
     //println("traceをbeadsに変換");
-    // int startBeadID = dragged_BeadID;
+    int startID = dragged_BeadID;
     int traceStartBeadID = 0;
     Bead startBead = data.points.get(startID);
     if (startBead.c==1) {//スタートビーズのデータを整える
