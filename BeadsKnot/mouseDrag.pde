@@ -496,6 +496,7 @@ class mouseDrag { //<>// //<>//
       //  }
       //  data.points.add(bd);
       //}
+      
       graph.make_data_graph();
       Draw.beads();
     }// OK=falseならば、図が未完成なので、さらなるトレースを待つ。

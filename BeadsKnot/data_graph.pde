@@ -313,7 +313,7 @@ class data_graph { //<>// //<>//
       edge.scaling_shape_modifier(nodes);
     }
     //Nodeのthetaを最適化する
-    for (int repeat=0; repeat < 1; repeat ++) {
+    for (int repeat=0; repeat < 0; repeat ++) {
       for (int n=0; n<nodes.size(); n++) {
         rotation_shape_modifier(n);
         graph.update_points();

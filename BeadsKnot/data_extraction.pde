@@ -74,9 +74,9 @@ class data_extract { //<>// //<>//
         stroke(0);
         fill(80, 255, 80);
         c=4;
-      //} else if (vec.closeJoint) {
-      //  stroke(0, 255, 0);
-      //  fill(255);
+        //} else if (vec.closeJoint) {
+        //  stroke(0, 255, 0);
+        //  fill(255);
       } else if (vec.midJoint) {
         stroke(0);
         fill(180, 255, 0);
@@ -1295,8 +1295,7 @@ class data_extract { //<>// //<>//
       //println("between_beads["+ii+"]"+data.between_beads[ii]);
       int a=between_beads[ii];
       Bead pt=points.get(a);
-      pt.n1=-1;
-      pt.n2=-1;
+
       if (pt.Joint) {
         if (ii>0) {
           int pre_a=between_beads[ii-1];
@@ -1318,6 +1317,9 @@ class data_extract { //<>// //<>//
         } else {
           return;
         }
+      } else {
+        pt.n1=-1;
+        pt.n2=-1;
       }
     }
   }
@@ -1350,7 +1352,7 @@ class data_extract { //<>// //<>//
 
 
   boolean next_to_undercrossing(int ptID) {
-    if(0> ptID || ptID>=points.size()) return false; 
+    if (0> ptID || ptID>=points.size()) return false; 
     int pt1ID = points.get(ptID).n1;
     if (0<=pt1ID && pt1ID<points.size()) {
       Bead bd1 = points.get(pt1ID);
