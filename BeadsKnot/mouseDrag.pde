@@ -473,32 +473,31 @@ class mouseDrag { //<>// //<>//
         }
       }
     }
-    //boolean OK=true;//図が完了しているかどうかのフラグ。
-    //for (int bdID=0; bdID<data.points.size(); bdID++) {
-    //  Bead bd = data.points.get(bdID);
-    //  if (bd.n1!=-1 || bd.n2!=-1 || bd.u1!=-1 || bd.u2!=-1) { 
-    //    if (bd.c!=2 && bd.c!=4) {
-    //      OK=false;
-    //      return;
-    //    }
-    //  }
-    //}
-    //if (OK) {
-    //  println("complete figure");
-    //  edit.beads.clear();
-    //for (int bdID=0; bdID<data.points.size(); bdID++) {
-    //  Bead bd = data.points.get(bdID);
-    //  if (bd.c==4) {
-    //    bd.c=2;
-    //    bd.Joint = true;
-    //  } else if (bd.c==2) {
-    //    bd.Joint = false;
-    //  }
-    //}
-    //    edit.beads.add(bd);
-    //  }
-    graph.make_data_graph();
-    Draw.beads();
-    //}// OK=falseならば、図が未完成なので、さらなるトレースを待つ。
+    boolean OK=true;//図が完了しているかどうかのフラグ。
+    for (int bdID=0; bdID<data.points.size(); bdID++) {
+      Bead bd = data.points.get(bdID);
+      if (bd.n1!=-1 || bd.n2!=-1 || bd.u1!=-1 || bd.u2!=-1) { 
+        if (bd.c!=2 && bd.c!=4) {
+          OK=false;
+          return;
+        }
+      }
+    }
+    if (OK) {
+      println("complete figure");
+      //data.points.clear();
+      //for (int bdID=0; bdID<edit.beads.size(); bdID++) {
+      //  Bead bd = edit.beads.get(bdID);
+      //  if (bd.c==4) {
+      //    bd.c=2;
+      //    bd.Joint = true;
+      //  } else if (bd.c==2) {
+      //    bd.Joint = false;
+      //  }
+      //  data.points.add(bd);
+      //}
+      graph.make_data_graph();
+      Draw.beads();
+    }// OK=falseならば、図が未完成なので、さらなるトレースを待つ。
   }
 };
