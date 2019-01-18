@@ -466,7 +466,7 @@ class data_graph { //<>// //<>//
         int b=findNeighborJointInPoints(i, a.n1);
         int c=findJointInPoints(i, a.n1);
         int j=getNodesFromPoint(c);
-        int k=findk(de.points.get(c), b);//////////////////////////////////////////////エラーがでる
+        int k=findk(de.points.get(c), b);
         int h=getNodesFromPoint (i);
         //Log.d("0の行先は",""+getNodesFromPoint(c)+","+k);
         if ((j > h) || (j==h && k>0)) {
@@ -478,7 +478,7 @@ class data_graph { //<>// //<>//
           b = findNeighborJointInPoints(i, a.u1);
           c = findJointInPoints(i, a.u1);
           j = getNodesFromPoint(c);
-          k = findk(de.points.get(c), b);//////////////////////////////////////////////エラーがでる
+          k = findk(de.points.get(c), b);
           // Log.d("1の行先は",""+getNodesFromPoint(c)+","+k);
           if ((j > h) || (j==h && k>1)) {
             edges.add(new Edge(h, 1, j, k));

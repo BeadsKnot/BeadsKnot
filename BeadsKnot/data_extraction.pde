@@ -1118,6 +1118,10 @@ class data_extract { //<>// //<>//
     boolean J2_under=false;
     int counta=0;
     int countb=0;
+    int self_crossing_a=0;
+    int self_crossing2_a=0;
+    int self_crossing_b=0;
+    int self_crossing2_b=0;
     for (int repeat=0; repeat < repeatmax; repeat++) {
       //startIDのビーズから初めてn1方向とn2方向の両方を調べる
       // go straight
@@ -1128,15 +1132,30 @@ class data_extract { //<>// //<>//
       prev_b=b;
 
       if (a==endID) {
+        //println("self_crossing="+self_crossing, "self_crossing2="+self_crossing2);
         if (J1_over&&J1_under) {
-          return -1;
+          if (self_crossing_a==self_crossing2_a) {
+            println("フリーループです");
+            count_for_distinguishing_edge=counta;
+            return 1;
+          } else {
+            ///////////////////////ここでライデⅠをしたあとにできたループなのかを判断する
+            return -1;
+          }
         } else {
           count_for_distinguishing_edge=counta;
           return 1;
         }
       } else if (b==endID) {
-        if (J2_over&&J2_under) {
-          return -1;
+        if ((J2_over&&J2_under)) {
+          if ( self_crossing_b==self_crossing2_b) {
+            println("フリーループです");
+            count_for_distinguishing_edge=countb;
+            return 2;
+          } else {
+            //////////////////////////ここでライデⅠをしたあとにできたループなのかを判断する
+            return -1;
+          }
         } else {
           count_for_distinguishing_edge=countb;
           return 2;
@@ -1144,7 +1163,7 @@ class data_extract { //<>// //<>//
       } else {//aもbもendIDでないとき
         ////////////////////////////////////////この辺でエラーが出やすい
         //aが-1になるとエラーがでる
-        node1=points.get(a);
+        node1=points.get(a);/////////////////////////何が怒っているのか
         counta++;
         node2=points.get(b);
         countb++;
@@ -1154,15 +1173,23 @@ class data_extract { //<>// //<>//
         if (node1.n1==pre_prev_a) {
           a=node1.n2;
           J1_over=true;
+          self_crossing_a=prev_a;
+          println("self_crossing_a="+self_crossing_a);
         } else if (node1.n2==pre_prev_a) {
           a=node1.n1;
           J1_over=true;
+          self_crossing_a=prev_a;
+          println("self_crossing_a="+self_crossing_a);
         } else if (node1.u1==pre_prev_a) {
           a=node1.u2;
           J1_under=true;
+          self_crossing2_a=prev_a;
+          println("self_crossing2_a="+self_crossing2_a);
         } else if (node1.u2==pre_prev_a) {
           a=node1.u1;
           J1_under=true;
+          self_crossing2_a=prev_a;
+          println("self_crossing2_a="+self_crossing2_a);
         }
       } else {
         a=node1.n1;
@@ -1174,15 +1201,23 @@ class data_extract { //<>// //<>//
         if (node2.n1==pre_prev_b) {
           b=node2.n2;
           J2_over=true;
+          self_crossing_b=prev_b;
+          println("self_crossing_b="+self_crossing_b);
         } else if (node2.n2==pre_prev_b) {
           b=node2.n1;
           J2_over=true;
+          self_crossing_b=prev_b;
+          println("self_crossing_b="+self_crossing_b);
         } else if (node2.u1==pre_prev_b) {
           b=node2.u2;
           J2_under=true;
+          self_crossing2_b=prev_b;
+          println("self_crossing2_b="+self_crossing2_b);
         } else if (node2.u2==pre_prev_b) {
           b=node2.u1;
           J2_under=true;
+          self_crossing2_b=prev_b;
+          println("self_crossing2_b="+self_crossing2_b);
         }
       } else {
         b=node2.n2;
@@ -1292,7 +1327,7 @@ class data_extract { //<>// //<>//
   }
   void extinguish(int count) {//between_beadsの情報をもとにbeadsを消す
     for (int ii=0; ii<count; ii++) {
-      //println("between_beads["+ii+"]"+data.between_beads[ii]);
+      println("between_beads["+ii+"]"+data.between_beads[ii]);
       int a=between_beads[ii];
       Bead pt=points.get(a);
 

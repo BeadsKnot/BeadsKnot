@@ -577,21 +577,25 @@ void mouseReleased() {
             //println("ここで作業をする");
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
-            if (i==1) {
-              // println("1");
-            } else if (i==2) {
-              //println("2");
-            } else if (i==-1) {
+            //if (i==1) {
+            //  println("1");
+            //} else if (i==2) {
+            //  println("2");
+            //} else if (i==-1) {
+            //  println("できませんでした");
+            //} else {//0のとき
+            //  println("ここで作業をする");
+            //}
+            if (i==1||i==2) {
+              println(count_for_distinguishing_edge);//間のbeadsの数。ただしstartIDとptIDは含まない
+              data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
+              data.extinguish(count_for_distinguishing_edge); 
+              data.extinguish_startID_and_endID(i, startID, ptID);
+              mouse.trace_to_parts_editing2(data, startID, ptID);//ここで線をビーズにする 
+              //traceからもらってくればよい
+            } else {
               println("できませんでした");
-            } else {//0のとき
-              println("ここで作業をする");
             }
-            // println(count);//間のbeadsの数。ただしstartIDとptIDは含まない
-            data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
-            data.extinguish(count_for_distinguishing_edge); 
-            data.extinguish_startID_and_endID(i, startID, ptID);
-            mouse.trace_to_parts_editing2(data, startID, ptID);//ここで線をビーズにする 
-            //traceからもらってくればよい
           }
         }
       }
