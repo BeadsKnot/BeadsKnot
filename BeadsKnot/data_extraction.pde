@@ -1245,6 +1245,9 @@ class data_extract { //<>// //<>//
     //    n1=-1,n2=-1,u1=-1,u2=-1にする
     int j=0;
     Bead st = points.get(startID);
+    if(st==null){
+      return ;
+    }
     int a=st.n1;
     int b=st.n2;
     Bead node1=st;
@@ -1325,6 +1328,7 @@ class data_extract { //<>// //<>//
       }
     }
   }
+  
   void extinguish(int count) {//between_beadsの情報をもとにbeadsを消す
     for (int ii=0; ii<count; ii++) {
       println("between_beads["+ii+"]"+data.between_beads[ii]);
