@@ -143,6 +143,10 @@ void keyPressed() {
     Draw.smoothing();
   } else if (keyCode==SHIFT) {
     Draw._beads=true;
+  } else if (key=='d') {
+    println("ドーカーコードを表示します");
+    orie.decide_orientation();
+    orie.dowker_notation();  ///////////////////////////////////////////////ここで関数を呼ぶ
   }
   //if (keyCode==SHIFT) {
   //  orie.decide_orientation();

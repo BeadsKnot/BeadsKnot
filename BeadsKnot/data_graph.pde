@@ -560,7 +560,7 @@ class data_graph { //<>// //<>//
       //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
       float arclength = ed.get_real_arclength(nodes);
       int beads_number = int(arclength / beads_interval) - 2;
-      if (beads_number<7) beads_number=7;
+      if (beads_number<5) beads_number=5;
       // edgeの上にある現在のビーズの個数を数える。
       int beads_count = 0;
       Node NodeA = nodes.get(ed.ANodeID);

@@ -50,24 +50,128 @@ class orientation {
       }
     }
   }
-  Nbhd find_next_joint(Nbhd n, int ori) {
-    int a=n.a;//うしろ
-    int b=n.b;//まえ
-    for (int repeat=0; repeat<de.points.size(); repeat++) {
-      if (de.points.get(b).Joint) {
-        return new Nbhd(a, b);
-      } else {
-        //(a,b)を一つ前へ送る
-        if (de.points.get(b).n1==a) {
-          a=b;
-          b=de.points.get(b).n2;
-        } else {
-          a=b;
-          b=de.points.get(b).n1;
-        }
-        de.points.get(a).orientation=ori;
+  //Nbhd find_next_joint(Nbhd n, int ori) {
+  //  int a=n.a;//うしろ
+  //  int b=n.b;//まえ
+  //  for (int repeat=0; repeat<de.points.size(); repeat++) {
+  //    if (de.points.get(b).Joint) {
+  //      return new Nbhd(a, b);
+  //    } else {
+  //      //(a,b)を一つ前へ送る
+  //      if (de.points.get(b).n1==a) {
+  //        a=b;
+  //        b=de.points.get(b).n2;
+  //      } else {
+  //        a=b;
+  //        b=de.points.get(b).n1;
+  //      }
+  //      de.points.get(a).orientation=ori;
+  //    }
+  //  }
+  //  return new Nbhd(0, 0);
+  //}
+
+  void dowker_notation() {
+    int count=0;
+    int joint_point_ID=0;
+    for (int i=0; i<de.points.size(); i++) {
+      Bead b=de.points.get(i);
+      if (b.Joint) {
+        joint_point_ID=i;
+        count++;
       }
     }
-    return new Nbhd(0, 0);
+    count=count*2;
+    // println(count);
+    if (count>0) {
+      int dowker_set[]=new int[count];
+      boolean wheather_over[]=new boolean[count];
+      Bead start=de.points.get(joint_point_ID);
+      int n1=start.n1;
+      int prev=joint_point_ID;
+      int pre_prev=joint_point_ID;
+      int j=0;
+      Bead node= start;
+      dowker_set[0]=joint_point_ID;
+      wheather_over[0]=true;
+      j++;
+      for (int i=0; i<de.points.size(); i++) {
+        pre_prev=prev;
+        prev=n1;
+        if (n1==start.n2) {
+          println(i);
+          break;
+        } else {
+          node=de.points.get(n1);
+        }
+        if (node.Joint) {
+          //println(n1);
+          dowker_set[j]=n1;
+          if (node.n1==pre_prev) {
+            n1=node.n2;
+            wheather_over[j]=true;
+          } else if (node.n2==pre_prev) {
+            n1=node.n1;
+            wheather_over[j]=true;
+          } else if (node.u1==pre_prev) {
+            n1=node.u2;
+            wheather_over[j]=false;
+          } else if (node.u2==pre_prev) {
+            n1=node.u1;
+            wheather_over[j]=false;
+          }
+          j=j+1;
+        } else {
+          n1=node.n1;
+          if (pre_prev==n1) {
+            n1=node.n2;
+          }
+        }
+      }
+      //print("(");
+      for (int i=0; i<count; i++) {
+        //println("dowker_set["+i+"]=", dowker_set[i]);
+        //println("wheather_over["+i+"]", wheather_over[i]);
+
+        if (i%2==0) {
+          int a=dowker_set[i];
+          for (int ii=0; ii<count; ii++) {
+            if (ii!=i&&dowker_set[ii]==a) {
+              if (wheather_over[ii]) {
+                print("-"+(ii+1)+",");
+                //return;
+              } else {
+                print((ii+1)+",");
+                //return;
+              }
+            }
+          }
+        }
+
+        //int a=dowker_set[0];
+        //for (int c=0; c<count; c++) {
+        //  if (c!=0&&dowker_set[c]==a) {
+        //    //println(c+1);
+        //    if (wheather_over[c]) {
+        //      print("-"+(c+1)+",");
+        //      //return;
+        //    } else {
+        //      print((c+1)+",");
+        //      //return;
+        //    }
+        //  }
+        //}
+
+
+        //if ((i+1)%2==0) {
+        //  if (wheather_over[i]==true) {
+        //    // print("-"+(i+1)+",");
+        //  } else {
+        //    // print(i+1+",");
+        //  }
+        //}
+      }
+      //print(")");
+    }
   }
 };
