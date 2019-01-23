@@ -215,7 +215,9 @@ class data_graph { //<>// //<>//
   }
 
   private int countNeighborJointInPoints(int j, int c) {
-    //print("countNeighborJointInPoints",j,c);
+    if(c<0 || de.points.size()<=c){
+      return 0;
+    }
     for (int count = 1; count < de.points.size(); count++) {
       Bead p=de.points.get(c);
       if (p.Joint) {
@@ -237,6 +239,9 @@ class data_graph { //<>// //<>//
   }
 
   int get_half_position(int j, int c, int number) {
+    if(c<0 || de.points.size()<=c){
+      return -1;
+    }
     if (number==0) {
       return c;
     }
@@ -260,8 +265,6 @@ class data_graph { //<>// //<>//
     }
     return c;
   }
-
-
 
   int findk(Bead joint, int j) {
     if (joint.n1==j) {
