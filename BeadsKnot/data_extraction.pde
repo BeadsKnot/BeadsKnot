@@ -1361,6 +1361,9 @@ class data_extract { //<>// //<>//
   void extinguish_startID_and_endID(int i, int startID, int endID) {
     Bead bds=data.points.get(startID);
     Bead bde=data.points.get(endID);
+    if(bds==null || bde==null){
+      return;
+    }
     bds.c=1;
     bde.c=1;
     if (i==1) {
