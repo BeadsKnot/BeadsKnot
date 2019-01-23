@@ -1387,19 +1387,24 @@ class data_extract { //<>// //<>//
 
 
   boolean next_to_undercrossing(int ptID) {
-    if (0> ptID || ptID>=points.size()) return false; 
-    int pt1ID = points.get(ptID).n1;
-    if (0<=pt1ID && pt1ID<points.size()) {
-      Bead bd1 = points.get(pt1ID);
-      if (bd1.Joint && (bd1.u1==ptID || bd1.u2==ptID) ) {
-        return true;
-      }
+    if (0> ptID || ptID>=points.size()) {
+      return false; 
     }
-    int pt2ID = points.get(ptID).n2;
-    if (0<=pt2ID && pt2ID<points.size()) {
-      Bead bd2 = points.get(pt2ID);
-      if (bd2.Joint  && (bd2.u1==ptID || bd2.u2==ptID)) {
-        return true;
+    Bead bd = points.get(ptID);
+    if(bd != null){
+      int pt1ID = bd.n1;
+      if (0<=pt1ID && pt1ID<points.size()) {
+        Bead bd1 = points.get(pt1ID);
+        if (bd1!=null && bd1.Joint && (bd1.u1==ptID || bd1.u2==ptID) ) {
+          return true;
+        }
+      }
+      int pt2ID = bd.n2;
+      if (0<=pt2ID && pt2ID<points.size()) {
+        Bead bd2 = points.get(pt2ID);
+        if (bd2!=null && bd2.Joint  && (bd2.u1==ptID || bd2.u2==ptID)) {
+          return true;
+        }
       }
     }
     return false;

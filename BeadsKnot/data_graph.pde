@@ -192,6 +192,9 @@ class data_graph { //<>// //<>//
   }
 
   int findJointInPoints(int j, int c) {// Jointを表すビーズの番号を返す。
+    if(c<0 || de.points.size()<=c){
+      return -1;
+    }
     for (int count = 0; count < de.points.size(); count++) {
       Bead p=de.points.get(c);
       if (p.Joint||p.midJoint) {
