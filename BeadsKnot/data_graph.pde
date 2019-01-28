@@ -319,12 +319,13 @@ class data_graph { //<>// //<>//
       edge.scaling_shape_modifier(nodes);
     }
     //Nodeのthetaを最適化する
-    for (int repeat=0; repeat < 0; repeat ++) {
-      for (int n=0; n<nodes.size(); n++) {
-        rotation_shape_modifier(n);
-        graph.update_points();
-      }
-    }
+    //for (int repeat=0; repeat < 0; repeat ++) {
+    //  for (int n=0; n<nodes.size(); n++) {
+    //    rotation_shape_modifier(n);
+    //    graph.update_points();
+    //  }
+    //}
+    // ジョイントをドラッグするときに限り、該当するジョイントの周りのthetaを最適化するようにする。（20190128メモ）
     //Nodeの(x,y)を最適化する
     //nodeCoordinateModifier(nodes, edges);
     // 絵の範囲を求めて適切に描画する
