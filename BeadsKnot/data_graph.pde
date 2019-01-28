@@ -559,122 +559,123 @@ class data_graph { //<>// //<>//
     }
   }
 
-  void update_points()
-  {
-    //課題：必ずいつでも「すべてのエッジについて行う」のは効率的ではない。
+  void update_points(){
     for (int e=0; e<edges.size(); e++) {
-      //print(e+":");
       Edge ed = edges.get(e);
-      //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
-      // 理想とするエッジの弧長の概数を計算する。
-      float arclength = ed.get_real_arclength(nodes);
-      // 理想とするビーズの内個数を計算する。
-      int beads_number = int(arclength / beads_interval) - 2;
-      if (beads_number<5) beads_number=5;
-      // edgeの上にある現在のビーズの個数を数える。
-      int beads_count = 0;
-      Node NodeA = nodes.get(ed.ANodeID);
-      Node NodeB = nodes.get(ed.BNodeID);
-      int bead1 = NodeA.pointID;
-      int bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号
-      int bead3 = -1;
-      if (bead2 == NodeB.pointID) {
-        beads_count=0;// この行は不要だがつけておく。
-      } else {
-        do {
-          //課題：このループで失敗していたらどうするか。
-          int b = de.points.get(bead2).n1;
-          if (b == bead1) {
-            bead3 = de.points.get(bead2).n2;
-          } else {
-            bead3 = b;
-          }
-          bead1 = bead2;
-          bead2 = bead3;
-          beads_count ++;
-        } while (bead3 != NodeB.pointID);
-      }
-      //println("必要数,現状数",beads_number, beads_count);
-      if (beads_number > beads_count) {// 必要数のほうが多い→ビーズの追加が必要
-        bead1 = NodeA.pointID;
-        bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
-        for (int repeat=0; repeat < beads_number - beads_count; repeat++) {
-          Bead newBd = new Bead(0, 0);
-          newBd.n1 = bead1;
-          newBd.n2 = bead2;
-          newBd.c = 2;
-          de.points.add(newBd);
-          int newBdID= de.points.size()-1;
-          de.points.get(bead1).set_un12(ed.ANodeRID, newBdID);
-          if (de.points.get(bead2).n1 == bead1) de.points.get(bead2).n1 = newBdID;
-          else de.points.get(bead2).n2 = newBdID;
-          bead2 = newBdID;
+      update_points_on_edge(ed);
+    }    
+  }
+
+  void update_points_on_edge(Edge ed)
+  {
+    //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
+    // 理想とするエッジの弧長の概数を計算する。
+    float arclength = ed.get_real_arclength(nodes);
+    // 理想とするビーズの内個数を計算する。
+    int beads_number = int(arclength / beads_interval) - 2;
+    if (beads_number<5) beads_number=5;
+    // edgeの上にある現在のビーズの個数を数える。
+    int beads_count = 0;
+    Node NodeA = nodes.get(ed.ANodeID);
+    Node NodeB = nodes.get(ed.BNodeID);
+    int bead1 = NodeA.pointID;
+    int bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号
+    int bead3 = -1;
+    if (bead2 == NodeB.pointID) {
+      beads_count=0;// この行は不要だがつけておく。
+    } else {
+      do {
+        //課題：このループで失敗していたらどうするか。
+        int b = de.points.get(bead2).n1;
+        if (b == bead1) {
+          bead3 = de.points.get(bead2).n2;
+        } else {
+          bead3 = b;
         }
-      } else if (beads_number < beads_count) {//現在数のほうが多い→ビーズの削除が必要
-        bead1 = NodeA.pointID;
-        for (int repeat=0; repeat < beads_count - beads_number; repeat++) {
-          bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
-          if (de.points.get(bead2).n1==bead1)
-            bead3 = de.points.get(bead2).n2;
-          else if (de.points.get(bead2).n2==bead1)
-            bead3 = de.points.get(bead2).n1;
-          else {
-            println("update_points : add points : error");
-            break;
-          }
-          de.points.get(bead1).set_un12(ed.ANodeRID, bead3);
-          if (de.points.get(bead3).n1 == bead2)
-            de.points.get(bead3).n1 = bead1;
-          else if (de.points.get(bead3).n2 == bead2) 
-            de.points.get(bead3).n2 = bead1;
-          de.points.get(bead2).n1 = de.points.get(bead2).n2 = -1;// 使わないもののデータを消す。
-          de.points.get(bead2).x = de.points.get(bead2).y = 100;//ダミーデータ-> 不要
-        }
+        bead1 = bead2;
+        bead2 = bead3;
+        beads_count ++;
+      } while (bead3 != NodeB.pointID);
+    }
+    //println("必要数,現状数",beads_number, beads_count);
+    if (beads_number > beads_count) {// 必要数のほうが多い→ビーズの追加が必要
+      bead1 = NodeA.pointID;
+      bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
+      for (int repeat=0; repeat < beads_number - beads_count; repeat++) {
+        Bead newBd = new Bead(0, 0);
+        newBd.n1 = bead1;
+        newBd.n2 = bead2;
+        newBd.c = 2;
+        de.points.add(newBd);
+        int newBdID= de.points.size()-1;
+        de.points.get(bead1).set_un12(ed.ANodeRID, newBdID);
+        if (de.points.get(bead2).n1 == bead1) de.points.get(bead2).n1 = newBdID;
+        else de.points.get(bead2).n2 = newBdID;
+        bead2 = newBdID;
       }
-      //今一度、エッジに乗っているビーズの座標を計算しなおす。
-      ed = edges.get(e);
-      Node ANode=nodes.get(ed.ANodeID);
-      Node BNode=nodes.get(ed.BNodeID);
-      float V1x = ANode.x;
-      float V1y = ANode.y;
-      float V2x = ANode.edge_x(ed.ANodeRID);
-      float V2y = ANode.edge_y(ed.ANodeRID);
-      float V3x = BNode.edge_x(ed.BNodeRID);
-      float V3y = BNode.edge_y(ed.BNodeRID);
-      float V4x = BNode.x;
-      float V4y = BNode.y;
-      bead1 = nodes.get(ed.ANodeID).pointID;
-      bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
-      float step = arclength / (beads_number+1);
-      int bd=0;
-      float arclen=0f;
-      float xx0 = V1x;
-      float yy0 = V1y;
-      float xx, yy;
-      for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
-        xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
-        yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
-        arclen += dist(xx0, yy0, xx, yy);
-        //println("update_points():",arclen,step);
-        if (arclen >= step * (bd+1)) {
-          de.points.get(bead2).x = xx; 
-          de.points.get(bead2).y = yy;
-          // println("update_points():",bead2,xx,yy);
-          bd ++;
-          int b = de.points.get(bead2).n1;
-          if (b == bead1) {
-            bead3 = de.points.get(bead2).n2;
-          } else {
-            bead3 = b;
-          }
-          bead1 = bead2;
-          bead2 = bead3;
-          if (bead2 == BNode.pointID)
-            break;
+    } else if (beads_number < beads_count) {//現在数のほうが多い→ビーズの削除が必要
+      bead1 = NodeA.pointID;
+      for (int repeat=0; repeat < beads_count - beads_number; repeat++) {
+        bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
+        if (de.points.get(bead2).n1==bead1)
+          bead3 = de.points.get(bead2).n2;
+        else if (de.points.get(bead2).n2==bead1)
+          bead3 = de.points.get(bead2).n1;
+        else {
+          println("update_points : add points : error");
+          break;
         }
-        xx0 = xx;
-        yy0 = yy;
+        de.points.get(bead1).set_un12(ed.ANodeRID, bead3);
+        if (de.points.get(bead3).n1 == bead2)
+          de.points.get(bead3).n1 = bead1;
+        else if (de.points.get(bead3).n2 == bead2) 
+          de.points.get(bead3).n2 = bead1;
+        de.points.get(bead2).n1 = de.points.get(bead2).n2 = -1;// 使わないもののデータを消す。
+        de.points.get(bead2).x = de.points.get(bead2).y = 100;//ダミーデータ-> 不要
       }
+    }
+    //今一度、エッジに乗っているビーズの座標を計算しなおす。
+    Node ANode=nodes.get(ed.ANodeID);
+    Node BNode=nodes.get(ed.BNodeID);
+    float V1x = ANode.x;
+    float V1y = ANode.y;
+    float V2x = ANode.edge_x(ed.ANodeRID);
+    float V2y = ANode.edge_y(ed.ANodeRID);
+    float V3x = BNode.edge_x(ed.BNodeRID);
+    float V3y = BNode.edge_y(ed.BNodeRID);
+    float V4x = BNode.x;
+    float V4y = BNode.y;
+    bead1 = nodes.get(ed.ANodeID).pointID;
+    bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
+    float step = arclength / (beads_number+1);
+    int bd=0;
+    float arclen=0f;
+    float xx0 = V1x;
+    float yy0 = V1y;
+    float xx, yy;
+    for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
+      xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
+      yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
+      arclen += dist(xx0, yy0, xx, yy);
+      //println("update_points():",arclen,step);
+      if (arclen >= step * (bd+1)) {
+        de.points.get(bead2).x = xx; 
+        de.points.get(bead2).y = yy;
+        // println("update_points():",bead2,xx,yy);
+        bd ++;
+        int b = de.points.get(bead2).n1;
+        if (b == bead1) {
+          bead3 = de.points.get(bead2).n2;
+        } else {
+          bead3 = b;
+        }
+        bead1 = bead2;
+        bead2 = bead3;
+        if (bead2 == BNode.pointID)
+          break;
+      }
+      xx0 = xx;
+      yy0 = yy;
     }
   }
 
