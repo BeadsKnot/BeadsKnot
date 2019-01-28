@@ -616,12 +616,17 @@ class data_graph { //<>// //<>//
       bead1 = NodeA.pointID;
       bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
       for (int repeat=0; repeat < beads_number - beads_count; repeat++) {
-        Bead newBd = new Bead(0, 0);// 課題：捨てられたビーズを再利用する。
+        //Bead newBd = new Bead(0, 0);// 課題：捨てられたビーズを再利用する。
+        //newBd.n1 = bead1;
+        //newBd.n2 = bead2;
+        //newBd.c = 2;
+        //de.points.add(newBd);
+        //int newBdID= de.points.size()-1;// 課題：捨てられたビーズを再利用するとき、ここが問題になる。
+        int newBdID = de.addBeadToPoint();
+        Bead newBd = de.points.get(newBdID);
         newBd.n1 = bead1;
         newBd.n2 = bead2;
         newBd.c = 2;
-        de.points.add(newBd);
-        int newBdID= de.points.size()-1;// 課題：捨てられたビーズを再利用するとき、ここが問題になる。
         de.points.get(bead1).set_un12(ed.ANodeRID, newBdID);
         if (de.points.get(bead2).n1 == bead1) de.points.get(bead2).n1 = newBdID;
         else de.points.get(bead2).n2 = newBdID;
