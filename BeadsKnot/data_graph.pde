@@ -561,11 +561,14 @@ class data_graph { //<>// //<>//
 
   void update_points()
   {
+    //課題：必ずいつでも「すべてのエッジについて行う」のは効率的ではない。
     for (int e=0; e<edges.size(); e++) {
       //print(e+":");
       Edge ed = edges.get(e);
       //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
+      // 理想とするエッジの弧長の概数を計算する。
       float arclength = ed.get_real_arclength(nodes);
+      // 理想とするビーズの内個数を計算する。
       int beads_number = int(arclength / beads_interval) - 2;
       if (beads_number<5) beads_number=5;
       // edgeの上にある現在のビーズの個数を数える。
@@ -579,6 +582,7 @@ class data_graph { //<>// //<>//
         beads_count=0;// この行は不要だがつけておく。
       } else {
         do {
+          //課題：このループで失敗していたらどうするか。
           int b = de.points.get(bead2).n1;
           if (b == bead1) {
             bead3 = de.points.get(bead2).n2;
