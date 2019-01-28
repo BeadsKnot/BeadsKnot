@@ -310,22 +310,15 @@ void mousePressed() {
           }
         }
       } else {
-        //int jt_ndID =graph.next_to_node(ptID); 
-        //if (jt_ndID!=-1) {//ノードの隣をドラッグした場合
-          //mouse.node_next_dragging = true;
-          //mouse.dragged_nodeID = jt_ndID;
-          //Node nd = graph.nodes.get(mouse.dragged_nodeID);
-          //mouse.dragged_theta = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
-          //mouse.nd_theta = nd.theta;
-          //mouse.nd_theta_branch =0f;
-        //} else {//ノードでもなくノードの隣でもないところでクリックをしたときの処理
+        int jt_ndID =graph.next_to_node(ptID); 
+        if (jt_ndID==-1) {//ノードの隣でないところをドラッグした場合
           startID=graph.is_PVector_on_points(mouseX, mouseY);
           mouse.prev = new PVector(mouseX, mouseY);
           mouse.trace.clear();
           mouse.trace.add(mouse.prev);
           mouse.new_curve=true;
           mouse.free_dragging = true;
-        //}
+        }
       }
     }
   } else if (Draw._free_loop) {
