@@ -305,27 +305,21 @@ void mousePressed() {
             Bead pt0 = data.points.get(pt0ID);
             mouse.DragX = pt0.x;
             mouse.DragY = pt0.y;
-            println("ドラッグ開始");
+            println("ノードのドラッグ開始");
             return;
           }
         }
       } else {
-        //int jt_ndID =graph.next_to_node(ptID); 
-        //if (jt_ndID!=-1) {//ノードの隣をドラッグした場合
-          //mouse.node_next_dragging = true;
-          //mouse.dragged_nodeID = jt_ndID;
-          //Node nd = graph.nodes.get(mouse.dragged_nodeID);
-          //mouse.dragged_theta = atan2(mouseY - disp.get_winY(nd.y), mouseX - disp.get_winX(nd.x));
-          //mouse.nd_theta = nd.theta;
-          //mouse.nd_theta_branch =0f;
-        //} else {//ノードでもなくノードの隣でもないところでクリックをしたときの処理
+        int jt_ndID =graph.next_to_node(ptID); 
+        if (jt_ndID==-1) {//ノードの隣でないところをドラッグした場合
+          println("新規パス開始");
           startID=graph.is_PVector_on_points(mouseX, mouseY);
           mouse.prev = new PVector(mouseX, mouseY);
           mouse.trace.clear();
           mouse.trace.add(mouse.prev);
           mouse.new_curve=true;
           mouse.free_dragging = true;
-        //}
+        }
       }
     }
   } else if (Draw._free_loop) {
@@ -559,6 +553,7 @@ void mouseReleased() {
                 edgeN1.BNodeID = BNode;
                 edgeN1.BNodeRID = BNodeR;
                 graph.edges.remove(edgeN2ID);
+                println("ミッドジョイント消去完了");
               }
             }
             break;
