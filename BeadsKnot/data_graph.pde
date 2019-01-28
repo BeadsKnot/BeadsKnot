@@ -680,20 +680,21 @@ class data_graph { //<>// //<>//
       arclen += dist(xx0, yy0, xx, yy);
       //println("update_points():",arclen,step);
       if (arclen >= step * (bd+1)) {
-        de.points.get(bead2).x = xx; 
-        de.points.get(bead2).y = yy;
-        // println("update_points():",bead2,xx,yy);
+        Bead bd2 = de.points.get(bead2); 
+        bd2.x = xx; 
+        bd2.y = yy;
         bd ++;
-        int b = de.points.get(bead2).n1;
+        int b = bd2.n1;
         if (b == bead1) {
-          bead3 = de.points.get(bead2).n2;
+          bead3 = bd2.n2;
         } else {
           bead3 = b;
         }
         bead1 = bead2;
         bead2 = bead3;
-        if (bead2 == BNode.pointID)
+        if (bead2 == BNode.pointID){
           break;
+        }
       }
       xx0 = xx;
       yy0 = yy;
