@@ -305,13 +305,14 @@ void mousePressed() {
             Bead pt0 = data.points.get(pt0ID);
             mouse.DragX = pt0.x;
             mouse.DragY = pt0.y;
-            println("ドラッグ開始");
+            println("ノードのドラッグ開始");
             return;
           }
         }
       } else {
         int jt_ndID =graph.next_to_node(ptID); 
         if (jt_ndID==-1) {//ノードの隣でないところをドラッグした場合
+          println("新規パス開始");
           startID=graph.is_PVector_on_points(mouseX, mouseY);
           mouse.prev = new PVector(mouseX, mouseY);
           mouse.trace.clear();
@@ -552,6 +553,7 @@ void mouseReleased() {
                 edgeN1.BNodeID = BNode;
                 edgeN1.BNodeRID = BNodeR;
                 graph.edges.remove(edgeN2ID);
+                println("ミッドジョイント消去完了");
               }
             }
             break;
