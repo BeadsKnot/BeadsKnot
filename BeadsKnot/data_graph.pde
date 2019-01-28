@@ -725,6 +725,19 @@ class data_graph { //<>// //<>//
     return retID;
   }
 
+  int is_PVector_on_Joints(float vecX, float vecY) {
+    int retID=-1;
+    float minDist = width+height;
+    for (int ptID=0; ptID<de.points.size(); ptID++) {
+      Bead bd = de.points.get(ptID);
+      float d = dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY); 
+      if ((bd.Joint || bd.midJoint) && d<10 && d<minDist) {
+        retID = ptID;
+      }
+    }
+    return retID;
+  }
+
 
   // クロスチェンジ
   void crosschange(int nodeID) {
