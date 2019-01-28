@@ -1416,4 +1416,19 @@ class data_extract { //<>// //<>//
     }
     return false;
   }
+  
+  int addBeadToPoint(){// pointsにある「消去済み」を再利用する。
+    for(int ptID=0; ptID<points.size(); ptID++){
+      Bead pt = points.get(ptID);
+      if(pt!=null){
+        if(pt.n1==-1 && pt.n2==-1){
+          pt.x = pt.y = 0f;
+          return ptID;
+        }
+      }
+    }
+    Bead pt = new Bead(0, 0);
+    points.add(pt);
+    return points.size()-1;
+  }
 }
