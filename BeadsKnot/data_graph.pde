@@ -634,23 +634,25 @@ class data_graph { //<>// //<>//
       }
     } else if (beads_number < beads_count) {//現在数のほうが多い→ビーズの削除が必要
       bead1 = NodeA.pointID;
+      Bead bd1 = de.points.get(bead1); 
       for (int repeat=0; repeat < beads_count - beads_number; repeat++) {
-        bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
-        if (de.points.get(bead2).n1==bead1)
-          bead3 = de.points.get(bead2).n2;
-        else if (de.points.get(bead2).n2==bead1)
-          bead3 = de.points.get(bead2).n1;
+        bead2 = bd1.get_un12(ed.ANodeRID);
+        Bead bd2 = de.points.get(bead2);
+        // ここでbd2=nullだったらどうしよう・・・・論理的にはありえないのだが。
+        if (bd2.n1==bead1)
+          bead3 = bd2.n2;
         else {
-          println("update_points : add points : error");
-          break;
+          bead3 = bd2.n1;
         }
-        de.points.get(bead1).set_un12(ed.ANodeRID, bead3);
-        if (de.points.get(bead3).n1 == bead2)
-          de.points.get(bead3).n1 = bead1;
-        else if (de.points.get(bead3).n2 == bead2) 
-          de.points.get(bead3).n2 = bead1;
-        de.points.get(bead2).n1 = de.points.get(bead2).n2 = -1;// 使わないもののデータを消す。
-        de.points.get(bead2).x = de.points.get(bead2).y = -1;//ダミーデータ-> 不要
+        bd1.set_un12(ed.ANodeRID, bead3);
+        Bead bd3 = de.points.get(bead3); 
+        if (bd3.n1 == bead2){
+          bd3.n1 = bead1;
+        } else {
+          bd3.n2 = bead1;
+        }
+        bd2.n1 = bd2.n2 = -1;// 使わないもののデータを消す。
+        bd2.x = bd2.y = -1;//ダミーデータ-> 不要
       }
     }
     //今一度、エッジに乗っているビーズの座標を計算しなおす。
