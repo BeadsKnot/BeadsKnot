@@ -568,6 +568,8 @@ class data_graph { //<>// //<>//
 
   void update_points_on_edge(Edge ed)
   {
+    // メモ：ed=NULLの場合を想定しておくべきか？
+    // ←そのたぐいのエラーが出るようになったら。
     //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
     // 理想とするエッジの弧長の概数を計算する。
     float arclength = ed.get_real_arclength(nodes);
@@ -578,14 +580,26 @@ class data_graph { //<>// //<>//
     int beads_count = 0;
     Node NodeA = nodes.get(ed.ANodeID);
     Node NodeB = nodes.get(ed.BNodeID);
+    //ここで、NodeA=null か　NodeB=nullならば、直ちにやめる。
+    if(NodeA==null || NodeB==null){
+      return ;
+    }
     int bead1 = NodeA.pointID;
-    int bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号
+    Bead beadA = de.points.get(bead1);
+    if(beadA == null) {
+      return ;
+    }
+    int bead2 = beadA.get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号
     int bead3 = -1;
-    if (bead2 == NodeB.pointID) {
+    if (bead2 == -1){
+      return ;
+    } else if (bead2 == NodeB.pointID) {
       beads_count=0;// この行は不要だがつけておく。
     } else {
       do {
-        //課題：このループで失敗していたらどうするか。
+        if(bead2 == -1){
+          return ;
+        }
         int b = de.points.get(bead2).n1;
         if (b == bead1) {
           bead3 = de.points.get(bead2).n2;
@@ -602,12 +616,12 @@ class data_graph { //<>// //<>//
       bead1 = NodeA.pointID;
       bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
       for (int repeat=0; repeat < beads_number - beads_count; repeat++) {
-        Bead newBd = new Bead(0, 0);
+        Bead newBd = new Bead(0, 0);// 課題：捨てられたビーズを再利用する。
         newBd.n1 = bead1;
         newBd.n2 = bead2;
         newBd.c = 2;
         de.points.add(newBd);
-        int newBdID= de.points.size()-1;
+        int newBdID= de.points.size()-1;// 課題：捨てられたビーズを再利用するとき、ここが問題になる。
         de.points.get(bead1).set_un12(ed.ANodeRID, newBdID);
         if (de.points.get(bead2).n1 == bead1) de.points.get(bead2).n1 = newBdID;
         else de.points.get(bead2).n2 = newBdID;
@@ -631,7 +645,7 @@ class data_graph { //<>// //<>//
         else if (de.points.get(bead3).n2 == bead2) 
           de.points.get(bead3).n2 = bead1;
         de.points.get(bead2).n1 = de.points.get(bead2).n2 = -1;// 使わないもののデータを消す。
-        de.points.get(bead2).x = de.points.get(bead2).y = 100;//ダミーデータ-> 不要
+        de.points.get(bead2).x = de.points.get(bead2).y = -1;//ダミーデータ-> 不要
       }
     }
     //今一度、エッジに乗っているビーズの座標を計算しなおす。
