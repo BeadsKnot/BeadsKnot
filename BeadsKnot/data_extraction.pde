@@ -27,6 +27,35 @@ class data_extract { //<>// //<>//
     disp = _disp;
   }
 
+  int addBeadToPoint(){// pointsにある「消去済み」を再利用する。
+    for(int ptID=0; ptID<points.size(); ptID++){
+      Bead pt = points.get(ptID);
+      if(pt!=null){
+        if(pt.n1==-1 && pt.n2==-1){
+          pt.x = pt.y = 0f;
+          return ptID;
+        }
+      }
+    }
+    Bead pt = new Bead(0, 0);
+    points.add(pt);
+    return points.size()-1;
+  }
+  
+  Bead getBead(int ID){
+    if(0<=ID && ID<points.size()){
+      return points.get(ID);
+    }
+    return null;
+  }
+  
+  void removeBeadFromPoint(int ID){
+    if(0<=ID && ID<points.size()){
+      Bead pt = points.get(ID);
+      pt.n1 = pt.n2 = -1;
+    }
+  }
+
   // imageデータの解析
   boolean make_data_extraction(PImage image) {
     //もと画像が横長の場合，縦長の場合に応じて変える。
@@ -1425,18 +1454,4 @@ class data_extract { //<>// //<>//
     return false;
   }
   
-  int addBeadToPoint(){// pointsにある「消去済み」を再利用する。
-    for(int ptID=0; ptID<points.size(); ptID++){
-      Bead pt = points.get(ptID);
-      if(pt!=null){
-        if(pt.n1==-1 && pt.n2==-1){
-          pt.x = pt.y = 0f;
-          return ptID;
-        }
-      }
-    }
-    Bead pt = new Bead(0, 0);
-    points.add(pt);
-    return points.size()-1;
-  }
 }
