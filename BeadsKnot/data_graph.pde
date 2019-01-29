@@ -162,7 +162,7 @@ class data_graph { //<>// //<>//
         d=p.n1;
       } else {
         // println();
-        println("find_next_Joint_in_points : 間違っている");
+        println("find_next_Joint_in_points : ビーズがつながっていないエラー");
         return -1;
       }
       //print(" "+d);
@@ -188,7 +188,7 @@ class data_graph { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("findNeighborJointInPoints : 間違っている");
+        println("findNeighborJointInPoints : ビーズがつながっていないエラー");
         return -1;
       }
       j=c;
@@ -200,6 +200,7 @@ class data_graph { //<>// //<>//
   int findJointInPoints(int j, int c) {// Jointを表すビーズの番号を返す。
     for (int count = 0; count < de.points.size(); count++) {
       if (c<0 || de.points.size()<=c) {
+        println("findJointInPoints:cの値が不正：エラー");
         return -1; //<>//
       }
       Bead p=de.getBead(c);
@@ -212,7 +213,7 @@ class data_graph { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("findJointInPoints:間違っている", "");
+        println("findJointInPoints:ビーズがつながっていないエラー");
         return -1; //<>//
       } 
       j=c;
@@ -247,15 +248,17 @@ class data_graph { //<>// //<>//
 
   int get_half_position(int j, int c, int number) {
     if (c<0 || de.points.size()<=c) {
+        println("get_half_position : c の値が不正：エラー");
       return -1;
     }
     if (number==0) {
+        println("get_half_position : number の値が不正：エラー");
       return c;
     }
     for (int count=1; count<number; count++) {
       Bead p=de.getBead(c);
       if (p.Joint) {
-        println("get_half_position : エラー");
+        println("get_half_position : jointに遭遇するエラー");
         return -1;
       }
       int d=0;
@@ -264,7 +267,7 @@ class data_graph { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("get_half_position:間違っている");
+        println("get_half_position:　ビーズがつながっていないエラー");
         return -1;
       }
       j=c;
@@ -274,6 +277,10 @@ class data_graph { //<>// //<>//
   }
 
   int findk(Bead joint, int j) {
+    if (joint == null){
+      println("findk : null pointer エラー");
+      return -1;
+    }
     if (joint.n1==j) {
       return 0;
     } else if (joint.u1==j) {

@@ -305,6 +305,10 @@ class mouseDrag { //<>// //<>//
     int startID = dragged_BeadID;
     int traceStartBeadID = 0;
     Bead startBead = data.getBead(startID);
+    if(startBead == null){
+      println("trace_to_parts_editing2:error:dragged_BeadIDの値が不正");
+      return ;
+    }
     if (startBead.c==1) {//スタートビーズのデータを整える
       startBead.n2 = data.points.size();
       startBead.c = 2;
@@ -356,7 +360,7 @@ class mouseDrag { //<>// //<>//
       if (bd1.c>=2) {
         for (int bdID2=0; bdID2<beadsNumber; bdID2++) {
           Bead bd2 = data.getBead(bdID2);
-          if (bdID2<bdID1 && bd2.c>=2) {
+          if (bd2 != null && bdID2<bdID1 && bd2.c>=2) {
             int bd1n1 = bd1.n1;
             int bd1n2 = bd1.n2;
             int bd2n1 = bd2.n1;
