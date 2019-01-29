@@ -1405,8 +1405,9 @@ class data_extract { //<>// //<>//
           return;
         }
       } else {
-        pt.n1=-1;
-        pt.n2=-1;
+        removeBeadFromPoint(a);
+        //pt.n1=-1;
+        //pt.n2=-1;
       }
     }
   }

@@ -22,7 +22,7 @@ class transform {//形を整えるクラス
       calc_spring(de.nbhds.get(i).a, de.nbhds.get(i).b, ln);//Nbh[n,m]みたいな感じになる
     }
     for (int i=0; i<de.points.size (); i++) {//double spring scheme
-      Bead vec=de.points.get(i);
+      Bead vec=de.getBead(i);
       if (vec.Joint) {
         calc_spring(vec.n1, vec.u1, 1.414*ln);
         calc_spring(vec.n2, vec.u1, 1.414*ln);
@@ -34,8 +34,8 @@ class transform {//形を整えるクラス
     }
 
     for (int i=0; i<de.points.size (); i++) {
-      de.points.get(i).x+=dx[i];
-      de.points.get(i).y+=dy[i];
+      de.getBead(i).x+=dx[i];
+      de.getBead(i).y+=dy[i];
     }
   }
 
@@ -44,8 +44,8 @@ class transform {//形を整えるクラス
     float Y=0;
     float d=0;
     float k=0.1;
-    X=de.points.get(j).x-de.points.get(i).x;
-    Y=de.points.get(j).y-de.points.get(i).y;
+    X=de.getBead(j).x-de.getBead(i).x;
+    Y=de.getBead(j).y-de.getBead(i).y;
     d=sqrt(X*X+Y*Y);
     dx[i]+=X/d*k*(d-l);
     dy[i]+=Y/d*k*(d-l);

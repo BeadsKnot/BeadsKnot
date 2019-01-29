@@ -1,4 +1,4 @@
-class parts_editing { //<>//
+class parts_editing { //<>// //<>//
 
   ArrayList<Bead> beads;
 
@@ -222,7 +222,7 @@ class parts_editing { //<>//
     int pointslength = de.points.size();
     println("pointslength", pointslength);
     for (int ptID = 0; ptID < pointslength; ptID++) {
-      Bead pt = de.points.get(ptID);
+      Bead pt = de.getBead(ptID);
       beads.add(pt);
     }
     restore_beads();

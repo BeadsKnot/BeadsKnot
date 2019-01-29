@@ -303,7 +303,7 @@ class mouseDrag { //<>// //<>//
     //println("traceをbeadsに変換");
     int startID = dragged_BeadID;
     int traceStartBeadID = 0;
-    Bead startBead = data.points.get(startID);
+    Bead startBead = data.getBead(startID);
     if (startBead.c==1) {//スタートビーズのデータを整える
       startBead.n2 = data.points.size();
       startBead.c = 2;
@@ -315,7 +315,7 @@ class mouseDrag { //<>// //<>//
       println("startBeadの異常");
       return ;
     }
-    Bead endBead = data.points.get(endBeadID);
+    Bead endBead = data.getBead(endBeadID);
     if (endBead.c!=1 && endBead.c!=0) {//エンドビーズについてもおかしなところがあれば即刻辞める
       return ;
     }
@@ -351,10 +351,10 @@ class mouseDrag { //<>// //<>//
     ArrayList<PVector> meets = new ArrayList<PVector>();
     int beadsNumber = data.points.size();
     for (int bdID1 = traceStartBeadID; bdID1<beadsNumber; bdID1++) {
-      Bead bd1 = data.points.get(bdID1);
+      Bead bd1 = data.getBead(bdID1);
       if (bd1.c>=2) {
         for (int bdID2=0; bdID2<beadsNumber; bdID2++) {
-          Bead bd2 = data.points.get(bdID2);
+          Bead bd2 = data.getBead(bdID2);
           if (bdID2<bdID1 && bd2.c>=2) {
             int bd1n1 = bd1.n1;
             int bd1n2 = bd1.n2;
@@ -364,14 +364,14 @@ class mouseDrag { //<>// //<>//
               && bd1n1!=bd2n1 && bd1n1!=bdID2 && bd1n1!=bd2n2
               && bdID1!=bd2n1 && bdID1!=bdID2 && bdID1!=bd2n2
               && bd1n2!=bd2n1 && bd1n2!=bdID2 && bd1n2!=bd2n2) {
-              float x1 = data.points.get(bd1n1).x;
-              float y1 = data.points.get(bd1n1).y;
-              float x2 = data.points.get(bd1n2).x;
-              float y2 = data.points.get(bd1n2).y;
-              float x3 = data.points.get(bd2n1).x;
-              float y3 = data.points.get(bd2n1).y;
-              float x4 = data.points.get(bd2n2).x;
-              float y4 = data.points.get(bd2n2).y;
+              float x1 = data.getBead(bd1n1).x;
+              float y1 = data.getBead(bd1n1).y;
+              float x2 = data.getBead(bd1n2).x;
+              float y2 = data.getBead(bd1n2).y;
+              float x3 = data.getBead(bd2n1).x;
+              float y3 = data.getBead(bd2n1).y;
+              float x4 = data.getBead(bd2n2).x;
+              float y4 = data.getBead(bd2n2).y;
               //   (x2-x1)s - (x4-x3)t = +x3-x1 
               //   (y2-y1)s - (y4-y3)t = +y3-y1
               float a = x2 - x1;
@@ -409,8 +409,8 @@ class mouseDrag { //<>// //<>//
                 if (localOK) {
                   println(bdID1, "meets", bdID2);
                   meets.add(new PVector(bdID1, bdID2));
-                  bd1 = data.points.get(bdID1);
-                  bd2 = data.points.get(bdID2);
+                  bd1 = data.getBead(bdID1);
+                  bd2 = data.getBead(bdID2);
                   ///////Jointかunderかoverかで変わる
                   ///overならbd1を採用し、underならbd2を採用する
                   if (data.over_crossing) {
@@ -419,18 +419,19 @@ class mouseDrag { //<>// //<>//
                     bd1.u1 = bd2n1;
                     bd1.u2 = bd2n2;
                     // bd1.c = 4;
-                    bd2.n1 = -1;
-                    bd2.n2 = -1;
-                    bd2.x = bd2.y = -1f;
-                    bd2.c = -1;
+                    data.removeBeadFromPoint(bdID2);
+                    //bd2.n1 = -1;
+                    //bd2.n2 = -1;
+                    //bd2.x = bd2.y = -1f;
+                    //bd2.c = -1;
 
-                    Bead bd11 = data.points.get(bd2n1);
+                    Bead bd11 = data.getBead(bd2n1);
                     if (bd11.n1 == bdID2) {
                       bd11.n1 = bdID1;
                     } else if (bd11.n2 == bdID2) {
                       bd11.n2 = bdID1;
                     }
-                    Bead bd12 = data.points.get(bd2n2);
+                    Bead bd12 = data.getBead(bd2n2);
                     if (bd12.n1 == bdID2) {
                       bd12.n1 = bdID1;
                     } else if (bd12.n2 == bdID2) {
@@ -442,18 +443,19 @@ class mouseDrag { //<>// //<>//
                     bd2.u1 = bd1n1;
                     bd2.u2 = bd1n2;
                     //bd2.c = 4;
-                    bd1.n1 = -1;
-                    bd1.n2 = -1;
-                    bd1.x = bd1.y = -1f;
-                    bd1.c = -1;
+                    data.removeBeadFromPoint(bdID1);
+                    //bd1.n1 = -1;
+                    //bd1.n2 = -1;
+                    //bd1.x = bd1.y = -1f;
+                    //bd1.c = -1;
 
-                    Bead bd11 = data.points.get(bd1n1);
+                    Bead bd11 = data.getBead(bd1n1);
                     if (bd11.n1 == bdID1) {
                       bd11.n1 = bdID2;
                     } else if (bd11.n2 == bdID1) {
                       bd11.n2 = bdID2;
                     }
-                    Bead bd12 = data.points.get(bd1n2);
+                    Bead bd12 = data.getBead(bd1n2);
                     if (bd12.n1 == bdID1) {
                       bd12.n1 = bdID2;
                     } else if (bd12.n2 == bdID1) {
@@ -472,7 +474,7 @@ class mouseDrag { //<>// //<>//
     }
     boolean OK=true;//図が完了しているかどうかのフラグ。
     for (int bdID=0; bdID<data.points.size(); bdID++) {
-      Bead bd = data.points.get(bdID);
+      Bead bd = data.getBead(bdID);
       if (bd.n1!=-1 || bd.n2!=-1 || bd.u1!=-1 || bd.u2!=-1) { 
         if (bd.c!=2 && bd.c!=4) {
           OK=false;
