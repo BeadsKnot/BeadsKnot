@@ -783,8 +783,9 @@ class data_extract { //<>// //<>//
     }
   }
   boolean Ofutarisama() {//みんなお二人様だったか確認
-    for (Bead vec : points) {
-      if (vec.c!=2) {
+    for (int bdID=0; bdID< points.size(); bdID++){
+      Bead bd = getBead(bdID);
+      if ((bd.n1!=-1 && bd.n2!=-1) && bd.c!=2) {
         return false;
       }
     }
