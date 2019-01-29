@@ -145,11 +145,11 @@ class data_graph { //<>// //<>//
 
   int find_next_Joint_in_points(int j, int c) {
     //print("find_next_Joint_in_points:", j, c);
-    if(c<0 || de.points.size()<=c){
-      return -1;
-    }
     for (int count = 0; count < de.points.size(); count++) {
       //print("("+j+","+c+")");
+      if(c<0 || de.points.size()<=c){
+        return -1; //<>//
+      }
       Bead p=de.points.get(c);
       if (p.Joint) {
         //println();
@@ -175,6 +175,9 @@ class data_graph { //<>// //<>//
   int findNeighborJointInPoints(int j, int c) {// Jointの一つ手前のビーズの番号を返す。
     //print("findNeighborJointInPoints",j,c);
     for (int count = 0; count < de.points.size(); count++) {
+      if (c<0 || de.points.size()<=c) {
+        return -1; //<>//
+      }
       Bead p=de.points.get(c);
       if (p.Joint||p.midJoint) {
         return j;
@@ -195,10 +198,10 @@ class data_graph { //<>// //<>//
   }
 
   int findJointInPoints(int j, int c) {// Jointを表すビーズの番号を返す。
-    if (c<0 || de.points.size()<=c) {
-      return -1;
-    }
     for (int count = 0; count < de.points.size(); count++) {
+      if (c<0 || de.points.size()<=c) {
+        return -1; //<>//
+      }
       Bead p=de.points.get(c);
       if (p.Joint||p.midJoint) {
         return c;
@@ -210,6 +213,7 @@ class data_graph { //<>// //<>//
         d=p.n1;
       } else {
         println("findJointInPoints:間違っている", "");
+        return -1; //<>//
       } 
       j=c;
       c=d;
@@ -218,10 +222,10 @@ class data_graph { //<>// //<>//
   }
 
   private int countNeighborJointInPoints(int j, int c) {
-    if (c<0 || de.points.size()<=c) {
-      return 0;
-    }
     for (int count = 1; count < de.points.size(); count++) {
+      if (c<0 || de.points.size()<=c) {
+        return 0;
+      }
       Bead p=de.points.get(c);
       if (p.Joint) {
         return count;
