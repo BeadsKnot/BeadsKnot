@@ -105,8 +105,8 @@ class data_extract { //<>// //<>//
         return pt;
       }
     }
-    addBeadToPoint(u, v);
-    return points.size()-1;
+    int ret = addBeadToPoint(u, v);
+    return ret;
   }
 
   void drawPoints() {//点をかく
