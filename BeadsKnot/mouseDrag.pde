@@ -105,12 +105,9 @@ class mouseDrag { //<>// //<>//
               jtBead.Joint = true;
               jtBead.u1 = jt2Bead.n1;
               jtBead.u2 = jt2Bead.n2;
-              jt2Bead.n1 = -1;
-              jt2Bead.n2 = -1;
-              jt2Bead.x = jt2Bead.y = -1f;
-              jt2Bead.c = 0;
-              data.points.get(tr2).n1 = jt;
-              data.points.get((tr2+2)%traceNumber).n2 = jt;
+              data.removeBeadFromPoint(jt2);
+              data.getBead(tr2).n1 = jt;
+              data.getBead((tr2+2)%traceNumber).n2 = jt;
             }
           }
         }
