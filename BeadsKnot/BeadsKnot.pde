@@ -240,9 +240,9 @@ void fileSelected(File selection) {
                 nd.pointID = n;
                 nd.Joint=false;
                 graph.nodes.add(nd);
-                Bead bd = new Bead(float(pieces[0]), float(pieces[1]));
+                int bdID = data.addBeadToPoint(float(pieces[0]), float(pieces[1]));
+                Bead bd = data.getBead(bdID); 
                 bd.c = 2;
-                data.points.add(bd);
               }
             } else return;
           }
@@ -260,14 +260,14 @@ void fileSelected(File selection) {
                 bd.n1 = ed.ANodeID;
                 bd.n2 = ed.BNodeID;
                 bd.c = 2;
-                Bead bdA = data.points.get(ed.ANodeID);
+                Bead bdA = data.getBead(ed.ANodeID);
                 bdA.set_un12(ed.ANodeRID, nodeNumber+n);
-                Bead bdB = data.points.get(ed.BNodeID);
+                Bead bdB = data.getBead(ed.BNodeID);
                 bdB.set_un12(ed.BNodeRID, nodeNumber+n);
                 data.points.add(bd);
               }
               for (int n=0; n<nodeNumber; n++) {
-                Bead bd = data.points.get(n);
+                Bead bd = data.getBead(n);
                 if (bd.u1==-1 && bd.u2==-1) {
                   bd.midJoint=true;
                 } else {
@@ -310,7 +310,7 @@ void mousePressed() {
           if (nd.onUse && nd.pointID == ptID) {
             mouse.dragged_nodeID = ndID;
             int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
-            Bead pt0 = data.points.get(pt0ID);
+            Bead pt0 = data.getBead(pt0ID);
             mouse.DragX = pt0.x;
             mouse.DragY = pt0.y;
             println("ノードのドラッグ開始");
@@ -363,7 +363,7 @@ void mouseDragged() {
           Node nd = graph.nodes.get(ndID);
           if(nd.onUse){
             int ptID = nd.pointID;
-            Bead pt = data.points.get(ptID);
+            Bead pt = data.getBead(ptID);
             float x = pt.x;
             float y = pt.y;
             float d = dist(mX, mY, x, y);
@@ -382,9 +382,11 @@ void mouseDragged() {
       if(nd0.onUse){
         nd0.x = mX;
         nd0.y = mY;
-        Bead bd0 = data.points.get(nd0.pointID);
-        bd0.x = mX;
-        bd0.y = mY;
+        Bead bd0 = data.getBead(nd0.pointID);
+        if(bd0 != null){
+          bd0.x = mX;
+          bd0.y = mY;
+        }
       }
       // 図全体のmodify();
       graph.modify();
@@ -446,7 +448,7 @@ void mouseReleased() {
       }
       // Joint以外をクリックした場合には、miJointの増減を行う。
       for (int beadID=0; beadID<data.points.size(); beadID++) {
-        Bead bd = data.points.get(beadID);
+        Bead bd = data.getBead(beadID);
         float mX = disp.getX_fromWin(mouseX);
         float mY = disp.getY_fromWin(mouseY);
         if (dist(mX, mY, bd.x, bd.y)<10) {
@@ -455,8 +457,11 @@ void mouseReleased() {
               int bdn1ID = bd.n1;
               int bdn2ID = bd.n2;
               // 両端がJointかmidJointだったら何もしない。
-              Bead bdn1 = data.points.get(bdn1ID);
-              Bead bdn2 = data.points.get(bdn2ID);
+              Bead bdn1 = data.getBead(bdn1ID);
+              Bead bdn2 = data.getBead(bdn2ID);
+              if(bdn1 == null || bdn2 == null){
+                break;
+              }
               if (bdn1.Joint || bdn1.midJoint || bdn2.Joint || bdn2.midJoint) {
                 break ;
               }
@@ -599,7 +604,7 @@ void mouseReleased() {
         if (ptID==-1) {
           return;
         } else {
-          Bead pt=data.points.get(ptID);
+          Bead pt=data.getBead(ptID);
           if (pt.Joint) {////////////////////////////////midJointやJointの隣も含むか要検討
             return;
           } else {

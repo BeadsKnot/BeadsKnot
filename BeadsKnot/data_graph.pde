@@ -637,7 +637,7 @@ class data_graph { //<>// //<>//
         //newBd.c = 2;
         //de.points.add(newBd);
         //int newBdID= de.points.size()-1;// 課題：捨てられたビーズを再利用するとき、ここが問題になる。
-        int newBdID = de.addBeadToPoint();
+        int newBdID = de.addBeadToPoint(0f, 0f);
         Bead newBd = de.points.get(newBdID);
         newBd.n1 = bead1;
         newBd.n2 = bead2;

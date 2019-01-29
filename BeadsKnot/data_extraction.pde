@@ -27,7 +27,7 @@ class data_extract { //<>// //<>//
     disp = _disp;
   }
 
-  int addBeadToPoint(){// pointsにある「消去済み」を再利用する。
+  int addBeadToPoint(float _x, float _y){// pointsにある「消去済み」を再利用する。
     for(int ptID=0; ptID<points.size(); ptID++){
       Bead pt = points.get(ptID);
       if(pt!=null){
@@ -37,7 +37,8 @@ class data_extract { //<>// //<>//
         }
       }
     }
-    Bead pt = new Bead(0, 0);
+    Bead pt = new Bead(_x, _y);
+    pt.n1 = pt.n2 = 0;
     points.add(pt);
     return points.size()-1;
   }
@@ -56,7 +57,7 @@ class data_extract { //<>// //<>//
     }
   }
   
-  void clearAllBead(){// points.clear()のかわり
+  void clearAllPoints(){// points.clear()のかわり
     for(int ID = 0; ID < points.size(); ID++){
       Bead bd = points.get(ID);
       bd.n1 = bd.n2 = -1;
@@ -555,22 +556,22 @@ class data_extract { //<>// //<>//
   }
 
   void removePoint(int u) {//点を消す
-    points.remove(u);
+    removeBeadFromPoint(u);
     for (int i=nbhds.size ()-1; i>=0; i--) {
       Nbhd n=nbhds.get(i);
       if (n.a==u||n.b==u) {
         nbhds.remove(i);
       }
     }
-    for (int i=nbhds.size ()-1; i>=0; i--) {
-      Nbhd n=nbhds.get(i);
-      if (n.a>u) {
-        n.a--;
-      }
-      if (n.b>u) {
-        n.b--;
-      }
-    }
+    //for (int i=nbhds.size ()-1; i>=0; i--) {
+    //  Nbhd n=nbhds.get(i);
+    //  if (n.a>u) {
+    //    n.a--;
+    //  }
+    //  if (n.b>u) {
+    //    n.b--;
+    //  }
+    //}
   }
 
   void removePoint2(int u) {

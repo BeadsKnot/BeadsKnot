@@ -17,7 +17,7 @@ class Thinning {
     w=DE.w;
     h=DE.h;
     DE.nbhds.clear();
-    DE.points.clear();
+    DE.clearAllPoints();
     // int de.d[w][h] を仮定してよい。
     get_edge_data_thinning();
 
@@ -428,9 +428,9 @@ class Thinning {
   }
 
   void removeBeadsWithAll(int p) {
-    Bead u = DE.points.get(p);
+    Bead u = DE.getBead(p);
     if (is_Beads_id(u.n1)) {
-      Bead uo = DE.points.get(u.n1);
+      Bead uo = DE.getBead(u.n1);
       uo.c --;
       if (uo.n1==p) { 
         uo.n1=uo.n2; 
@@ -447,7 +447,7 @@ class Thinning {
       }
     }
     if (is_Beads_id(u.n2)) {
-      Bead uo = DE.points.get(u.n2);
+      Bead uo = DE.getBead(u.n2);
       uo.c --;
       if (uo.n1==p) { 
         uo.n1=uo.n2; 
@@ -464,7 +464,7 @@ class Thinning {
       }
     }
     if (is_Beads_id(u.u1)) {
-      Bead uo = DE.points.get(u.u1);
+      Bead uo = DE.getBead(u.u1);
       uo.c --;
       if (uo.n1==p) { 
         uo.n1=uo.n2; 
@@ -480,22 +480,19 @@ class Thinning {
         uo.u2=-1;
       }
     }
-    DE.points.remove(p);
-    for (int i=0; i<DE.points.size (); i++) {
-      Bead v = DE.points.get(i);
-      if (v.n1>p) v.n1--;
-      if (v.n2>p) v.n2--;
-      if (v.u1>p) v.u1--;
-      if (v.u2>p) v.u2--;
-    }
+    DE.removeBeadFromPoint(p);
+    //for (int i=0; i<DE.points.size (); i++) {
+    //  Bead v = DE.points.get(i);
+    //  if (v.n1>p) v.n1--;
+    //  if (v.n2>p) v.n2--;
+    //  if (v.u1>p) v.u1--;
+    //  if (v.u2>p) v.u2--;
+    //}
     for (int i=DE.nbhds.size ()-1; i>=0; i--) {
       Nbhd r = DE.nbhds.get(i) ;
       if (r.a==p || r.b==p) {
         DE.nbhds.remove(i);
-      } else {
-        if (r.a>p) r.a--;
-        if (r.b>p) r.b--;
-      }
+      } 
     }
   }
 

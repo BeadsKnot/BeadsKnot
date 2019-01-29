@@ -22,12 +22,13 @@ class Square {
       ss[a*2 + 1] = s + a + 1;
       ss[a*2 + 2] = s - a - 1;
     }
+    
     boolean ofutarisama_flag = false;
     for (int a = 0; a < 10; a++) { 
       s = ss[a];
 
       de.nbhds.clear();
-      de.points.clear();
+      de.clearAllPoints();
 
       for (int y=0; y<de.h; y+=s) {
         for (int x=0; x<de.w; x+=s) {
@@ -82,7 +83,7 @@ class Square {
         println("extraction failed.");
         // beadsを一度消す。
         de.nbhds.clear();
-        de.points.clear();
+        de.clearAllPoints();
         //Draw.menu();
         return 0;// 失敗
       }
