@@ -361,17 +361,19 @@ void mouseDragged() {
       for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
         if (ndID != mouse.dragged_nodeID) {
           Node nd = graph.nodes.get(ndID);
-          int ptID = nd.pointID;
-          Bead pt = data.points.get(ptID);
-          float x = pt.x;
-          float y = pt.y;
-          float d = dist(mX, mY, x, y);
-          if (d < mouseDragmin_dist) {//ボロノイ領域を超えたら処理をしない。
-            return;
-          }
-          if (d > 1000) {//あまり外側へ行ったら処理をしない。
-            println("*外側へ行きすぎです。");
-            return ;
+          if(nd.onUse){
+            int ptID = nd.pointID;
+            Bead pt = data.points.get(ptID);
+            float x = pt.x;
+            float y = pt.y;
+            float d = dist(mX, mY, x, y);
+            if (d < mouseDragmin_dist) {//ボロノイ領域を超えたら処理をしない。
+              return;
+            }
+            if (d > 1000) {//あまり外側へ行ったら処理をしない。
+              println("*外側へ行きすぎです。");
+              return ;
+            }
           }
         }
       }
