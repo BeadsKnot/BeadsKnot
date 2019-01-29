@@ -147,6 +147,9 @@ class data_graph { //<>// //<>//
     //print("find_next_Joint_in_points:", j, c);
     for (int count = 0; count < de.points.size(); count++) {
       //print("("+j+","+c+")");
+      if(c<0 || de.points.size()<=c){
+        return -1; //<>//
+      }
       Bead p=de.points.get(c);
       if (p.Joint) {
         //println();
@@ -172,6 +175,9 @@ class data_graph { //<>// //<>//
   int findNeighborJointInPoints(int j, int c) {// Jointの一つ手前のビーズの番号を返す。
     //print("findNeighborJointInPoints",j,c);
     for (int count = 0; count < de.points.size(); count++) {
+      if (c<0 || de.points.size()<=c) {
+        return -1; //<>//
+      }
       Bead p=de.points.get(c);
       if (p.Joint||p.midJoint) {
         return j;
@@ -192,10 +198,10 @@ class data_graph { //<>// //<>//
   }
 
   int findJointInPoints(int j, int c) {// Jointを表すビーズの番号を返す。
-    if(c<0 || de.points.size()<=c){
-      return -1;
-    }
     for (int count = 0; count < de.points.size(); count++) {
+      if (c<0 || de.points.size()<=c) {
+        return -1; //<>//
+      }
       Bead p=de.points.get(c);
       if (p.Joint||p.midJoint) {
         return c;
@@ -207,6 +213,7 @@ class data_graph { //<>// //<>//
         d=p.n1;
       } else {
         println("findJointInPoints:間違っている", "");
+        return -1; //<>//
       } 
       j=c;
       c=d;
@@ -215,10 +222,10 @@ class data_graph { //<>// //<>//
   }
 
   private int countNeighborJointInPoints(int j, int c) {
-    if(c<0 || de.points.size()<=c){
-      return 0;
-    }
     for (int count = 1; count < de.points.size(); count++) {
+      if (c<0 || de.points.size()<=c) {
+        return 0;
+      }
       Bead p=de.points.get(c);
       if (p.Joint) {
         return count;
@@ -239,7 +246,7 @@ class data_graph { //<>// //<>//
   }
 
   int get_half_position(int j, int c, int number) {
-    if(c<0 || de.points.size()<=c){
+    if (c<0 || de.points.size()<=c) {
       return -1;
     }
     if (number==0) {
@@ -349,23 +356,25 @@ class data_graph { //<>// //<>//
   //Nodeのthetaを最適化する
   void rotation_shape_modifier(int id) {
     Node node = nodes.get(id);
-    float theta0 = node.theta;
-    float totalCurvatureRange = get_curvatureRange_squareSum_at(id);
-
-    float thetaP = theta0 + 0.05f;
-    node.theta = thetaP;
-    float totalCurvatureRangeP = get_curvatureRange_squareSum_at(id);
-
-    float thetaM = theta0 + 0.05f;
-    node.theta = thetaM;
-    float totalCurvatureRangeM = get_curvatureRange_squareSum_at(id);
-
-    if (totalCurvatureRange  > totalCurvatureRangeP) {
+    if(node.onUse){
+      float theta0 = node.theta;
+      float totalCurvatureRange = get_curvatureRange_squareSum_at(id);
+  
+      float thetaP = theta0 + 0.05f;
       node.theta = thetaP;
-    } else if (totalCurvatureRange > totalCurvatureRangeM) {
+      float totalCurvatureRangeP = get_curvatureRange_squareSum_at(id);
+  
+      float thetaM = theta0 + 0.05f;
       node.theta = thetaM;
-    } else {
-      node.theta = theta0;
+      float totalCurvatureRangeM = get_curvatureRange_squareSum_at(id);
+  
+      if (totalCurvatureRange  > totalCurvatureRangeP) {
+        node.theta = thetaP;
+      } else if (totalCurvatureRange > totalCurvatureRangeM) {
+        node.theta = thetaM;
+      } else {
+        node.theta = theta0;
+      }
     }
     return ;
   }
@@ -377,25 +386,27 @@ class data_graph { //<>// //<>//
       Edge ed = edges.get(e);
       Node ANode=nodes.get(ed.ANodeID);
       Node BNode=nodes.get(ed.BNodeID);
-      float V1x = ANode.x;
-      float V1y = ANode.y;
-      float V2x = ANode.edge_x(ed.ANodeRID);
-      float V2y = ANode.edge_y(ed.ANodeRID);
-      float V3x = BNode.edge_x(ed.BNodeRID);
-      float V3y = BNode.edge_y(ed.BNodeRID);
-      float V4x = BNode.x;
-      float V4y = BNode.y;
-      for (float step=0.0; step<=1.0; step+=0.05) {    
-        float xx = coordinate_bezier(V1x, V2x, V3x, V4x, step);
-        float yy = coordinate_bezier(V1y, V2y, V3y, V4y, step);
-        if (e==0 && step==0.0) {
-          l=r=xx;
-          t=b=yy;
-        } else {
-          if (xx<l) l=xx;
-          if (r<xx) r=xx;
-          if (yy<t) t=yy;
-          if (b<yy) b=yy;
+      if(ANode.onUse && BNode.onUse){
+        float V1x = ANode.x;
+        float V1y = ANode.y;
+        float V2x = ANode.edge_x(ed.ANodeRID);
+        float V2y = ANode.edge_y(ed.ANodeRID);
+        float V3x = BNode.edge_x(ed.BNodeRID);
+        float V3y = BNode.edge_y(ed.BNodeRID);
+        float V4x = BNode.x;
+        float V4y = BNode.y;
+        for (float step=0.0; step<=1.0; step+=0.05) {    
+          float xx = coordinate_bezier(V1x, V2x, V3x, V4x, step);
+          float yy = coordinate_bezier(V1y, V2y, V3y, V4y, step);
+          if (e==0 && step==0.0) {
+            l=r=xx;
+            t=b=yy;
+          } else {
+            if (xx<l) l=xx;
+            if (r<xx) r=xx;
+            if (yy<t) t=yy;
+            if (b<yy) b=yy;
+          }
         }
       }
     }
@@ -525,45 +536,49 @@ class data_graph { //<>// //<>//
       Node a0=nodes.get(e.ANodeID);
       Node a1=nodes.get(e.BNodeID);
       // float hx=(a0.x-disp.left)*disp.rate;
-      float hx=disp.get_winX(a0.x);
-      float hy=disp.get_winY(a0.y);
-      if (e.ANodeRID==1 ||e.ANodeRID==3) {
-        hx = disp.get_winX(a0.edge_rx(e.ANodeRID, 30/disp.rate));
-        hy = disp.get_winY(a0.edge_ry(e.ANodeRID, 30/disp.rate));
+      if(a0.onUse && a1.onUse){
+        float hx=disp.get_winX(a0.x);
+        float hy=disp.get_winY(a0.y);
+        if (e.ANodeRID==1 ||e.ANodeRID==3) {
+          hx = disp.get_winX(a0.edge_rx(e.ANodeRID, 30/disp.rate));
+          hy = disp.get_winY(a0.edge_ry(e.ANodeRID, 30/disp.rate));
+        }
+        float ix=disp.get_winX(a0.edge_x(e.ANodeRID));
+        float iy=disp.get_winY(a0.edge_y(e.ANodeRID));
+        float jx=disp.get_winX(a1.x);
+        float jy=disp.get_winY(a1.y);
+        if (e.BNodeRID==1 || e.BNodeRID==3) {
+          jx = disp.get_winX(a1.edge_rx(e.BNodeRID, 30/disp.rate));
+          jy = disp.get_winY(a1.edge_ry(e.BNodeRID, 30/disp.rate));
+        }
+        float kx=disp.get_winX(a1.edge_x(e.BNodeRID));
+        float ky=disp.get_winY(a1.edge_y(e.BNodeRID));
+  
+        stroke( 0, 0, 0);
+        strokeWeight(5);
+        noFill();
+        bezier(hx, hy, ix, iy, kx, ky, jx, jy);
       }
-      float ix=disp.get_winX(a0.edge_x(e.ANodeRID));
-      float iy=disp.get_winY(a0.edge_y(e.ANodeRID));
-      float jx=disp.get_winX(a1.x);
-      float jy=disp.get_winY(a1.y);
-      if (e.BNodeRID==1 || e.BNodeRID==3) {
-        jx = disp.get_winX(a1.edge_rx(e.BNodeRID, 30/disp.rate));
-        jy = disp.get_winY(a1.edge_ry(e.BNodeRID, 30/disp.rate));
-      }
-      float kx=disp.get_winX(a1.edge_x(e.BNodeRID));
-      float ky=disp.get_winY(a1.edge_y(e.BNodeRID));
-
-      stroke( 0, 0, 0);
-      strokeWeight(5);
-      noFill();
-      bezier(hx, hy, ix, iy, kx, ky, jx, jy);
     }
     for (Node n : nodes) {
-      if (n.Joint) {
-        fill(255, 255, 0);
-      } else {
-        fill(255, 0, 255);
+      if (n.onUse){
+        if (n.Joint) {
+          fill(255, 255, 0);
+        } else {
+          fill(255, 0, 255);
+        }
+        stroke(0);
+        strokeWeight(1);
+        ellipse(disp.get_winX(n.x), disp.get_winY(n.y), n.radius, n.radius);
       }
-      stroke(0);
-      strokeWeight(1);
-      ellipse(disp.get_winX(n.x), disp.get_winY(n.y), n.radius, n.radius);
     }
   }
 
-  void update_points(){
+  void update_points() {
     for (int e=0; e<edges.size(); e++) {
       Edge ed = edges.get(e);
       update_points_on_edge(ed);
-    }    
+    }
   }
 
   void update_points_on_edge(Edge ed)
@@ -581,23 +596,23 @@ class data_graph { //<>// //<>//
     Node NodeA = nodes.get(ed.ANodeID);
     Node NodeB = nodes.get(ed.BNodeID);
     //ここで、NodeA=null か　NodeB=nullならば、直ちにやめる。
-    if(NodeA==null || NodeB==null){
+    if (NodeA==null || NodeB==null || NodeA.onUse==false || NodeB.onUse==false) {
       return ;
     }
     int bead1 = NodeA.pointID;
     Bead beadA = de.points.get(bead1);
-    if(beadA == null) {
+    if (beadA == null) {
       return ;
     }
     int bead2 = beadA.get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号
     int bead3 = -1;
-    if (bead2 == -1){
+    if (bead2 == -1) {
       return ;
     } else if (bead2 == NodeB.pointID) {
       beads_count=0;// この行は不要だがつけておく。
     } else {
       do {
-        if(bead2 == -1){
+        if (bead2 == -1) {
           return ;
         }
         int b = de.points.get(bead2).n1;
@@ -646,7 +661,7 @@ class data_graph { //<>// //<>//
         }
         bd1.set_un12(ed.ANodeRID, bead3);
         Bead bd3 = de.points.get(bead3); 
-        if (bd3.n1 == bead2){
+        if (bd3.n1 == bead2) {
           bd3.n1 = bead1;
         } else {
           bd3.n2 = bead1;
@@ -658,55 +673,60 @@ class data_graph { //<>// //<>//
     //今一度、エッジに乗っているビーズの座標を計算しなおす。
     Node ANode=nodes.get(ed.ANodeID);
     Node BNode=nodes.get(ed.BNodeID);
-    float V1x = ANode.x;
-    float V1y = ANode.y;
-    float V2x = ANode.edge_x(ed.ANodeRID);
-    float V2y = ANode.edge_y(ed.ANodeRID);
-    float V3x = BNode.edge_x(ed.BNodeRID);
-    float V3y = BNode.edge_y(ed.BNodeRID);
-    float V4x = BNode.x;
-    float V4y = BNode.y;
-    bead1 = nodes.get(ed.ANodeID).pointID;
-    bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
-    float step = arclength / (beads_number+1);
-    int bd=0;
-    float arclen=0f;
-    float xx0 = V1x;
-    float yy0 = V1y;
-    float xx, yy;
-    for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
-      xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
-      yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
-      arclen += dist(xx0, yy0, xx, yy);
-      //println("update_points():",arclen,step);
-      if (arclen >= step * (bd+1)) {
-        Bead bd2 = de.points.get(bead2); 
-        bd2.x = xx; 
-        bd2.y = yy;
-        bd ++;
-        int b = bd2.n1;
-        if (b == bead1) {
-          bead3 = bd2.n2;
-        } else {
-          bead3 = b;
+    if(ANode.onUse && BNode.onUse){
+      float V1x = ANode.x;
+      float V1y = ANode.y;
+      float V2x = ANode.edge_x(ed.ANodeRID);
+      float V2y = ANode.edge_y(ed.ANodeRID);
+      float V3x = BNode.edge_x(ed.BNodeRID);
+      float V3y = BNode.edge_y(ed.BNodeRID);
+      float V4x = BNode.x;
+      float V4y = BNode.y;
+      bead1 = nodes.get(ed.ANodeID).pointID;
+      bead2 = de.points.get(bead1).get_un12(ed.ANodeRID);
+      float step = arclength / (beads_number+1);
+      int bd=0;
+      float arclen=0f;
+      float xx0 = V1x;
+      float yy0 = V1y;
+      float xx, yy;
+      for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
+        xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
+        yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
+        arclen += dist(xx0, yy0, xx, yy);
+        //println("update_points():",arclen,step);
+        if (arclen >= step * (bd+1)) {
+          Bead bd2 = de.points.get(bead2); 
+          bd2.x = xx; 
+          bd2.y = yy;
+          bd ++;
+          int b = bd2.n1;
+          if (b == bead1) {
+            bead3 = bd2.n2;
+          } else {
+            bead3 = b;
+          }
+          bead1 = bead2;
+          bead2 = bead3;
+          if (bead2 == BNode.pointID) {
+            break;
+          }
         }
-        bead1 = bead2;
-        bead2 = bead3;
-        if (bead2 == BNode.pointID){
-          break;
-        }
+        xx0 = xx;
+        yy0 = yy;
       }
-      xx0 = xx;
-      yy0 = yy;
     }
   }
 
   int is_PVector_on_Joint(float vecX, float vecY) {
-    for (int nd=0; nd<nodes.size(); nd++) {
-      int ndID = nodes.get(nd).pointID;
-      Bead bd = de.points.get(ndID);
-      if (dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY)<10) {
-        return nd;
+    for (int ndID=0; ndID<nodes.size(); ndID++) {
+      Node nd = nodes.get(ndID);
+      if(nd.onUse){
+        int ndpointID = nd.pointID;
+        Bead bd = de.points.get(ndpointID);
+        if (dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY)<10) {
+          return ndID;
+        }
       }
     }
     return -1;
@@ -742,26 +762,28 @@ class data_graph { //<>// //<>//
   // クロスチェンジ
   void crosschange(int nodeID) {
     Node node = nodes.get(nodeID);// nodeIDが適正であるかどうかをチェックせよ。
-    int pt = node.pointID;
-    Bead bd = de.points.get(pt);
-    int tmp = bd.n1;
-    bd.n1 = bd.u2;
-    bd.u2 = bd.n2;
-    bd.n2 = bd.u1;
-    bd.u1 = tmp;
-    float tmpf = node.r[0];
-    node.r[0] = node.r[3];
-    node.r[3] = node.r[2];
-    node.r[2] = node.r[1];
-    node.r[1] = tmpf;
-    node.theta -= (PI/2);
-    for (int edgeID = 0; edgeID<edges.size(); edgeID++) {
-      Edge ed = edges.get(edgeID);
-      if (ed.ANodeID == nodeID) {
-        ed.ANodeRID = (ed.ANodeRID+1)%4;
-      } else 
-      if (ed.BNodeID == nodeID) {
-        ed.BNodeRID = (ed.BNodeRID+1)%4;
+    if(node.onUse){
+      int pt = node.pointID;
+      Bead bd = de.points.get(pt);
+      int tmp = bd.n1;
+      bd.n1 = bd.u2;
+      bd.u2 = bd.n2;
+      bd.n2 = bd.u1;
+      bd.u1 = tmp;
+      float tmpf = node.r[0];
+      node.r[0] = node.r[3];
+      node.r[3] = node.r[2];
+      node.r[2] = node.r[1];
+      node.r[1] = tmpf;
+      node.theta -= (PI/2);
+      for (int edgeID = 0; edgeID<edges.size(); edgeID++) {
+        Edge ed = edges.get(edgeID);
+        if (ed.ANodeID == nodeID) {
+          ed.ANodeRID = (ed.ANodeRID+1)%4;
+        } else 
+        if (ed.BNodeID == nodeID) {
+          ed.BNodeRID = (ed.BNodeRID+1)%4;
+        }
       }
     }
   }
@@ -772,7 +794,8 @@ class data_graph { //<>// //<>//
       Bead bd1 = de.points.get(pt1ID);
       if (bd1.Joint || bd1.midJoint) {
         for (int ndID=0; ndID < nodes.size(); ndID++) {
-          if (nodes.get(ndID).pointID == pt1ID) { 
+          Node nd = nodes.get(ndID);
+          if (nd.onUse && nd.pointID == pt1ID) { 
             return ndID;
           }
         }
@@ -783,12 +806,19 @@ class data_graph { //<>// //<>//
       Bead bd2 = de.points.get(pt2ID);
       if (bd2.Joint || bd2.midJoint) {
         for (int ndID=0; ndID < nodes.size(); ndID++) {
-          if (nodes.get(ndID).pointID == pt2ID) { 
+          Node nd = nodes.get(ndID);
+          if (nd.onUse && nd.pointID == pt2ID) { 
             return ndID;
           }
         }
       }
     }
     return -1;
+  }
+
+  void removeNode(int ID) {
+    if (0<=ID && ID<nodes.size()) {
+      nodes.get(ID).onUse = false;
+    }
   }
 }
