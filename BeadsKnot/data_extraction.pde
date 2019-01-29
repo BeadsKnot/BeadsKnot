@@ -603,13 +603,13 @@ class data_extract { //<>// //<>//
           if (n.a==u) {
             if (getBead(n.b).c==3) {
               removePoint(u);
-              removePoint2(u);
+              //removePoint2(u);
               getBead(n.b).c=2;
             }
           } else if (n.b==u) {
             if (getBead(n.a).c==3) {
               removePoint(u);
-              removePoint2(u);
+              //removePoint2(u);
               getBead(n.a).c=2;
             }
           }

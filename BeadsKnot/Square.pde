@@ -37,7 +37,7 @@ class Square {
       }
 
       //cancelLoop();がいるらしい。
-      de.countNbhds();
+      de.countNbhds(); //<>//
       de.removeThrone();
       de.countNbhds();
       de.fillGap();
