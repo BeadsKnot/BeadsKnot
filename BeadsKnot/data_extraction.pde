@@ -55,6 +55,13 @@ class data_extract { //<>// //<>//
       pt.n1 = pt.n2 = -1;
     }
   }
+  
+  void clearAllBead(){// points.clear()のかわり
+    for(int ID = 0; ID < points.size(); ID++){
+      Bead bd = points.get(ID);
+      bd.n1 = bd.n2 = -1;
+    }
+  }
 
   // imageデータの解析
   boolean make_data_extraction(PImage image) {
