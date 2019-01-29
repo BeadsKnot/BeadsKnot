@@ -257,8 +257,10 @@ class Thinning {
     // 		return i;
     // 	}
     // }
-    DE.points.add(new Bead(_x, _y));
-    return DE.points.size()-1;
+    int ret = DE.addBeadToPoint(_x, _y);
+    //DE.points.add(new Bead(_x, _y));
+    //return DE.points.size()-1;
+    return ret;
   }
 
   boolean addToNbh_WithoutCheck(int i1, int i2) {

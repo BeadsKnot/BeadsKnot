@@ -47,11 +47,12 @@ class mouseDrag { //<>// //<>//
     int traceNumber = trace.size();
     // まず1列のbeadの列を作る。
     for (int tr = 0; tr < traceNumber; tr++) {
-      Bead bd = new Bead(trace.get(tr).x, trace.get(tr).y);
+      int bdID = data.addBeadToPoint(trace.get(tr).x, trace.get(tr).y);
+      Bead bd = data.getBead(bdID);
       bd.n1 = (tr+1)%traceNumber;
       bd.n2 = (tr+traceNumber-1)%traceNumber;
       bd.c = 2;
-      data.points.add(bd);
+      //data.points.add(bd);
     }
     for (int tr1 = 0; tr1 < traceNumber; tr1++) {
       for (int tr2 = tr1+1; tr2 < traceNumber; tr2++) {

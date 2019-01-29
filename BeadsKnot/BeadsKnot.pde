@@ -256,7 +256,9 @@ void fileSelected(File selection) {
                 pieces = split(line, ',');
                 Edge ed = new Edge(int(pieces[0]), int(pieces[1]), int(pieces[2]), int(pieces[3]));
                 graph.edges.add(ed);
-                Bead bd = new Bead(0f, 0f);// id = nodeNumber+n
+                //Bead bd = new Bead(0f, 0f);// id = nodeNumber+n
+                int bdID = data.addBeadToPoint(0f, 0f);
+                Bead bd = data.getBead(bdID);
                 bd.n1 = ed.ANodeID;
                 bd.n2 = ed.BNodeID;
                 bd.c = 2;
@@ -264,7 +266,7 @@ void fileSelected(File selection) {
                 bdA.set_un12(ed.ANodeRID, nodeNumber+n);
                 Bead bdB = data.getBead(ed.BNodeID);
                 bdB.set_un12(ed.BNodeRID, nodeNumber+n);
-                data.points.add(bd);
+                //data.points.add(bd);
               }
               for (int n=0; n<nodeNumber; n++) {
                 Bead bd = data.getBead(n);
