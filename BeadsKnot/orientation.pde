@@ -6,7 +6,13 @@ class orientation {
     dg=_dg;
   }
   void decide_orientation() {//orientationを決める
-    Node nd=dg.nodes.get(0);
+    Node nd = dg.nodes.get(0);
+    for(int ndID=0; ndID<dg.nodes.size(); ndID++){
+      nd = dg.nodes.get(ndID);
+      if(nd.onUse){
+        break;
+      }
+    }
     int beads_start=nd.pointID;
     int beads_first=nd.pointID;
     int beads_next=de.points.get(beads_start).n1;

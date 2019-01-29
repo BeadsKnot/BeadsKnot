@@ -7,6 +7,7 @@ class Node {
   boolean Joint;//Jointかどうか
   boolean drawOn;//描画するかどうか？
   int pointID;// Bead[] pointsのID
+  boolean onUse;
 
   float edge_x(int i) {
     return x + r[i] * cos(theta+radians(i*90));
@@ -32,6 +33,7 @@ class Node {
     Joint=false;
     drawOn = false;
     pointID = -1;
+    onUse=true;
   }
   float getR(int i) {
     if (0<=i && i<4) return r[i];

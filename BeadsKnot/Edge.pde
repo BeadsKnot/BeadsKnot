@@ -97,7 +97,9 @@ class Edge {
   void set_bezier(ArrayList<Node> nodes) {
     Node ANode=nodes.get(ANodeID);
     Node BNode=nodes.get(BNodeID);
-    bezier.set_bezier(ANode, BNode, ANodeRID, BNodeRID);
+    if(ANode.onUse && BNode.onUse){
+      bezier.set_bezier(ANode, BNode, ANodeRID, BNodeRID);
+    }
   }
 
   //四本の線の長さを変えることで形を整える
@@ -105,53 +107,55 @@ class Edge {
   void scaling_shape_modifier(ArrayList<Node> nodes) {
     Node nodeA = nodes.get(ANodeID);
     Node nodeB = nodes.get(BNodeID);
-    //データベースによるrの値の最適近似
-    scaling_shape_modifier1(nodes);
-    set_bezier(nodes);
-    PVector minMax = bezier.get_curvature_range();
-    //意味があるかはわからないが、rを変化させて、curvature_rangeを小さくするように試みる。
-    for (int repeat=0; repeat<1; repeat++) {
-      Bezier bezierAP = new Bezier(bezier);
-      bezierAP.v2X = nodeA.edge_rx(ANodeRID, nodeA.r[ANodeRID]+1f);
-      bezierAP.v2Y = nodeA.edge_ry(ANodeRID, nodeA.r[ANodeRID]+1f);
-      PVector minMaxAP = bezierAP.get_curvature_range();
-      if (minMax.y-minMax.x >minMaxAP.y - minMaxAP.x) {
-        bezier.v2X = bezierAP.v2X;
-        bezier.v2Y = bezierAP.v2Y;
-        nodeA.r[ANodeRID] += 1f;
-        minMax = bezier.get_curvature_range();
-      } else {
-        Bezier bezierAM = new Bezier(bezier);
-        bezierAM.v2X = nodeA.edge_rx(ANodeRID, nodeA.r[ANodeRID]-1f);
-        bezierAM.v2Y = nodeA.edge_ry(ANodeRID, nodeA.r[ANodeRID]-1f);
-        PVector minMaxAM = bezierAM.get_curvature_range();
-        if (minMax.y-minMax.x >minMaxAM.y - minMaxAM.x) {
-          bezier.v2X = bezierAM.v2X;
-          bezier.v2Y = bezierAM.v2Y;
-          nodeA.r[ANodeRID] -= 1f;
+    if(nodeA.onUse && nodeB.onUse){
+      //データベースによるrの値の最適近似
+      scaling_shape_modifier1(nodes);
+      set_bezier(nodes);
+      PVector minMax = bezier.get_curvature_range();
+      //意味があるかはわからないが、rを変化させて、curvature_rangeを小さくするように試みる。
+      for (int repeat=0; repeat<1; repeat++) {
+        Bezier bezierAP = new Bezier(bezier);
+        bezierAP.v2X = nodeA.edge_rx(ANodeRID, nodeA.r[ANodeRID]+1f);
+        bezierAP.v2Y = nodeA.edge_ry(ANodeRID, nodeA.r[ANodeRID]+1f);
+        PVector minMaxAP = bezierAP.get_curvature_range();
+        if (minMax.y-minMax.x >minMaxAP.y - minMaxAP.x) {
+          bezier.v2X = bezierAP.v2X;
+          bezier.v2Y = bezierAP.v2Y;
+          nodeA.r[ANodeRID] += 1f;
           minMax = bezier.get_curvature_range();
+        } else {
+          Bezier bezierAM = new Bezier(bezier);
+          bezierAM.v2X = nodeA.edge_rx(ANodeRID, nodeA.r[ANodeRID]-1f);
+          bezierAM.v2Y = nodeA.edge_ry(ANodeRID, nodeA.r[ANodeRID]-1f);
+          PVector minMaxAM = bezierAM.get_curvature_range();
+          if (minMax.y-minMax.x >minMaxAM.y - minMaxAM.x) {
+            bezier.v2X = bezierAM.v2X;
+            bezier.v2Y = bezierAM.v2Y;
+            nodeA.r[ANodeRID] -= 1f;
+            minMax = bezier.get_curvature_range();
+          }
         }
-      }
-
-      Bezier bezierBP = new Bezier(bezier);
-      bezierBP.v3X = nodeB.edge_rx(BNodeRID, nodeB.r[BNodeRID]+1f);
-      bezierBP.v3Y = nodeB.edge_ry(BNodeRID, nodeB.r[BNodeRID]+1f);
-      PVector minMaxBP = bezierBP.get_curvature_range();
-      if (minMax.y-minMax.x >minMaxBP.y - minMaxBP.x) {
-        bezier.v3X = bezierBP.v3X;
-        bezier.v3Y = bezierBP.v3Y;
-        nodeB.r[BNodeRID] += 1f;
-        minMax = bezier.get_curvature_range();
-      } else {
-        Bezier bezierBM = new Bezier(bezier);
-        bezierBM.v3X = nodeB.edge_rx(BNodeRID, nodeB.r[BNodeRID]-1f);
-        bezierBM.v3Y = nodeB.edge_ry(BNodeRID, nodeB.r[BNodeRID]-1f);
-        PVector minMaxBM = bezierBM.get_curvature_range();
-        if (minMax.y-minMax.x >minMaxBM.y - minMaxBM.x) {
-          bezier.v3X = bezierBM.v3X;
-          bezier.v3Y = bezierBM.v3Y;
-          nodeB.r[BNodeRID] -= 1f;
+  
+        Bezier bezierBP = new Bezier(bezier);
+        bezierBP.v3X = nodeB.edge_rx(BNodeRID, nodeB.r[BNodeRID]+1f);
+        bezierBP.v3Y = nodeB.edge_ry(BNodeRID, nodeB.r[BNodeRID]+1f);
+        PVector minMaxBP = bezierBP.get_curvature_range();
+        if (minMax.y-minMax.x >minMaxBP.y - minMaxBP.x) {
+          bezier.v3X = bezierBP.v3X;
+          bezier.v3Y = bezierBP.v3Y;
+          nodeB.r[BNodeRID] += 1f;
           minMax = bezier.get_curvature_range();
+        } else {
+          Bezier bezierBM = new Bezier(bezier);
+          bezierBM.v3X = nodeB.edge_rx(BNodeRID, nodeB.r[BNodeRID]-1f);
+          bezierBM.v3Y = nodeB.edge_ry(BNodeRID, nodeB.r[BNodeRID]-1f);
+          PVector minMaxBM = bezierBM.get_curvature_range();
+          if (minMax.y-minMax.x >minMaxBM.y - minMaxBM.x) {
+            bezier.v3X = bezierBM.v3X;
+            bezier.v3Y = bezierBM.v3Y;
+            nodeB.r[BNodeRID] -= 1f;
+            minMax = bezier.get_curvature_range();
+          }
         }
       }
     }
@@ -353,24 +357,26 @@ class Edge {
   float getXIntersectionWithBezier(float ox, float oy, ArrayList<Node> nodes) {
     Node a0 = nodes.get(ANodeID);
     Node a1 = nodes.get(BNodeID);
-    float hx=a0.x;
-    float hy=a0.y;
-    float ix=a0.edge_x(ANodeRID);
-    float iy=a0.edge_y(ANodeRID);
-    float jx=a1.x;
-    float jy=a1.y;
-    float kx=a1.edge_x(BNodeRID);
-    float ky=a1.edge_y(BNodeRID);
-    float step = 0.1;
     float ret = 9999.0;
-    for (float t = 0.0; t<1.0-step; t += step) {
-      float sx = coordinate_bezier(hx, ix, kx, jx, t);
-      float sy = coordinate_bezier(hy, iy, ky, jy, t);
-      float tx = coordinate_bezier(hx, ix, kx, jx, t+step);
-      float ty = coordinate_bezier(hy, iy, ky, jy, t+step);
-      float xx = getXIntersectionWithInterval(ox, oy, sx, sy, tx, ty);
-      if (-9998 < xx && xx<ret) {
-        ret = xx;
+    if(a0.onUse && a1.onUse){
+      float hx=a0.x;
+      float hy=a0.y;
+      float ix=a0.edge_x(ANodeRID);
+      float iy=a0.edge_y(ANodeRID);
+      float jx=a1.x;
+      float jy=a1.y;
+      float kx=a1.edge_x(BNodeRID);
+      float ky=a1.edge_y(BNodeRID);
+      float step = 0.1;
+      for (float t = 0.0; t<1.0-step; t += step) {
+        float sx = coordinate_bezier(hx, ix, kx, jx, t);
+        float sy = coordinate_bezier(hy, iy, ky, jy, t);
+        float tx = coordinate_bezier(hx, ix, kx, jx, t+step);
+        float ty = coordinate_bezier(hy, iy, ky, jy, t+step);
+        float xx = getXIntersectionWithInterval(ox, oy, sx, sy, tx, ty);
+        if (-9998 < xx && xx<ret) {
+          ret = xx;
+        }
       }
     }
     return ret;
