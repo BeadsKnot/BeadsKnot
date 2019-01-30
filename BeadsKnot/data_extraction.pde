@@ -747,6 +747,7 @@ class data_extract { //<>// //<>//
               bdNumU2.n2 = num;
               bdNumU2.c ++;
             }
+            continue;
           } 
           int numN2=bdNum.n2;
           Bead bdNumN2 = getBead(numN2);
@@ -756,10 +757,14 @@ class data_extract { //<>// //<>//
             bdNumN2.u1=-1;
             Bead bdNumU1 = getBead(bdNum.u1);
             Bead bdNumU2 = getBead(bdNum.u2);
-            getBead(bdNum.u1).n2=num;
-            getBead(bdNum.u2).n2=num;
-            getBead(getBead(num).u1).c++;
-            getBead(getBead(num).u2).c++;
+            if (bdNumU1!=null){
+              bdNumU1.n2=num;
+              bdNumU1.c++;
+            }
+            if(bdNumU2 !=null){
+              bdNumU2.n2=num;
+              bdNumU2.c++;
+            }
           }
           //隣の隣
           if (pgn1!=-1&&pgn2!=-1) {
