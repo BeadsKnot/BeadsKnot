@@ -689,7 +689,7 @@ class data_extract { //<>// //<>//
       Bead bdU = getBead(u);
       if (bdU!=null &&  bdU.c==1) {
         float min=w;
-        int num=0;
+        int num = 0;
         int un1=bdU.n1;
         Bead bdun1 = getBead(un1);
         int un1n1=-1, un1n2=-1;
@@ -732,24 +732,32 @@ class data_extract { //<>// //<>//
             continue;
           }
           int numN1=bdNum.n1;
-          int numN2=bdNum.n2;
           Bead bdNumN1 = getBead(numN1);
           if (bdNumN1 != null && bdNumN1.Joint) {//隣だったとき
-            getBead(pgn1).Joint=false;
-            getBead(num).u2=getBead(pgn1).u1;
-            getBead(pgn1).u1=-1;
-            getBead(getBead(num).u1).n2=num;
-            getBead(getBead(num).u2).n2=num;
-            getBead(getBead(num).u1).c++;
-            getBead(getBead(num).u2).c++;
+            bdNumN1.Joint = false;
+            bdNum.u2 = bdNumN1.u1;
+            bdNumN1.u1=-1;
+            Bead bdNumU1 = getBead(bdNum.u1);
+            Bead bdNumU2 = getBead(bdNum.u2);
+            if(bdNumU1 != null){
+              bdNumU1.n2 = num;
+              bdNumU1.c ++;
+            }
+            if(bdNumU2 != null){
+              bdNumU2.n2 = num;
+              bdNumU2.c ++;
+            }
           } 
+          int numN2=bdNum.n2;
           Bead bdNumN2 = getBead(numN2);
-          if (pgn2!=-1&&getBead(pgn2).Joint) {
-            getBead(pgn2).Joint=false;
-            getBead(num).u2=getBead(pgn2).u1;
-            getBead(pgn2).u1=-1;
-            getBead(getBead(num).u1).n2=num;
-            getBead(getBead(num).u2).n2=num;
+          if (bdNumN2 != null && bdNumN2.Joint) {
+            bdNumN2.Joint=false;
+            bdNum.u2 = bdNumN2.u1;
+            bdNumN2.u1=-1;
+            Bead bdNumU1 = getBead(bdNum.u1);
+            Bead bdNumU2 = getBead(bdNum.u2);
+            getBead(bdNum.u1).n2=num;
+            getBead(bdNum.u2).n2=num;
             getBead(getBead(num).u1).c++;
             getBead(getBead(num).u2).c++;
           }
