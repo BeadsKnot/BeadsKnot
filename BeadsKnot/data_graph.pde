@@ -795,9 +795,11 @@ class data_graph { //<>// //<>//
     float minDist = width+height;
     for (int ptID=0; ptID<de.points.size(); ptID++) {
       Bead bd = de.getBead(ptID);
-      float d = dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY); 
-      if (d<10 && d<minDist) {
-        retID = ptID;
+      if(bd!=null){
+        float d = dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY); 
+        if (d<10 && d<minDist) {
+          retID = ptID;
+        }
       }
     }
     return retID;
@@ -808,9 +810,11 @@ class data_graph { //<>// //<>//
     float minDist = width+height;
     for (int ptID=0; ptID<de.points.size(); ptID++) {
       Bead bd = de.getBead(ptID);
-      float d = dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY); 
-      if ((bd.Joint || bd.midJoint) && d<10 && d<minDist) {
-        retID = ptID;
+      if(bd!=null){
+        float d = dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY); 
+        if ((bd.Joint || bd.midJoint) && d<10 && d<minDist) {
+          retID = ptID;
+        }
       }
     }
     return retID;

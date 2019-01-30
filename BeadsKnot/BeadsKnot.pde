@@ -263,13 +263,20 @@ void fileSelected(File selection) {
                 bd.n2 = ed.BNodeID;
                 bd.c = 2;
                 Bead bdA = data.getBead(ed.ANodeID);
-                bdA.set_un12(ed.ANodeRID, nodeNumber+n);
+                if(bdA!=null){
+                  bdA.set_un12(ed.ANodeRID, nodeNumber+n);
+                }
                 Bead bdB = data.getBead(ed.BNodeID);
-                bdB.set_un12(ed.BNodeRID, nodeNumber+n);
+                if(bdB!=null){
+                  bdB.set_un12(ed.BNodeRID, nodeNumber+n);
+                }
                 //data.points.add(bd);
               }
               for (int n=0; n<nodeNumber; n++) {
                 Bead bd = data.getBead(n);
+                if(bd.n1==0 && bd.n2==0){ //<>//
+                  bd.inUse=false;
+                }
                 if (bd.u1==-1 && bd.u2==-1) {
                   bd.midJoint=true;
                 } else {
@@ -366,6 +373,9 @@ void mouseDragged() {
           if(nd.onUse){
             int ptID = nd.pointID;
             Bead pt = data.getBead(ptID);
+            if(pt!=null){
+              return;
+            }
             float x = pt.x;
             float y = pt.y;
             float d = dist(mX, mY, x, y);
@@ -451,6 +461,9 @@ void mouseReleased() {
       // Joint以外をクリックした場合には、miJointの増減を行う。
       for (int beadID=0; beadID<data.points.size(); beadID++) {
         Bead bd = data.getBead(beadID);
+        if(bd==null){
+          continue;
+        }
         float mX = disp.getX_fromWin(mouseX);
         float mY = disp.getY_fromWin(mouseY);
         if (dist(mX, mY, bd.x, bd.y)<10) {
