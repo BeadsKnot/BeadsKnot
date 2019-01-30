@@ -9,7 +9,7 @@ class data_extract { //<>// //<>//
   int pre_endID=0;//消すときにendIDにとってのn1を消すのかn2を消すのかを調べるために使う
   boolean over_crossing=true;//overならtrue,underならfalse
 
-  ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
+    ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
   ArrayList<Bead> points=new ArrayList<Bead>();//点を登録
   transform tf;
   Binarization bin;
@@ -28,7 +28,7 @@ class data_extract { //<>// //<>//
   }
 
   int addBeadToPoint(float _x, float _y) {// pointsにある「消去済み」を再利用する。
-    for (int ptID=0; ptID<points.size(); ptID++) {
+    for (int ptID=0; ptID<points.size (); ptID++) {
       Bead pt = points.get(ptID);
       if (pt!=null) {
         if (pt.n1==-1 && pt.n2==-1) {
@@ -48,7 +48,7 @@ class data_extract { //<>// //<>//
   Bead getBead(int ID) {
     if (0<=ID && ID<points.size()) {
       Bead pt = points.get(ID);
-      if(pt.inUse){
+      if (pt.inUse) {
         return pt;
       }
     }
@@ -67,7 +67,7 @@ class data_extract { //<>// //<>//
   }
 
   void clearAllPoints() {// points.clear()のかわり
-    for (int ID = 0; ID < points.size(); ID++) {
+    for (int ID = 0; ID < points.size (); ID++) {
       Bead bd = points.get(ID);
       bd.n1 = bd.n2 = -1;
       bd.x = bd.y = -1;
@@ -109,10 +109,10 @@ class data_extract { //<>// //<>//
     // (u,v)は点の座標なので，float型ではないか？
     for (int ptID=0; ptID<points.size (); ptID++) {
       Bead pt = getBead(ptID);
-      if(pt!=null){
+      if (pt!=null) {
         if (dist(u, v, pt.x, pt.y ) < threshold-1) {//近くに既存の点がある場合には追加しない
           return ptID;
-        }  
+        }
       }
     }
     int ret = addBeadToPoint(u, v);
@@ -123,7 +123,7 @@ class data_extract { //<>// //<>//
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
       Bead vec = getBead(pt);
-      if (vec == null){
+      if (vec == null) {
         continue;
       }
       if (vec.Joint) {
@@ -169,7 +169,7 @@ class data_extract { //<>// //<>//
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
       Bead vec=getBead(pt);
-      if (vec == null){
+      if (vec == null) {
         continue;
       }
       int n1=vec.n1;
@@ -180,11 +180,11 @@ class data_extract { //<>// //<>//
       Bead vecn2 = getBead(n2);
       Bead vecu1 = getBead(u1);
       Bead vecu2 = getBead(u2);
-      if(vecn1==null || vecn2==null){
+      if (vecn1==null || vecn2==null) {
         continue;
       }
       if (vec.Joint) {
-        if(vecu1==null || vecu2==null){
+        if (vecu1==null || vecu2==null) {
           continue;
         }
         if (vecn1.orientation > vecn2.orientation) {
@@ -201,7 +201,7 @@ class data_extract { //<>// //<>//
           }
         } else {
           if (vecu1.orientation > vecu2.orientation) {
-           //fill(0, 0, 255);//negative
+            //fill(0, 0, 255);//negative
             noStroke();
             fill(0, 0, 255, 25);
             ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
@@ -262,7 +262,7 @@ class data_extract { //<>// //<>//
     }
     Bead bdN = getBead(nn);
     Bead bdM = getBead(mm);
-    if(bdN==null || bdM==null){
+    if (bdN==null || bdM==null) {
       return 0;
     }
     float xa=bdN.x;
@@ -334,7 +334,8 @@ class data_extract { //<>// //<>//
           }
         }
       }
-    } while (!loop_end);//1がなくなるまで繰り返す
+    } 
+    while (!loop_end);//1がなくなるまで繰り返す
     //もし1がなくなり、すべて2にすることができたら
     if (g[fbx][fby]==2) {
       return 1;//OKなら1を返す
@@ -347,7 +348,7 @@ class data_extract { //<>// //<>//
     for (int ptID=0; ptID<points.size (); ptID++) {
       if (!next_to_undercrossing(ptID)) {
         Bead pt=getBead(ptID);
-        if(pt == null){
+        if (pt == null) {
           continue;
         }
         if ( 0<=pt.n1 && pt.n1<points.size() && !next_to_undercrossing(pt.n1)) {
@@ -355,7 +356,7 @@ class data_extract { //<>// //<>//
           Bead pt2 = getBead(pt.n1);
           if (pt2 != null && ! pt2.Joint) {
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
         }
         if (0<=pt.n2 && pt.n2<points.size() && !next_to_undercrossing(pt.n2)) {
@@ -363,7 +364,7 @@ class data_extract { //<>// //<>//
           Bead pt2 = getBead(pt.n2);
           if (! pt2.Joint) {
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
         }
       }
@@ -375,7 +376,7 @@ class data_extract { //<>// //<>//
     //negativeが青色
     for (int ptID=0; ptID<points.size (); ptID++) {
       Bead pt=getBead(ptID);
-      if(pt==null){
+      if (pt==null) {
         continue;
       }
       if (pt.Joint) {
@@ -387,7 +388,7 @@ class data_extract { //<>// //<>//
         Bead pt2=getBead(u2);
         Bead pt3=getBead(n2);
         Bead pt4=getBead(u1);
-        if(pt1==null || pt2==null || pt3==null || pt4==null){
+        if (pt1==null || pt2==null || pt3==null || pt4==null) {
           continue;
         }
         if (pt1.orientation < pt3.orientation) {
@@ -478,7 +479,7 @@ class data_extract { //<>// //<>//
           if (! pt2.Joint) {
             strokeWeight(1);
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
         }
         if (0<=pt.n2 && pt.n2<points.size()) {
@@ -486,7 +487,7 @@ class data_extract { //<>// //<>//
           Bead pt2 = getBead(pt.n2);
           if (! pt2.Joint) {
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
         }
       }
@@ -501,7 +502,7 @@ class data_extract { //<>// //<>//
     for (Nbhd n : nbhds) {
       // getBead(n.a).c++;
       //getBead(n.b).c++;
-      if(n.inUse){
+      if (n.inUse) {
         Bead vec_1=getBead(n.a);
         if (vec_1.c==0) {
           vec_1.n1=n.b;
@@ -806,7 +807,7 @@ class data_extract { //<>// //<>//
     }
   }
   boolean Ofutarisama() {//みんなお二人様だったか確認
-    for (int bdID=0; bdID< points.size(); bdID++){
+    for (int bdID=0; bdID< points.size (); bdID++) {
       Bead bd = getBead(bdID);
       if ((bd.n1!=-1 && bd.n2!=-1) && bd.c!=2) {
         return false;
@@ -843,7 +844,7 @@ class data_extract { //<>// //<>//
   Nbhd find_Joint_midJoint(Nbhd nbhd) {
     int j=nbhd.a;
     int c=nbhd.b;
-    for (int count = 0; count < points.size(); count++) {
+    for (int count = 0; count < points.size (); count++) {
       Bead p=getBead(c);
       if (p.Joint || p.midJoint) {
         return new Nbhd(j, c);
@@ -869,13 +870,13 @@ class data_extract { //<>// //<>//
       if (p.n1==nbhd.a) {
         return new Nbhd(nbhd.b, p.u2);
       } else 
-      if (p.u1==nbhd.a) {
+        if (p.u1==nbhd.a) {
         return new Nbhd(nbhd.b, p.n1);
       } else 
-      if (p.n2==nbhd.a) {
+        if (p.n2==nbhd.a) {
         return new Nbhd(nbhd.b, p.u1);
       } else 
-      if (p.u2==nbhd.a) {
+        if (p.u2==nbhd.a) {
         return new Nbhd(nbhd.b, p.n2);
       }
     }
@@ -900,7 +901,7 @@ class data_extract { //<>// //<>//
         if (ptA.n1 == b) {
           c = ptA.n2;
         } else 
-        if (ptA.n2 == b) {
+          if (ptA.n2 == b) {
           c = ptA.n1;
         } else {
           println("draw_region : error");
@@ -914,13 +915,13 @@ class data_extract { //<>// //<>//
         if (ptA.n1 == b) {
           c = ptA.u2;
         } else 
-        if (ptA.u1 == b) {
+          if (ptA.u1 == b) {
           c = ptA.n1;
         } else 
-        if (ptA.n2 == b) {
+          if (ptA.n2 == b) {
           c = ptA.u1;
         } else 
-        if (ptA.u2 == b) {
+          if (ptA.u2 == b) {
           c = ptA.n2;
         } else {
           println("draw_region : error");
@@ -1068,8 +1069,11 @@ class data_extract { //<>// //<>//
   Nbhd get_near_nbhd() {//（マウスポジションの真右にあって）マウスの位置に近いNbhdを見つける。
     int a=-1, b=-1;
     float maxX=9999f;
-    for (int p = 0; p<points.size(); p++) {
+    for (int p = 0; p<points.size (); p++) {
       Bead bead = getBead(p);
+      if (bead==null) {
+        continue;
+      }
       float x0 = disp.get_winX(bead.x);
       float y0 = disp.get_winY(bead.y);
       if (bead.Joint) {
@@ -1077,6 +1081,9 @@ class data_extract { //<>// //<>//
         int n1 = bead.n1;// n2, u1, u2についても同じことをする。
         if (n1 != -1) {
           Bead bead1 = getBead(n1);
+          if (bead1 == null) {
+            continue;
+          }
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
           if (mouseX < x0 || mouseX< x1) {
@@ -1100,6 +1107,9 @@ class data_extract { //<>// //<>//
         int n2 = bead.n2;// n2, u1, u2についても同じことをする。
         if (n2 != -1) {
           Bead bead2 = getBead(n2);
+          if (bead2 == null) {
+            continue;
+          }
           float x1 = disp.get_winX(bead2.x);
           float y1 = disp.get_winY(bead2.y);
           if (mouseX < x0 || mouseX< x1) {
@@ -1123,6 +1133,9 @@ class data_extract { //<>// //<>//
         int u1 = bead.u1;// n2, u1, u2についても同じことをする。
         if (u1 != -1) {
           Bead bead1 = getBead(u1);
+          if (bead1 == null) {
+            continue;
+          }
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
           if (mouseX < x0 || mouseX< x1) {
@@ -1146,6 +1159,9 @@ class data_extract { //<>// //<>//
         int u2 = bead.u2;// n2, u1, u2についても同じことをする。
         if (u2 != -1) {
           Bead bead2 = getBead(u2);
+          if (bead2 == null) {
+            continue;
+          }
           float x1 = disp.get_winX(bead2.x);
           float y1 = disp.get_winY(bead2.y);
           if (mouseX < x0 || mouseX< x1) {
@@ -1174,6 +1190,9 @@ class data_extract { //<>// //<>//
   int findArcFromPoints(int startID, int endID) {
     //引数はpointのID
     Bead st = getBead(startID);
+    if (st==null) {
+      return -1;
+    }
     //Bead en = getBead(endID);
     int a=st.n1;
     int b=st.n2;
@@ -1235,66 +1254,74 @@ class data_extract { //<>// //<>//
       } else {//aもbもendIDでないとき
         ////////////////////////////////////////この辺でエラーが出やすい
         //aが-1になるとエラーがでる
-        node1=getBead(a);/////////////////////////何が怒っているのか
-        counta++;
-        node2=getBead(b);
-        countb++;
+        if (node!= null) {
+          node1=getBead(a);/////////////////////////何が怒っているのか
+          counta++;
+        }
+        if (node2!=null) {
+          node2=getBead(b);
+          countb++;
+        }
       }
 
-      if (node1.Joint) {
-        if (node1.n1==pre_prev_a) {
-          a=node1.n2;
-          J1_over=true;
-          self_crossing_a=prev_a;
-          println("self_crossing_a="+self_crossing_a);
-        } else if (node1.n2==pre_prev_a) {
+      if (node1 != null ) {
+        if (node1.Joint) {
+          if (node1.n1==pre_prev_a) {
+            a=node1.n2;
+            J1_over=true;
+            self_crossing_a=prev_a;
+            println("self_crossing_a="+self_crossing_a);
+          } else if (node1.n2==pre_prev_a) {
+            a=node1.n1;
+            J1_over=true;
+            self_crossing_a=prev_a;
+            println("self_crossing_a="+self_crossing_a);
+          } else if (node1.u1==pre_prev_a) {
+            a=node1.u2;
+            J1_under=true;
+            self_crossing2_a=prev_a;
+            println("self_crossing2_a="+self_crossing2_a);
+          } else if (node1.u2==pre_prev_a) {
+            a=node1.u1;
+            J1_under=true;
+            self_crossing2_a=prev_a;
+            println("self_crossing2_a="+self_crossing2_a);
+          }
+        } else {
           a=node1.n1;
-          J1_over=true;
-          self_crossing_a=prev_a;
-          println("self_crossing_a="+self_crossing_a);
-        } else if (node1.u1==pre_prev_a) {
-          a=node1.u2;
-          J1_under=true;
-          self_crossing2_a=prev_a;
-          println("self_crossing2_a="+self_crossing2_a);
-        } else if (node1.u2==pre_prev_a) {
-          a=node1.u1;
-          J1_under=true;
-          self_crossing2_a=prev_a;
-          println("self_crossing2_a="+self_crossing2_a);
-        }
-      } else {
-        a=node1.n1;
-        if (pre_prev_a==a) {
-          a=node1.n2;
+          if (pre_prev_a==a) {
+            a=node1.n2;
+          }
         }
       }
-      if (node2.Joint) {
-        if (node2.n1==pre_prev_b) {
+      if (node2 != null) {
+        if (node2.Joint) {
+          if (node2.n1==pre_prev_b) {
+            b=node2.n2;
+            J2_over=true;
+            self_crossing_b=prev_b;
+            println("self_crossing_b="+self_crossing_b);
+          } else if (node2.n2==pre_prev_b) {
+            b=node2.n1;
+            J2_over=true;
+            self_crossing_b=prev_b;
+            println("self_crossing_b="+self_crossing_b);
+          } else if (node2.u1==pre_prev_b) {
+            b=node2.u2;
+            J2_under=true;
+            self_crossing2_b=prev_b;
+            println("self_crossing2_b="+self_crossing2_b);
+          } else if (node2.u2==pre_prev_b) {
+            b=node2.u1;
+            J2_under=true;
+            self_crossing2_b=prev_b;
+            println("self_crossing2_b="+self_crossing2_b);
+          }
+        } else {
           b=node2.n2;
-          J2_over=true;
-          self_crossing_b=prev_b;
-          println("self_crossing_b="+self_crossing_b);
-        } else if (node2.n2==pre_prev_b) {
-          b=node2.n1;
-          J2_over=true;
-          self_crossing_b=prev_b;
-          println("self_crossing_b="+self_crossing_b);
-        } else if (node2.u1==pre_prev_b) {
-          b=node2.u2;
-          J2_under=true;
-          self_crossing2_b=prev_b;
-          println("self_crossing2_b="+self_crossing2_b);
-        } else if (node2.u2==pre_prev_b) {
-          b=node2.u1;
-          J2_under=true;
-          self_crossing2_b=prev_b;
-          println("self_crossing2_b="+self_crossing2_b);
-        }
-      } else {
-        b=node2.n2;
-        if (pre_prev_b==b) {
-          b=node2.n1;
+          if (pre_prev_b==b) {
+            b=node2.n1;
+          }
         }
       }
       // if on joint, n1->n2, u1->u2, n2->n1, u2->u1
@@ -1346,26 +1373,30 @@ class data_extract { //<>// //<>//
           pre_endID=pre_prev_a;
           return;
         } else {
-          node1=getBead(a);
+          if (node1 != null) {
+            node1=getBead(a);
+          }
         }
-        if (node1.Joint) {
-          if (node1.n1==pre_prev_a) {
-            a=node1.n2;
-          } else if (node1.n2==pre_prev_a) {
+        if (node1 != null) {
+          if (node1.Joint) {
+            if (node1.n1==pre_prev_a) {
+              a=node1.n2;
+            } else if (node1.n2==pre_prev_a) {
+              a=node1.n1;
+            } else if (node1.u1==pre_prev_a) {
+              a=node1.u2;
+            } else if (node1.u2==pre_prev_a) {
+              a=node1.u1;
+            }
+          } else {
             a=node1.n1;
-          } else if (node1.u1==pre_prev_a) {
-            a=node1.u2;
-          } else if (node1.u2==pre_prev_a) {
-            a=node1.u1;
+            if (pre_prev_a==a) {
+              a=node1.n2;
+            }
           }
-        } else {
-          a=node1.n1;
-          if (pre_prev_a==a) {
-            a=node1.n2;
-          }
+          between_beads[j]=prev_a;
+          j=j+1;
         }
-        between_beads[j]=prev_a;
-        j=j+1;
         //if (j==count-1) {
         //  return;
         //}
@@ -1374,26 +1405,30 @@ class data_extract { //<>// //<>//
           pre_endID=pre_prev_b;
           return;
         } else {
-          node2=getBead(b);
+          if (node2 != null) {
+            node2=getBead(b);
+          }
         }
-        if (node2.Joint) {
-          if (node2.n1==pre_prev_b) {
+        if (node2 != null) {
+          if (node2.Joint) {
+            if (node2.n1==pre_prev_b) {
+              b=node2.n2;
+            } else if (node2.n2==pre_prev_b) {
+              b=node2.n1;
+            } else if (node2.u1==pre_prev_b) {
+              b=node2.u2;
+            } else if (node2.u2==pre_prev_b) {
+              b=node2.u1;
+            }
+          } else {
             b=node2.n2;
-          } else if (node2.n2==pre_prev_b) {
-            b=node2.n1;
-          } else if (node2.u1==pre_prev_b) {
-            b=node2.u2;
-          } else if (node2.u2==pre_prev_b) {
-            b=node2.u1;
-          }
-        } else {
-          b=node2.n2;
-          if (pre_prev_b==b) {
-            b=node2.n1;
-          }
-        }  
-        between_beads[j]=prev_b;
-        j=j+1;
+            if (pre_prev_b==b) {
+              b=node2.n1;
+            }
+          }  
+          between_beads[j]=prev_b;
+          j=j+1;
+        }
         //if (j==count-1) {
         //  return;
         //}
@@ -1406,35 +1441,35 @@ class data_extract { //<>// //<>//
       println("between_beads["+ii+"]"+data.between_beads[ii]);
       int a=between_beads[ii];
       Bead pt=getBead(a);
-
-      if (pt.Joint) {
-        if (ii>0) {
-          int pre_a=between_beads[ii-1];
-          if (pt.u1==pre_a||pt.u2==pre_a) {//undercrossingだったら
-            pt.u1=-1;
-            pt.u2=-1;
-            pt.Joint=false;
-            pt.c=2;
-            over_crossing=false;
-            println("通過したJointはUnderCrossingでした");
-          } else {//overcrossingだったら
-            pt.n1=pt.u1;
-            pt.n2=pt.u2;
-            pt.Joint=false;
-            pt.c=2;
-            over_crossing=true;
-            println("通過したJointはOverCrossingでした");
+      if(pt!=null){
+        if (pt.Joint) {
+          if (ii>0) {
+            int pre_a=between_beads[ii-1];
+            if (pt.u1==pre_a||pt.u2==pre_a) {//undercrossingだったら
+              pt.u1=-1;
+              pt.u2=-1;
+              pt.Joint=false;
+              pt.c=2;
+              over_crossing=false;
+              println("通過したJointはUnderCrossingでした");
+            } else {//overcrossingだったら
+              pt.n1=pt.u1;
+              pt.n2=pt.u2;
+              pt.Joint=false;
+              pt.c=2;
+              over_crossing=true;
+              println("通過したJointはOverCrossingでした");
+            }
+          } else {
+            return;
           }
         } else {
-          return;
+          removeBeadFromPoint(a);
         }
-      } else {
-        removeBeadFromPoint(a);
-        //pt.n1=-1;
-        //pt.n2=-1;
       }
     }
   }
+  
   void extinguish_startID_and_endID(int i, int startID, int endID) {
     Bead bds=data.getBead(startID);
     Bead bde=data.getBead(endID);
@@ -1490,3 +1525,4 @@ class data_extract { //<>// //<>//
     return false;
   }
 }
+
