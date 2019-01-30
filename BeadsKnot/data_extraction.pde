@@ -1022,6 +1022,9 @@ class data_extract { //<>// //<>//
     int repeatmax = points.size();
     Bead ptA = getBead(a);
     Bead ptB = getBead(b);
+    if(ptA==null || ptB==null){
+      return;
+    }
     if (ptA.Joint) {
       int n1 = ptB.n1;
       int n2 = ptB.n2;
@@ -1031,6 +1034,9 @@ class data_extract { //<>// //<>//
         a = n2;
       }
       ptA = getBead(a);
+      if(ptA==null){
+        return ;
+      }
     } else if (ptB.Joint) {
       int n1 = ptA.n1;
       int n2 = ptA.n2;
@@ -1040,9 +1046,12 @@ class data_extract { //<>// //<>//
         b = n2;
       }
       ptB = getBead(b);
+      if(ptB==null){
+        return ;
+      }
     }
 
-    if (ptA.orientation<ptB.orientation) {
+    if (ptA.orientation < ptB.orientation) {
       ptA=getBead(b);
       ptB=getBead(a);
       c=a;
@@ -1077,10 +1086,14 @@ class data_extract { //<>// //<>//
         int n2=ptA.n2;
         int u1=ptA.u1;
         int u2=ptA.u2;
-        int n1o=getBead(n1).orientation;
-        int n2o=getBead(n2).orientation;
-        int u1o=getBead(u1).orientation;
-        int u2o=getBead(u2).orientation;
+        Bead bdN1=getBead(n1),bdN2=getBead(n2), bdU1=getBead(u1), bdU2=getBead(u2);
+        if(bdN1==null || bdN2==null || bdU1==null || bdU2==null){
+          break;
+        }
+        int n1o=bdN1.orientation;
+        int n2o=bdN2.orientation;
+        int u1o=bdU1.orientation;
+        int u2o=bdU2.orientation;
         if ((n1o<n2o)&&(u1o<u2o)) {
           if (ptA.n1 == b) {
             c = ptA.u2;
@@ -1132,6 +1145,9 @@ class data_extract { //<>// //<>//
         //vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
       }
       ptA = getBead(a);
+      if(ptA==null){
+        break;
+      }
       if (nbhd.a == a) {
         break;
       }
