@@ -622,31 +622,37 @@ class data_extract { //<>// //<>//
 
   void removeThrone() {//とげを除く
     for (int u=0; u<points.size (); u++) {
+      Bead bdU = getBead(u);
+      if(bdU==null){
+        continue;
+      }
       if ( getBead(u).c==1) {
         for (int i=nbhds.size ()-1; i>=0; i--) {
           Nbhd n=nbhds.get(i);
           if (n.a==u) {
-            if (getBead(n.b).c==3) {
+            Bead bdNB = getBead(n.b); 
+            if (bdNB!=null && bdNB.c==3) {
               removePoint(u);
-              getBead(n.b).c=2;
+              bdNB.c=2;
             }
-          } else if (n.b==u) {
-            if (getBead(n.a).c==3) {
+          } if (n.b==u) {
+            Bead bdNA = getBead(n.a);
+            if (bdNA!=null && bdNA.c==3) {
               removePoint(u);
-              getBead(n.a).c=2;
+              bdNA.c=2;
             }
           }
         }
       }
     }
   }
-
+ //<>//
   void fillGap() {//点と点の距離の最小を記録し、最小の距離の点が1本さんならばその点と点をつなげる
     for (int u=0; u<points.size (); u++) {
       Bead bdU = getBead(u);
       if(bdU!=null){
         if ( bdU.c==1) {// まず「自分」がおひとりさまの場合のみ調べる
-          float min=w;//大きな値から始める。 //<>//
+          float min=w;//大きな値から始める。
           int num=-1;//最小の距離の点の番号を記録するための変数
           for (int v=0; v<points.size (); v++) {
             Bead bdV = getBead(v);
@@ -667,7 +673,7 @@ class data_extract { //<>// //<>//
               //なにかする//TODO 「なにかする」という古いメッセージの意味を考える。
               bdNum.c++;
               bdU.c++;
-            } else if (getBead(num).c==0) {//最小の距離の点が孤立
+            } else if (bdNum.c==0) {//最小の距離の点が孤立
               addToNbhds(u, num);
               bdNum.c++;
               bdU.c++;
@@ -677,40 +683,25 @@ class data_extract { //<>// //<>//
       }
     }
   }
-  /*
-  void get_nbhd() {//となりの隣の内容をgetする
-   //for (Nbhd n : nbhds) {
-   for (int i=0; i<nbhds.size (); i++) {
-   Nbh n=nbhds.get(i);
-   if (n.a!=n.b) {
-   if (getBead(n.a).n1==-1) {
-   getBead(n.a).n1=n.b;
-   } else {
-   getBead(n.a).n2=n.b;
-   }
-   if (getBead(n.b).n1==-1) {
-   getBead(n.b).n1=n.a;
-   } else {
-   getBead(n.b).n2=n.a;
-   }
-   }
-   }
-   }
-   */
 
   void FindJoint() {//jointを探す
     for (int u=0; u<points.size (); u++) {
-      if ( getBead(u).c==1) {
+      Bead bdU = getBead(u);
+      if (bdU!=null &&  bdU.c==1) {
         float min=w;
         int num=0;
+        int un1=bdU.n1;
+        Bead bdun1 = getBead(un1);
+        int un1n1=-1, un1n2=-1;
+        if(bdun1!=null){
+          un1n1 = bdun1.n1;
+          un1n2 = bdun1.n2;
+        }
         for (int v=0; v<points.size (); v++) {
-          if (u!=v) {
-            int pgu1=getBead(u).n1;
-            // println(pgu1);
-            if (v!=pgu1) {
-              //print("pgu1="+pgu1);
-              if (pgu1!=-1&&v!=getBead(pgu1).n1&&v!=getBead(pgu1).n2) {
-                float d=dist(getBead(u).x, getBead(u).y, getBead(v).x, getBead(v).y);
+          Bead bdV = getBead(v);
+          if (bdV!=null) {
+            if (v!=u && v!=un1 && v!=un1n1 && v!=un1n2) {
+                float d=dist(bdU.x, bdU.y, bdV.x, bdV.y);
                 if (min>d) {
                   min=d;
                   num=v;
@@ -719,21 +710,31 @@ class data_extract { //<>// //<>//
             }
           }
         }
-        if (getBead(num).c==2) {
-          getBead(num).Joint=true;
-
-          if (getBead(num).u1==-1) {
-            getBead(num).u1=u;
+        Bead bdNum = getBead(num);
+        if (bdNum!=null && getBead(num).c==2) {
+          bdNum.Joint=true;
+          if (bdNum.u1==-1) {
+            bdNum.u1=u;
           } else {
-            getBead(num).u2=u;
-            getBead(getBead(num).u1).n2=num;
-            getBead(getBead(num).u2).n2=num;
-            getBead(getBead(num).u1).c++;
-            getBead(getBead(num).u2).c++;
+            bdNum.u2=u;
+            int numU1 = bdNum.u1;
+            int numU2 = u;//bdNum.u2;
+            Bead bdNumU1 = getBead(numU1);
+            Bead bdNumU2 = getBead(numU2);
+            if (bdNumU1 != null){
+              bdNumU1.n2=num;
+              bdNumU1.c++;
+            }
+            if (bdNumU2 != null){
+              bdNumU2.n2=num;
+              bdNumU2.c++;
+            }
+            continue;
           }
-          int pgn1=getBead(num).n1;
-          int pgn2=getBead(num).n2;
-          if (pgn1!=-1&&getBead(pgn1).Joint) {//隣だったとき
+          int numN1=bdNum.n1;
+          int numN2=bdNum.n2;
+          Bead bdNumN1 = getBead(numN1);
+          if (bdNumN1 != null && bdNumN1.Joint) {//隣だったとき
             getBead(pgn1).Joint=false;
             getBead(num).u2=getBead(pgn1).u1;
             getBead(pgn1).u1=-1;
@@ -741,7 +742,9 @@ class data_extract { //<>// //<>//
             getBead(getBead(num).u2).n2=num;
             getBead(getBead(num).u1).c++;
             getBead(getBead(num).u2).c++;
-          } else if (pgn2!=-1&&getBead(pgn2).Joint) {
+          } 
+          Bead bdNumN2 = getBead(numN2);
+          if (pgn2!=-1&&getBead(pgn2).Joint) {
             getBead(pgn2).Joint=false;
             getBead(num).u2=getBead(pgn2).u1;
             getBead(pgn2).u1=-1;
