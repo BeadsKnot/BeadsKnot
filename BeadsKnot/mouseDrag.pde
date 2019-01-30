@@ -480,10 +480,12 @@ class mouseDrag { //<>// //<>//
     boolean OK=true;//図が完了しているかどうかのフラグ。
     for (int bdID=0; bdID<data.points.size(); bdID++) {
       Bead bd = data.getBead(bdID);
-      if (bd.n1!=-1 || bd.n2!=-1 || bd.u1!=-1 || bd.u2!=-1) { 
-        if (bd.c!=2 && bd.c!=4) {
-          OK=false;
-          return;
+      if(bd!=null){
+        if (bd.n1!=-1 || bd.n2!=-1 || bd.u1!=-1 || bd.u2!=-1) { 
+          if (bd.c!=2 && bd.c!=4) {
+            OK=false;
+            return;
+          }
         }
       }
     }

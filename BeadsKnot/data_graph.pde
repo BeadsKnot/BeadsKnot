@@ -37,31 +37,33 @@ class data_graph { //<>// //<>//
   void modify_Joint_orientation() {
     for (int i=0; i<de.points.size (); i++) {
       Bead vec=de.getBead(i);
-      if (vec.Joint) {
-        if (vec.u1<0||vec.u1>=de.points.size()||vec.u2<0||vec.u2>=de.points.size()) {
-          return;
-        }
-        //println(vec.n1, vec.u1, vec.n2, vec.u2);
-        Bead vecn1=de.getBead(vec.n1);
-        float x0=vecn1.x;
-        float y0=vecn1.y;
-        Bead vecu1=de.getBead(vec.u1);
-        float x1=vecu1.x;
-        float y1=vecu1.y;
-        Bead vecn2=de.getBead(vec.n2);
-        float x2=vecn2.x;
-        float y2=vecn2.y;
-        Bead vecu2=de.getBead(vec.u2);
-        float x3=vecu2.x;
-        float y3=vecu2.y;
-        float x02=x0-x2;//a
-        float y02=y0-y2;//b
-        float x13=x1-x3;//c
-        float y13=y1-y3;//d
-        if (x02*y13-y02*x13>0) {
-          int a=vec.u1;
-          vec.u1=vec.u2;
-          vec.u2=a;
+      if(vec!=null){
+        if (vec.Joint) {
+          if (vec.u1<0||vec.u1>=de.points.size()||vec.u2<0||vec.u2>=de.points.size()) {
+            return;
+          }
+          //println(vec.n1, vec.u1, vec.n2, vec.u2);
+          Bead vecn1=de.getBead(vec.n1);
+          float x0=vecn1.x;
+          float y0=vecn1.y;
+          Bead vecu1=de.getBead(vec.u1);
+          float x1=vecu1.x;
+          float y1=vecu1.y;
+          Bead vecn2=de.getBead(vec.n2);
+          float x2=vecn2.x;
+          float y2=vecn2.y;
+          Bead vecu2=de.getBead(vec.u2);
+          float x3=vecu2.x;
+          float y3=vecu2.y;
+          float x02=x0-x2;//a
+          float y02=y0-y2;//b
+          float x13=x1-x3;//c
+          float y13=y1-y3;//d
+          if (x02*y13-y02*x13>0) {
+            int a=vec.u1;
+            vec.u1=vec.u2;
+            vec.u2=a;
+          }
         }
       }
     }
