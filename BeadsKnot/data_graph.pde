@@ -146,13 +146,14 @@ class data_graph { //<>// //<>//
   int find_next_Joint_in_points(int j, int c) {
     //print("find_next_Joint_in_points:", j, c);
     for (int count = 0; count < de.points.size(); count++) {
-      //print("("+j+","+c+")");
+      print("("+j+","+c+")");
       if(c<0 || de.points.size()<=c){
+        println("["+de.points.get(j).n1+":"+de.points.get(j).n2+"]"+de.points.get(j).inUse);
         return -1; //<>//
       }
       Bead p=de.getBead(c);
       if (p.Joint) {
-        //println();
+        println();
         return c;
       }
       int d=0;

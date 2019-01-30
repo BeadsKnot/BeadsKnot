@@ -362,7 +362,7 @@ class data_extract { //<>// //<>//
         if (0<=pt.n2 && pt.n2<points.size() && !next_to_undercrossing(pt.n2)) {
           stroke(0);
           Bead pt2 = getBead(pt.n2);
-          if (! pt2.Joint) {
+          if (pt2 != null && ! pt2.Joint) {
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
             disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
@@ -476,7 +476,7 @@ class data_extract { //<>// //<>//
         if (0<=pt.n1 && pt.n1<points.size()) {
           stroke(0);
           Bead pt2 = getBead(pt.n1);
-          if (! pt2.Joint) {
+          if (pt2!=null && ! pt2.Joint) {
             strokeWeight(1);
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
             disp.get_winX(pt2.x), disp.get_winY(pt2.y));
@@ -485,7 +485,7 @@ class data_extract { //<>// //<>//
         if (0<=pt.n2 && pt.n2<points.size()) {
           stroke(0);
           Bead pt2 = getBead(pt.n2);
-          if (! pt2.Joint) {
+          if (pt2!=null && ! pt2.Joint) {
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
             disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
@@ -504,27 +504,37 @@ class data_extract { //<>// //<>//
       //getBead(n.b).c++;
       if (n.inUse) {
         Bead vec_1=getBead(n.a);
-        if (vec_1.c==0) {
-          vec_1.n1=n.b;
-        } else if (vec_1.c==1) {
-          vec_1.n2=n.b;
-        } else if (vec_1.c==2) {
-          vec_1.u1=n.b;
-        } else if (vec_1.c==3) {
-          vec_1.u2=n.b;
+        if (vec_1!=null){
+          if (vec_1.c==0) {
+            vec_1.n1=n.b;
+            vec_1.c++;
+          } else if (vec_1.c==1) {
+            vec_1.n2=n.b;
+            vec_1.c++;
+          } else if (vec_1.c==2) {
+            vec_1.u1=n.b;
+            vec_1.c++;
+          } else if (vec_1.c==3) {
+            vec_1.u2=n.b;
+            vec_1.c++;
+          }
         }
-        vec_1.c++;
         Bead vec_2=getBead(n.b);
-        if (vec_2.c==0) {
-          vec_2.n1=n.a;
-        } else if (vec_2.c==1) {
-          vec_2.n2=n.a;
-        } else if (vec_2.c==2) {
-          vec_2.u1=n.a;
-        } else if (vec_2.c==3) {
-          vec_2.u2=n.a;
+        if (vec_2!=null){
+          if (vec_2.c==0) {
+            vec_2.n1=n.a;
+            vec_2.c++;
+          } else if (vec_2.c==1) {
+            vec_2.n2=n.a;
+            vec_2.c++;
+          } else if (vec_2.c==2) {
+            vec_2.u1=n.a;
+            vec_2.c++;
+          } else if (vec_2.c==3) {
+            vec_2.u2=n.a;
+            vec_2.c++;
+          }
         }
-        vec_2.c++;
       }
     }
   }
@@ -535,14 +545,16 @@ class data_extract { //<>// //<>//
     l=t=r=b=0;
     for (int u=0; u<points.size (); u++) {
       Bead pt=getBead(u);
-      if (u==0) {
-        l=r=pt.x;
-        t=b=pt.y;
-      } else {
-        if (pt.x<l) l=pt.x;
-        if (r<pt.x) r=pt.x;
-        if (pt.y<t) t=pt.y;
-        if (b<pt.y) b=pt.y;
+      if(pt != null){
+        if (u==0) {
+          l=r=pt.x;
+          t=b=pt.y;
+        } else {
+          if (pt.x<l) l=pt.x;
+          if (r<pt.x) r=pt.x;
+          if (pt.y<t) t=pt.y;
+          if (b<pt.y) b=pt.y;
+        }
       }
     }
     disp.left=l;
@@ -555,16 +567,13 @@ class data_extract { //<>// //<>//
   void addJointToNbhds() {//jointに関しての線を追加
     for (int u=0; u<points.size (); u++) {
       Bead vec=getBead(u);
-      if (vec.Joint) {
+      if (vec != null && vec.Joint) {
         if (duplicateNbhds(u, vec.u1)==0) {
           nbhds.add(new Nbhd(u, vec.u1));
         }
         if (duplicateNbhds(u, vec.u2)==0) {
           nbhds.add(new Nbhd(u, vec.u2));
         }
-        // addToNbhs(u, vec.u1);
-        // addToNbhs(u, vec.u2);
-        // println(u, vec.u1);
       }
     }
   }
@@ -590,15 +599,7 @@ class data_extract { //<>// //<>//
         n.inUse = false;
       }
     }
-    //for (int i=nbhds.size ()-1; i>=0; i--) {
-    //  Nbhd n=nbhds.get(i);
-    //  if (n.a>u) {
-    //    n.a--;
-    //  }
-    //  if (n.b>u) {
-    //    n.b--;
-    //  }
-    //}
+
   }
 
   void removePoint2(int u) {
@@ -627,13 +628,11 @@ class data_extract { //<>// //<>//
           if (n.a==u) {
             if (getBead(n.b).c==3) {
               removePoint(u);
-              //removePoint2(u);
               getBead(n.b).c=2;
             }
           } else if (n.b==u) {
             if (getBead(n.a).c==3) {
               removePoint(u);
-              //removePoint2(u);
               getBead(n.a).c=2;
             }
           }
@@ -644,29 +643,36 @@ class data_extract { //<>// //<>//
 
   void fillGap() {//点と点の距離の最小を記録し、最小の距離の点が1本さんならばその点と点をつなげる
     for (int u=0; u<points.size (); u++) {
-      if ( getBead(u).c==1) {// まず「自分」がおひとりさまの場合のみ調べる
-        float min=w;//大きな値から始める。
-        int num=-1;//最小の距離の点の番号を記録するための変数
-        for (int v=0; v<points.size (); v++) {
-          if (u!=v) {
-            if (getBead(u).n1!=v) {//おひとりさまの相手は近くにいるに決まっているので探索対象から除外
-              float d=dist(getBead(u).x, getBead(u).y, getBead(v).x, getBead(v).y);
-              if (min>d) {
-                min=d;
-                num=v;
+      Bead bdU = getBead(u);
+      if(bdU!=null){
+        if ( bdU.c==1) {// まず「自分」がおひとりさまの場合のみ調べる
+          float min=w;//大きな値から始める。 //<>//
+          int num=-1;//最小の距離の点の番号を記録するための変数
+          for (int v=0; v<points.size (); v++) {
+            Bead bdV = getBead(v);
+            if (bdV != null && u != v) {
+              if (bdU.n1!=v) {//おひとりさまの相手は近くにいるに決まっているので探索対象から除外
+                float d=dist(bdU.x, bdU.y, bdV.x, bdV.y);
+                if (min>d) {
+                  min=d;
+                  num=v;
+                }
               }
             }
           }
-        }
-        if (getBead(num).c==1) {//最小の距離の点がおひとりさま
-          addToNbhds(u, num);
-          //なにかする//TODO 「なにかする」という古いメッセージの意味を考える。
-          getBead(num).c++;
-          getBead(u).c++;
-        } else if (getBead(num).c==0) {//最小の距離の点が孤立
-          addToNbhds(u, num);
-          getBead(num).c++;
-          getBead(u).c++;
+          Bead bdNum = getBead(num);
+          if(bdNum!=null){
+            if (bdNum.c==1) {//最小の距離の点がおひとりさま
+              addToNbhds(u, num);
+              //なにかする//TODO 「なにかする」という古いメッセージの意味を考える。
+              bdNum.c++;
+              bdU.c++;
+            } else if (getBead(num).c==0) {//最小の距離の点が孤立
+              addToNbhds(u, num);
+              bdNum.c++;
+              bdU.c++;
+            }
+          }
         }
       }
     }
@@ -809,7 +815,13 @@ class data_extract { //<>// //<>//
   boolean Ofutarisama() {//みんなお二人様だったか確認
     for (int bdID=0; bdID< points.size (); bdID++) {
       Bead bd = getBead(bdID);
-      if ((bd.n1!=-1 && bd.n2!=-1) && bd.c!=2) {
+      if(bd==null){
+        continue;
+      }
+      if (bd.inUse==false){
+        continue;
+      }
+      if(bd.c!=2) {
         return false;
       }
     }
@@ -1254,7 +1266,7 @@ class data_extract { //<>// //<>//
       } else {//aもbもendIDでないとき
         ////////////////////////////////////////この辺でエラーが出やすい
         //aが-1になるとエラーがでる
-        if (node!= null) {
+        if (node1!= null) {
           node1=getBead(a);/////////////////////////何が怒っているのか
           counta++;
         }
@@ -1525,4 +1537,3 @@ class data_extract { //<>// //<>//
     return false;
   }
 }
-
