@@ -701,11 +701,10 @@ class data_extract { //<>// //<>//
           Bead bdV = getBead(v);
           if (bdV!=null) {
             if (v!=u && v!=un1 && v!=un1n1 && v!=un1n2) {
-                float d=dist(bdU.x, bdU.y, bdV.x, bdV.y);
-                if (min>d) {
-                  min=d;
-                  num=v;
-                }
+              float d=dist(bdU.x, bdU.y, bdV.x, bdV.y);
+              if (min>d) {
+                min=d;
+                num=v;
               }
             }
           }
@@ -767,24 +766,30 @@ class data_extract { //<>// //<>//
             }
           }
           //隣の隣
-          if (pgn1!=-1&&pgn2!=-1) {
-            int pgn1_1=getBead(pgn1).n1;
-            int pgn1_2=getBead(pgn1).n2;
-            int pgn2_1=getBead(pgn2).n1;
-            int pgn2_2=getBead(pgn2).n2;
-            if (num!=pgn1_1&&getBead(pgn1_1).Joint) {
-              getBead(pgn1_1).Joint=false;
-              getBead(pgn1).Joint=true;
-              getBead(num).Joint=false;
-              getBead(pgn1).u1=getBead(num).u1;
-              getBead(num).u1=-1;
-              getBead(pgn1).u2=getBead(pgn1_1).u1;
-              getBead(pgn1_1).u1=-1;
-              getBead(getBead(pgn1).u1).n2=pgn1;
-              getBead(getBead(pgn1).u2).n2=pgn1;
-              getBead(getBead(pgn1).u1).c++;
-              getBead(getBead(pgn1).u2).c++;
-            } else if (pgn1_2!=-1&&num!=pgn1_2&&getBead(pgn1_2).Joint) {
+          if (bdNumN1 != null && bdNumN2 != null) {
+            int numN1N1 = bdNumN1.n1;
+            Bead bdNumN1N1 = getBead(numN1N1);
+            if (bdNumN1N1!=null && num != numN1N1 && bdNumN1N1.Joint) {
+              bdNumN1N1.Joint=false;
+              bdNumN1.Joint=true;
+              bdNum.Joint=false;
+              bdNumN1.u1=bdNum.u1;
+              bdNum.u1=-1;
+              bdNumN1.u2=bdNumN1N1.u1;
+              bdNumN1N1.u1=-1;
+              Bead bdNumN1U1 = getBead(bdNumN1.u1);
+              if(bdNumN1U1 != null){
+                bdNumN1U1.n2=numN1;
+                bdNumN1U1.c++;
+              }
+              Bead bdNumN1U2 = getBead(bdNumN1.u2);
+              if(bdNumN1U2 != null){
+                bdNumN1U2.n2=numN1;
+                bdNumN1U2.c++;
+              }
+              continue;
+            } 
+            if (pgn1_2!=-1&&num!=pgn1_2&&getBead(pgn1_2).Joint) {
               getBead(pgn1_2).Joint=false;
               getBead(pgn1).Joint=true;
               getBead(num).Joint=false;
