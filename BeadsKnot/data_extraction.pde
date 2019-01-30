@@ -833,38 +833,34 @@ class data_extract { //<>// //<>//
               }
               continue;
             } 
-              if (num!=pgn2_1&&getBead(pgn2_1).Joint) {
-              getBead(pgn2_1).Joint=false;
-              getBead(pgn2).Joint=true;
-              getBead(num).Joint=false;
-              getBead(pgn2).u1=getBead(num).u1;
-              getBead(num).u1=-1;
-              getBead(pgn2).u2=getBead(pgn2_1).u1;
-              getBead(pgn2_1).u1=-1;
-              getBead(getBead(pgn2).u1).n2=pgn2;
-              getBead(getBead(pgn2).u2).n2=pgn2; 
-              getBead(getBead(pgn2).u1).c++;
-              getBead(getBead(pgn2).u2).c++;
-            } else if (pgn2_2!=-1&&num!=pgn2_2&&getBead(pgn2_2).Joint) {
-              getBead(pgn2_2).Joint=false;
-              getBead(pgn2).Joint=true;
-              getBead(num).Joint=false;
-              getBead(pgn2).u1=getBead(num).u1;
-              getBead(num).u1=-1;
-              getBead(pgn2).u2=getBead(pgn2_2).u1;
-              getBead(pgn2_2).u1=-1;
-              if (getBead(pgn2).u1!=-1&&getBead(pgn2).u2!=-1) {
-                getBead(getBead(pgn2).u1).n2=pgn2;
-                getBead(getBead(pgn2).u2).n2=pgn2;
-                getBead(getBead(pgn2).u1).c++;
-                getBead(getBead(pgn2).u2).c++;
+            int numN2N2 = bdNumN2.n2;
+            Bead bdNumN2N2 = getBead(numN2N2);
+            if (bdNumN2N2!=null && num != numN2N2 && bdNumN2N2.Joint) {
+              bdNumN2N2.Joint=false;
+              bdNumN2.Joint=true;
+              bdNum.Joint=false;
+              bdNumN2.u1=bdNum.u1;
+              bdNum.u1=-1;
+              bdNumN2.u2=bdNumN2N2.u1;
+              bdNumN2N2.u1=-1;
+              Bead bdNumN2U1 = getBead(bdNumN2.u1);
+              if(bdNumN2U1 != null){
+                bdNumN2U1.n2=numN2;
+                bdNumN2U1.c++;
               }
-            }
+              Bead bdNumN2U2 = getBead(bdNumN2.u2);
+              if(bdNumN2U2 != null){
+                bdNumN2U2.n2=numN2;
+                bdNumN2U2.c++;
+              }
+              continue;
+            } 
           }
         }
       }
     }
   }
+
   boolean Ofutarisama() {//みんなお二人様だったか確認
     for (int bdID=0; bdID< points.size (); bdID++) {
       Bead bd = getBead(bdID);
@@ -911,6 +907,9 @@ class data_extract { //<>// //<>//
     int c=nbhd.b;
     for (int count = 0; count < points.size (); count++) {
       Bead p=getBead(c);
+      if (p==null){
+        return new Nbhd(0, 0);
+      }
       if (p.Joint || p.midJoint) {
         return new Nbhd(j, c);
       }
@@ -920,7 +919,7 @@ class data_extract { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("find_Joint_midJoint : 間違っている");
+        println("find_Joint_midJoint : ビーズがつながっていない"+j+":"+c+":"+d);
         return new Nbhd(0, 0);
       }
       j = c;
@@ -931,6 +930,9 @@ class data_extract { //<>// //<>//
 
   Nbhd turn_left(Nbhd nbhd) {
     Bead p=getBead(nbhd.b);
+    if (p==null){
+      return new Nbhd(0, 0);
+    }
     if (p.Joint) {
       if (p.n1==nbhd.a) {
         return new Nbhd(nbhd.b, p.u2);
@@ -957,6 +959,9 @@ class data_extract { //<>// //<>//
 
     int repeatmax = points.size();
     Bead ptA = getBead(a);
+    if(ptA==null){
+      return ;
+    }
     fill(120, 120, 255, 50);
     beginShape();
     vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
@@ -996,9 +1001,11 @@ class data_extract { //<>// //<>//
         a = c;
       }
       ptA = getBead(a);
+      if(ptA==null){
+        return;
+      }
       vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
       if (nbhd.a == a) {
-
         break;
       }
     }
@@ -1009,8 +1016,9 @@ class data_extract { //<>// //<>//
     int a = nbhd.a;
     int b = nbhd.b;
     int c = -1;
-    if (a==-1 || b==-1) return;
-
+    if (a==-1 || b==-1) {
+      return;
+    }
     int repeatmax = points.size();
     Bead ptA = getBead(a);
     Bead ptB = getBead(b);
