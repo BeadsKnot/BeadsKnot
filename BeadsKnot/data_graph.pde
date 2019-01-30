@@ -163,7 +163,7 @@ class data_graph { //<>// //<>//
         d=p.n1;
       } else {
         // println();
-        println("find_next_Joint_in_points : ビーズがつながっていないエラー");
+        println("find_next_Joint_in_points : ビーズがつながっていない"+j+":"+c+":"+d);
         return -1;
       }
       //print(" "+d);
@@ -189,7 +189,7 @@ class data_graph { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("findNeighborJointInPoints : ビーズがつながっていないエラー");
+        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d);
         return -1;
       }
       j=c;
@@ -214,7 +214,7 @@ class data_graph { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("findJointInPoints:ビーズがつながっていないエラー");
+        println("findJointInPoints:ビーズがつながっていないエラー"+j+":"+c+":"+d);
         return -1; //<>//
       } 
       j=c;
@@ -238,7 +238,7 @@ class data_graph { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("countNeighborJointInPoints:間違っている");
+        println("countNeighborJointInPoints:間違っている"+j+":"+c+":"+d);
         return 0;
       }
       j=c;
@@ -268,7 +268,7 @@ class data_graph { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("get_half_position:　ビーズがつながっていないエラー");
+        println("get_half_position:　ビーズがつながっていないエラー"+j+":"+c+":"+d);
         return -1;
       }
       j=c;
