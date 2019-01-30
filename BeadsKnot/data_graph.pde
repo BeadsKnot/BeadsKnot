@@ -138,11 +138,13 @@ class data_graph { //<>// //<>//
   void add_close_point_Joint() {//Ten Percent Neighborhood point
     for (int p = 0; p < de.points.size(); p++) {
       Bead bd = de.getBead(p);
-      bd.closeJoint = false;
+      if(bd!=null){
+        bd.closeJoint = false;
+      }
     }
     for (int pt = 0; pt < de.points.size(); pt++) {
       Bead bd = de.getBead(pt);
-      if (bd.Joint) {
+      if (bd!=null && bd.Joint) {
         int count = countNeighborJointInPoints(pt, bd.n1);
         int p_close = get_half_position(pt, bd.n1, ceil(count*0.1));
         de.getBead(p_close).closeJoint=true;
@@ -165,6 +167,9 @@ class data_graph { //<>// //<>//
         return -1; //<>//
       }
       Bead p=de.getBead(c);
+      if(p==null){
+        return -1;
+      }
       if (p.Joint) {
         return c;
       }
@@ -191,6 +196,9 @@ class data_graph { //<>// //<>//
         return -1; //<>//
       }
       Bead p=de.getBead(c);
+      if(p==null){
+        return -1;
+      }
       if (p.Joint||p.midJoint) {
         return j;
       }
@@ -216,6 +224,9 @@ class data_graph { //<>// //<>//
         return -1; //<>//
       }
       Bead p=de.getBead(c);
+      if(p==null){
+        return -1;
+      }
       if (p.Joint||p.midJoint) {
         return c;
       }
@@ -240,6 +251,9 @@ class data_graph { //<>// //<>//
         return 0;
       }
       Bead p=de.getBead(c);
+      if(p==null){
+        return 0;
+      }
       if (p.Joint) {
         return count;
       }
@@ -269,6 +283,9 @@ class data_graph { //<>// //<>//
     }
     for (int count=1; count<number; count++) {
       Bead p=de.getBead(c);
+      if(p==null){
+        return -1;
+      }
       if (p.Joint) {
         println("get_half_position : jointに遭遇するエラー");
         return -1;
@@ -322,6 +339,9 @@ class data_graph { //<>// //<>//
     int count=0;
     for (int i = 0; i < de.points.size(); i++) {
       Bead vec = de.getBead(i);
+      if(vec==null){
+        continue;
+      }
       if (vec.Joint||vec.midJoint) {
         count++;
       }
@@ -330,6 +350,9 @@ class data_graph { //<>// //<>//
     count=0;
     for (int i = 0; i < de.points.size(); i++) {
       Bead vec = de.getBead(i);
+      if(vec==null){
+        continue;
+      }
       if (vec.Joint||vec.midJoint) {
         table[count]=i;
         count++;
