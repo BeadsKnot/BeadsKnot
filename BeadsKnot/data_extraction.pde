@@ -789,6 +789,28 @@ class data_extract { //<>// //<>//
               }
               continue;
             } 
+            int numN1N2 = bdNumN1.n2;
+            Bead bdNumN1N2 = getBead(numN1N2);
+            if (bdNumN1N2!=null && num != numN1N2 && bdNumN1N2.Joint) {
+              bdNumN1N2.Joint=false;
+              bdNumN1.Joint=true;
+              bdNum.Joint=false;
+              bdNumN1.u1=bdNum.u1;
+              bdNum.u1=-1;
+              bdNumN1.u2=bdNumN1N2.u1;
+              bdNumN1N2.u1=-1;
+              Bead bdNumN1U1 = getBead(bdNumN1.u1);
+              if(bdNumN1U1 != null){
+                bdNumN1U1.n2=numN1;
+                bdNumN1U1.c++;
+              }
+              Bead bdNumN1U2 = getBead(bdNumN1.u2);
+              if(bdNumN1U2 != null){
+                bdNumN1U2.n2=numN1;
+                bdNumN1U2.c++;
+              }
+              continue;
+            } 
             if (pgn1_2!=-1&&num!=pgn1_2&&getBead(pgn1_2).Joint) {
               getBead(pgn1_2).Joint=false;
               getBead(pgn1).Joint=true;
