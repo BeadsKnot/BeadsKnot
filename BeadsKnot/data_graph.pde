@@ -40,19 +40,31 @@ class data_graph { //<>// //<>//
       if(vec!=null){
         if (vec.Joint) {
           if (vec.u1<0||vec.u1>=de.points.size()||vec.u2<0||vec.u2>=de.points.size()) {
-            return;
+            continue;
           }
           //println(vec.n1, vec.u1, vec.n2, vec.u2);
           Bead vecn1=de.getBead(vec.n1);
+          if(vecn1==null){
+            continue;
+          }
           float x0=vecn1.x;
           float y0=vecn1.y;
           Bead vecu1=de.getBead(vec.u1);
+          if(vecu1==null){
+            continue;
+          }
           float x1=vecu1.x;
           float y1=vecu1.y;
           Bead vecn2=de.getBead(vec.n2);
+          if(vecn2==null){
+            continue;
+          }
           float x2=vecn2.x;
           float y2=vecn2.y;
           Bead vecu2=de.getBead(vec.u2);
+          if(vecu2==null){
+            continue;
+          }
           float x3=vecu2.x;
           float y3=vecu2.y;
           float x02=x0-x2;//a
@@ -76,11 +88,13 @@ class data_graph { //<>// //<>//
   void add_half_point_Joint() {
     for (int p = 0; p < de.points.size(); p++) {
       Bead bd = de.getBead(p);
-      bd.midJoint = false;
+      if(bd!=null){
+        bd.midJoint = false;
+      }
     }
     for (int p = 0; p < de.points.size(); p++) {
       Bead bd = de.getBead(p);
-      if (bd.Joint) {
+      if (bd!=null && bd.Joint) {
         if (0<=bd.n1 && bd.n1<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.n1);
           if (p<=nextJoint) {
