@@ -503,6 +503,9 @@ class data_graph { //<>// //<>//
   void get_nodes() {
     for (int p = 0; p < de.points.size(); p++) {
       Bead pt = de.getBead(p);
+      if(pt==null){
+        continue;
+      }
       if (pt.Joint || pt.midJoint) {// ここではtable[]を使っていないが・・・
         Node nd = new Node(pt.x, pt.y);
         nd.theta = pt.getTheta(de.points);
@@ -519,6 +522,9 @@ class data_graph { //<>// //<>//
   void get_edges(ArrayList<Edge> edges) {
     for (int i=0; i<de.points.size(); i++) {
       Bead a=de.getBead(i);
+      if(a==null){
+        continue;
+      }
       if (a.Joint||a.midJoint) {
         // Log.d("getNodesFromPoint(i)は",""+getNodesFromPoint(i));
         // Bead b=getBead(a.n1);
@@ -626,6 +632,9 @@ class data_graph { //<>// //<>//
   void update_points_on_edge(Edge ed)
   {
     // メモ：ed=NULLの場合を想定しておくべきか？
+    if(ed==null){
+      return ;
+    }
     // ←そのたぐいのエラーが出るようになったら。
     //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
     // 理想とするエッジの弧長の概数を計算する。
@@ -657,9 +666,13 @@ class data_graph { //<>// //<>//
         if (bead2 == -1) {
           return ;
         }
-        int b = de.getBead(bead2).n1;
+        Bead bd2 = de.getBead(bead2);
+        if( bd2==null){
+          return;
+        }
+        int b = bd2.n1;
         if (b == bead1) {
-          bead3 = de.getBead(bead2).n2;
+          bead3 = bd2.n2;
         } else {
           bead3 = b;
         }
@@ -671,6 +684,9 @@ class data_graph { //<>// //<>//
     //println("必要数,現状数",beads_number, beads_count);
     if (beads_number > beads_count) {// 必要数のほうが多い→ビーズの追加が必要
       bead1 = NodeA.pointID;
+      if(de.getBead(bead1)==null){
+        return;
+      }
       bead2 = de.getBead(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
       for (int repeat=0; repeat < beads_number - beads_count; repeat++) {
         //Bead newBd = new Bead(0, 0);// 課題：捨てられたビーズを再利用する。
@@ -709,7 +725,7 @@ class data_graph { //<>// //<>//
           bd3.n2 = bead1;
         }
         bd2.n1 = bd2.n2 = -1;// 使わないもののデータを消す。
-        bd2.x = bd2.y = -1;//ダミーデータ-> 不要
+        de.removeBeadFromPoint(bead2);
       }
     }
     //今一度、エッジに乗っているビーズの座標を計算しなおす。
