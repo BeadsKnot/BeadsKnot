@@ -1,4 +1,4 @@
-class data_extract { //<>// //<>//
+class data_extract { //<>// //<>// //<>//
   // 画像からの読みとり
   // ビーズとそれをつなぐNbhからなる。
   int w, h;// 解析画面の大きさ
@@ -31,8 +31,9 @@ class data_extract { //<>// //<>//
     for (int ptID=0; ptID<points.size (); ptID++) {
       Bead pt = points.get(ptID);
       if (pt!=null) {
-        if (pt.n1==-1 && pt.n2==-1) {
-          pt.x = pt.y = 0f;
+        if (pt.inUse == false) {
+          pt.x = _x;
+          pt.y = _y;
           pt.inUse = true;
           return ptID;
         }
@@ -862,17 +863,28 @@ class data_extract { //<>// //<>//
   }
 
   boolean Ofutarisama() {//みんなお二人様だったか確認
+    int countNG0=0;
+    int countNG1=0;
+    int countNG2=0;
     for (int bdID=0; bdID< points.size (); bdID++) {
       Bead bd = getBead(bdID);
       if(bd==null){
+        countNG0 ++;
         continue;
       }
       if (bd.inUse==false){
+        countNG1 ++;
         continue;
       }
       if(bd.c!=2) {
-        return false;
+        countNG2 ++;
+        continue;
+        //return false;
       }
+    }
+    println("size="+points.size ()+":null="+countNG0+":not inUse="+countNG1+":not 2="+countNG2);
+    if(countNG2>0){
+      return false;
     }
     return true;
   }
