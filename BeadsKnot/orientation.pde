@@ -9,7 +9,7 @@ class orientation {
     Node nd = dg.nodes.get(0);
     for(int ndID=0; ndID<dg.nodes.size(); ndID++){
       nd = dg.nodes.get(ndID);
-      if(nd.onUse){
+      if(nd.inUse){
         break;
       }
     }

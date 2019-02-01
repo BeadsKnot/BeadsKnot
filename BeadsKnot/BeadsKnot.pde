@@ -1,4 +1,4 @@
-import java.awt.*; //<>// //<>// //<>//
+import java.awt.*; //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -80,7 +80,7 @@ void draw() {
     if (mouse.node_next_dragging) {
       //ビーズ周りのガイドを表示する。
       Node nd = graph.nodes.get(mouse.dragged_nodeID);
-      if(nd.onUse){
+      if(nd.inUse){
         float x = disp.get_winX(nd.x);
         float y = disp.get_winY(nd.y);
         float t = nd.theta;
@@ -176,7 +176,7 @@ void saveFileSelect(File selection) {
       file.println("Nodes,"+graph.nodes.size());
       for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
         Node nd = graph.nodes.get(nodeID);
-        if(nd.onUse){
+        if(nd.inUse){
           file.print(nd.x+","+nd.y+","+nd.theta+",");
           file.println(nd.r[0]+","+nd.r[1]+","+nd.r[2]+","+nd.r[3]);
         }
@@ -274,7 +274,7 @@ void fileSelected(File selection) {
               }
               for (int n=0; n<nodeNumber; n++) {
                 Bead bd = data.getBead(n);
-                if(bd.n1==0 && bd.n2==0){ //<>//
+                if(bd.n1==0 && bd.n2==0){ //<>// //<>//
                   bd.inUse=false;
                 }
                 if (bd.u1==-1 && bd.u2==-1) {
@@ -282,7 +282,7 @@ void fileSelected(File selection) {
                 } else {
                   bd.Joint = true;
                   Node ndN = graph.nodes.get(n);
-                  if(ndN.onUse){
+                  if(ndN.inUse){
                     ndN.Joint = true;
                   }
                 }
@@ -316,7 +316,7 @@ void mousePressed() {
         mouse.node_dragging = true;
         for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
           Node nd = graph.nodes.get(ndID); 
-          if (nd.onUse && nd.pointID == ptID) {
+          if (nd.inUse && nd.pointID == ptID) {
             mouse.dragged_nodeID = ndID;
             int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
             Bead pt0 = data.getBead(pt0ID);
@@ -370,7 +370,7 @@ void mouseDragged() {
       for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
         if (ndID != mouse.dragged_nodeID) {
           Node nd = graph.nodes.get(ndID);
-          if(nd.onUse){
+          if(nd.inUse){
             int ptID = nd.pointID;
             Bead pt = data.getBead(ptID);
             if(pt==null){
@@ -391,7 +391,7 @@ void mouseDragged() {
       }
       //println(mX,mY);
       Node nd0 = graph.nodes.get(mouse.dragged_nodeID);
-      if(nd0.onUse){
+      if(nd0.inUse){
         nd0.x = mX;
         nd0.y = mY;
         Bead bd0 = data.getBead(nd0.pointID);
@@ -446,7 +446,7 @@ void mouseReleased() {
       // ノードをクリックしている場合には、クロスチェンジする。
       for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
         Node node = graph.nodes.get(nodeID);
-        if (node.onUse){
+        if (node.inUse){
           float mX = disp.getX_fromWin(mouseX);
           float mY = disp.getY_fromWin(mouseY);
           if (dist(mX, mY, node.x, node.y)<10) {
@@ -496,7 +496,7 @@ void mouseReleased() {
               // 対応するノードの番号を探す
               for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
                 Node nd = graph.nodes.get(nodeID);
-                if(nd.onUse){
+                if(nd.inUse){
                   if (nd.pointID == nodeBeadN1)  {
                     nodeN1 = nodeID;
                   }
@@ -543,7 +543,7 @@ void mouseReleased() {
               int nodeID = -1;
               for (int ndID = 0; ndID<graph.nodes.size(); ndID ++) {
                 Node nd = graph.nodes.get(ndID); 
-                if (nd.onUse && nd.pointID == beadID) {
+                if (nd.inUse && nd.pointID == beadID) {
                   nodeID = ndID;
                   break;
                 }
@@ -558,7 +558,7 @@ void mouseReleased() {
               // 対応するノードの番号を探す
               for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
                 Node nd = graph.nodes.get(ndID);
-                if(nd.onUse){
+                if(nd.inUse){
                   if (nd.pointID == nodeBeadN1)  {
                     nodeN1 = ndID;
                   }
