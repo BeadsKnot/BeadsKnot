@@ -373,7 +373,7 @@ void mouseDragged() {
           if(nd.onUse){
             int ptID = nd.pointID;
             Bead pt = data.getBead(ptID);
-            if(pt!=null){
+            if(pt==null){
               return;
             }
             float x = pt.x;
