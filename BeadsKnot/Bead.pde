@@ -7,6 +7,7 @@ class Bead {//点のクラス
   int u1;//underのお隣//pointsの番号
   int u2;//underのお隣
   int orientation;//Beadsの番号ではない
+  boolean inUse;//そもそも使用しているかどうか．
   boolean Joint;//crossingかどうか
   boolean midJoint;//crossingとcrossingの間のBeads
   boolean closeJoint;//crossingのやや隣
@@ -19,6 +20,7 @@ class Bead {//点のクラス
     u1=-1;
     u2=-1;
     c=0;
+    inUse=true;
     Joint=false;
     midJoint=false;
     closeJoint=false;

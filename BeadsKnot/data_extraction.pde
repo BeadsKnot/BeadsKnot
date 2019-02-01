@@ -9,7 +9,7 @@ class data_extract { //<>// //<>//
   int pre_endID=0;//消すときにendIDにとってのn1を消すのかn2を消すのかを調べるために使う
   boolean over_crossing=true;//overならtrue,underならfalse
 
-  ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
+    ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
   ArrayList<Bead> points=new ArrayList<Bead>();//点を登録
   transform tf;
   Binarization bin;
@@ -25,6 +25,56 @@ class data_extract { //<>// //<>//
     sq = new Square(this);
     th = new Thinning(this);
     disp = _disp;
+  }
+
+  int addBeadToPoint(float _x, float _y) {// pointsにある「消去済み」を再利用する。
+    for (int ptID=0; ptID<points.size (); ptID++) {
+      Bead pt = points.get(ptID);
+      if (pt!=null) {
+        if (pt.n1==-1 && pt.n2==-1) {
+          pt.x = pt.y = 0f;
+          pt.inUse = true;
+          return ptID;
+        }
+      }
+    }
+    Bead pt = new Bead(_x, _y);
+    pt.n1 = pt.n2 = 0;
+    pt.inUse = true;
+    points.add(pt);
+    return points.size()-1;
+  }
+
+  Bead getBead(int ID) {
+    if (0<=ID && ID<points.size()) {
+      Bead pt = points.get(ID);
+      if (pt.inUse) {
+        return pt;
+      }
+    }
+    return null;
+  }
+
+  void removeBeadFromPoint(int ID) {
+    if (0<=ID && ID<points.size()) {
+      Bead pt = points.get(ID);
+      pt.n1 = pt.n2 = -1;
+      pt.x = pt.y = -1;
+      pt.c = 0;
+      pt.inUse=false;
+      pt.Joint = pt.midJoint = false;
+    }
+  }
+
+  void clearAllPoints() {// points.clear()のかわり
+    for (int ID = 0; ID < points.size (); ID++) {
+      Bead bd = points.get(ID);
+      bd.n1 = bd.n2 = -1;
+      bd.x = bd.y = -1;
+      bd.c = 0;
+      bd.inUse=false;
+      bd.Joint = bd.midJoint = false;
+    }
   }
 
   // imageデータの解析
@@ -57,19 +107,25 @@ class data_extract { //<>// //<>//
 
   int addToPoints(int u, int v, int threshold) {//点を追加する
     // (u,v)は点の座標なので，float型ではないか？
-    for (int pt=0; pt<points.size (); pt++) {
-      if (dist(u, v, points.get(pt).x, points.get(pt).y ) < threshold-1) {//近くに既存の点がある場合には追加しない
-        return pt;
+    for (int ptID=0; ptID<points.size (); ptID++) {
+      Bead pt = getBead(ptID);
+      if (pt!=null) {
+        if (dist(u, v, pt.x, pt.y ) < threshold-1) {//近くに既存の点がある場合には追加しない
+          return ptID;
+        }
       }
     }
-    points.add(new Bead(u, v));
-    return points.size()-1;
+    int ret = addBeadToPoint(u, v);
+    return ret;
   }
 
   void drawPoints() {//点をかく
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
-      Bead vec=points.get(pt);
+      Bead vec = getBead(pt);
+      if (vec == null) {
+        continue;
+      }
       if (vec.Joint) {
         stroke(0);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
@@ -78,9 +134,6 @@ class data_extract { //<>// //<>//
           fill(80, 255, 80);
         }
         c=4;
-        //} else if (vec.closeJoint) {
-        //  stroke(0, 255, 0);
-        //  fill(255);
       } else if (vec.midJoint) {
         stroke(0);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
@@ -93,7 +146,7 @@ class data_extract { //<>// //<>//
         stroke(255, 0, 0);
         fill(255);
       }
-      if (vec.c<=0 || vec.c>=4 || (vec.n1==-1 && vec.n2==-1) || next_to_undercrossing(pt)) {
+      if (vec.c<=0 || vec.c>=4 || vec.inUse == false || next_to_undercrossing(pt)) {
       } else {
         //dispをつかって表示を画面サイズに合わせるように座標変換する。
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
@@ -115,14 +168,27 @@ class data_extract { //<>// //<>//
     //negativeが青色
     for (int pt=0; pt<points.size (); pt++) {
       float c = 2;
-      Bead vec=points.get(pt);
+      Bead vec=getBead(pt);
+      if (vec == null) {
+        continue;
+      }
       int n1=vec.n1;
       int n2=vec.n2;
       int u1=vec.u1;
       int u2=vec.u2;
+      Bead vecn1 = getBead(n1);
+      Bead vecn2 = getBead(n2);
+      Bead vecu1 = getBead(u1);
+      Bead vecu2 = getBead(u2);
+      if (vecn1==null || vecn2==null) {
+        continue;
+      }
       if (vec.Joint) {
-        if (points.get(n1).orientation>points.get(n2).orientation) {
-          if (points.get(u1).orientation>points.get(u2).orientation) {
+        if (vecu1==null || vecu2==null) {
+          continue;
+        }
+        if (vecn1.orientation > vecn2.orientation) {
+          if (vecu1.orientation > vecu2.orientation) {
             //fill(255, 0, 0);//positive
             noStroke();
             fill(255, 0, 0, 25);
@@ -134,7 +200,7 @@ class data_extract { //<>// //<>//
             ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
           }
         } else {
-          if (points.get(u1).orientation>points.get(u2).orientation) {
+          if (vecu1.orientation > vecu2.orientation) {
             //fill(0, 0, 255);//negative
             noStroke();
             fill(0, 0, 255, 25);
@@ -194,10 +260,15 @@ class data_extract { //<>// //<>//
     if (nn<0 || mm<0 || points.size()<=nn || points.size()<=mm) {
       return 0;
     }
-    float xa=points.get(nn).x;
-    float ya=points.get(nn).y;
-    float xb=points.get(mm).x;
-    float yb=points.get(mm).y;
+    Bead bdN = getBead(nn);
+    Bead bdM = getBead(mm);
+    if (bdN==null || bdM==null) {
+      return 0;
+    }
+    float xa=bdN.x;
+    float ya=bdN.y;
+    float xb=bdM.x;
+    float yb=bdM.y;
     int l=int(min(xa, xb));
     int r=int(max(xa, xb));
     int t=int(min(ya, yb));
@@ -263,7 +334,8 @@ class data_extract { //<>// //<>//
           }
         }
       }
-    } while (!loop_end);//1がなくなるまで繰り返す
+    } 
+    while (!loop_end);//1がなくなるまで繰り返す
     //もし1がなくなり、すべて2にすることができたら
     if (g[fbx][fby]==2) {
       return 1;//OKなら1を返す
@@ -275,35 +347,26 @@ class data_extract { //<>// //<>//
   void drawNbhds() {//線を書く
     for (int ptID=0; ptID<points.size (); ptID++) {
       if (!next_to_undercrossing(ptID)) {
-        Bead pt=points.get(ptID);
-        //if (pt.n1!=-1&&pt.n2!=-1) {
-        if ( pt.n1<points.size() && !next_to_undercrossing(pt.n1)) {
-          if (0<=pt.n1) {
-            stroke(0);
-            Bead pt2 = points.get(pt.n1);
-            if (! pt2.Joint) {
-              line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-                disp.get_winX(pt2.x), disp.get_winY(pt2.y));
-            }
-          } else {
-            // println("a");
+        Bead pt=getBead(ptID);
+        if (pt == null) {
+          continue;
+        }
+        if ( 0<=pt.n1 && pt.n1<points.size() && !next_to_undercrossing(pt.n1)) {
+          stroke(0);
+          Bead pt2 = getBead(pt.n1);
+          if (pt2 != null && ! pt2.Joint) {
+            line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
         }
-        if (pt.n2<points.size() && !next_to_undercrossing(pt.n2)) {
-          if (0<=pt.n2) {
-            stroke(0);
-            Bead pt2 = points.get(pt.n2);
-            if (! pt2.Joint) {
-              line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-                disp.get_winX(pt2.x), disp.get_winY(pt2.y));
-            }
+        if (0<=pt.n2 && pt.n2<points.size() && !next_to_undercrossing(pt.n2)) {
+          stroke(0);
+          Bead pt2 = getBead(pt.n2);
+          if (pt2 != null && ! pt2.Joint) {
+            line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
-        } else {
-          //println("b");
         }
-        //} else {
-        //println("線を消します");
-        //}
       }
     }
   }
@@ -312,24 +375,28 @@ class data_extract { //<>// //<>//
     //positiveが赤色
     //negativeが青色
     for (int ptID=0; ptID<points.size (); ptID++) {
-      Bead pt=points.get(ptID);
+      Bead pt=getBead(ptID);
+      if (pt==null) {
+        continue;
+      }
       if (pt.Joint) {
         int n1=pt.n1;
         int n2=pt.n2;
         int u1=pt.u1;
         int u2=pt.u2;
-        if (points.get(n1).orientation<points.get(n2).orientation) {
-          if (points.get(u1).orientation<points.get(u2).orientation) {
-            Bead pt1=points.get(n1);
-            Bead pt2=points.get(u2);
-            Bead pt3=points.get(n2);
-            Bead pt4=points.get(u1);
+        Bead pt1=getBead(n1);
+        Bead pt2=getBead(u2);
+        Bead pt3=getBead(n2);
+        Bead pt4=getBead(u1);
+        if (pt1==null || pt2==null || pt3==null || pt4==null) {
+          continue;
+        }
+        if (pt1.orientation < pt3.orientation) {
+          if (pt4.orientation < pt2.orientation) {
             float ax=disp.get_winX(pt1.x);
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
-            // pt1=points.get(n2);
-            //pt2=points.get(u1);
             float cx=disp.get_winX(pt3.x);
             float cy=disp.get_winY(pt3.y);
             float dx=disp.get_winX(pt4.x);
@@ -342,20 +409,18 @@ class data_extract { //<>// //<>//
             strokeWeight(3);
             line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           } else {
-            Bead pt1=points.get(n1);
-            Bead pt2=points.get(u1);
-            Bead pt3=points.get(n2);
-            Bead pt4=points.get(u2);
+            //Bead pt1=getBead(n1);
+            //Bead pt2=getBead(u1);
+            //Bead pt3=getBead(n2);
+            //Bead pt4=getBead(u2);
             float ax=disp.get_winX(pt1.x);
             float ay=disp.get_winY(pt1.y);
-            float bx=disp.get_winX(pt2.x);
-            float by=disp.get_winY(pt2.y);
-            //pt1=points.get(n2);
-            //pt2=points.get(u2);
+            float bx=disp.get_winX(pt4.x);
+            float by=disp.get_winY(pt4.y);
             float cx=disp.get_winX(pt3.x);
             float cy=disp.get_winY(pt3.y);
-            float dx=disp.get_winX(pt4.x);
-            float dy=disp.get_winY(pt4.y);
+            float dx=disp.get_winX(pt2.x);
+            float dy=disp.get_winY(pt2.y);
             stroke(0);
             strokeWeight(1);
             line(ax, ay, bx, by);
@@ -365,19 +430,17 @@ class data_extract { //<>// //<>//
             line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           }
         } else {
-          if (points.get(u1).orientation<points.get(u2).orientation) {
-            Bead pt1=points.get(n2);
-            Bead pt2=points.get(u2);
-            Bead pt3=points.get(n1);
-            Bead pt4=points.get(u1);
-            float ax=disp.get_winX(pt1.x);
-            float ay=disp.get_winY(pt1.y);
+          if (pt4.orientation < pt2.orientation) {
+            //Bead pt1=getBead(n2);
+            //Bead pt2=getBead(u2);
+            //Bead pt3=getBead(n1);
+            //Bead pt4=getBead(u1);
+            float ax=disp.get_winX(pt3.x);
+            float ay=disp.get_winY(pt3.y);
             float bx=disp.get_winX(pt2.x);
             float by=disp.get_winY(pt2.y);
-            //pt1=points.get(n1);
-            //pt2=points.get(u1);
-            float cx=disp.get_winX(pt3.x);
-            float cy=disp.get_winY(pt3.y);
+            float cx=disp.get_winX(pt1.x);
+            float cy=disp.get_winY(pt1.y);
             float dx=disp.get_winX(pt4.x);
             float dy=disp.get_winY(pt4.y);
             stroke(0);
@@ -388,20 +451,18 @@ class data_extract { //<>// //<>//
             strokeWeight(3);
             line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           } else {
-            Bead pt1=points.get(n2);
-            Bead pt2=points.get(u1);
-            Bead pt3=points.get(n1);
-            Bead pt4=points.get(u2);
-            float ax=disp.get_winX(pt1.x);
-            float ay=disp.get_winY(pt1.y);
-            float bx=disp.get_winX(pt2.x);
-            float by=disp.get_winY(pt2.y);
-            //pt1=points.get(n1);
-            //pt2=points.get(u2);
-            float cx=disp.get_winX(pt3.x);
-            float cy=disp.get_winY(pt3.y);
-            float dx=disp.get_winX(pt4.x);
-            float dy=disp.get_winY(pt4.y);
+            //Bead pt1=getBead(n2);
+            //Bead pt2=getBead(u1);
+            //Bead pt3=getBead(n1);
+            //Bead pt4=getBead(u2);
+            float ax=disp.get_winX(pt3.x);
+            float ay=disp.get_winY(pt3.y);
+            float bx=disp.get_winX(pt4.x);
+            float by=disp.get_winY(pt4.y);
+            float cx=disp.get_winX(pt1.x);
+            float cy=disp.get_winY(pt1.y);
+            float dx=disp.get_winX(pt2.x);
+            float dy=disp.get_winY(pt2.y);
             stroke(0);
             strokeWeight(1);
             line(ax, ay, bx, by );
@@ -414,19 +475,19 @@ class data_extract { //<>// //<>//
       } else {
         if (0<=pt.n1 && pt.n1<points.size()) {
           stroke(0);
-          Bead pt2 = points.get(pt.n1);
-          if (! pt2.Joint) {
+          Bead pt2 = getBead(pt.n1);
+          if (pt2!=null && ! pt2.Joint) {
             strokeWeight(1);
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
         }
         if (0<=pt.n2 && pt.n2<points.size()) {
           stroke(0);
-          Bead pt2 = points.get(pt.n2);
-          if (! pt2.Joint) {
+          Bead pt2 = getBead(pt.n2);
+          if (pt2!=null && ! pt2.Joint) {
             line(disp.get_winX(pt.x), disp.get_winY(pt.y), 
-              disp.get_winX(pt2.x), disp.get_winY(pt2.y));
+            disp.get_winX(pt2.x), disp.get_winY(pt2.y));
           }
         }
       }
@@ -439,30 +500,42 @@ class data_extract { //<>// //<>//
       vec.n1=vec.n2=vec.u1=vec.u2=-1;//正常でない値
     }
     for (Nbhd n : nbhds) {
-      // points.get(n.a).c++;
-      //points.get(n.b).c++;
-      Bead vec_1=points.get(n.a);
-      if (vec_1.c==0) {
-        vec_1.n1=n.b;
-      } else if (vec_1.c==1) {
-        vec_1.n2=n.b;
-      } else if (vec_1.c==2) {
-        vec_1.u1=n.b;
-      } else if (vec_1.c==3) {
-        vec_1.u2=n.b;
+      // getBead(n.a).c++;
+      //getBead(n.b).c++;
+      if (n.inUse) {
+        Bead vec_1=getBead(n.a);
+        if (vec_1!=null){
+          if (vec_1.c==0) {
+            vec_1.n1=n.b;
+            vec_1.c++;
+          } else if (vec_1.c==1) {
+            vec_1.n2=n.b;
+            vec_1.c++;
+          } else if (vec_1.c==2) {
+            vec_1.u1=n.b;
+            vec_1.c++;
+          } else if (vec_1.c==3) {
+            vec_1.u2=n.b;
+            vec_1.c++;
+          }
+        }
+        Bead vec_2=getBead(n.b);
+        if (vec_2!=null){
+          if (vec_2.c==0) {
+            vec_2.n1=n.a;
+            vec_2.c++;
+          } else if (vec_2.c==1) {
+            vec_2.n2=n.a;
+            vec_2.c++;
+          } else if (vec_2.c==2) {
+            vec_2.u1=n.a;
+            vec_2.c++;
+          } else if (vec_2.c==3) {
+            vec_2.u2=n.a;
+            vec_2.c++;
+          }
+        }
       }
-      vec_1.c++;
-      Bead vec_2=points.get(n.b);
-      if (vec_2.c==0) {
-        vec_2.n1=n.a;
-      } else if (vec_2.c==1) {
-        vec_2.n2=n.a;
-      } else if (vec_2.c==2) {
-        vec_2.u1=n.a;
-      } else if (vec_2.c==3) {
-        vec_2.u2=n.a;
-      }
-      vec_2.c++;
     }
   }
 
@@ -471,15 +544,17 @@ class data_extract { //<>// //<>//
     float l, t, r, b;
     l=t=r=b=0;
     for (int u=0; u<points.size (); u++) {
-      Bead pt=points.get(u);
-      if (u==0) {
-        l=r=pt.x;
-        t=b=pt.y;
-      } else {
-        if (pt.x<l) l=pt.x;
-        if (r<pt.x) r=pt.x;
-        if (pt.y<t) t=pt.y;
-        if (b<pt.y) b=pt.y;
+      Bead pt=getBead(u);
+      if(pt != null){
+        if (u==0) {
+          l=r=pt.x;
+          t=b=pt.y;
+        } else {
+          if (pt.x<l) l=pt.x;
+          if (r<pt.x) r=pt.x;
+          if (pt.y<t) t=pt.y;
+          if (b<pt.y) b=pt.y;
+        }
       }
     }
     disp.left=l;
@@ -491,27 +566,24 @@ class data_extract { //<>// //<>//
 
   void addJointToNbhds() {//jointに関しての線を追加
     for (int u=0; u<points.size (); u++) {
-      Bead vec=points.get(u);
-      if (vec.Joint) {
+      Bead vec=getBead(u);
+      if (vec != null && vec.Joint) {
         if (duplicateNbhds(u, vec.u1)==0) {
           nbhds.add(new Nbhd(u, vec.u1));
         }
         if (duplicateNbhds(u, vec.u2)==0) {
           nbhds.add(new Nbhd(u, vec.u2));
         }
-        // addToNbhs(u, vec.u1);
-        // addToNbhs(u, vec.u2);
-        // println(u, vec.u1);
       }
     }
   }
 
   int duplicateNbhds(int nn, int mm) {//線が重複しているかどうかを調べる
     for (Nbhd n : nbhds) {
-      if (nn==n.a&&mm==n.b) {
+      if (n.inUse && nn==n.a && mm==n.b) {
         return 1;
       }
-      if (nn==n.b&&mm==n.a) {
+      if (n.inUse && nn==n.b&&mm==n.a) {
         return 1;
       }
     }
@@ -519,27 +591,20 @@ class data_extract { //<>// //<>//
   }
 
   void removePoint(int u) {//点を消す
-    points.remove(u);
+    removeBeadFromPoint(u);
     for (int i=nbhds.size ()-1; i>=0; i--) {
       Nbhd n=nbhds.get(i);
       if (n.a==u||n.b==u) {
-        nbhds.remove(i);
+        //nbhds.remove(i);
+        n.inUse = false;
       }
     }
-    for (int i=nbhds.size ()-1; i>=0; i--) {
-      Nbhd n=nbhds.get(i);
-      if (n.a>u) {
-        n.a--;
-      }
-      if (n.b>u) {
-        n.b--;
-      }
-    }
+
   }
 
   void removePoint2(int u) {
     for (int i=0; i<points.size (); i++) {
-      Bead vec_po=points.get(i);
+      Bead vec_po=getBead(i);
       if (vec_po.n1>u) {
         vec_po.n1--;
       }
@@ -557,90 +622,43 @@ class data_extract { //<>// //<>//
 
   void removeThrone() {//とげを除く
     for (int u=0; u<points.size (); u++) {
-      if ( points.get(u).c==1) {
+      Bead bdU = getBead(u);
+      if(bdU==null){
+        continue;
+      }
+      if ( getBead(u).c==1) {
         for (int i=nbhds.size ()-1; i>=0; i--) {
           Nbhd n=nbhds.get(i);
           if (n.a==u) {
-            if (points.get(n.b).c==3) {
+            Bead bdNB = getBead(n.b); 
+            if (bdNB!=null && bdNB.c==3) {
               removePoint(u);
-              removePoint2(u);
-              points.get(n.b).c=2;
+              bdNB.c=2;
             }
-          } else if (n.b==u) {
-            if (points.get(n.a).c==3) {
+          } if (n.b==u) {
+            Bead bdNA = getBead(n.a);
+            if (bdNA!=null && bdNA.c==3) {
               removePoint(u);
-              removePoint2(u);
-              points.get(n.a).c=2;
+              bdNA.c=2;
             }
           }
         }
       }
     }
   }
-
+ //<>//
   void fillGap() {//点と点の距離の最小を記録し、最小の距離の点が1本さんならばその点と点をつなげる
     for (int u=0; u<points.size (); u++) {
-      if ( points.get(u).c==1) {// まず「自分」がおひとりさまの場合のみ調べる
-        float min=w;//大きな値から始める。
-        int num=-1;//最小の距離の点の番号を記録するための変数
-        for (int v=0; v<points.size (); v++) {
-          if (u!=v) {
-            if (points.get(u).n1!=v) {//おひとりさまの相手は近くにいるに決まっているので探索対象から除外
-              float d=dist(points.get(u).x, points.get(u).y, points.get(v).x, points.get(v).y);
-              if (min>d) {
-                min=d;
-                num=v;
-              }
-            }
-          }
-        }
-        if (points.get(num).c==1) {//最小の距離の点がおひとりさま
-          addToNbhds(u, num);
-          //なにかする//TODO 「なにかする」という古いメッセージの意味を考える。
-          points.get(num).c++;
-          points.get(u).c++;
-        } else if (points.get(num).c==0) {//最小の距離の点が孤立
-          addToNbhds(u, num);
-          points.get(num).c++;
-          points.get(u).c++;
-        }
-      }
-    }
-  }
-  /*
-  void get_nbhd() {//となりの隣の内容をgetする
-   //for (Nbhd n : nbhds) {
-   for (int i=0; i<nbhds.size (); i++) {
-   Nbh n=nbhds.get(i);
-   if (n.a!=n.b) {
-   if (points.get(n.a).n1==-1) {
-   points.get(n.a).n1=n.b;
-   } else {
-   points.get(n.a).n2=n.b;
-   }
-   if (points.get(n.b).n1==-1) {
-   points.get(n.b).n1=n.a;
-   } else {
-   points.get(n.b).n2=n.a;
-   }
-   }
-   }
-   }
-   */
-
-  void FindJoint() {//jointを探す
-    for (int u=0; u<points.size (); u++) {
-      if ( points.get(u).c==1) {
-        float min=w;
-        int num=0;
-        for (int v=0; v<points.size (); v++) {
-          if (u!=v) {
-            int pgu1=points.get(u).n1;
-            // println(pgu1);
-            if (v!=pgu1) {
-              //print("pgu1="+pgu1);
-              if (pgu1!=-1&&v!=points.get(pgu1).n1&&v!=points.get(pgu1).n2) {
-                float d=dist(points.get(u).x, points.get(u).y, points.get(v).x, points.get(v).y);
+      Bead bdU = getBead(u);
+      if(bdU!=null){
+        if ( bdU.c==1) {// まず「自分」がおひとりさまの場合のみ調べる
+          float min=w;//大きな値から始める。
+          int num=-1;//最小の距離の点の番号を記録するための変数
+          for (int v=0; v<points.size (); v++) {
+            Bead bdV = getBead(v);
+            if (bdV != null && u != v) {
+              if (bdU.n1!=v) {//おひとりさまの相手は近くにいるに決まっているので探索対象から除外
+                float d=dist(bdU.x, bdU.y, bdV.x, bdV.y);
                 if (min>d) {
                   min=d;
                   num=v;
@@ -648,103 +666,211 @@ class data_extract { //<>// //<>//
               }
             }
           }
-        }
-        if (points.get(num).c==2) {
-          points.get(num).Joint=true;
-
-          if (points.get(num).u1==-1) {
-            points.get(num).u1=u;
-          } else {
-            points.get(num).u2=u;
-            points.get(points.get(num).u1).n2=num;
-            points.get(points.get(num).u2).n2=num;
-            points.get(points.get(num).u1).c++;
-            points.get(points.get(num).u2).c++;
-          }
-          int pgn1=points.get(num).n1;
-          int pgn2=points.get(num).n2;
-          if (pgn1!=-1&&points.get(pgn1).Joint) {//隣だったとき
-            points.get(pgn1).Joint=false;
-            points.get(num).u2=points.get(pgn1).u1;
-            points.get(pgn1).u1=-1;
-            points.get(points.get(num).u1).n2=num;
-            points.get(points.get(num).u2).n2=num;
-            points.get(points.get(num).u1).c++;
-            points.get(points.get(num).u2).c++;
-          } else if (pgn2!=-1&&points.get(pgn2).Joint) {
-            points.get(pgn2).Joint=false;
-            points.get(num).u2=points.get(pgn2).u1;
-            points.get(pgn2).u1=-1;
-            points.get(points.get(num).u1).n2=num;
-            points.get(points.get(num).u2).n2=num;
-            points.get(points.get(num).u1).c++;
-            points.get(points.get(num).u2).c++;
-          }
-          //隣の隣
-          if (pgn1!=-1&&pgn2!=-1) {
-            int pgn1_1=points.get(pgn1).n1;
-            int pgn1_2=points.get(pgn1).n2;
-            int pgn2_1=points.get(pgn2).n1;
-            int pgn2_2=points.get(pgn2).n2;
-            if (num!=pgn1_1&&points.get(pgn1_1).Joint) {
-              points.get(pgn1_1).Joint=false;
-              points.get(pgn1).Joint=true;
-              points.get(num).Joint=false;
-              points.get(pgn1).u1=points.get(num).u1;
-              points.get(num).u1=-1;
-              points.get(pgn1).u2=points.get(pgn1_1).u1;
-              points.get(pgn1_1).u1=-1;
-              points.get(points.get(pgn1).u1).n2=pgn1;
-              points.get(points.get(pgn1).u2).n2=pgn1;
-              points.get(points.get(pgn1).u1).c++;
-              points.get(points.get(pgn1).u2).c++;
-            } else if (pgn1_2!=-1&&num!=pgn1_2&&points.get(pgn1_2).Joint) {
-              points.get(pgn1_2).Joint=false;
-              points.get(pgn1).Joint=true;
-              points.get(num).Joint=false;
-              points.get(pgn1).u1=points.get(num).u1;
-              points.get(num).u1=-1;
-              points.get(pgn1).u2=points.get(pgn1_2).u1;
-              points.get(pgn1_2).u1=-1;
-              points.get(points.get(pgn1).u1).n2=pgn1;
-              points.get(points.get(pgn1).u2).n2=pgn1;
-              points.get(points.get(pgn1).u1).c++;
-              points.get(points.get(pgn1).u2).c++;
-            } else  if (num!=pgn2_1&&points.get(pgn2_1).Joint) {
-              points.get(pgn2_1).Joint=false;
-              points.get(pgn2).Joint=true;
-              points.get(num).Joint=false;
-              points.get(pgn2).u1=points.get(num).u1;
-              points.get(num).u1=-1;
-              points.get(pgn2).u2=points.get(pgn2_1).u1;
-              points.get(pgn2_1).u1=-1;
-              points.get(points.get(pgn2).u1).n2=pgn2;
-              points.get(points.get(pgn2).u2).n2=pgn2; 
-              points.get(points.get(pgn2).u1).c++;
-              points.get(points.get(pgn2).u2).c++;
-            } else if (pgn2_2!=-1&&num!=pgn2_2&&points.get(pgn2_2).Joint) {
-              points.get(pgn2_2).Joint=false;
-              points.get(pgn2).Joint=true;
-              points.get(num).Joint=false;
-              points.get(pgn2).u1=points.get(num).u1;
-              points.get(num).u1=-1;
-              points.get(pgn2).u2=points.get(pgn2_2).u1;
-              points.get(pgn2_2).u1=-1;
-              if (points.get(pgn2).u1!=-1&&points.get(pgn2).u2!=-1) {
-                points.get(points.get(pgn2).u1).n2=pgn2;
-                points.get(points.get(pgn2).u2).n2=pgn2;
-                points.get(points.get(pgn2).u1).c++;
-                points.get(points.get(pgn2).u2).c++;
-              }
+          Bead bdNum = getBead(num);
+          if(bdNum!=null){
+            if (bdNum.c==1) {//最小の距離の点がおひとりさま
+              addToNbhds(u, num);
+              //なにかする//TODO 「なにかする」という古いメッセージの意味を考える。
+              bdNum.c++;
+              bdU.c++;
+            } else if (bdNum.c==0) {//最小の距離の点が孤立
+              addToNbhds(u, num);
+              bdNum.c++;
+              bdU.c++;
             }
           }
         }
       }
     }
   }
+
+  void FindJoint() {//jointを探す
+    for (int u=0; u<points.size (); u++) {
+      Bead bdU = getBead(u);
+      if (bdU!=null &&  bdU.c==1) {
+        float min=w;
+        int num = 0;
+        int un1=bdU.n1;
+        Bead bdun1 = getBead(un1);
+        int un1n1=-1, un1n2=-1;
+        if(bdun1!=null){
+          un1n1 = bdun1.n1;
+          un1n2 = bdun1.n2;
+        }
+        for (int v=0; v<points.size (); v++) {
+          Bead bdV = getBead(v);
+          if (bdV!=null) {
+            if (v!=u && v!=un1 && v!=un1n1 && v!=un1n2) {
+              float d=dist(bdU.x, bdU.y, bdV.x, bdV.y);
+              if (min>d) {
+                min=d;
+                num=v;
+              }
+            }
+          }
+        }
+        Bead bdNum = getBead(num);
+        if (bdNum!=null && getBead(num).c==2) {
+          bdNum.Joint=true;
+          if (bdNum.u1==-1) {
+            bdNum.u1=u;
+          } else {
+            bdNum.u2=u;
+            int numU1 = bdNum.u1;
+            int numU2 = u;//bdNum.u2;
+            Bead bdNumU1 = getBead(numU1);
+            Bead bdNumU2 = getBead(numU2);
+            if (bdNumU1 != null){
+              bdNumU1.n2=num;
+              bdNumU1.c++;
+            }
+            if (bdNumU2 != null){
+              bdNumU2.n2=num;
+              bdNumU2.c++;
+            }
+            continue;
+          }
+          int numN1=bdNum.n1;
+          Bead bdNumN1 = getBead(numN1);
+          if (bdNumN1 != null && bdNumN1.Joint) {//隣だったとき
+            bdNumN1.Joint = false;
+            bdNum.u2 = bdNumN1.u1;
+            bdNumN1.u1=-1;
+            Bead bdNumU1 = getBead(bdNum.u1);
+            Bead bdNumU2 = getBead(bdNum.u2);
+            if(bdNumU1 != null){
+              bdNumU1.n2 = num;
+              bdNumU1.c ++;
+            }
+            if(bdNumU2 != null){
+              bdNumU2.n2 = num;
+              bdNumU2.c ++;
+            }
+            continue;
+          } 
+          int numN2=bdNum.n2;
+          Bead bdNumN2 = getBead(numN2);
+          if (bdNumN2 != null && bdNumN2.Joint) {
+            bdNumN2.Joint=false;
+            bdNum.u2 = bdNumN2.u1;
+            bdNumN2.u1=-1;
+            Bead bdNumU1 = getBead(bdNum.u1);
+            Bead bdNumU2 = getBead(bdNum.u2);
+            if (bdNumU1!=null){
+              bdNumU1.n2=num;
+              bdNumU1.c++;
+            }
+            if(bdNumU2 !=null){
+              bdNumU2.n2=num;
+              bdNumU2.c++;
+            }
+          }
+          //隣の隣
+          if (bdNumN1 != null && bdNumN2 != null) {
+            int numN1N1 = bdNumN1.n1;
+            Bead bdNumN1N1 = getBead(numN1N1);
+            if (bdNumN1N1!=null && num != numN1N1 && bdNumN1N1.Joint) {
+              bdNumN1N1.Joint=false;
+              bdNumN1.Joint=true;
+              bdNum.Joint=false;
+              bdNumN1.u1=bdNum.u1;
+              bdNum.u1=-1;
+              bdNumN1.u2=bdNumN1N1.u1;
+              bdNumN1N1.u1=-1;
+              Bead bdNumN1U1 = getBead(bdNumN1.u1);
+              if(bdNumN1U1 != null){
+                bdNumN1U1.n2=numN1;
+                bdNumN1U1.c++;
+              }
+              Bead bdNumN1U2 = getBead(bdNumN1.u2);
+              if(bdNumN1U2 != null){
+                bdNumN1U2.n2=numN1;
+                bdNumN1U2.c++;
+              }
+              continue;
+            } 
+            int numN1N2 = bdNumN1.n2;
+            Bead bdNumN1N2 = getBead(numN1N2);
+            if (bdNumN1N2!=null && num != numN1N2 && bdNumN1N2.Joint) {
+              bdNumN1N2.Joint=false;
+              bdNumN1.Joint=true;
+              bdNum.Joint=false;
+              bdNumN1.u1=bdNum.u1;
+              bdNum.u1=-1;
+              bdNumN1.u2=bdNumN1N2.u1;
+              bdNumN1N2.u1=-1;
+              Bead bdNumN1U1 = getBead(bdNumN1.u1);
+              if(bdNumN1U1 != null){
+                bdNumN1U1.n2=numN1;
+                bdNumN1U1.c++;
+              }
+              Bead bdNumN1U2 = getBead(bdNumN1.u2);
+              if(bdNumN1U2 != null){
+                bdNumN1U2.n2=numN1;
+                bdNumN1U2.c++;
+              }
+              continue;
+            } 
+            int numN2N1 = bdNumN2.n1;
+            Bead bdNumN2N1 = getBead(numN2N1);
+            if (bdNumN2N1!=null && num != numN2N1 && bdNumN2N1.Joint) {
+              bdNumN2N1.Joint=false;
+              bdNumN2.Joint=true;
+              bdNum.Joint=false;
+              bdNumN2.u1=bdNum.u1;
+              bdNum.u1=-1;
+              bdNumN2.u2=bdNumN2N1.u1;
+              bdNumN2N1.u1=-1;
+              Bead bdNumN2U1 = getBead(bdNumN2.u1);
+              if(bdNumN2U1 != null){
+                bdNumN2U1.n2=numN2;
+                bdNumN2U1.c++;
+              }
+              Bead bdNumN2U2 = getBead(bdNumN2.u2);
+              if(bdNumN2U2 != null){
+                bdNumN2U2.n2=numN2;
+                bdNumN2U2.c++;
+              }
+              continue;
+            } 
+            int numN2N2 = bdNumN2.n2;
+            Bead bdNumN2N2 = getBead(numN2N2);
+            if (bdNumN2N2!=null && num != numN2N2 && bdNumN2N2.Joint) {
+              bdNumN2N2.Joint=false;
+              bdNumN2.Joint=true;
+              bdNum.Joint=false;
+              bdNumN2.u1=bdNum.u1;
+              bdNum.u1=-1;
+              bdNumN2.u2=bdNumN2N2.u1;
+              bdNumN2N2.u1=-1;
+              Bead bdNumN2U1 = getBead(bdNumN2.u1);
+              if(bdNumN2U1 != null){
+                bdNumN2U1.n2=numN2;
+                bdNumN2U1.c++;
+              }
+              Bead bdNumN2U2 = getBead(bdNumN2.u2);
+              if(bdNumN2U2 != null){
+                bdNumN2U2.n2=numN2;
+                bdNumN2U2.c++;
+              }
+              continue;
+            } 
+          }
+        }
+      }
+    }
+  }
+
   boolean Ofutarisama() {//みんなお二人様だったか確認
-    for (Bead vec : points) {
-      if (vec.c!=2) {
+    for (int bdID=0; bdID< points.size (); bdID++) {
+      Bead bd = getBead(bdID);
+      if(bd==null){
+        continue;
+      }
+      if (bd.inUse==false){
+        continue;
+      }
+      if(bd.c!=2) {
         return false;
       }
     }
@@ -779,8 +905,11 @@ class data_extract { //<>// //<>//
   Nbhd find_Joint_midJoint(Nbhd nbhd) {
     int j=nbhd.a;
     int c=nbhd.b;
-    for (int count = 0; count < points.size(); count++) {
-      Bead p=points.get(c);
+    for (int count = 0; count < points.size (); count++) {
+      Bead p=getBead(c);
+      if (p==null){
+        return new Nbhd(0, 0);
+      }
       if (p.Joint || p.midJoint) {
         return new Nbhd(j, c);
       }
@@ -790,7 +919,7 @@ class data_extract { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("find_Joint_midJoint : 間違っている");
+        println("find_Joint_midJoint : ビーズがつながっていない"+j+":"+c+":"+d);
         return new Nbhd(0, 0);
       }
       j = c;
@@ -800,18 +929,21 @@ class data_extract { //<>// //<>//
   }
 
   Nbhd turn_left(Nbhd nbhd) {
-    Bead p=points.get(nbhd.b);
+    Bead p=getBead(nbhd.b);
+    if (p==null){
+      return new Nbhd(0, 0);
+    }
     if (p.Joint) {
       if (p.n1==nbhd.a) {
         return new Nbhd(nbhd.b, p.u2);
       } else 
-      if (p.u1==nbhd.a) {
+        if (p.u1==nbhd.a) {
         return new Nbhd(nbhd.b, p.n1);
       } else 
-      if (p.n2==nbhd.a) {
+        if (p.n2==nbhd.a) {
         return new Nbhd(nbhd.b, p.u1);
       } else 
-      if (p.u2==nbhd.a) {
+        if (p.u2==nbhd.a) {
         return new Nbhd(nbhd.b, p.n2);
       }
     }
@@ -826,7 +958,10 @@ class data_extract { //<>// //<>//
     if (a==-1 || b==-1) return;
 
     int repeatmax = points.size();
-    Bead ptA = points.get(a);
+    Bead ptA = getBead(a);
+    if(ptA==null){
+      return ;
+    }
     fill(120, 120, 255, 50);
     beginShape();
     vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
@@ -836,7 +971,7 @@ class data_extract { //<>// //<>//
         if (ptA.n1 == b) {
           c = ptA.n2;
         } else 
-        if (ptA.n2 == b) {
+          if (ptA.n2 == b) {
           c = ptA.n1;
         } else {
           println("draw_region : error");
@@ -850,13 +985,13 @@ class data_extract { //<>// //<>//
         if (ptA.n1 == b) {
           c = ptA.u2;
         } else 
-        if (ptA.u1 == b) {
+          if (ptA.u1 == b) {
           c = ptA.n1;
         } else 
-        if (ptA.n2 == b) {
+          if (ptA.n2 == b) {
           c = ptA.u1;
         } else 
-        if (ptA.u2 == b) {
+          if (ptA.u2 == b) {
           c = ptA.n2;
         } else {
           println("draw_region : error");
@@ -865,10 +1000,12 @@ class data_extract { //<>// //<>//
         b = a;
         a = c;
       }
-      ptA = points.get(a);
+      ptA = getBead(a);
+      if(ptA==null){
+        return;
+      }
       vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
       if (nbhd.a == a) {
-
         break;
       }
     }
@@ -879,11 +1016,15 @@ class data_extract { //<>// //<>//
     int a = nbhd.a;
     int b = nbhd.b;
     int c = -1;
-    if (a==-1 || b==-1) return;
-
+    if (a==-1 || b==-1) {
+      return;
+    }
     int repeatmax = points.size();
-    Bead ptA = points.get(a);
-    Bead ptB = points.get(b);
+    Bead ptA = getBead(a);
+    Bead ptB = getBead(b);
+    if(ptA==null || ptB==null){
+      return;
+    }
     if (ptA.Joint) {
       int n1 = ptB.n1;
       int n2 = ptB.n2;
@@ -892,7 +1033,10 @@ class data_extract { //<>// //<>//
       } else {
         a = n2;
       }
-      ptA = points.get(a);
+      ptA = getBead(a);
+      if(ptA==null){
+        return ;
+      }
     } else if (ptB.Joint) {
       int n1 = ptA.n1;
       int n2 = ptA.n2;
@@ -901,12 +1045,15 @@ class data_extract { //<>// //<>//
       } else {
         b = n2;
       }
-      ptB = points.get(b);
+      ptB = getBead(b);
+      if(ptB==null){
+        return ;
+      }
     }
 
-    if (ptA.orientation<ptB.orientation) {
-      ptA=points.get(b);
-      ptB=points.get(a);
+    if (ptA.orientation < ptB.orientation) {
+      ptA=getBead(b);
+      ptB=getBead(a);
       c=a;
       a=b;
       b=c;
@@ -927,7 +1074,7 @@ class data_extract { //<>// //<>//
         }
         b = a;
         a = c;
-        // ptA = points.get(a);
+        // ptA = getBead(a);
         vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
         if (nbhd.a == a) {
           break;
@@ -939,10 +1086,14 @@ class data_extract { //<>// //<>//
         int n2=ptA.n2;
         int u1=ptA.u1;
         int u2=ptA.u2;
-        int n1o=points.get(n1).orientation;
-        int n2o=points.get(n2).orientation;
-        int u1o=points.get(u1).orientation;
-        int u2o=points.get(u2).orientation;
+        Bead bdN1=getBead(n1),bdN2=getBead(n2), bdU1=getBead(u1), bdU2=getBead(u2);
+        if(bdN1==null || bdN2==null || bdU1==null || bdU2==null){
+          break;
+        }
+        int n1o=bdN1.orientation;
+        int n2o=bdN2.orientation;
+        int u1o=bdU1.orientation;
+        int u2o=bdU2.orientation;
         if ((n1o<n2o)&&(u1o<u2o)) {
           if (ptA.n1 == b) {
             c = ptA.u2;
@@ -993,7 +1144,10 @@ class data_extract { //<>// //<>//
         }
         //vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
       }
-      ptA = points.get(a);
+      ptA = getBead(a);
+      if(ptA==null){
+        break;
+      }
       if (nbhd.a == a) {
         break;
       }
@@ -1004,15 +1158,21 @@ class data_extract { //<>// //<>//
   Nbhd get_near_nbhd() {//（マウスポジションの真右にあって）マウスの位置に近いNbhdを見つける。
     int a=-1, b=-1;
     float maxX=9999f;
-    for (int p = 0; p<points.size(); p++) {
-      Bead bead = points.get(p);
+    for (int p = 0; p<points.size (); p++) {
+      Bead bead = getBead(p);
+      if (bead==null) {
+        continue;
+      }
       float x0 = disp.get_winX(bead.x);
       float y0 = disp.get_winY(bead.y);
       if (bead.Joint) {
       } else {
         int n1 = bead.n1;// n2, u1, u2についても同じことをする。
         if (n1 != -1) {
-          Bead bead1 = points.get(n1);
+          Bead bead1 = getBead(n1);
+          if (bead1 == null) {
+            continue;
+          }
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
           if (mouseX < x0 || mouseX< x1) {
@@ -1035,7 +1195,10 @@ class data_extract { //<>// //<>//
         }
         int n2 = bead.n2;// n2, u1, u2についても同じことをする。
         if (n2 != -1) {
-          Bead bead2 = points.get(n2);
+          Bead bead2 = getBead(n2);
+          if (bead2 == null) {
+            continue;
+          }
           float x1 = disp.get_winX(bead2.x);
           float y1 = disp.get_winY(bead2.y);
           if (mouseX < x0 || mouseX< x1) {
@@ -1058,7 +1221,10 @@ class data_extract { //<>// //<>//
         }
         int u1 = bead.u1;// n2, u1, u2についても同じことをする。
         if (u1 != -1) {
-          Bead bead1 = points.get(u1);
+          Bead bead1 = getBead(u1);
+          if (bead1 == null) {
+            continue;
+          }
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
           if (mouseX < x0 || mouseX< x1) {
@@ -1081,7 +1247,10 @@ class data_extract { //<>// //<>//
         }
         int u2 = bead.u2;// n2, u1, u2についても同じことをする。
         if (u2 != -1) {
-          Bead bead2 = points.get(u2);
+          Bead bead2 = getBead(u2);
+          if (bead2 == null) {
+            continue;
+          }
           float x1 = disp.get_winX(bead2.x);
           float y1 = disp.get_winY(bead2.y);
           if (mouseX < x0 || mouseX< x1) {
@@ -1109,8 +1278,11 @@ class data_extract { //<>// //<>//
 
   int findArcFromPoints(int startID, int endID) {
     //引数はpointのID
-    Bead st = points.get(startID);
-    //Bead en = points.get(endID);
+    Bead st = getBead(startID);
+    if (st==null) {
+      return -1;
+    }
+    //Bead en = getBead(endID);
     int a=st.n1;
     int b=st.n2;
     Bead node1=st;
@@ -1171,66 +1343,74 @@ class data_extract { //<>// //<>//
       } else {//aもbもendIDでないとき
         ////////////////////////////////////////この辺でエラーが出やすい
         //aが-1になるとエラーがでる
-        node1=points.get(a);/////////////////////////何が怒っているのか
-        counta++;
-        node2=points.get(b);
-        countb++;
+        if (node1!= null) {
+          node1=getBead(a);/////////////////////////何が怒っているのか
+          counta++;
+        }
+        if (node2!=null) {
+          node2=getBead(b);
+          countb++;
+        }
       }
 
-      if (node1.Joint) {
-        if (node1.n1==pre_prev_a) {
-          a=node1.n2;
-          J1_over=true;
-          self_crossing_a=prev_a;
-          println("self_crossing_a="+self_crossing_a);
-        } else if (node1.n2==pre_prev_a) {
+      if (node1 != null ) {
+        if (node1.Joint) {
+          if (node1.n1==pre_prev_a) {
+            a=node1.n2;
+            J1_over=true;
+            self_crossing_a=prev_a;
+            println("self_crossing_a="+self_crossing_a);
+          } else if (node1.n2==pre_prev_a) {
+            a=node1.n1;
+            J1_over=true;
+            self_crossing_a=prev_a;
+            println("self_crossing_a="+self_crossing_a);
+          } else if (node1.u1==pre_prev_a) {
+            a=node1.u2;
+            J1_under=true;
+            self_crossing2_a=prev_a;
+            println("self_crossing2_a="+self_crossing2_a);
+          } else if (node1.u2==pre_prev_a) {
+            a=node1.u1;
+            J1_under=true;
+            self_crossing2_a=prev_a;
+            println("self_crossing2_a="+self_crossing2_a);
+          }
+        } else {
           a=node1.n1;
-          J1_over=true;
-          self_crossing_a=prev_a;
-          println("self_crossing_a="+self_crossing_a);
-        } else if (node1.u1==pre_prev_a) {
-          a=node1.u2;
-          J1_under=true;
-          self_crossing2_a=prev_a;
-          println("self_crossing2_a="+self_crossing2_a);
-        } else if (node1.u2==pre_prev_a) {
-          a=node1.u1;
-          J1_under=true;
-          self_crossing2_a=prev_a;
-          println("self_crossing2_a="+self_crossing2_a);
-        }
-      } else {
-        a=node1.n1;
-        if (pre_prev_a==a) {
-          a=node1.n2;
+          if (pre_prev_a==a) {
+            a=node1.n2;
+          }
         }
       }
-      if (node2.Joint) {
-        if (node2.n1==pre_prev_b) {
+      if (node2 != null) {
+        if (node2.Joint) {
+          if (node2.n1==pre_prev_b) {
+            b=node2.n2;
+            J2_over=true;
+            self_crossing_b=prev_b;
+            println("self_crossing_b="+self_crossing_b);
+          } else if (node2.n2==pre_prev_b) {
+            b=node2.n1;
+            J2_over=true;
+            self_crossing_b=prev_b;
+            println("self_crossing_b="+self_crossing_b);
+          } else if (node2.u1==pre_prev_b) {
+            b=node2.u2;
+            J2_under=true;
+            self_crossing2_b=prev_b;
+            println("self_crossing2_b="+self_crossing2_b);
+          } else if (node2.u2==pre_prev_b) {
+            b=node2.u1;
+            J2_under=true;
+            self_crossing2_b=prev_b;
+            println("self_crossing2_b="+self_crossing2_b);
+          }
+        } else {
           b=node2.n2;
-          J2_over=true;
-          self_crossing_b=prev_b;
-          println("self_crossing_b="+self_crossing_b);
-        } else if (node2.n2==pre_prev_b) {
-          b=node2.n1;
-          J2_over=true;
-          self_crossing_b=prev_b;
-          println("self_crossing_b="+self_crossing_b);
-        } else if (node2.u1==pre_prev_b) {
-          b=node2.u2;
-          J2_under=true;
-          self_crossing2_b=prev_b;
-          println("self_crossing2_b="+self_crossing2_b);
-        } else if (node2.u2==pre_prev_b) {
-          b=node2.u1;
-          J2_under=true;
-          self_crossing2_b=prev_b;
-          println("self_crossing2_b="+self_crossing2_b);
-        }
-      } else {
-        b=node2.n2;
-        if (pre_prev_b==b) {
-          b=node2.n1;
+          if (pre_prev_b==b) {
+            b=node2.n1;
+          }
         }
       }
       // if on joint, n1->n2, u1->u2, n2->n1, u2->u1
@@ -1252,8 +1432,8 @@ class data_extract { //<>// //<>//
   void extinguish_points(int i, int count, int startID, int endID) {
     //    n1=-1,n2=-1,u1=-1,u2=-1にする
     int j=0;
-    Bead st = points.get(startID);
-    if(st==null){
+    Bead st = getBead(startID);
+    if (st==null) {
       return ;
     }
     int a=st.n1;
@@ -1282,26 +1462,30 @@ class data_extract { //<>// //<>//
           pre_endID=pre_prev_a;
           return;
         } else {
-          node1=points.get(a);
+          if (node1 != null) {
+            node1=getBead(a);
+          }
         }
-        if (node1.Joint) {
-          if (node1.n1==pre_prev_a) {
-            a=node1.n2;
-          } else if (node1.n2==pre_prev_a) {
+        if (node1 != null) {
+          if (node1.Joint) {
+            if (node1.n1==pre_prev_a) {
+              a=node1.n2;
+            } else if (node1.n2==pre_prev_a) {
+              a=node1.n1;
+            } else if (node1.u1==pre_prev_a) {
+              a=node1.u2;
+            } else if (node1.u2==pre_prev_a) {
+              a=node1.u1;
+            }
+          } else {
             a=node1.n1;
-          } else if (node1.u1==pre_prev_a) {
-            a=node1.u2;
-          } else if (node1.u2==pre_prev_a) {
-            a=node1.u1;
+            if (pre_prev_a==a) {
+              a=node1.n2;
+            }
           }
-        } else {
-          a=node1.n1;
-          if (pre_prev_a==a) {
-            a=node1.n2;
-          }
+          between_beads[j]=prev_a;
+          j=j+1;
         }
-        between_beads[j]=prev_a;
-        j=j+1;
         //if (j==count-1) {
         //  return;
         //}
@@ -1310,70 +1494,75 @@ class data_extract { //<>// //<>//
           pre_endID=pre_prev_b;
           return;
         } else {
-          node2=points.get(b);
+          if (node2 != null) {
+            node2=getBead(b);
+          }
         }
-        if (node2.Joint) {
-          if (node2.n1==pre_prev_b) {
+        if (node2 != null) {
+          if (node2.Joint) {
+            if (node2.n1==pre_prev_b) {
+              b=node2.n2;
+            } else if (node2.n2==pre_prev_b) {
+              b=node2.n1;
+            } else if (node2.u1==pre_prev_b) {
+              b=node2.u2;
+            } else if (node2.u2==pre_prev_b) {
+              b=node2.u1;
+            }
+          } else {
             b=node2.n2;
-          } else if (node2.n2==pre_prev_b) {
-            b=node2.n1;
-          } else if (node2.u1==pre_prev_b) {
-            b=node2.u2;
-          } else if (node2.u2==pre_prev_b) {
-            b=node2.u1;
-          }
-        } else {
-          b=node2.n2;
-          if (pre_prev_b==b) {
-            b=node2.n1;
-          }
-        }  
-        between_beads[j]=prev_b;
-        j=j+1;
+            if (pre_prev_b==b) {
+              b=node2.n1;
+            }
+          }  
+          between_beads[j]=prev_b;
+          j=j+1;
+        }
         //if (j==count-1) {
         //  return;
         //}
       }
     }
   }
-  
+
   void extinguish(int count) {//between_beadsの情報をもとにbeadsを消す
     for (int ii=0; ii<count; ii++) {
       println("between_beads["+ii+"]"+data.between_beads[ii]);
       int a=between_beads[ii];
-      Bead pt=points.get(a);
-
-      if (pt.Joint) {
-        if (ii>0) {
-          int pre_a=between_beads[ii-1];
-          if (pt.u1==pre_a||pt.u2==pre_a) {//undercrossingだったら
-            pt.u1=-1;
-            pt.u2=-1;
-            pt.Joint=false;
-            pt.c=2;
-            over_crossing=false;
-            println("通過したJointはUnderCrossingでした");
-          } else {//overcrossingだったら
-            pt.n1=pt.u1;
-            pt.n2=pt.u2;
-            pt.Joint=false;
-            pt.c=2;
-            over_crossing=true;
-            println("通過したJointはOverCrossingでした");
+      Bead pt=getBead(a);
+      if(pt!=null){
+        if (pt.Joint) {
+          if (ii>0) {
+            int pre_a=between_beads[ii-1];
+            if (pt.u1==pre_a||pt.u2==pre_a) {//undercrossingだったら
+              pt.u1=-1;
+              pt.u2=-1;
+              pt.Joint=false;
+              pt.c=2;
+              over_crossing=false;
+              println("通過したJointはUnderCrossingでした");
+            } else {//overcrossingだったら
+              pt.n1=pt.u1;
+              pt.n2=pt.u2;
+              pt.Joint=false;
+              pt.c=2;
+              over_crossing=true;
+              println("通過したJointはOverCrossingでした");
+            }
+          } else {
+            return;
           }
         } else {
-          return;
+          removeBeadFromPoint(a);
         }
-      } else {
-        pt.n1=-1;
-        pt.n2=-1;
       }
     }
   }
+  
   void extinguish_startID_and_endID(int i, int startID, int endID) {
-    Bead bds=data.points.get(startID);
-    Bead bde=data.points.get(endID);
-    if(bds==null || bde==null){
+    Bead bds=data.getBead(startID);
+    Bead bde=data.getBead(endID);
+    if (bds==null || bde==null) {
       return;
     }
     bds.c=1;
@@ -1403,40 +1592,25 @@ class data_extract { //<>// //<>//
 
   boolean next_to_undercrossing(int ptID) {
     if (0> ptID || ptID>=points.size()) {
-      return false; 
+      return false;
     }
-    Bead bd = points.get(ptID);
-    if(bd != null){
+    Bead bd = getBead(ptID);
+    if (bd != null) {
       int pt1ID = bd.n1;
       if (0<=pt1ID && pt1ID<points.size()) {
-        Bead bd1 = points.get(pt1ID);
+        Bead bd1 = getBead(pt1ID);
         if (bd1!=null && bd1.Joint && (bd1.u1==ptID || bd1.u2==ptID) ) {
           return true;
         }
       }
       int pt2ID = bd.n2;
       if (0<=pt2ID && pt2ID<points.size()) {
-        Bead bd2 = points.get(pt2ID);
+        Bead bd2 = getBead(pt2ID);
         if (bd2!=null && bd2.Joint  && (bd2.u1==ptID || bd2.u2==ptID)) {
           return true;
         }
       }
     }
     return false;
-  }
-  
-  int addBeadToPoint(){// pointsにある「消去済み」を再利用する。
-    for(int ptID=0; ptID<points.size(); ptID++){
-      Bead pt = points.get(ptID);
-      if(pt!=null){
-        if(pt.n1==-1 && pt.n2==-1){
-          pt.x = pt.y = 0f;
-          return ptID;
-        }
-      }
-    }
-    Bead pt = new Bead(0, 0);
-    points.add(pt);
-    return points.size()-1;
   }
 }

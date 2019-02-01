@@ -62,7 +62,8 @@ class PLink {
     crs=new ArrayList<crossing_set>();
     //midJointとcloseJointに処理済みかどうかのフラグを設定//もしくはBeadsにフラグを設定
     for (int pN=0; pN<de.points.size(); pN++) {
-      de.points.get(pN).treated=false;//どこもたどっていないのでまずすべてfalseに
+      Bead bd = de.points.get(pN); 
+      bd.treated=false;//どこもたどっていないのでまずすべてfalseに
     }
     int edgeCount=0;//辺を数える
     int pointCount=0;//点を数える
@@ -86,7 +87,7 @@ class PLink {
               crs.add(c_s);
             }
 
-            Bead dePoint_out=de.points.get(pn1.j);
+            Bead dePoint_out=de.getBead(pn1.j);
             if (!dePoint_out.treated) {//処理していなかったら
               dePoint_out.treated=true;
               pPo.add(new plinkPoint(pointCount, int(dePoint_out.x), int(dePoint_out.y)));
@@ -139,7 +140,7 @@ class PLink {
     int j=_pn.j;
     int c=_pn.c;
     while (true) {
-      Bead pc=de.points.get(c);
+      Bead pc=de.getBead(c);
       if (pc.n1==j) {
         j=c;
         c=pc.n2;
@@ -169,7 +170,7 @@ class PLink {
     int c=_pn.c;
     int o_u_flag=0;
     while (true) {
-      Bead pc=de.points.get(c);
+      Bead pc=de.getBead(c);
       if (pc.n1==j) {
         j=c;
         c=pc.n2;
