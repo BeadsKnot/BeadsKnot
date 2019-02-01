@@ -100,7 +100,7 @@ void draw() {
     message("Draw a free loop.");
     mouse.draw_trace();
   } else if (Draw._parts_editing) {
-    message("A crossing by a click, connecting two crossings by mouse-drag.");
+    message("A crossing by a click, connecting two crossings by mouse-drag."); //<>//
     edit.draw_parts();
     mouse.draw_trace();
     //} else if (Draw._posinega) {

@@ -226,7 +226,8 @@ class parts_editing { //<>// //<>//
       beads.add(pt);
     }
     restore_beads();
-    de.clearAllPoints();
+    //de.clearAllPoints();
+    de.points.clear();
     de.nbhds.clear();
     Draw.parts_editing();
   }
