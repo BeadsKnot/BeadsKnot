@@ -288,7 +288,6 @@ void fileSelected(File selection) {
                 }
               }
             }
-            data.debugLogPoints("test.csv");
             graph.modify(); //<>//
             graph.update_points();
             graph.add_close_point_Joint();
