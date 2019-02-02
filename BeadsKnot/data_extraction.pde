@@ -36,6 +36,8 @@ class data_extract { //<>// //<>// //<>//
           pt.x = _x;
           pt.y = _y;
           pt.inUse = true;
+          pt.Joint=false;
+          pt.midJoint=false;
           return ptID;
         }
       }

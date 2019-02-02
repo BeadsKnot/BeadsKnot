@@ -227,7 +227,7 @@ void fileSelected(File selection) {
             if (pieces[0].equals("Nodes")) {
               nodeNumber = int(pieces[1]);
               graph.nodes.clear();
-              data.points.clear();
+              data.clearAllPoints();
               for (int n=0; n<nodeNumber; n++) {
                 line = reader.readLine();
                 pieces = split(line, ',');
@@ -274,8 +274,8 @@ void fileSelected(File selection) {
               }
               for (int n=0; n<nodeNumber; n++) {
                 Bead bd = data.getBead(n);
-                if(bd.n1==0 && bd.n2==0){ //<>// //<>//
-                  bd.inUse=false;
+                if(bd.n1==0 && bd.n2==0){ //<>//
+                  data.removeBeadFromPoint(n);
                 }
                 if (bd.u1==-1 && bd.u2==-1) {
                   bd.midJoint=true;
@@ -288,7 +288,8 @@ void fileSelected(File selection) {
                 }
               }
             }
-            graph.modify();
+            data.debugLogPoints("test.csv");
+            graph.modify(); //<>//
             graph.update_points();
             graph.add_close_point_Joint();
             Draw.beads();// drawモードの変更

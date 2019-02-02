@@ -164,7 +164,7 @@ class data_graph { //<>// //<>// //<>//
 
   int find_next_Joint_in_points(int j, int c) {
     for (int count = 0; count < de.points.size(); count++) {
-      if(c<0 || de.points.size()<=c){ //<>//
+      if(c<0 || de.points.size()<=c){
         return -1; //<>//
       }
       Bead p=de.getBead(c);
