@@ -1,4 +1,4 @@
-import java.awt.*; //<>// //<>// //<>// //<>//
+import java.awt.*; //<>// //<>// //<>// //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -80,7 +80,7 @@ void draw() {
     if (mouse.node_next_dragging) {
       //ビーズ周りのガイドを表示する。
       Node nd = graph.nodes.get(mouse.dragged_nodeID);
-      if(nd.inUse){
+      if (nd.inUse) {
         float x = disp.get_winX(nd.x);
         float y = disp.get_winY(nd.y);
         float t = nd.theta;
@@ -100,7 +100,7 @@ void draw() {
     message("Draw a free loop.");
     mouse.draw_trace();
   } else if (Draw._parts_editing) {
-    message("A crossing by a click, connecting two crossings by mouse-drag."); //<>//
+    message("A crossing by a click, connecting two crossings by mouse-drag.");
     edit.draw_parts();
     mouse.draw_trace();
     //} else if (Draw._posinega) {
@@ -176,7 +176,7 @@ void saveFileSelect(File selection) {
       file.println("Nodes,"+graph.nodes.size());
       for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
         Node nd = graph.nodes.get(nodeID);
-        if(nd.inUse){
+        if (nd.inUse) {
           file.print(nd.x+","+nd.y+","+nd.theta+",");
           file.println(nd.r[0]+","+nd.r[1]+","+nd.r[2]+","+nd.r[3]);
         }
@@ -243,6 +243,7 @@ void fileSelected(File selection) {
                 int bdID = data.addBeadToPoint(float(pieces[0]), float(pieces[1]));
                 Bead bd = data.getBead(bdID); 
                 bd.c = 2;
+                bd.n1 = bd.n2 = -1;
               }
             } else return;
           }
@@ -263,18 +264,17 @@ void fileSelected(File selection) {
                 bd.n2 = ed.BNodeID;
                 bd.c = 2;
                 Bead bdA = data.getBead(ed.ANodeID);
-                if(bdA!=null){
+                if (bdA!=null) {
                   bdA.set_un12(ed.ANodeRID, nodeNumber+n);
                 }
                 Bead bdB = data.getBead(ed.BNodeID);
-                if(bdB!=null){
+                if (bdB!=null) {
                   bdB.set_un12(ed.BNodeRID, nodeNumber+n);
                 }
-                //data.points.add(bd);
               }
               for (int n=0; n<nodeNumber; n++) {
                 Bead bd = data.getBead(n);
-                if(bd.n1==0 && bd.n2==0){ //<>//
+                if (bd.n1==-1 && bd.n2==-1) {
                   data.removeBeadFromPoint(n);
                 }
                 if (bd.u1==-1 && bd.u2==-1) {
@@ -282,13 +282,13 @@ void fileSelected(File selection) {
                 } else {
                   bd.Joint = true;
                   Node ndN = graph.nodes.get(n);
-                  if(ndN.inUse){
+                  if (ndN.inUse) {
                     ndN.Joint = true;
                   }
                 }
               }
             }
-            graph.modify(); //<>//
+            graph.modify();
             graph.update_points();
             graph.add_close_point_Joint();
             Draw.beads();// drawモードの変更
@@ -370,10 +370,10 @@ void mouseDragged() {
       for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
         if (ndID != mouse.dragged_nodeID) {
           Node nd = graph.nodes.get(ndID);
-          if(nd.inUse){
+          if (nd.inUse) {
             int ptID = nd.pointID;
             Bead pt = data.getBead(ptID);
-            if(pt==null){
+            if (pt==null) {
               return;
             }
             float x = pt.x;
@@ -391,11 +391,11 @@ void mouseDragged() {
       }
       //println(mX,mY);
       Node nd0 = graph.nodes.get(mouse.dragged_nodeID);
-      if(nd0.inUse){
+      if (nd0.inUse) {
         nd0.x = mX;
         nd0.y = mY;
         Bead bd0 = data.getBead(nd0.pointID);
-        if(bd0 != null){
+        if (bd0 != null) {
           bd0.x = mX;
           bd0.y = mY;
         }
@@ -446,7 +446,7 @@ void mouseReleased() {
       // ノードをクリックしている場合には、クロスチェンジする。
       for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
         Node node = graph.nodes.get(nodeID);
-        if (node.inUse){
+        if (node.inUse) {
           float mX = disp.getX_fromWin(mouseX);
           float mY = disp.getY_fromWin(mouseY);
           if (dist(mX, mY, node.x, node.y)<10) {
@@ -461,7 +461,7 @@ void mouseReleased() {
       // Joint以外をクリックした場合には、miJointの増減を行う。
       for (int beadID=0; beadID<data.points.size(); beadID++) {
         Bead bd = data.getBead(beadID);
-        if(bd==null){
+        if (bd==null) {
           continue;
         }
         float mX = disp.getX_fromWin(mouseX);
@@ -474,7 +474,7 @@ void mouseReleased() {
               // 両端がJointかmidJointだったら何もしない。
               Bead bdn1 = data.getBead(bdn1ID);
               Bead bdn2 = data.getBead(bdn2ID);
-              if(bdn1 == null || bdn2 == null){
+              if (bdn1 == null || bdn2 == null) {
                 break;
               }
               if (bdn1.Joint || bdn1.midJoint || bdn2.Joint || bdn2.midJoint) {
@@ -496,11 +496,11 @@ void mouseReleased() {
               // 対応するノードの番号を探す
               for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
                 Node nd = graph.nodes.get(nodeID);
-                if(nd.inUse){
-                  if (nd.pointID == nodeBeadN1)  {
+                if (nd.inUse) {
+                  if (nd.pointID == nodeBeadN1) {
                     nodeN1 = nodeID;
                   }
-                  if (nd.pointID == nodeBeadN2)  {
+                  if (nd.pointID == nodeBeadN2) {
                     nodeN2 = nodeID;
                   }
                 }
@@ -558,11 +558,11 @@ void mouseReleased() {
               // 対応するノードの番号を探す
               for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
                 Node nd = graph.nodes.get(ndID);
-                if(nd.inUse){
-                  if (nd.pointID == nodeBeadN1)  {
+                if (nd.inUse) {
+                  if (nd.pointID == nodeBeadN1) {
                     nodeN1 = ndID;
                   }
-                  if (nd.pointID == nodeBeadN2)  {
+                  if (nd.pointID == nodeBeadN2) {
                     nodeN2 = ndID;
                   }
                 }
