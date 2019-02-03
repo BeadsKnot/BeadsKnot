@@ -271,7 +271,7 @@ class mouseDrag { //<>// //<>// //<>// //<>// //<>//
       }
     }
     boolean OK=true;//図が完了しているかどうかのフラグ。
-    for (int bdID=0; bdID<edit.beads.size(); bdID++) { //<>// //<>//
+    for (int bdID=0; bdID<edit.beads.size(); bdID++) { //<>//
       Bead bd = edit.beads.get(bdID);
       if (bd.n1!=-1 || bd.n2!=-1 || bd.u1!=-1 || bd.u2!=-1) { 
         if (bd.c!=2 && bd.c!=4) {

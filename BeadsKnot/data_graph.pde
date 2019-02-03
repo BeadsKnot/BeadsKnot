@@ -165,7 +165,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
         if(bdPClose!=null){
           bdPClose.closeJoint=true;
         }
-        count = countNeighborJointInPoints(pt, bd.u2); //<>//
+        count = countNeighborJointInPoints(pt, bd.u2);
         p_close = get_half_position(pt, bd.u2, ceil(count*0.1));
         bdPClose = de.getBead(p_close);
         if(bdPClose!=null){
@@ -221,8 +221,8 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
         d=p.n2;
       } else if (p.n2==j) {
         d=p.n1;
-      } else { //<>//
-        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d); //<>// //<>//
+      } else {
+        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d); //<>//
         return -1;
       }
       j=c;
@@ -234,11 +234,11 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
   int findJointInPoints(int j, int c) {// Jointを表すビーズの番号を返す。
     for (int count = 0; count < de.points.size(); count++) {
       if (c<0 || de.points.size()<=c) {
-        println("findJointInPoints:cの値が不正：エラー"); //<>//
-        return -1; //<>//
+        println("findJointInPoints:cの値が不正：エラー");
+        return -1;
       }
-      Bead p=de.getBead(c); //<>//
-      if(p==null){ //<>//
+      Bead p=de.getBead(c);
+      if(p==null){
         return -1;
       }
       if (p.Joint||p.midJoint) {
@@ -250,8 +250,8 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("findJointInPoints:ビーズがつながっていないエラー"+j+":"+c+":"+d); //<>//
-        return -1; //<>//
+        println("findJointInPoints:ビーズがつながっていないエラー"+j+":"+c+":"+d);
+        return -1;
       } 
       j=c;
       c=d;
@@ -756,13 +756,13 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
       float V4y = BNode.y;
       bead1 = nodes.get(ed.ANodeID).pointID;
       bead2 = de.getBead(bead1).get_un12(ed.ANodeRID);
-      float step = arclength / (beads_number+1);
+      float step = arclength*0.98f / (beads_number+1);
       int bd=0;
       float arclen=0f;
       float xx0 = V1x;
       float yy0 = V1y;
       float xx, yy;
-      for (float repeat=0.01f; repeat<=1.0f; repeat += 0.01f) {
+      for (float repeat=0.01f; repeat<1.00f; repeat += 0.01f) {
         xx = coordinate_bezier(V1x, V2x, V3x, V4x, repeat);
         yy = coordinate_bezier(V1y, V2y, V3y, V4y, repeat);
         arclen += dist(xx0, yy0, xx, yy);
