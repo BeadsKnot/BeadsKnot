@@ -1,4 +1,4 @@
-class data_extract { //<>// //<>// //<>// //<>//
+class data_extract { //<>// //<>// //<>// //<>// //<>//
   // 画像からの読みとり
   // ビーズとそれをつなぐNbhからなる。
   int w, h;// 解析画面の大きさ
@@ -604,25 +604,29 @@ class data_extract { //<>// //<>// //<>// //<>//
     }
   }
 
-  int duplicateNbhds(int nn, int mm) {//線が重複しているかどうかを調べる
-    for (Nbhd n : nbhds) {
-      if (n.inUse && nn==n.a && mm==n.b) {
-        return 1;
-      }
-      if (n.inUse && nn==n.b&&mm==n.a) {
-        return 1;
+  int duplicateNbhds(int ptID1, int ptID2) {//線が重複しているかどうかを調べる
+    for (int nbID=0; nbID<nbhds.size(); nbID++) {
+      Nbhd nb = getNbhd(nbID);
+      if(nb!=null){
+        if (nb.inUse && ptID1==nb.a && ptID2==nb.b) {
+          return 1;
+        }
+        if (nb.inUse && ptID1==nb.b&& ptID2==nb.a) {
+          return 1;
+        }
       }
     }
     return 0;
   }
 
-  void removePoint(int u) {//点を消す
-    removeBeadFromPoint(u);
-    for (int i=nbhds.size ()-1; i>=0; i--) {
-      Nbhd n=nbhds.get(i);
-      if (n.a==u||n.b==u) {
-        //nbhds.remove(i);
-        n.inUse = false;
+  void removePoint(int ptID) {//点を消す
+    removeBeadFromPoint(ptID);
+    for (int nbID=nbhds.size ()-1; nbID>=0; nbID--) {
+      Nbhd nb=nbhds.get(nbID);
+      if (nb != null){
+        if (nb.a==ptID || nb.b==ptID) {
+          nb.inUse = false;
+        }
       }
     }
 
@@ -654,19 +658,21 @@ class data_extract { //<>// //<>// //<>// //<>//
       }
       if ( getBead(u).c==1) {
         for (int i=nbhds.size ()-1; i>=0; i--) {
-          Nbhd n=nbhds.get(i);
-          if (n.a==u) {
-            Bead bdNB = getBead(n.b); 
-            if (bdNB!=null && bdNB.c==3) {
-              removePoint(u);
-              bdNB.c=2;
-            }
-          } if (n.b==u) {
-            Bead bdNA = getBead(n.a);
-            if (bdNA!=null && bdNA.c==3) {
-              removePoint(u);
-              bdNA.c=2;
-            }
+          Nbhd n=getNbhd(i);
+          if(n!=null){
+            if (n.a==u) {
+              Bead bdNB = getBead(n.b); 
+              if (bdNB!=null && bdNB.c==3) {
+                removePoint(u);
+                bdNB.c=2;
+              }
+            } if (n.b==u) {
+              Bead bdNA = getBead(n.a);
+              if (bdNA!=null && bdNA.c==3) {
+                removePoint(u);
+                bdNA.c=2;
+              }
+            } //<>//
           }
         }
       }

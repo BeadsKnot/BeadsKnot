@@ -1,4 +1,4 @@
-class Thinning { //<>//
+class Thinning { //<>// //<>//
   data_extract DE;
   int w, h;
   int d_new[][];
@@ -42,7 +42,7 @@ class Thinning { //<>//
     //もし問題なければtrueを返し、問題が残っていれば、parts_editingモードにする。
 
     if (thinning_finish()) {
-      Draw.beads();// drawモードの変更
+      Draw.beads();// drawモードの変更 //<>//
       println("成功");
       return true;
     } else {
@@ -58,7 +58,7 @@ class Thinning { //<>//
       if (pt != null) {
         if (!pt.Joint && pt.c!=2) {
           return false;
-        }
+        } //<>//
       }
     }
     return true;
@@ -330,22 +330,24 @@ class Thinning { //<>//
       pt_row[p][0]=pt_row[p][1]=pt_row[p][2]=pt_row[p][3]=-1;
     }
     for (int n=0; n<DE.nbhds.size (); n++) {
-      Nbhd u = DE.nbhds.get(n);
-      for (int i=0; i<4; i++) {
-        if (pt_nhd[u.a][i]<0) {
-          pt_nhd[u.a][i] = u.b;
-          pt_row[u.a][i] = n;
-          break;
+      Nbhd u = DE.getNbhd(n);
+      if(u != null){
+        for (int i=0; i<4; i++) {
+          if (pt_nhd[u.a][i]<0) {
+            pt_nhd[u.a][i] = u.b;
+            pt_row[u.a][i] = n;
+            break;
+          }
         }
-      }
-      for (int i=0; i<4; i++) {
-        if (pt_nhd[u.b][i]<0) {
-          pt_nhd[u.b][i] = u.a;
-          pt_row[u.b][i] = n;
-          break;
+        for (int i=0; i<4; i++) {
+          if (pt_nhd[u.b][i]<0) {
+            pt_nhd[u.b][i] = u.a;
+            pt_row[u.b][i] = n;
+            break;
+          }
         }
+        nbh_left[n]=false;
       }
-      nbh_left[n]=false;
     }
     for (int p=0; p<DE.points.size (); p++) {
       fill_pt_tag1(p, 1);
@@ -517,9 +519,11 @@ class Thinning { //<>//
     }
     DE.removeBeadFromPoint(p);
     for (int i=DE.nbhds.size ()-1; i>=0; i--) {
-      Nbhd r = DE.nbhds.get(i) ;
-      if (r.a==p || r.b==p) {
-        DE.nbhds.remove(i);
+      Nbhd r = DE.getNbhd(i) ;
+      if(r != null){
+        if (r.a==p || r.b==p) {
+          DE.nbhds.remove(i);
+        }
       }
     }
   }
