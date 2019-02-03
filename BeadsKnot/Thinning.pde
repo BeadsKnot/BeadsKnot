@@ -53,9 +53,12 @@ class Thinning { //<>//
   }
 
   boolean thinning_finish() {//みんなお二人様だったか確認
-    for (Bead vec : DE.points) {
-      if (!vec.Joint && vec.c!=2) {
-        return false;
+    for (int ptID = 0; ptID<DE.points.size(); ptID++) {
+      Bead pt = DE.getBead(ptID);
+      if (pt != null) {
+        if (!pt.Joint && pt.c!=2) {
+          return false;
+        }
       }
     }
     return true;
@@ -605,7 +608,7 @@ class Thinning { //<>//
     }
     int a_prev = p;
     Bead bdP = DE.getBead(p);
-    if(bdP == null){
+    if (bdP == null) {
       return false;
     }
     int a_now = bdP.n1;
@@ -636,7 +639,7 @@ class Thinning { //<>//
 
   int find_next(int prv, int nw) {
     Bead v = DE.getBead(nw);
-    if (v != null){
+    if (v != null) {
       if (v.n1 == prv) {
         return v.n2;
       } else if (v.n2 == prv) {
@@ -668,19 +671,19 @@ class Thinning { //<>//
       if (j<maxk) {
         Nbhd ck = cross.get(maxk);
         Bead bdCkB=DE.getBead(ck.b);
-        if (bdCkB!=null){
+        if (bdCkB!=null) {
           bdCkB.Joint=true;
           bdCkB.u1=cj.a;
           // TODO 向きを決めないといけない
           bdCkB.u2=ck.a;
         }
         Bead bdCjA= DE.getBead(cj.a);
-        if (bdCjA != null){
+        if (bdCjA != null) {
           bdCjA.c=2;
           bdCjA.n2=ck.b;
         }
         Bead bdCkA = DE.getBead(ck.a);
-        if (bdCkA != null){
+        if (bdCkA != null) {
           bdCkA.c=2;
           bdCkA.n2=ck.b;
         }
@@ -694,7 +697,7 @@ class Thinning { //<>//
     }
     int a_prev = p;
     Bead bdP = DE.getBead(p);
-    if (bdP == null){
+    if (bdP == null) {
       return -1;
     }
     int a_now = bdP.n1;
