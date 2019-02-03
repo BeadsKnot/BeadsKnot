@@ -1,4 +1,4 @@
-class data_extract { //<>// //<>//
+class data_extract { //<>// //<>// //<>//
   // 画像からの読みとり
   // ビーズとそれをつなぐNbhからなる。
   int w, h;// 解析画面の大きさ
@@ -9,7 +9,7 @@ class data_extract { //<>// //<>//
   int pre_endID=0;//消すときにendIDにとってのn1を消すのかn2を消すのかを調べるために使う
   boolean over_crossing=true;//overならtrue,underならfalse
 
-    ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
+  ArrayList<Nbhd> nbhds=new ArrayList<Nbhd>();//線を登録
   ArrayList<Bead> points=new ArrayList<Bead>();//点を登録
   transform tf;
   Binarization bin;
@@ -27,13 +27,17 @@ class data_extract { //<>// //<>//
     disp = _disp;
   }
 
+
   int addBeadToPoint(float _x, float _y) {// pointsにある「消去済み」を再利用する。
     for (int ptID=0; ptID<points.size (); ptID++) {
       Bead pt = points.get(ptID);
       if (pt!=null) {
-        if (pt.n1==-1 && pt.n2==-1) {
-          pt.x = pt.y = 0f;
+        if (pt.inUse == false) {
+          pt.x = _x;
+          pt.y = _y;
           pt.inUse = true;
+          pt.Joint=false;
+          pt.midJoint=false;
           return ptID;
         }
       }
@@ -48,6 +52,9 @@ class data_extract { //<>// //<>//
   Bead getBead(int ID) {
     if (0<=ID && ID<points.size()) {
       Bead pt = points.get(ID);
+      if (pt == null){
+        return null;
+      }
       if (pt.inUse) {
         return pt;
       }
@@ -77,6 +84,25 @@ class data_extract { //<>// //<>//
     }
   }
 
+  int addNbhdToNbhds(int _a, int _b){
+    nbhds.add(new Nbhd(_a, _b));
+    return nbhds.size()-1;
+  }
+
+  Nbhd getNbhd(int ID){
+    return nbhds.get(ID);
+  }
+
+  void removeNbhdFromNbhds(int ID){
+    //nbhds.remove(ID);
+    Nbhd nb=nbhds.get(ID);
+    nb.inUse=false;
+  }
+  
+  void clearAllNbhd(){
+    nbhds.clear();
+  }
+  
   // imageデータの解析
   boolean make_data_extraction(PImage image) {
     //もと画像が横長の場合，縦長の場合に応じて変える。
@@ -152,7 +178,7 @@ class data_extract { //<>// //<>//
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
-          //text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
           //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
           ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
@@ -234,7 +260,7 @@ class data_extract { //<>// //<>//
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
           //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          //text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
         }//}
@@ -862,17 +888,28 @@ class data_extract { //<>// //<>//
   }
 
   boolean Ofutarisama() {//みんなお二人様だったか確認
+    int countNG0=0;
+    int countNG1=0;
+    int countNG2=0;
     for (int bdID=0; bdID< points.size (); bdID++) {
       Bead bd = getBead(bdID);
       if(bd==null){
+        countNG0 ++;
         continue;
       }
       if (bd.inUse==false){
+        countNG1 ++;
         continue;
       }
       if(bd.c!=2) {
-        return false;
+        countNG2 ++;
+        continue;
+        //return false;
       }
+    }
+    println("size="+points.size ()+":null="+countNG0+":not inUse="+countNG1+":not 2="+countNG2);
+    if(countNG2>0){
+      return false;
     }
     return true;
   }
@@ -1612,5 +1649,31 @@ class data_extract { //<>// //<>//
       }
     }
     return false;
+  }
+  
+  void debugLogPoints(String filename){
+    PrintWriter file; 
+    file = createWriter(filename);
+    file.println("ID,X,Y,c,n1,n2,u1,u2,inUse,Joint,midJoint");
+    for(int ptID=0; ptID<points.size();ptID++){
+      Bead pt = points.get(ptID);
+      if(pt==null){
+        file.println("null");
+      } else {
+        file.print(ptID+",");
+        file.print(pt.x+","+pt.y+",");
+        file.print(pt.c+",");
+        file.print(pt.n1+",");
+        file.print(pt.n2+",");
+        file.print(pt.u1+",");
+        file.print(pt.u2+",");
+        file.print(pt.inUse+",");
+        file.print(pt.Joint+",");
+        file.print(pt.midJoint);
+      }
+      file.println();
+    }
+    file.flush();
+    file.close();
   }
 }

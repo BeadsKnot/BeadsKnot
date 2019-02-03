@@ -1,4 +1,4 @@
-class data_graph { //<>// //<>//
+class data_graph { //<>// //<>// //<>//
   //データのグラフ構造
   //nodeとedgeからなる
 
@@ -18,6 +18,7 @@ class data_graph { //<>// //<>//
   }
 
   // deのデータから
+  //pointsのx,y,n1,n2,u1,u2,Jointのみ
   //nodesやedgesを決める
   void make_data_graph() {
     nodes.clear();
@@ -192,7 +193,7 @@ class data_graph { //<>// //<>//
   int findNeighborJointInPoints(int j, int c) {// Jointの一つ手前のビーズの番号を返す。
     //print("findNeighborJointInPoints",j,c);
     for (int count = 0; count < de.points.size(); count++) {
-      if (c<0 || de.points.size()<=c) {
+      if (c<0 || de.points.size()<=c) { //<>//
         return -1; //<>//
       }
       Bead p=de.getBead(c);
@@ -220,7 +221,7 @@ class data_graph { //<>// //<>//
   int findJointInPoints(int j, int c) {// Jointを表すビーズの番号を返す。
     for (int count = 0; count < de.points.size(); count++) {
       if (c<0 || de.points.size()<=c) {
-        println("findJointInPoints:cの値が不正：エラー");
+        println("findJointInPoints:cの値が不正：エラー"); //<>//
         return -1; //<>//
       }
       Bead p=de.getBead(c);
@@ -236,7 +237,7 @@ class data_graph { //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("findJointInPoints:ビーズがつながっていないエラー"+j+":"+c+":"+d);
+        println("findJointInPoints:ビーズがつながっていないエラー"+j+":"+c+":"+d); //<>//
         return -1; //<>//
       } 
       j=c;
@@ -398,7 +399,7 @@ class data_graph { //<>// //<>//
   //Nodeのthetaを最適化する
   void rotation_shape_modifier(int id) {
     Node node = nodes.get(id);
-    if(node.onUse){
+    if(node.inUse){
       float theta0 = node.theta;
       float totalCurvatureRange = get_curvatureRange_squareSum_at(id);
   
@@ -428,7 +429,7 @@ class data_graph { //<>// //<>//
       Edge ed = edges.get(e);
       Node ANode=nodes.get(ed.ANodeID);
       Node BNode=nodes.get(ed.BNodeID);
-      if(ANode.onUse && BNode.onUse){
+      if(ANode.inUse && BNode.inUse){
         float V1x = ANode.x;
         float V1y = ANode.y;
         float V2x = ANode.edge_x(ed.ANodeRID);
@@ -584,7 +585,7 @@ class data_graph { //<>// //<>//
       Node a0=nodes.get(e.ANodeID);
       Node a1=nodes.get(e.BNodeID);
       // float hx=(a0.x-disp.left)*disp.rate;
-      if(a0.onUse && a1.onUse){
+      if(a0.inUse && a1.inUse){
         float hx=disp.get_winX(a0.x);
         float hy=disp.get_winY(a0.y);
         if (e.ANodeRID==1 ||e.ANodeRID==3) {
@@ -609,7 +610,7 @@ class data_graph { //<>// //<>//
       }
     }
     for (Node n : nodes) {
-      if (n.onUse){
+      if (n.inUse){
         if (n.Joint) {
           fill(255, 255, 0);
         } else {
@@ -647,7 +648,7 @@ class data_graph { //<>// //<>//
     Node NodeA = nodes.get(ed.ANodeID);
     Node NodeB = nodes.get(ed.BNodeID);
     //ここで、NodeA=null か　NodeB=nullならば、直ちにやめる。
-    if (NodeA==null || NodeB==null || NodeA.onUse==false || NodeB.onUse==false) {
+    if (NodeA==null || NodeB==null || NodeA.inUse==false || NodeB.inUse==false) {
       return ;
     }
     int bead1 = NodeA.pointID;
@@ -731,7 +732,7 @@ class data_graph { //<>// //<>//
     //今一度、エッジに乗っているビーズの座標を計算しなおす。
     Node ANode=nodes.get(ed.ANodeID);
     Node BNode=nodes.get(ed.BNodeID);
-    if(ANode.onUse && BNode.onUse){
+    if(ANode.inUse && BNode.inUse){
       float V1x = ANode.x;
       float V1y = ANode.y;
       float V2x = ANode.edge_x(ed.ANodeRID);
@@ -779,7 +780,7 @@ class data_graph { //<>// //<>//
   int is_PVector_on_Joint(float vecX, float vecY) {
     for (int ndID=0; ndID<nodes.size(); ndID++) {
       Node nd = nodes.get(ndID);
-      if(nd.onUse){
+      if(nd.inUse){
         int ndpointID = nd.pointID;
         Bead bd = de.getBead(ndpointID);
         if (dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY)<10) {
@@ -824,7 +825,7 @@ class data_graph { //<>// //<>//
   // クロスチェンジ
   void crosschange(int nodeID) {
     Node node = nodes.get(nodeID);// nodeIDが適正であるかどうかをチェックせよ。
-    if(node.onUse){
+    if(node.inUse){
       int pt = node.pointID;
       Bead bd = de.getBead(pt);
       int tmp = bd.n1;
@@ -857,7 +858,7 @@ class data_graph { //<>// //<>//
       if (bd1.Joint || bd1.midJoint) {
         for (int ndID=0; ndID < nodes.size(); ndID++) {
           Node nd = nodes.get(ndID);
-          if (nd.onUse && nd.pointID == pt1ID) { 
+          if (nd.inUse && nd.pointID == pt1ID) { 
             return ndID;
           }
         }
@@ -869,7 +870,7 @@ class data_graph { //<>// //<>//
       if (bd2.Joint || bd2.midJoint) {
         for (int ndID=0; ndID < nodes.size(); ndID++) {
           Node nd = nodes.get(ndID);
-          if (nd.onUse && nd.pointID == pt2ID) { 
+          if (nd.inUse && nd.pointID == pt2ID) { 
             return ndID;
           }
         }
@@ -880,7 +881,7 @@ class data_graph { //<>// //<>//
 
   void removeNode(int ID) {
     if (0<=ID && ID<nodes.size()) {
-      nodes.get(ID).onUse = false;
+      nodes.get(ID).inUse = false;
     }
   }
 }

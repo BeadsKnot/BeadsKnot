@@ -97,7 +97,7 @@ class Edge {
   void set_bezier(ArrayList<Node> nodes) {
     Node ANode=nodes.get(ANodeID);
     Node BNode=nodes.get(BNodeID);
-    if(ANode.onUse && BNode.onUse){
+    if(ANode.inUse && BNode.inUse){
       bezier.set_bezier(ANode, BNode, ANodeRID, BNodeRID);
     }
   }
@@ -107,7 +107,7 @@ class Edge {
   void scaling_shape_modifier(ArrayList<Node> nodes) {
     Node nodeA = nodes.get(ANodeID);
     Node nodeB = nodes.get(BNodeID);
-    if(nodeA.onUse && nodeB.onUse){
+    if(nodeA.inUse && nodeB.inUse){
       //データベースによるrの値の最適近似
       scaling_shape_modifier1(nodes);
       set_bezier(nodes);
@@ -358,7 +358,7 @@ class Edge {
     Node a0 = nodes.get(ANodeID);
     Node a1 = nodes.get(BNodeID);
     float ret = 9999.0;
-    if(a0.onUse && a1.onUse){
+    if(a0.inUse && a1.inUse){
       float hx=a0.x;
       float hy=a0.y;
       float ix=a0.edge_x(ANodeRID);
