@@ -16,7 +16,7 @@ class Thinning { //<>// //<>//
   boolean getThinningExtraction() {
     w=DE.w;
     h=DE.h;
-    DE.nbhds.clear();
+    DE.clearAllNbhd();
     DE.clearAllPoints();
     // int de.d[w][h] を仮定してよい。
     get_edge_data_thinning();

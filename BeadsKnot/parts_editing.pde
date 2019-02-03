@@ -1,4 +1,4 @@
-class parts_editing { //<>// //<>// //<>//
+class parts_editing { //<>// //<>// //<>// //<>//
 
   ArrayList<Bead> beads;
 
@@ -227,8 +227,8 @@ class parts_editing { //<>// //<>// //<>//
     }
     restore_beads();
     //de.clearAllPoints();
-    de.points.clear();
-    de.nbhds.clear();
+    de.clearAllPoints();
+    de.clearAllNbhd();
     Draw.parts_editing();
   }
 }

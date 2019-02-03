@@ -1,4 +1,4 @@
-class mouseDrag { //<>// //<>// //<>// //<>//
+class mouseDrag { //<>// //<>// //<>// //<>// //<>//
   ArrayList<PVector> trace;
   PVector prev;
 
@@ -43,7 +43,7 @@ class mouseDrag { //<>// //<>// //<>// //<>//
 
   void trace_to_beads(data_extract data, data_graph graph) {
     ArrayList<PVector> meets = new ArrayList<PVector>();
-    data.points.clear();
+    data.clearAllPoints();
     int traceNumber = trace.size();
     // まず1列のbeadの列を作る。
     for (int tr = 0; tr < traceNumber; tr++) {
@@ -271,7 +271,7 @@ class mouseDrag { //<>// //<>// //<>// //<>//
       }
     }
     boolean OK=true;//図が完了しているかどうかのフラグ。
-    for (int bdID=0; bdID<edit.beads.size(); bdID++) { //<>// //<>//
+    for (int bdID=0; bdID<edit.beads.size(); bdID++) { //<>// //<>// //<>//
       Bead bd = edit.beads.get(bdID);
       if (bd.n1!=-1 || bd.n2!=-1 || bd.u1!=-1 || bd.u2!=-1) { 
         if (bd.c!=2 && bd.c!=4) {
