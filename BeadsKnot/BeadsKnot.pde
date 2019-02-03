@@ -291,10 +291,10 @@ void fileSelected(File selection) {
                 }
               }
             }
-            data.debugLogPoints("0123.csv");
             graph.modify();
             graph.update_points();
             graph.add_close_point_Joint();
+            //data.debugLogPoints("0123.csv");
             Draw.beads();// drawモードの変更
           }
         }
