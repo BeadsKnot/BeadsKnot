@@ -1,4 +1,4 @@
-class data_graph { //<>// //<>// //<>//
+class data_graph { //<>// //<>// //<>// //<>//
   //データのグラフ構造
   //nodeとedgeからなる
 
@@ -136,6 +136,7 @@ class data_graph { //<>// //<>// //<>//
   //nodesやedgesを決める（その３）
   //　エッジの端のほうにあるビーズをclosepointにする。
   //　これはPLinkファイルをつくるため。
+  // PLinkファイルを作る時だけ発動すればよい，という説もある．
   void add_close_point_Joint() {//Ten Percent Neighborhood point
     for (int p = 0; p < de.points.size(); p++) {
       Bead bd = de.getBead(p);
@@ -148,16 +149,28 @@ class data_graph { //<>// //<>// //<>//
       if (bd!=null && bd.Joint) {
         int count = countNeighborJointInPoints(pt, bd.n1);
         int p_close = get_half_position(pt, bd.n1, ceil(count*0.1));
-        de.getBead(p_close).closeJoint=true;
+        Bead bdPClose = de.getBead(p_close);
+        if(bdPClose!=null){
+          bdPClose.closeJoint=true;
+        }
         count = countNeighborJointInPoints(pt, bd.u1);
         p_close = get_half_position(pt, bd.u1, ceil(count*0.1));
-        de.getBead(p_close).closeJoint=true;
+        bdPClose = de.getBead(p_close);
+        if(bdPClose!=null){
+          bdPClose.closeJoint=true;
+        }
         count = countNeighborJointInPoints(pt, bd.n2);
         p_close = get_half_position(pt, bd.n2, ceil(count*0.1));
-        de.getBead(p_close).closeJoint=true;
-        count = countNeighborJointInPoints(pt, bd.u2);
+        bdPClose = de.getBead(p_close);
+        if(bdPClose!=null){
+          bdPClose.closeJoint=true;
+        }
+        count = countNeighborJointInPoints(pt, bd.u2); //<>//
         p_close = get_half_position(pt, bd.u2, ceil(count*0.1));
-        de.getBead(p_close).closeJoint=true;
+        bdPClose = de.getBead(p_close);
+        if(bdPClose!=null){
+          bdPClose.closeJoint=true;
+        }
       }
     }
   }
@@ -181,7 +194,7 @@ class data_graph { //<>// //<>// //<>//
         d=p.n1;
       } else {
         // println();
-        println("find_next_Joint_in_points : ビーズがつながっていない"+j+":"+c+":"+d);
+        println("find_next_Joint_in_points : ビーズがつながっていない"+j+":"+c+":"+d); //<>//
         return -1;
       }
       j = c;
@@ -208,8 +221,8 @@ class data_graph { //<>// //<>// //<>//
         d=p.n2;
       } else if (p.n2==j) {
         d=p.n1;
-      } else {
-        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d);
+      } else { //<>//
+        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d); //<>//
         return -1;
       }
       j=c;
@@ -224,8 +237,8 @@ class data_graph { //<>// //<>// //<>//
         println("findJointInPoints:cの値が不正：エラー"); //<>//
         return -1; //<>//
       }
-      Bead p=de.getBead(c);
-      if(p==null){
+      Bead p=de.getBead(c); //<>//
+      if(p==null){ //<>//
         return -1;
       }
       if (p.Joint||p.midJoint) {
@@ -453,11 +466,11 @@ class data_graph { //<>// //<>// //<>//
         }
       }
     }
-    disp.left=l;
-    disp.right=r;
-    disp.top=t;
-    disp.bottom=b;
-    disp.set_rate();
+    disp.Left=l;
+    disp.Right=r;
+    disp.Top=t;
+    disp.Bottom=b;
+    //disp.set_rate();
   }
 
 
