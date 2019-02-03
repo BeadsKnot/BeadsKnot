@@ -2,15 +2,16 @@ class display {
   float left, top, right, bottom;
   float win_width, win_height, win_offset;
   float rate;
-
+  float Left,Right,Top,Bottom;
+  
   display(float _w, float _h) {
     win_width = _w;
     win_height = _h;
     win_offset = 50;
-    left=win_offset;
-    top=win_offset;
-    right=win_width-win_offset;
-    bottom=win_height-win_offset;
+    left=Left=win_offset;
+    top=Top=win_offset;
+    right=Right=win_width-win_offset;
+    bottom=Bottom=win_height-win_offset;
     rate=1;
   }
 
@@ -37,5 +38,29 @@ class display {
     } else {
       rate = (win_width-2*win_offset)/(bottom-top);
     }
+  }
+  
+  void modify(){
+    if(Left>left+1){
+      left ++;
+    }else if(Left<left-1){
+      left --;
+    }
+    if(Right>right+1){
+      right++;
+    } else if (Right<right-1){
+      right--;
+    }
+    if(Top>top+1){
+      top++;
+    } else if (Top<top-1){
+      top--;
+    }
+    if(Bottom>bottom+1){
+      bottom++;
+    } else if(Bottom<bottom-1){
+      bottom--;
+    }
+    set_rate();
   }
 }
