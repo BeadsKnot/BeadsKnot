@@ -90,13 +90,25 @@ class data_extract { //<>// //<>// //<>// //<>// //<>//
   }
 
   Nbhd getNbhd(int ID){
-    return nbhds.get(ID);
+    if(0<=ID && ID<nbhds.size()){
+      Nbhd nb = nbhds.get(ID);
+      if(nb == null){
+        return null;
+      }
+      if(nb.inUse){
+        return nb;
+      }
+    }
+    return null;
   }
 
   void removeNbhdFromNbhds(int ID){
-    //nbhds.remove(ID);
-    Nbhd nb=nbhds.get(ID);
-    nb.inUse=false;
+    Nbhd nb=getNbhd(ID);
+    if(nb!=null){
+      nb.inUse=false;
+      nb.a = -1;
+      nb.b = -1;
+    }
   }
   
   void clearAllNbhd(){
@@ -672,7 +684,7 @@ class data_extract { //<>// //<>// //<>// //<>// //<>//
                 removePoint(u);
                 bdNB.c=2;
               }
-            } if (n.b==u) { //<>//
+            } if (n.b==u) {
               Bead bdNA = getBead(n.a);
               if (bdNA!=null && bdNA.c==3) {
                 removePoint(u);

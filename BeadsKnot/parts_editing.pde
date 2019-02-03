@@ -222,8 +222,22 @@ class parts_editing { //<>// //<>// //<>// //<>//
     int pointslength = de.points.size();
     println("pointslength", pointslength);
     for (int ptID = 0; ptID < pointslength; ptID++) {
-      Bead pt = de.points.get(ptID);
-      beads.add(pt);
+      Bead pt = de.getBead(ptID);
+      if(pt==null){
+        Bead bd = new Bead(0f,0f);
+        bd.inUse=false;
+        beads.add(bd);
+      } else {
+        Bead bd = new Bead(pt.x,pt.y);
+        bd.n1 = pt.n1;
+        bd.n2 = pt.n2;
+        bd.u1 = pt.u1;
+        bd.u2 = pt.u2;
+        bd.c = pt.c;
+        bd.inUse=true;
+        bd.Joint = pt.Joint;
+        beads.add(bd);
+      }
     }
     restore_beads();
     //de.clearAllPoints();

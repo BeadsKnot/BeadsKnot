@@ -77,7 +77,7 @@ class Square {
         );
       if (r==0) {
         // beads を parts_editingのデータにする。
-        edit.points_to_beads(data);
+        edit.points_to_beads(data); //<>//
         return 2;// 条件付き成功
       } else {
         println("extraction failed.");
