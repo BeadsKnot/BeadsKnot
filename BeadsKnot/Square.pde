@@ -27,7 +27,7 @@ class Square {
     for (int a = 0; a < 10; a++) { 
       s = ss[a];
 
-      de.nbhds.clear(); //<>//
+      de.nbhds.clear();
       de.clearAllPoints();
 
       for (int y=0; y<de.h; y+=s) {
@@ -37,7 +37,7 @@ class Square {
       }
 
       //cancelLoop();がいるらしい。
-      de.countNbhds(); //<>//
+      de.countNbhds();
       de.removeThrone();
       de.countNbhds();
       de.fillGap();
