@@ -193,7 +193,7 @@ class data_graph { //<>// //<>// //<>//
   int findNeighborJointInPoints(int j, int c) {// Jointの一つ手前のビーズの番号を返す。
     //print("findNeighborJointInPoints",j,c);
     for (int count = 0; count < de.points.size(); count++) {
-      if (c<0 || de.points.size()<=c) { //<>//
+      if (c<0 || de.points.size()<=c) {
         return -1; //<>//
       }
       Bead p=de.getBead(c);

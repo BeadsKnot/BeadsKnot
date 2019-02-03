@@ -1,4 +1,4 @@
-class Thinning {
+class Thinning { //<>//
   data_extract DE;
   int w, h;
   int d_new[][];
@@ -41,21 +41,24 @@ class Thinning {
     println(DE.points.size(), DE.nbhds.size());
     //もし問題なければtrueを返し、問題が残っていれば、parts_editingモードにする。
 
-    if(thinning_finish()){
+    if (thinning_finish()) {
       Draw.beads();// drawモードの変更
       println("成功");
       return true;
     } else {
       println("失敗なので、手作業モードへ移ります。");
       edit.points_to_beads(data);
-      return false; 
+      return false;
     }
   }
 
   boolean thinning_finish() {//みんなお二人様だったか確認
-    for (Bead vec : DE.points) {
-      if (!vec.Joint && vec.c!=2) {
-        return false;
+    for (int ptID = 0; ptID<DE.points.size(); ptID++) {
+      Bead pt = DE.getBead(ptID);
+      if (pt != null) {
+        if (!pt.Joint && pt.c!=2) {
+          return false;
+        }
       }
     }
     return true;
@@ -195,7 +198,7 @@ class Thinning {
 
   void find_next_point_on_thinning_graph(int p) {
     Bead bd = DE.getBead(p);
-    if(bd == null){
+    if (bd == null) {
       return ;
     }
     int vx = int(bd.x+0.1);
@@ -222,9 +225,11 @@ class Thinning {
     }
     for (int q=0; q<DE.points.size(); q++) {
       Bead bd = DE.getBead(q);
-      if (x==int(bd.x+0.1) && y==int(bd.y+0.1) ) {
-        addToNbh_WithoutCheck(p, q);
-        return ;
+      if (bd != null) {
+        if (x==int(bd.x+0.1) && y==int(bd.y+0.1) ) {
+          addToNbh_WithoutCheck(p, q);
+          return ;
+        }
       }
     }
     if (count==10) {
@@ -378,9 +383,12 @@ class Thinning {
         }
       }
       fill_pt_treated(maxp);
-      if ( is_Beads_id(maxp) && DE.getBead(maxp).c>0) {
-        for (int q=maxp; q!=-1; q=pt_prev[q]) {
-          pt_left[q]=true;
+      Bead bdMaxp = DE.getBead(maxp);
+      if (bdMaxp != null) {
+        if ( bdMaxp.c>0) {
+          for (int q=maxp; q!=-1; q=pt_prev[q]) {
+            pt_left[q]=true;
+          }
         }
       }
     } while (max>0 && countp>0);
@@ -436,8 +444,11 @@ class Thinning {
 
   void removeBeadsWithAll(int p) {
     Bead u = DE.getBead(p);
-    if (is_Beads_id(u.n1)) {
-      Bead uo = DE.getBead(u.n1);
+    if (u==null) {
+      return ;
+    }
+    Bead uo = DE.getBead(u.n1);
+    if (uo != null) {
       uo.c --;
       if (uo.n1==p) { 
         uo.n1=uo.n2; 
@@ -453,8 +464,8 @@ class Thinning {
         uo.u2=-1;
       }
     }
-    if (is_Beads_id(u.n2)) {
-      Bead uo = DE.getBead(u.n2);
+    uo = DE.getBead(u.n2);
+    if (uo != null) {
       uo.c --;
       if (uo.n1==p) { 
         uo.n1=uo.n2; 
@@ -470,8 +481,25 @@ class Thinning {
         uo.u2=-1;
       }
     }
-    if (is_Beads_id(u.u1)) {
-      Bead uo = DE.getBead(u.u1);
+    uo = DE.getBead(u.u1);
+    if (uo != null) {
+      uo.c --;
+      if (uo.n1==p) { 
+        uo.n1=uo.n2; 
+        uo.n2=uo.u1; 
+        uo.u1=uo.u2; 
+        uo.u2=-1;
+      } else if (uo.n2==p) { 
+        uo.n2=uo.u1; 
+        uo.u1=uo.u2; 
+        uo.u2=-1;
+      } else if (uo.u1==p) { 
+        uo.u1=uo.u2; 
+        uo.u2=-1;
+      }
+    }
+    uo = DE.getBead(u.u2);
+    if (uo != null) {
       uo.c --;
       if (uo.n1==p) { 
         uo.n1=uo.n2; 
@@ -488,18 +516,11 @@ class Thinning {
       }
     }
     DE.removeBeadFromPoint(p);
-    //for (int i=0; i<DE.points.size (); i++) {
-    //  Bead v = DE.points.get(i);
-    //  if (v.n1>p) v.n1--;
-    //  if (v.n2>p) v.n2--;
-    //  if (v.u1>p) v.u1--;
-    //  if (v.u2>p) v.u2--;
-    //}
     for (int i=DE.nbhds.size ()-1; i>=0; i--) {
       Nbhd r = DE.nbhds.get(i) ;
       if (r.a==p || r.b==p) {
         DE.nbhds.remove(i);
-      } 
+      }
     }
   }
 
@@ -517,15 +538,20 @@ class Thinning {
     }
     for (int u=0; u<DE.points.size(); u++) {
       Bead vec0 = DE.getBead(u);
-      if (vec0.c == 0) {
-        pt_left[u]=false;
-      } else 
-      if (vec0.c == 1 && is_Beads_id(vec0.n1)) {
-        int a_prev = u;
-        int a_now = vec0.n1;
-        if (DE.getBead(a_now).c == 1) {
-          pt_left[a_prev]=false;
-          pt_left[a_now]=false;
+      if (vec0 != null) {
+        if (vec0.c == 0) {
+          pt_left[u]=false;
+        } else 
+        if (vec0.c == 1) {
+          int a_prev = u;
+          int a_now = vec0.n1;
+          Bead bdANow = DE.getBead(a_now);
+          if (bdANow != null) {
+            if (bdANow.c == 1) {
+              pt_left[a_prev]=false;
+              pt_left[a_now]=false;
+            }
+          }
         }
       }
     }
@@ -545,26 +571,30 @@ class Thinning {
   boolean find_crossing() {
     for (int i=0; i<DE.points.size (); i++) {
       Bead bdsi=DE.getBead(i);
-      if (bdsi.c==1) {
-        float min=9999;
-        int minJ=-1;
-        for (int j=0; j<DE.points.size (); j++) {
-          Bead bdsj = DE.getBead(j);
-          if (bdsj.c==2) {
-            float d1=dist(bdsi.x, bdsi.y, DE.getBead(bdsj.n1).x, DE.getBead(bdsj.n1).y);
-            float d=dist(bdsi.x, bdsi.y, bdsj.x, bdsj.y);
-            float d2=dist(bdsi.x, bdsi.y, DE.getBead(bdsj.n2).x, DE.getBead(bdsj.n2).y);
-            if (i!=j && d<min && d<d1 && d<d2) {
-              //if (j!=bdsi.n1 && DE.points.get(bdsi.n1).c == 2) {
-              if (!is_near_two_points(i, j, 5)) {
-                min=d;
-                minJ=j;
+      if (bdsi != null) {
+        if (bdsi.c==1) {
+          float min=9999;
+          int minJ=-1;
+          for (int j=0; j<DE.points.size (); j++) {
+            Bead bdsj = DE.getBead(j);
+            if (bdsj != null) {
+              if (bdsj.c==2) {
+                float d1=dist(bdsi.x, bdsi.y, DE.getBead(bdsj.n1).x, DE.getBead(bdsj.n1).y);
+                float d=dist(bdsi.x, bdsi.y, bdsj.x, bdsj.y);
+                float d2=dist(bdsi.x, bdsi.y, DE.getBead(bdsj.n2).x, DE.getBead(bdsj.n2).y);
+                if (i!=j && d<min && d<d1 && d<d2) {
+                  //if (j!=bdsi.n1 && DE.points.get(bdsi.n1).c == 2) {
+                  if (!is_near_two_points(i, j, 5)) {
+                    min=d;
+                    minJ=j;
+                  }
+                }
               }
             }
           }
-        }
-        if (minJ>=0) {
-          cross.add(new Nbhd(i, minJ));
+          if (minJ>=0) {
+            cross.add(new Nbhd(i, minJ));
+          }
         }
       }
     }
@@ -573,14 +603,15 @@ class Thinning {
   }
 
   boolean is_near_two_points(int p, int q, int cc) {
-    if (!is_Beads_id(p)) {
-      return false;
-    }
     if (p==q) {
       return true;
     }
     int a_prev = p;
-    int a_now = DE.getBead(p).n1;
+    Bead bdP = DE.getBead(p);
+    if (bdP == null) {
+      return false;
+    }
+    int a_now = bdP.n1;
     if (is_Beads_id(a_now)) {
       for (int i=0; i<cc && a_now!=-1; i++) {
         if (a_now==q) {
@@ -592,7 +623,7 @@ class Thinning {
       }
     }
     a_prev = p;
-    a_now = DE.getBead(p).n2;
+    a_now = bdP.n2;
     if (is_Beads_id(a_now)) {
       for (int i=0; i<cc && a_now!=-1; i++) {
         if (a_now==q) {
@@ -607,8 +638,8 @@ class Thinning {
   }
 
   int find_next(int prv, int nw) {
-    if (is_Beads_id(nw)) {
-      Bead v = DE.getBead(nw);
+    Bead v = DE.getBead(nw);
+    if (v != null) {
       if (v.n1 == prv) {
         return v.n2;
       } else if (v.n2 == prv) {
@@ -639,15 +670,23 @@ class Thinning {
       }
       if (j<maxk) {
         Nbhd ck = cross.get(maxk);
-        Bead v=DE.getBead(ck.b);
-        v.Joint=true;
-        v.u1=cj.a;
-        // TODO 向きを決めないといけない
-        v.u2=ck.a;
-        DE.getBead(cj.a).c=2;
-        DE.getBead(cj.a).n2=ck.b;
-        DE.getBead(ck.a).c=2;
-        DE.getBead(ck.a).n2=ck.b;
+        Bead bdCkB=DE.getBead(ck.b);
+        if (bdCkB!=null) {
+          bdCkB.Joint=true;
+          bdCkB.u1=cj.a;
+          // TODO 向きを決めないといけない
+          bdCkB.u2=ck.a;
+        }
+        Bead bdCjA= DE.getBead(cj.a);
+        if (bdCjA != null) {
+          bdCjA.c=2;
+          bdCjA.n2=ck.b;
+        }
+        Bead bdCkA = DE.getBead(ck.a);
+        if (bdCkA != null) {
+          bdCkA.c=2;
+          bdCkA.n2=ck.b;
+        }
       }
     }
   }
@@ -657,7 +696,11 @@ class Thinning {
       return 0;
     }
     int a_prev = p;
-    int a_now = DE.getBead(p).n1;
+    Bead bdP = DE.getBead(p);
+    if (bdP == null) {
+      return -1;
+    }
+    int a_now = bdP.n1;
     if (is_Beads_id(a_now)) {
       for (int i=0; i<cc && a_now!=-1; i++) {
         if (a_now==q) {
@@ -669,7 +712,7 @@ class Thinning {
       }
     }
     a_prev = p;
-    a_now = DE.getBead(p).n2;
+    a_now = bdP.n2;
     if (a_now>=0) {
       for (int i=0; i<cc && a_now!=-1; i++) {
         if (a_now==q) {

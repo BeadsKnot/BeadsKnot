@@ -1,4 +1,4 @@
-class data_extract { //<>// //<>// //<>//
+class data_extract { //<>// //<>// //<>// //<>//
   // 画像からの読みとり
   // ビーズとそれをつなぐNbhからなる。
   int w, h;// 解析画面の大きさ
@@ -672,7 +672,7 @@ class data_extract { //<>// //<>// //<>//
       }
     }
   }
- //<>//
+ //<>// //<>//
   void fillGap() {//点と点の距離の最小を記録し、最小の距離の点が1本さんならばその点と点をつなげる
     for (int u=0; u<points.size (); u++) {
       Bead bdU = getBead(u);
