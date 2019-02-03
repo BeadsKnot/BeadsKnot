@@ -245,6 +245,8 @@ void fileSelected(File selection) {
                 Bead bd = data.getBead(bdID); 
                 bd.c = 2;
                 bd.n1 = bd.n2 = -1;
+                bd.u1 = bd.u2 = -1;
+                bd.Joint = bd.midJoint = false;
               }
             } else return;
           }
@@ -254,7 +256,7 @@ void fileSelected(File selection) {
               edgeNumber = int(pieces[1]);
               graph.edges.clear();
               for (int n=0; n<edgeNumber; n++) {
-                line = reader.readLine();
+                line = reader.readLine(); //<>//
                 pieces = split(line, ',');
                 Edge ed = new Edge(int(pieces[0]), int(pieces[1]), int(pieces[2]), int(pieces[3]));
                 graph.edges.add(ed);
@@ -289,6 +291,7 @@ void fileSelected(File selection) {
                 }
               }
             }
+            data.debugLogPoints("0123.csv");
             graph.modify();
             graph.update_points();
             graph.add_close_point_Joint();
