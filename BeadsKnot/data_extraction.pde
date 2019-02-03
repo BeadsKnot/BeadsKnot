@@ -52,6 +52,9 @@ class data_extract { //<>// //<>// //<>//
   Bead getBead(int ID) {
     if (0<=ID && ID<points.size()) {
       Bead pt = points.get(ID);
+      if (pt == null){
+        return null;
+      }
       if (pt.inUse) {
         return pt;
       }
