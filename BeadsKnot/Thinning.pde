@@ -272,11 +272,14 @@ class Thinning { //<>// //<>//
     if (!is_Beads_id(i1) || !is_Beads_id(i2)) {
       return false;
     }
-    for (Nbhd n : DE.nbhds) {
-      if ( n.a==i1 && n.b==i2 ) {
-        return  false;
-      } else if ( n.a==i2 && n.b==i1 ) {
-        return  false;
+    for (int nbID=0; nbID< DE.nbhds.size(); nbID++){
+      Nbhd n = DE.getNbhd(nbID);
+      if (n!=null){
+        if ( n.a==i1 && n.b==i2 ) {
+          return  false;
+        } else if ( n.a==i2 && n.b==i1 ) {
+          return  false;
+        }
       }
     }
     if (i1==i2) {

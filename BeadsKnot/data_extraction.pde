@@ -521,44 +521,50 @@ class data_extract { //<>// //<>// //<>// //<>// //<>//
   }
 
   void countNbhds() {//線を数える
-    for (Bead vec : points) {
-      vec.c=0;
-      vec.n1=vec.n2=vec.u1=vec.u2=-1;//正常でない値
+    for(int vecID=0; vecID<points.size(); vecID++){
+      Bead vec = getBead(vecID);
+      if(vec!=null){
+        vec.c=0;
+        vec.n1=vec.n2=vec.u1=vec.u2=-1;//正常でない値
+      }
     }
-    for (Nbhd n : nbhds) {
-      // getBead(n.a).c++;
-      //getBead(n.b).c++;
-      if (n.inUse) {
-        Bead vec_1=getBead(n.a);
-        if (vec_1!=null){
-          if (vec_1.c==0) {
-            vec_1.n1=n.b;
-            vec_1.c++;
-          } else if (vec_1.c==1) {
-            vec_1.n2=n.b;
-            vec_1.c++;
-          } else if (vec_1.c==2) {
-            vec_1.u1=n.b;
-            vec_1.c++;
-          } else if (vec_1.c==3) {
-            vec_1.u2=n.b;
-            vec_1.c++;
+    for (int nbID=0; nbID<nbhds.size(); nbID++){
+      Nbhd n = getNbhd(nbID);
+      if(n!=null){
+        // getBead(n.a).c++;
+        //getBead(n.b).c++;
+        if (n.inUse) {
+          Bead vec_1=getBead(n.a);
+          if (vec_1!=null){
+            if (vec_1.c==0) {
+              vec_1.n1=n.b;
+              vec_1.c++;
+            } else if (vec_1.c==1) {
+              vec_1.n2=n.b;
+              vec_1.c++;
+            } else if (vec_1.c==2) {
+              vec_1.u1=n.b;
+              vec_1.c++;
+            } else if (vec_1.c==3) {
+              vec_1.u2=n.b;
+              vec_1.c++;
+            }
           }
-        }
-        Bead vec_2=getBead(n.b);
-        if (vec_2!=null){
-          if (vec_2.c==0) {
-            vec_2.n1=n.a;
-            vec_2.c++;
-          } else if (vec_2.c==1) {
-            vec_2.n2=n.a;
-            vec_2.c++;
-          } else if (vec_2.c==2) {
-            vec_2.u1=n.a;
-            vec_2.c++;
-          } else if (vec_2.c==3) {
-            vec_2.u2=n.a;
-            vec_2.c++;
+          Bead vec_2=getBead(n.b);
+          if (vec_2!=null){
+            if (vec_2.c==0) {
+              vec_2.n1=n.a;
+              vec_2.c++;
+            } else if (vec_2.c==1) {
+              vec_2.n2=n.a;
+              vec_2.c++;
+            } else if (vec_2.c==2) {
+              vec_2.u1=n.a;
+              vec_2.c++;
+            } else if (vec_2.c==3) {
+              vec_2.u2=n.a;
+              vec_2.c++;
+            }
           }
         }
       }
@@ -666,13 +672,13 @@ class data_extract { //<>// //<>// //<>// //<>// //<>//
                 removePoint(u);
                 bdNB.c=2;
               }
-            } if (n.b==u) {
+            } if (n.b==u) { //<>//
               Bead bdNA = getBead(n.a);
               if (bdNA!=null && bdNA.c==3) {
                 removePoint(u);
                 bdNA.c=2;
               }
-            } //<>//
+            }
           }
         }
       }
