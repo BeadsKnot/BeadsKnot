@@ -85,7 +85,20 @@ class data_extract { //<>// //<>// //<>// //<>// //<>//
   }
 
   int addNbhdToNbhds(int _a, int _b){
-    nbhds.add(new Nbhd(_a, _b));
+    for (int nbID=0; nbID<points.size (); nbID++) {
+      Nbhd nb = getNbhd(nbID);
+      if (nb!=null) {
+        if (nb.inUse == false) {
+          nb.a = _a;
+          nb.b = _b;
+          nb.inUse = true;
+          return nbID;
+        }
+      }
+    }
+    Nbhd nb = new Nbhd(_a, _b);
+    nb.inUse = true;
+    nbhds.add(nb);
     return nbhds.size()-1;
   }
 
