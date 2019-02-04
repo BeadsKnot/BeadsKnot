@@ -17,6 +17,7 @@ class orientation {
     int beads_first=nd.pointID;
     int beads_next=de.getBead(beads_start).n1;
     int beads_second=de.getBead(beads_start).n1;
+    int beads_next_next=-1;
 
     int ori_id=0;//通し番号
 
@@ -24,23 +25,26 @@ class orientation {
       de.getBead(beads_start).orientation=ori_id;
       //始めは0
       ori_id++;
-      de.getBead(beads_next).orientation=ori_id;
-      //次は1
-      //Nbhd new_joint=find_next_joint(new Nbhd(beads_start, beads_next), ori_id);
-      //自分で描いたプログラム
-      // if (new_joint.a!=0&&new_joint.b!=0) {
-      //ori_id++;
-      //beads_start=new_joint.b;
-      int beads_next_next=-1;
-
-      if (de.getBead(beads_next).u1==beads_start) {
-        beads_next_next=de.getBead(beads_next).u2;
-      } else if (de.getBead(beads_next).u2==beads_start) {
-        beads_next_next=de.getBead(beads_next).u1;
-      } else if (de.getBead(beads_next).n1==beads_start) {
-        beads_next_next=de.getBead(beads_next).n2;
-      } else if (de.getBead(beads_next).n2==beads_start) {
-        beads_next_next=de.getBead(beads_next).n1;
+      Bead bdNext = de.getBead(beads_next);
+      if(bdNext!=null){
+        bdNext.orientation=ori_id;
+        //次は1
+        //Nbhd new_joint=find_next_joint(new Nbhd(beads_start, beads_next), ori_id);
+        //自分で描いたプログラム
+        // if (new_joint.a!=0&&new_joint.b!=0) {
+        //ori_id++;
+        //beads_start=new_joint.b;
+        beads_next_next=-1;
+  
+        if (de.getBead(beads_next).u1==beads_start) {
+          beads_next_next=de.getBead(beads_next).u2;
+        } else if (de.getBead(beads_next).u2==beads_start) {
+          beads_next_next=de.getBead(beads_next).u1;
+        } else if (de.getBead(beads_next).n1==beads_start) {
+          beads_next_next=de.getBead(beads_next).n2;
+        } else if (de.getBead(beads_next).n2==beads_start) {
+          beads_next_next=de.getBead(beads_next).n1;
+        }
       }
       beads_start=beads_next;
       beads_next=beads_next_next;
@@ -54,6 +58,7 @@ class orientation {
         return;
         // }
       }
+      
     }
   }
   //Nbhd find_next_joint(Nbhd n, int ori) {
