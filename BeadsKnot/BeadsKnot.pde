@@ -627,18 +627,8 @@ void mouseReleased() {
           if (pt.Joint) {////////////////////////////////midJointやJointの隣も含むか要検討
             return;
           } else {
-            //println("ここで作業をする");
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
-            //if (i==1) {
-            //  println("1");
-            //} else if (i==2) {
-            //  println("2");
-            //} else if (i==-1) {
-            //  println("できませんでした");
-            //} else {//0のとき
-            //  println("ここで作業をする");
-            //}
             if (i==1||i==2) {
               println(count_for_distinguishing_edge);//間のbeadsの数。ただしstartIDとptIDは含まない
               data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
