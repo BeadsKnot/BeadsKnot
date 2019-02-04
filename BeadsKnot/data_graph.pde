@@ -503,7 +503,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>// //<>//
   //deからnodesとedgesをつくる（５）
   void get_data_nodes_edges() {
     // nodesのデータを作る
-    get_nodes(); //<>//
+    get_nodes();
     //edgesのデータを作る。
     get_edges(edges);
     //  形を整える。
@@ -515,7 +515,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>// //<>//
 
   // nodesのデータを作る
   void get_nodes() {
-    de.debugLogPoints("get_nodes.csv");
+    //de.debugLogPoints("get_nodes.csv");
     for (int p = 0; p < de.points.size(); p++) {
       Bead pt = de.getBead(p);
       if(pt==null){
@@ -653,7 +653,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>// //<>//
     // ←そのたぐいのエラーが出るようになったら。
     //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
     // 理想とするエッジの弧長の概数を計算する。
-    float arclength = ed.get_real_arclength(nodes); //<>//
+    float arclength = ed.get_real_arclength(nodes);
     // 理想とするビーズの内個数を計算する。
     int beads_number = int(arclength / beads_interval) - 2;
     if (beads_number<5) beads_number=5;
