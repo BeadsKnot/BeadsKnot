@@ -1,4 +1,4 @@
-class Thinning { //<>// //<>//
+class Thinning {  //<>//
   data_extract DE;
   int w, h;
   int d_new[][];
@@ -31,18 +31,19 @@ class Thinning { //<>// //<>//
 
     println("find_crossing()");
     find_crossing();		
-
+    //DE.debugLogPoints("find_crossing.csv");
 
     println("画面サイズ調整");
     DE.getDisplayLTRB();
     println("jointに関しての線を追加");
     DE.addJointToNbhds();
+    //DE.debugLogPoints("addJointToNbhds.csv");
 
     println(DE.points.size(), DE.nbhds.size());
     //もし問題なければtrueを返し、問題が残っていれば、parts_editingモードにする。
 
     if (thinning_finish()) {
-      Draw.beads();// drawモードの変更 //<>//
+      Draw.beads();// drawモードの変更
       println("成功");
       return true;
     } else {

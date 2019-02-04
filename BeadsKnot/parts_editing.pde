@@ -1,4 +1,4 @@
-class parts_editing { //<>// //<>// //<>// //<>//
+class parts_editing {    //<>//
 
   ArrayList<Bead> beads;
 
@@ -16,7 +16,11 @@ class parts_editing { //<>// //<>// //<>// //<>//
     for (int bdID=0; bdID<beads.size (); bdID++) {
       Bead bd=beads.get(bdID);
       int c = 2;
-      if (bd.c == 1) {
+      if (bd.c == 3) {
+        stroke(0);
+        fill(255, 0, 0);
+        c=5;
+      }else if (bd.c == 1) {
         stroke(0);
         fill(255, 180, 0);
         c=3;
@@ -221,6 +225,7 @@ class parts_editing { //<>// //<>// //<>// //<>//
     beads.clear();
     int pointslength = de.points.size();
     println("pointslength", pointslength);
+    //de.debugLogPoints("points_to_beads.csv");
     for (int ptID = 0; ptID < pointslength; ptID++) {
       Bead pt = de.getBead(ptID);
       if(pt==null){
