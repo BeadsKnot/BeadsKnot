@@ -366,7 +366,7 @@ void mousePressed() {
 void mouseDragged() {
   //if (Draw._beads) {
   if (Draw._beads||Draw._smoothing) {
-    if (mouse.node_dragging) {
+    if (mouse.node_dragging && mouse.dragged_nodeID!=-1) {
       float mX = disp.getX_fromWin(mouseX);
       float mY = disp.getY_fromWin(mouseY);
 
@@ -384,9 +384,10 @@ void mouseDragged() {
             float y = pt.y;
             float d = dist(mX, mY, x, y);
             if (d < mouseDragmin_dist) {//ボロノイ領域を超えたら処理をしない。
+              println("ジョイント"+mouse.dragged_nodeID+"がジョイント"+ndID+"に近づきすぎです。");
               return;
             }
-            if (d > 1000) {//あまり外側へ行ったら処理をしない。
+            if (d > 1500/disp.rate) {//あまり外側へ行ったら処理をしない。
               println("*外側へ行きすぎです。");
               return ;
             }
@@ -406,6 +407,9 @@ void mouseDragged() {
       }
       // 図全体のmodify();
       graph.modify();
+      for(int repeat=0; repeat<5; repeat++){
+        graph.rotation_shape_modifier(mouse.dragged_nodeID);
+      }
       graph.update_points();
       graph.add_close_point_Joint();
       //} else if (mouse.node_next_dragging) {
@@ -444,6 +448,7 @@ void mouseDragged() {
 void mouseReleased() {
   if (Draw._beads) {
     mouse.node_dragging=false;
+    mouse.dragged_nodeID=-1;
     mouse.node_next_dragging = false;
     if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
       println("beads-mode : click");
@@ -627,18 +632,8 @@ void mouseReleased() {
           if (pt.Joint) {////////////////////////////////midJointやJointの隣も含むか要検討
             return;
           } else {
-            //println("ここで作業をする");
             println(startID, ptID);
             int i=data.findArcFromPoints(startID, ptID);
-            //if (i==1) {
-            //  println("1");
-            //} else if (i==2) {
-            //  println("2");
-            //} else if (i==-1) {
-            //  println("できませんでした");
-            //} else {//0のとき
-            //  println("ここで作業をする");
-            //}
             if (i==1||i==2) {
               println(count_for_distinguishing_edge);//間のbeadsの数。ただしstartIDとptIDは含まない
               data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
