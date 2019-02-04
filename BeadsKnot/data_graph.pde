@@ -1,4 +1,4 @@
-class data_graph { //<>// //<>// //<>// //<>// //<>//
+class data_graph { //<>// //<>// //<>// //<>// //<>// //<>//
   //データのグラフ構造
   //nodeとedgeからなる
 
@@ -178,7 +178,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
   int find_next_Joint_in_points(int j, int c) {
     for (int count = 0; count < de.points.size(); count++) {
       if(c<0 || de.points.size()<=c){
-        return -1; //<>//
+        return -1; //<>// //<>//
       }
       Bead p=de.getBead(c);
       if(p==null){
@@ -194,7 +194,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
         d=p.n1;
       } else {
         // println();
-        println("find_next_Joint_in_points : ビーズがつながっていない"+j+":"+c+":"+d); //<>// //<>//
+        println("find_next_Joint_in_points : ビーズがつながっていない"+j+":"+c+":"+d); //<>// //<>// //<>//
         return -1;
       }
       j = c;
@@ -207,7 +207,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
     //print("findNeighborJointInPoints",j,c);
     for (int count = 0; count < de.points.size(); count++) {
       if (c<0 || de.points.size()<=c) {
-        return -1; //<>//
+        return -1; //<>// //<>//
       }
       Bead p=de.getBead(c);
       if(p==null){
@@ -222,7 +222,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d); //<>//
+        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d); //<>// //<>//
         return -1;
       }
       j=c;
@@ -503,7 +503,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
   //deからnodesとedgesをつくる（５）
   void get_data_nodes_edges() {
     // nodesのデータを作る
-    get_nodes();
+    get_nodes(); //<>//
     //edgesのデータを作る。
     get_edges(edges);
     //  形を整える。
@@ -515,6 +515,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
 
   // nodesのデータを作る
   void get_nodes() {
+    de.debugLogPoints("get_nodes.csv");
     for (int p = 0; p < de.points.size(); p++) {
       Bead pt = de.getBead(p);
       if(pt==null){
@@ -652,7 +653,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
     // ←そのたぐいのエラーが出るようになったら。
     //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
     // 理想とするエッジの弧長の概数を計算する。
-    float arclength = ed.get_real_arclength(nodes);
+    float arclength = ed.get_real_arclength(nodes); //<>//
     // 理想とするビーズの内個数を計算する。
     int beads_number = int(arclength / beads_interval) - 2;
     if (beads_number<5) beads_number=5;
@@ -698,10 +699,11 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
     //println("必要数,現状数",beads_number, beads_count);
     if (beads_number > beads_count) {// 必要数のほうが多い→ビーズの追加が必要
       bead1 = NodeA.pointID;
-      if(de.getBead(bead1)==null){
+      Bead bd1 = de.getBead(bead1);
+      if(bd1==null){
         return;
       }
-      bead2 = de.getBead(bead1).get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
+      bead2 = bd1.get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
       for (int repeat=0; repeat < beads_number - beads_count; repeat++) {
         //Bead newBd = new Bead(0, 0);// 課題：捨てられたビーズを再利用する。
         //newBd.n1 = bead1;
@@ -714,9 +716,12 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
         newBd.n1 = bead1;
         newBd.n2 = bead2;
         newBd.c = 2;
-        de.getBead(bead1).set_un12(ed.ANodeRID, newBdID);
-        if (de.getBead(bead2).n1 == bead1) de.getBead(bead2).n1 = newBdID;
-        else de.getBead(bead2).n2 = newBdID;
+        bd1.set_un12(ed.ANodeRID, newBdID);
+        Bead bd2 = de.getBead(bead2);
+        if (bd2.n1 == bead1) bd2.n1 = newBdID;
+        else if (bd2.n2 == bead1) bd2.n2 = newBdID;
+        else if (bd2.u1 == bead1) bd2.u1 = newBdID;
+        else if (bd2.u2 == bead1) bd2.u2 = newBdID;
         bead2 = newBdID;
       }
     } else if (beads_number < beads_count) {//現在数のほうが多い→ビーズの削除が必要
@@ -725,7 +730,7 @@ class data_graph { //<>// //<>// //<>// //<>// //<>//
       for (int repeat=0; repeat < beads_count - beads_number; repeat++) {
         bead2 = bd1.get_un12(ed.ANodeRID);
         Bead bd2 = de.getBead(bead2);
-        // ここでbd2=nullだったらどうしよう・・・・論理的にはありえないのだが。
+        // ここでbd2がJointだったらどうしよう・・・・論理的にはありえないのだが。
         if (bd2.n1==bead1)
           bead3 = bd2.n2;
         else {
