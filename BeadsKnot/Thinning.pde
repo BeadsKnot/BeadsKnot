@@ -1,4 +1,4 @@
-class Thinning { //<>// //<>//
+class Thinning {  //<>//
   data_extract DE;
   int w, h;
   int d_new[][];
