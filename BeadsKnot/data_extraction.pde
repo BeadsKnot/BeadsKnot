@@ -1231,12 +1231,12 @@ class data_extract {     //<>// //<>// //<>//
   float segmentIsInRight(float mX, float mY, float x0, float y0, float x1, float y1) {
     float maxX=9999999;
     if (mX < x0 || mX< x1) {
-      if ( y0 < y1 && mY >= y0 && mY <= y1) {
+      if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
         float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
         if (xx>mX && xx<maxX) {
           return xx;
         }
-      } else if ( y1 < y0 && mY >= y1 && mY <= y0) {
+      } else if ( y1 < y0 && mY >= y1-0.1 && mY <= y0+0.1) {
         float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
         if (xx>mX && xx<maxX) {
           return xx;
@@ -1256,8 +1256,8 @@ class data_extract {     //<>// //<>// //<>//
       }
       float x0 = disp.get_winX(bead.x);
       float y0 = disp.get_winY(bead.y);
-      if (bead.Joint) {
-      } else {
+      //if (bead.Joint) {
+      //} else {
         int n1 = bead.n1;// n2, u1, u2についても同じことをする。
         if (n1 != -1) {
           Bead bead1 = getBead(n1);
@@ -1266,22 +1266,11 @@ class data_extract {     //<>// //<>// //<>//
           }
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
-          if (mX < x0 || mX< x1) {
-            if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
-              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mX && xx<maxX) {
-                maxX = xx;
-                a = n1;
-                b = p;
-              }
-            } else if ( y1 < y0 && mY > y1-0.1 && mY < y0+0.1) {
-              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mX && xx<maxX) {
-                maxX = xx;
-                a = p;
-                b = n1;
-              }
-            }
+          float nextX = segmentIsInRight(mX,mY,x0,y0,x1,y1);
+          if (mX < nextX){
+            maxX = nextX;
+            a = n1;
+            b = p;
           }
         }
         int n2 = bead.n2;// n2, u1, u2についても同じことをする。
@@ -1362,7 +1351,7 @@ class data_extract {     //<>// //<>// //<>//
             }
           }
         }
-      }
+      //}
     }
     return new Nbhd(b, a);
   }
