@@ -1086,6 +1086,10 @@ class data_extract {     //<>// //<>// //<>//
     endShape();
   }
 
+  boolean smoothingRegionContainsPt(float mX, float mY, Nbhd nbhd){
+    return true;
+  }
+
   void draw_smoothing_region(Nbhd nbhd) {
     int a = nbhd.a;
     int b = nbhd.b;

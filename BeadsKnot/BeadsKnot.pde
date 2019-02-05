@@ -111,7 +111,9 @@ void draw() {
   } else if (Draw._smoothing) {
     //smoothingの関数を呼び出す
     data.nearNb = data.get_near_nbhd(mouseX, mouseY);
-    data.draw_smoothing_region(data.nearNb);
+    if(data.smoothingRegionContainsPt(mouseX, mouseY, data.nearNb)){
+      data.draw_smoothing_region(data.nearNb);
+    }
     data.draw_smoothing_Nbhds();
     data.draw_smoothing_Points();
     //drawNbhdsを変える
