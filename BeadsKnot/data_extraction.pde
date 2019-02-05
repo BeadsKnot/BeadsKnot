@@ -1229,7 +1229,7 @@ class data_extract {     //<>// //<>//
     endShape();
   }
 
-  Nbhd get_near_nbhd() {//（マウスポジションの真右にあって）マウスの位置に近いNbhdを見つける。
+  Nbhd get_near_nbhd(float mX, float mY) {//（マウスポジションの真右にあって）マウスの位置に近いNbhdを見つける。
     int a=-1, b=-1;
     float maxX=9999f;
     for (int p = 0; p<points.size (); p++) {
@@ -1249,17 +1249,17 @@ class data_extract {     //<>// //<>//
           }
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
-          if (mouseX < x0 || mouseX< x1) {
-            if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
-              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mouseX && xx<maxX) {
+          if (mX < x0 || mX< x1) {
+            if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
+              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mX && xx<maxX) {
                 maxX = xx;
                 a = n1;
                 b = p;
               }
-            } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
-              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mouseX && xx<maxX) {
+            } else if ( y1 < y0 && mY > y1-0.1 && mY < y0+0.1) {
+              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mX && xx<maxX) {
                 maxX = xx;
                 a = p;
                 b = n1;
@@ -1275,17 +1275,17 @@ class data_extract {     //<>// //<>//
           }
           float x1 = disp.get_winX(bead2.x);
           float y1 = disp.get_winY(bead2.y);
-          if (mouseX < x0 || mouseX< x1) {
-            if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
-              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mouseX && xx<maxX) {
+          if (mX < x0 || mX< x1) {
+            if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
+              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mX && xx<maxX) {
                 maxX = xx;
                 a = n2;
                 b = p;
               }
-            } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
-              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mouseX && xx<maxX) {
+            } else if ( y1 < y0 && mY > y1-0.1 && mY < y0+0.1) {
+              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mX && xx<maxX) {
                 maxX = xx;
                 a = p;
                 b = n2;
@@ -1301,17 +1301,17 @@ class data_extract {     //<>// //<>//
           }
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
-          if (mouseX < x0 || mouseX< x1) {
-            if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
-              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mouseX && xx<maxX) {
+          if (mX < x0 || mX< x1) {
+            if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
+              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mX && xx<maxX) {
                 maxX = xx;
                 a = u1;
                 b = p;
               }
-            } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
-              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mouseX && xx<maxX) {
+            } else if ( y1 < y0 && mY > y1-0.1 && mY < y0+0.1) {
+              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mX && xx<maxX) {
                 maxX = xx;
                 a = p;
                 b = u1;
@@ -1327,17 +1327,17 @@ class data_extract {     //<>// //<>//
           }
           float x1 = disp.get_winX(bead2.x);
           float y1 = disp.get_winY(bead2.y);
-          if (mouseX < x0 || mouseX< x1) {
-            if ( y0 < y1 && mouseY > y0-0.1 && mouseY < y1+0.1) {
-              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mouseX && xx<maxX) {
+          if (mX < x0 || mX< x1) {
+            if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
+              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mX && xx<maxX) {
                 maxX = xx;
                 a = u2;
                 b = p;
               }
-            } else if ( y1 < y0 && mouseY > y1-0.1 && mouseY < y0+0.1) {
-              float xx = x0 + (mouseY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mouseX && xx<maxX) {
+            } else if ( y1 < y0 && mY > y1-0.1 && mY < y0+0.1) {
+              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
+              if (xx>mX && xx<maxX) {
                 maxX = xx;
                 a = p;
                 b = u2;
