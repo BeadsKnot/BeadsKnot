@@ -15,18 +15,24 @@ class orientation {
     }
     int beads_start=nd.pointID;
     int beads_first=nd.pointID;
-    int beads_next=de.getBead(beads_start).n1;
-    int beads_second=de.getBead(beads_start).n1;
+    Bead bdStart = de.getBead(beads_start);
+    if(bdStart == null){
+      println("start bead is null!");
+      return ;
+    }
+    int beads_next=bdStart.n1;
+    int beads_second=bdStart.n1;
     int beads_next_next=-1;
 
     int ori_id=0;//通し番号
 
     for (int repeat=0; repeat<de.points.size()*2; repeat++) {
-      de.getBead(beads_start).orientation=ori_id;
-      //始めは0
-      ori_id++;
+      bdStart = de.getBead(beads_start);
       Bead bdNext = de.getBead(beads_next);
-      if(bdNext!=null){
+      if(bdStart!=null && bdNext!=null){
+        bdStart.orientation=ori_id;
+        //始めは0
+        ori_id++;
         bdNext.orientation=ori_id;
         //次は1
         //Nbhd new_joint=find_next_joint(new Nbhd(beads_start, beads_next), ori_id);
@@ -36,14 +42,14 @@ class orientation {
         //beads_start=new_joint.b;
         beads_next_next=-1;
   
-        if (de.getBead(beads_next).u1==beads_start) {
-          beads_next_next=de.getBead(beads_next).u2;
-        } else if (de.getBead(beads_next).u2==beads_start) {
-          beads_next_next=de.getBead(beads_next).u1;
-        } else if (de.getBead(beads_next).n1==beads_start) {
-          beads_next_next=de.getBead(beads_next).n2;
-        } else if (de.getBead(beads_next).n2==beads_start) {
-          beads_next_next=de.getBead(beads_next).n1;
+        if (bdNext.u1==beads_start) {
+          beads_next_next=bdNext.u2;
+        } else if (bdNext.u2==beads_start) {
+          beads_next_next=bdNext.u1;
+        } else if (bdNext.n1==beads_start) {
+          beads_next_next=bdNext.n2;
+        } else if (bdNext.n2==beads_start) {
+          beads_next_next=bdNext.n1;
         }
       }
       beads_start=beads_next;
@@ -54,7 +60,7 @@ class orientation {
       // println(beads_start, beads_first, beads_next, beads_second);
       if (beads_second==beads_next&&beads_first==beads_start) {
         ori_id++;
-        de.getBead(beads_next).orientation=ori_id;
+        bdNext.orientation=ori_id;
         return;
         // }
       }
@@ -87,7 +93,7 @@ class orientation {
     int joint_point_ID=0;
     for (int i=0; i<de.points.size(); i++) {
       Bead b=de.getBead(i);
-      if (b.Joint) {
+      if (b!=null && b.Joint) {
         joint_point_ID=i;
         count++;
       }
@@ -98,6 +104,10 @@ class orientation {
       int dowker_set[]=new int[count];
       boolean wheather_over[]=new boolean[count];
       Bead start=de.getBead(joint_point_ID);
+      if(start == null){
+        println(":failure");
+        return ;
+      }
       int n1=start.n1;
       int prev=joint_point_ID;
       int pre_prev=joint_point_ID;
@@ -114,6 +124,9 @@ class orientation {
           break;
         } else {
           node=de.getBead(n1);
+          if(node==null){
+            println(":failure");
+          }
         }
         if (node.Joint) {
           //println(n1);
