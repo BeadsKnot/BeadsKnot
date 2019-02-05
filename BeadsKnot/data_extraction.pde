@@ -15,7 +15,8 @@ class data_extract {     //<>// //<>// //<>//
   Binarization bin;
   Square sq;
   Thinning th;
-
+  Nbhd nearNb;
+  
   //コンストラクタ
   data_extract(int _h, int _w, display _disp) {
     w = _w;
@@ -1256,8 +1257,8 @@ class data_extract {     //<>// //<>// //<>//
       }
       float x0 = disp.get_winX(bead.x);
       float y0 = disp.get_winY(bead.y);
-      //if (bead.Joint) {
-      //} else {
+      if (bead.Joint) {
+      } else {
         int n1 = bead.n1;// n2, u1, u2についても同じことをする。
         if (n1 != -1) {
           Bead bead1 = getBead(n1);
@@ -1266,9 +1267,9 @@ class data_extract {     //<>// //<>// //<>//
           }
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
-          float nextX = segmentIsInRight(mX,mY,x0,y0,x1,y1);
-          if (mX < nextX){
-            maxX = nextX;
+          float xx = segmentIsInRight(mX,mY,x0,y0,x1,y1);
+          if (mX < xx && xx < maxX){
+            maxX = xx;
             a = n1;
             b = p;
           }
@@ -1281,22 +1282,11 @@ class data_extract {     //<>// //<>// //<>//
           }
           float x1 = disp.get_winX(bead2.x);
           float y1 = disp.get_winY(bead2.y);
-          if (mX < x0 || mX< x1) {
-            if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
-              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mX && xx<maxX) {
-                maxX = xx;
-                a = n2;
-                b = p;
-              }
-            } else if ( y1 < y0 && mY > y1-0.1 && mY < y0+0.1) {
-              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mX && xx<maxX) {
-                maxX = xx;
-                a = p;
-                b = n2;
-              }
-            }
+          float xx = segmentIsInRight(mX,mY,x0,y0,x1,y1);
+          if (xx>mX && xx<maxX) {
+            maxX = xx;
+            a = n2;
+            b = p;
           }
         }
         int u1 = bead.u1;// n2, u1, u2についても同じことをする。
@@ -1307,22 +1297,11 @@ class data_extract {     //<>// //<>// //<>//
           }
           float x1 = disp.get_winX(bead1.x);
           float y1 = disp.get_winY(bead1.y);
-          if (mX < x0 || mX< x1) {
-            if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
-              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mX && xx<maxX) {
-                maxX = xx;
-                a = u1;
-                b = p;
-              }
-            } else if ( y1 < y0 && mY > y1-0.1 && mY < y0+0.1) {
-              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mX && xx<maxX) {
-                maxX = xx;
-                a = p;
-                b = u1;
-              }
-            }
+          float xx = segmentIsInRight(mX,mY,x0,y0,x1,y1);
+          if (xx>mX && xx<maxX) {
+            maxX = xx;
+            a = u1;
+            b = p;
           }
         }
         int u2 = bead.u2;// n2, u1, u2についても同じことをする。
@@ -1333,25 +1312,14 @@ class data_extract {     //<>// //<>// //<>//
           }
           float x1 = disp.get_winX(bead2.x);
           float y1 = disp.get_winY(bead2.y);
-          if (mX < x0 || mX< x1) {
-            if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
-              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mX && xx<maxX) {
-                maxX = xx;
-                a = u2;
-                b = p;
-              }
-            } else if ( y1 < y0 && mY > y1-0.1 && mY < y0+0.1) {
-              float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-              if (xx>mX && xx<maxX) {
-                maxX = xx;
-                a = p;
-                b = u2;
-              }
-            }
+          float xx = segmentIsInRight(mX,mY,x0,y0,x1,y1);
+          if (xx>mX && xx<maxX) {
+            maxX = xx;
+            a = u2;
+            b = p;
           }
         }
-      //}
+      }
     }
     return new Nbhd(b, a);
   }
