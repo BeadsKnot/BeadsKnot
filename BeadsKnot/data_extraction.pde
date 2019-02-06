@@ -1160,7 +1160,9 @@ class data_extract {     //<>// //<>// //<>//
         if (ptB==null) {
           return false;
         }
-        if(mX < segmentIsInRight(mX, mY, ptA.x, ptA.y, ptB.x, ptB.y)){
+        float xxx = segmentIsInRight(mX, mY, ptA.x, ptA.y, ptB.x, ptB.y);
+        if(mX < xxx){
+          print(xxx+" ");
           count ++;
         }
       }
@@ -1234,7 +1236,9 @@ class data_extract {     //<>// //<>// //<>//
         if (ptB==null) {
           return false;
         }
-        if(mX < segmentIsInRight(mX, mY, ptA.x, ptA.y, ptB.x, ptB.y)){
+        float xxx = segmentIsInRight(mX, mY, ptA.x, ptA.y, ptB.x, ptB.y);
+        if(mX < xxx){
+          print(xxx+"::");
           count ++;
         }
       }
