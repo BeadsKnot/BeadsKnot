@@ -1087,6 +1087,78 @@ class data_extract {     //<>// //<>// //<>//
   }
 
   boolean smoothingRegionContainsPt(float mX, float mY, Nbhd nbhd){
+    if(nbhd == null){
+      return false;
+    }
+    int a = nbhd.a;
+    Bead ptA = getBead(a);
+    int b = nbhd.b;
+    Bead ptB = getBead(b);
+    int c = -1;
+    if (ptA == null || ptB == null) {
+      return false;
+    }
+    if (ptA.Joint) {
+      int n1 = ptB.n1;
+      int n2 = ptB.n2;
+      if (n1 == a) {
+        a = n2;
+      } else if (n2 == a){
+        a = n1;
+      } else {
+        return false;
+      }
+      ptA = getBead(a);
+      if (ptA==null) {
+        return false;
+      }
+    }
+    if (ptB.Joint) {
+      int n1 = ptA.n1;
+      int n2 = ptA.n2;
+      if (n1 == b) {
+        b = n2;
+      } else if (n2 == b){
+        b = n1;
+      } else {
+        return false;
+      }
+      ptB = getBead(b);
+      if (ptB==null) {
+        return false;
+      }
+    }
+
+    if (ptA.orientation < ptB.orientation) {
+      ptA=getBead(b);
+      ptB=getBead(a);
+      c=a;
+      a=b;
+      b=c;
+    }
+    int count = 0;
+    int repeatmax = points.size();
+    for (int repeat=0; repeat < repeatmax; repeat++) {
+      if ( ! ptA.Joint) {
+        if (ptA.n1 == b) {
+          c = ptA.n2;
+        } else if (ptA.n2 == b) {
+          c = ptA.n1;
+        } else {
+          println("draw_smoothing_region 1: error");
+          return false;
+        }
+        b = a;
+        a = c;
+
+        if(mX < segmentIsInRight(mX, mY, ptA.x, ptA.y, ptB.x, ptB.y)){
+          count ++;
+        }
+        if (nbhd.a == a) {
+          break;
+        }
+      }
+    }
     return true;
   }
 
@@ -1106,10 +1178,12 @@ class data_extract {     //<>// //<>// //<>//
     if (ptA.Joint) {
       int n1 = ptB.n1;
       int n2 = ptB.n2;
-      if (n1 != a) {
+      if (n2 == a) {
         a = n1;
-      } else {
+      } else if (n1 == a){
         a = n2;
+      } else {
+        return ;
       }
       ptA = getBead(a);
       if (ptA==null) {
@@ -1118,9 +1192,9 @@ class data_extract {     //<>// //<>// //<>//
     } else if (ptB.Joint) {
       int n1 = ptA.n1;
       int n2 = ptA.n2;
-      if (n1 != b) {
+      if (n2 == b) {
         b = n1;
-      } else {
+      } else if (n1 == b){
         b = n2;
       }
       ptB = getBead(b);
@@ -1208,7 +1282,7 @@ class data_extract {     //<>// //<>// //<>//
           b = a;
           a = c;
         }
-        if ((n1o>n2o)&&(u1o>u2o)) {
+        if (n1o > n2o && u1o>u2o ) {
           if (ptA.n2 == b) {
             c = ptA.u1;
           } else if (ptA.u2 == b) {
@@ -1250,7 +1324,7 @@ class data_extract {     //<>// //<>// //<>//
     }
     return mX-1f;
   }
-
+  
   Nbhd get_near_nbhd(float mX, float mY) {//（マウスポジションの真右にあって）マウスの位置に近いNbhdを見つける。
     int a=-1, b=-1;
     float maxX=9999f;
