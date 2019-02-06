@@ -1139,6 +1139,7 @@ class data_extract {     //<>// //<>// //<>//
     int count = 0;
     int repeatmax = points.size();
     for (int repeat=0; repeat < repeatmax; repeat++) {
+      // go straight
       if ( ! ptA.Joint) {
         if (ptA.n1 == b) {
           c = ptA.n2;
@@ -1151,14 +1152,101 @@ class data_extract {     //<>// //<>// //<>//
         b = a;
         a = c;
 
+        ptA= getBead(a);
+        if (ptA==null) {
+          return false;
+        }
+        ptB = getBead(b);
+        if (ptB==null) {
+          return false;
+        }
         if(mX < segmentIsInRight(mX, mY, ptA.x, ptA.y, ptB.x, ptB.y)){
           count ++;
         }
-        if (nbhd.a == a) {
+      }
+      // go along smoothing curve 
+      else {
+        int n1=ptA.n1;
+        int n2=ptA.n2;
+        int u1=ptA.u1;
+        int u2=ptA.u2;
+        Bead bdN1=getBead(n1), bdN2=getBead(n2), bdU1=getBead(u1), bdU2=getBead(u2);
+        if (bdN1==null || bdN2==null || bdU1==null || bdU2==null) {
           break;
         }
+        int n1o=bdN1.orientation;
+        int n2o=bdN2.orientation;
+        int u1o=bdU1.orientation;
+        int u2o=bdU2.orientation;
+        if ((n1o<n2o)&&(u1o<u2o)) {
+          if (ptA.n1 == b) {
+            c = ptA.u2;
+          } else if (ptA.u1 == b) {
+            c = ptA.n2;
+          } else {
+            println("draw_smoothing_region 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
+            return false;
+          }
+          b = a;
+          a = c;
+        }
+        else if ((n1o<n2o)&&(u1o>u2o)) {
+          if (ptA.n1 == b) {
+            c = ptA.u1;
+          } else  if (ptA.u2 == b) {
+            c = ptA.n2;
+          } else {
+            println("draw_smoothing_region 3: error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
+            return false;
+          }
+          b = a;
+          a = c;
+        }
+        else if ((n1o>n2o)&&(u1o<u2o)) {
+          if (ptA.n2 == b) {
+            c = ptA.u2;
+          } else if (ptA.u1 == b) {
+            c = ptA.n1;
+          } else {
+            println("draw_smoothing_region 4: error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
+            return false;
+          }
+          b = a;
+          a = c;
+        }
+        else if (n1o > n2o && u1o>u2o ) {
+          if (ptA.n2 == b) {
+            c = ptA.u1;
+          } else if (ptA.u2 == b) {
+            c = ptA.n1;
+          } else {
+            println("draw_smoothing_region 5: error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
+            return false;
+          }
+          b = a;
+          a = c;
+        }
+        ptA= getBead(a);
+        if (ptA==null) {
+          return false;
+        }
+        ptB = getBead(b);
+        if (ptB==null) {
+          return false;
+        }
+        if(mX < segmentIsInRight(mX, mY, ptA.x, ptA.y, ptB.x, ptB.y)){
+          count ++;
+        }
+      }
+      ptA = getBead(a);
+      if (ptA==null) {
+        break;
+      }
+      if (nbhd.a == a) {
+        break;
       }
     }
+    println(count);
     return true;
   }
 
