@@ -1151,7 +1151,7 @@ class data_extract {     //<>// //<>// //<>//
         }
         b = a;
         a = c;
-
+        //print("("+b+">"+a+")");
         ptA= getBead(a);
         if (ptA==null) {
           return false;
@@ -1160,9 +1160,12 @@ class data_extract {     //<>// //<>// //<>//
         if (ptB==null) {
           return false;
         }
-        float xxx = segmentIsInRight(mX, mY, ptA.x, ptA.y, ptB.x, ptB.y);
+        float xxx = segmentIsInRight(mX, mY, 
+          disp.get_winX(ptA.x), disp.get_winY(ptA.y), 
+          disp.get_winX(ptB.x), disp.get_winY(ptB.y));
+          //print(mX+","+xxx+" ");
         if(mX < xxx){
-          print(xxx+" ");
+          //print(xxx+" ");
           count ++;
         }
       }
@@ -1228,6 +1231,7 @@ class data_extract {     //<>// //<>// //<>//
           b = a;
           a = c;
         }
+        //print("["+b+">"+a+"]");
         ptA= getBead(a);
         if (ptA==null) {
           return false;
@@ -1236,22 +1240,29 @@ class data_extract {     //<>// //<>// //<>//
         if (ptB==null) {
           return false;
         }
-        float xxx = segmentIsInRight(mX, mY, ptA.x, ptA.y, ptB.x, ptB.y);
+        float xxx = segmentIsInRight(mX, mY, 
+          disp.get_winX(ptA.x), disp.get_winY(ptA.y), 
+          disp.get_winX(ptB.x), disp.get_winY(ptB.y));
         if(mX < xxx){
-          print(xxx+"::");
+          //print(xxx+"::");
           count ++;
         }
       }
-      ptA = getBead(a);
-      if (ptA==null) {
-        break;
-      }
+      //ptA = getBead(a);
+      //if (ptA==null) {
+      //  break;
+      //}
       if (nbhd.a == a) {
         break;
       }
     }
-    println(count);
-    return true;
+    //println(count);
+    if(count%2==1){
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
   void draw_smoothing_region(Nbhd nbhd) {
@@ -1407,7 +1418,7 @@ class data_extract {     //<>// //<>// //<>//
         if (xx>mX && xx<maxX) {
           return xx;
         }
-      } else if ( y1 < y0 && mY >= y1-0.1 && mY <= y0+0.1) {
+      } else if ( y1 <= y0 && mY >= y1-0.1 && mY <= y0+0.1) {
         float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
         if (xx>mX && xx<maxX) {
           return xx;
@@ -1427,10 +1438,10 @@ class data_extract {     //<>// //<>// //<>//
       }
       float x0 = disp.get_winX(bead.x);
       float y0 = disp.get_winY(bead.y);
-      if (bead.Joint) {
-      } else {
+      //if (bead.Joint) {
+      //} else {
         int n1 = bead.n1;// n2, u1, u2についても同じことをする。
-        if (n1 != -1) {
+        //if (n1 != -1) {
           Bead bead1 = getBead(n1);
           if (bead1 == null) {
             continue;
@@ -1443,53 +1454,53 @@ class data_extract {     //<>// //<>// //<>//
             a = n1;
             b = p;
           }
-        }
+        //}
         int n2 = bead.n2;// n2, u1, u2についても同じことをする。
-        if (n2 != -1) {
+        //if (n2 != -1) {
           Bead bead2 = getBead(n2);
           if (bead2 == null) {
             continue;
           }
-          float x1 = disp.get_winX(bead2.x);
-          float y1 = disp.get_winY(bead2.y);
-          float xx = segmentIsInRight(mX,mY,x0,y0,x1,y1);
-          if (xx>mX && xx<maxX) {
-            maxX = xx;
+          float x2 = disp.get_winX(bead2.x);
+          float y2 = disp.get_winY(bead2.y);
+          float xx2 = segmentIsInRight(mX,mY,x0,y0,x2,y2);
+          if (xx2>mX && xx2<maxX) {
+            maxX = xx2;
             a = n2;
             b = p;
           }
-        }
+        //}
         int u1 = bead.u1;// n2, u1, u2についても同じことをする。
-        if (u1 != -1) {
-          Bead bead1 = getBead(u1);
-          if (bead1 == null) {
+        //if (u1 != -1) {
+          Bead bead3 = getBead(u1);
+          if (bead3 == null) {
             continue;
           }
-          float x1 = disp.get_winX(bead1.x);
-          float y1 = disp.get_winY(bead1.y);
-          float xx = segmentIsInRight(mX,mY,x0,y0,x1,y1);
-          if (xx>mX && xx<maxX) {
-            maxX = xx;
+          float x3 = disp.get_winX(bead3.x);
+          float y3 = disp.get_winY(bead3.y);
+          float xx3 = segmentIsInRight(mX,mY,x0,y0,x3,y3);
+          if (xx3>mX && xx3<maxX) {
+            maxX = xx3;
             a = u1;
             b = p;
           }
-        }
+        //}
         int u2 = bead.u2;// n2, u1, u2についても同じことをする。
-        if (u2 != -1) {
-          Bead bead2 = getBead(u2);
-          if (bead2 == null) {
+        //if (u2 != -1) {
+          Bead bead4 = getBead(u2);
+          if (bead4 == null) {
             continue;
           }
-          float x1 = disp.get_winX(bead2.x);
-          float y1 = disp.get_winY(bead2.y);
-          float xx = segmentIsInRight(mX,mY,x0,y0,x1,y1);
-          if (xx>mX && xx<maxX) {
-            maxX = xx;
+          float x4 = disp.get_winX(bead4.x);
+          float y4 = disp.get_winY(bead4.y);
+          float xx4 = segmentIsInRight(mX,mY,x0,y0,x4,y4);
+          if (xx4>mX && xx4<maxX) {
+            maxX = xx4;
             a = u2;
             b = p;
           }
-        }
-      }
+        //}
+      //}
     }
     if(a==-1 && b==-1){
       return null;
