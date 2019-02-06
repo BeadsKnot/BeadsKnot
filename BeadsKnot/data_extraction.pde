@@ -15,7 +15,7 @@ class data_extract {     //<>// //<>// //<>//
   Binarization bin;
   Square sq;
   Thinning th;
-  Nbhd nearNb;
+  float nearX;
   
   //コンストラクタ
   data_extract(int _h, int _w, display _disp) {
@@ -1325,7 +1325,12 @@ class data_extract {     //<>// //<>// //<>//
         }
       }
     }
-    return new Nbhd(b, a);
+    if(a==-1 && b==-1){
+      return null;
+    }
+    else {
+      return new Nbhd(b, a);
+    }
   }
 
   int findArcFromPoints(int startID, int endID) {

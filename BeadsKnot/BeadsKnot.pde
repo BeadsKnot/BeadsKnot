@@ -110,10 +110,19 @@ void draw() {
     //  data.draw_posinega_Points();
   } else if (Draw._smoothing) {
     //smoothingの関数を呼び出す
-    data.nearNb = data.get_near_nbhd(mouseX, mouseY);
-    if(data.smoothingRegionContainsPt(mouseX, mouseY, data.nearNb)){
-      data.draw_smoothing_region(data.nearNb);
-    }
+    float mX=mouseX, mY=mouseY;
+    do {
+      Nbhd nearNb = data.get_near_nbhd(mX, mY);
+      if(nearNb == null){
+        break;
+      }
+      if(data.smoothingRegionContainsPt(mouseX, mouseY, nearNb)){
+        data.draw_smoothing_region(nearNb);
+        break;
+      }else {
+        mX = data.nearX+1f;
+      }
+    } while(true);
     data.draw_smoothing_Nbhds();
     data.draw_smoothing_Points();
     //drawNbhdsを変える
