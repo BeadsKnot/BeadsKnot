@@ -114,13 +114,20 @@ void draw() {
     do {
       Nbhd nearNb = data.get_near_nbhd(mX, mY);
       if(nearNb == null){
+        println("break;");
         break;
       }
-      if(data.smoothingRegionContainsPt(mouseX, mouseY, nearNb, false)){
+      int count = data.smoothingRegionContainsPt(mouseX, mouseY, nearNb, false);
+      if(count<0){
+        println("break;");
+        break;
+      }
+      if (count%2 == 1){
         data.draw_smoothing_region(nearNb);
         break;
-      }else {
-        mX = data.nearX+1f;
+      } else {
+        mX = data.nearX+1f; //<>//
+        println(count,int(mX)," ");
       }
     } while(true);
     data.draw_smoothing_Nbhds();
@@ -173,7 +180,8 @@ void keyPressed() {
       if(nearNb == null){
         break;
       }
-      if(data.smoothingRegionContainsPt(mouseX, mouseY, nearNb,true)){
+      int count = data.smoothingRegionContainsPt(mouseX, mouseY, nearNb,true);
+      if (count%2 == 1){
         break;
       } 
     } while(true);

@@ -1088,9 +1088,9 @@ class data_extract {     //<>// //<>// //<>//
 
   int count_old=0;
   
-  boolean smoothingRegionContainsPt(float mX, float mY, Nbhd nbhd, boolean debug){
+  int smoothingRegionContainsPt(float mX, float mY, Nbhd nbhd, boolean debug){
     if(nbhd == null){
-      return false;
+      return -1;
     }
     int a = nbhd.a;
     Bead ptA = getBead(a);
@@ -1098,7 +1098,7 @@ class data_extract {     //<>// //<>// //<>//
     Bead ptB = getBead(b);
     int c = -1;
     if (ptA == null || ptB == null) {
-      return false;
+      return -1;
     }
     if (ptA.Joint) {
       int n1 = ptB.n1;
@@ -1108,11 +1108,11 @@ class data_extract {     //<>// //<>// //<>//
       } else if (n2 == a){
         a = n1;
       } else {
-        return false;
+        return -1;
       }
       ptA = getBead(a);
       if (ptA==null) {
-        return false;
+        return -1;
       }
     }
     if (ptB.Joint) {
@@ -1123,11 +1123,11 @@ class data_extract {     //<>// //<>// //<>//
       } else if (n2 == b){
         b = n1;
       } else {
-        return false;
+        return -1;
       }
       ptB = getBead(b);
       if (ptB==null) {
-        return false;
+        return -1;
       }
     }
 
@@ -1140,6 +1140,7 @@ class data_extract {     //<>// //<>// //<>//
     }
     int start_a = a;
     int count = 0;
+    nearX = mX;
     float x0,y0,x1,y1,xxx;
     int repeatmax = points.size();
     for (int repeat=0; repeat < repeatmax; repeat++) {
@@ -1151,7 +1152,7 @@ class data_extract {     //<>// //<>// //<>//
           c = ptA.n1;
         } else {
           println("draw_smoothing_region 1: error");
-          return false;
+          return -1;
         }
         b = a;
         a = c;
@@ -1160,11 +1161,11 @@ class data_extract {     //<>// //<>// //<>//
         }
         ptA= getBead(a);
         if (ptA==null) {
-          return false;
+          return -1;
         }
         ptB = getBead(b);
         if (ptB==null) {
-          return false;
+          return -1;
         }
         x0 = disp.get_winX(ptA.x);
         y0 = disp.get_winY(ptA.y);
@@ -1175,7 +1176,7 @@ class data_extract {     //<>// //<>// //<>//
           println(mX, mY, x0, y0, x1, y1,":",xxx);
         }
         if(mX < xxx){
-          nearX = Math.max(x0,x1);
+          nearX = Math.max(nearX,xxx+1f);
           count ++;
         }
       }
@@ -1200,7 +1201,7 @@ class data_extract {     //<>// //<>// //<>//
             c = ptA.n2;
           } else {
             println("draw_smoothing_region 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
-            return false;
+            return -1;
           }
           b = a;
           a = c;
@@ -1212,7 +1213,7 @@ class data_extract {     //<>// //<>// //<>//
             c = ptA.n2;
           } else {
             println("draw_smoothing_region 3: error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
-            return false;
+            return -1;
           }
           b = a;
           a = c;
@@ -1224,7 +1225,7 @@ class data_extract {     //<>// //<>// //<>//
             c = ptA.n1;
           } else {
             println("draw_smoothing_region 4: error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
-            return false;
+            return -1;
           }
           b = a;
           a = c;
@@ -1236,7 +1237,7 @@ class data_extract {     //<>// //<>// //<>//
             c = ptA.n1;
           } else {
             println("draw_smoothing_region 5: error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
-            return false;
+            return -1;
           }
           b = a;
           a = c;
@@ -1246,11 +1247,11 @@ class data_extract {     //<>// //<>// //<>//
         }
         ptA= getBead(a);
         if (ptA==null) {
-          return false;
+          return -1;
         }
         ptB = getBead(b);
         if (ptB==null) {
-          return false;
+          return -1;
         }
         x0 = disp.get_winX(ptA.x);
         y0 = disp.get_winY(ptA.y);
@@ -1262,27 +1263,14 @@ class data_extract {     //<>// //<>// //<>//
         }
         if(mX < xxx){
           count ++;
-          nearX = Math.max(x0,x1);
+          nearX = Math.max(nearX, xxx+1f);
         }
       }
-      //ptA = getBead(a);
-      //if (ptA==null) {
-      //  break;
-      //}
       if (start_a == a) {
         break;
       }
     }
-    if(count_old != count){
-      println(count);
-      count_old = count;
-    }
-    //if(count%2==1){
-      return true;
-    //}
-    //else {
-    //  return false;
-    //}
+    return count;
   }
 
   void draw_smoothing_region(Nbhd nbhd) {
