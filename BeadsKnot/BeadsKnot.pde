@@ -116,7 +116,7 @@ void draw() {
       if(nearNb == null){
         break;
       }
-      if(data.smoothingRegionContainsPt(mouseX, mouseY, nearNb)){
+      if(data.smoothingRegionContainsPt(mouseX, mouseY, nearNb, false)){
         data.draw_smoothing_region(nearNb);
         break;
       }else {
@@ -166,6 +166,18 @@ void keyPressed() {
   //  orie.decide_orientation();
   //  Draw.posinega();
   //}
+  else if(key == 'q'){
+    float mX=mouseX, mY=mouseY;
+    do {
+      Nbhd nearNb = data.get_near_nbhd(mX, mY);
+      if(nearNb == null){
+        break;
+      }
+      if(data.smoothingRegionContainsPt(mouseX, mouseY, nearNb,true)){
+        break;
+      } 
+    } while(true);
+  }
 }
 
 void saveFileSelect(File selection) {

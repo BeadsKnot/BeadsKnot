@@ -1086,7 +1086,9 @@ class data_extract {     //<>// //<>// //<>//
     endShape();
   }
 
-  boolean smoothingRegionContainsPt(float mX, float mY, Nbhd nbhd){
+  int count_old=0;
+  
+  boolean smoothingRegionContainsPt(float mX, float mY, Nbhd nbhd, boolean debug){
     if(nbhd == null){
       return false;
     }
@@ -1136,7 +1138,9 @@ class data_extract {     //<>// //<>// //<>//
       a=b;
       b=c;
     }
+    int start_a = a;
     int count = 0;
+    float x0,y0,x1,y1,xxx;
     int repeatmax = points.size();
     for (int repeat=0; repeat < repeatmax; repeat++) {
       // go straight
@@ -1151,7 +1155,9 @@ class data_extract {     //<>// //<>// //<>//
         }
         b = a;
         a = c;
-        //print("("+b+">"+a+")");
+        if(debug){
+          print("("+b+">"+a+")");
+        }
         ptA= getBead(a);
         if (ptA==null) {
           return false;
@@ -1160,12 +1166,16 @@ class data_extract {     //<>// //<>// //<>//
         if (ptB==null) {
           return false;
         }
-        float xxx = segmentIsInRight(mX, mY, 
-          disp.get_winX(ptA.x), disp.get_winY(ptA.y), 
-          disp.get_winX(ptB.x), disp.get_winY(ptB.y));
-          //print(mX+","+xxx+" ");
+        x0 = disp.get_winX(ptA.x);
+        y0 = disp.get_winY(ptA.y);
+        x1 = disp.get_winX(ptB.x);
+        y1 = disp.get_winY(ptB.y);
+        xxx = segmentIsInRight(mX, mY,x0,y0,x1,y1); 
+        if(debug){
+          println(mX, mY, x0, y0, x1, y1,":",xxx);
+        }
         if(mX < xxx){
-          //print(xxx+" ");
+          nearX = Math.max(x0,x1);
           count ++;
         }
       }
@@ -1231,7 +1241,9 @@ class data_extract {     //<>// //<>// //<>//
           b = a;
           a = c;
         }
-        //print("["+b+">"+a+"]");
+        if(debug){
+          print("["+b+">"+a+"]");
+        }
         ptA= getBead(a);
         if (ptA==null) {
           return false;
@@ -1240,29 +1252,37 @@ class data_extract {     //<>// //<>// //<>//
         if (ptB==null) {
           return false;
         }
-        float xxx = segmentIsInRight(mX, mY, 
-          disp.get_winX(ptA.x), disp.get_winY(ptA.y), 
-          disp.get_winX(ptB.x), disp.get_winY(ptB.y));
+        x0 = disp.get_winX(ptA.x);
+        y0 = disp.get_winY(ptA.y);
+        x1 = disp.get_winX(ptB.x);
+        y1 = disp.get_winY(ptB.y);
+        xxx = segmentIsInRight(mX, mY, x0, y0, x1, y1);
+        if(debug){
+          println(mX, mY, x0, y0, x1, y1,":",xxx);
+        }
         if(mX < xxx){
-          //print(xxx+"::");
           count ++;
+          nearX = Math.max(x0,x1);
         }
       }
       //ptA = getBead(a);
       //if (ptA==null) {
       //  break;
       //}
-      if (nbhd.a == a) {
+      if (start_a == a) {
         break;
       }
     }
-    //println(count);
-    if(count%2==1){
+    if(count_old != count){
+      println(count);
+      count_old = count;
+    }
+    //if(count%2==1){
       return true;
-    }
-    else {
-      return false;
-    }
+    //}
+    //else {
+    //  return false;
+    //}
   }
 
   void draw_smoothing_region(Nbhd nbhd) {
@@ -1411,16 +1431,15 @@ class data_extract {     //<>// //<>// //<>//
   }
 
   float segmentIsInRight(float mX, float mY, float x0, float y0, float x1, float y1) {
-    float maxX=9999999;
     if (mX < x0 || mX< x1) {
-      if ( y0 < y1 && mY > y0-0.1 && mY < y1+0.1) {
+      if ( y0 < y1 && mY >= y0 && mY < y1) {
         float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-        if (xx>mX && xx<maxX) {
+        if (xx>mX) {
           return xx;
         }
-      } else if ( y1 <= y0 && mY >= y1-0.1 && mY <= y0+0.1) {
+      } else if ( y1 <= y0 && mY >= y1 && mY < y0) {
         float xx = x0 + (mY - y0)*(x1-x0)/(y1-y0);
-        if (xx>mX && xx<maxX) {
+        if (xx>mX) {
           return xx;
         }
       }
