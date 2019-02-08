@@ -110,8 +110,26 @@ void draw() {
     //  data.draw_posinega_Points();
   } else if (Draw._smoothing) {
     //smoothingの関数を呼び出す
-    Nbhd nh = data.get_near_nbhd();
-    data.draw_smoothing_region(nh);
+    float mX=mouseX, mY=mouseY;
+    do {
+      Nbhd nearNb = data.get_near_nbhd(mX, mY);
+      if(nearNb == null){
+        println("break;");
+        break;
+      }
+      int count = data.smoothingRegionContainsPt(mouseX, mouseY, nearNb, false);
+      if(count<0){
+        println("break;");
+        break;
+      }
+      if (count%2 == 1){
+        data.draw_smoothing_region(nearNb);
+        break;
+      } else {
+        mX = data.nearX+1f; //<>//
+        println(count,int(mX)," ");
+      }
+    } while(true);
     data.draw_smoothing_Nbhds();
     data.draw_smoothing_Points();
     //drawNbhdsを変える
@@ -155,6 +173,19 @@ void keyPressed() {
   //  orie.decide_orientation();
   //  Draw.posinega();
   //}
+  else if(key == 'q'){
+    float mX=mouseX, mY=mouseY;
+    do {
+      Nbhd nearNb = data.get_near_nbhd(mX, mY);
+      if(nearNb == null){
+        break;
+      }
+      int count = data.smoothingRegionContainsPt(mouseX, mouseY, nearNb,true);
+      if (count%2 == 1){
+        break;
+      } 
+    } while(true);
+  }
 }
 
 void saveFileSelect(File selection) {
