@@ -1,11 +1,13 @@
 class orientation {
   data_extract de;
   data_graph dg;
+  boolean inUse;
   int orientation_mod;
   
   orientation(data_extract _de, data_graph _dg) {
     de=_de;
     dg=_dg;
+    inUse = false;
   }
   void decide_orientation() {//orientationを決める
     Node nd = dg.nodes.get(0);
@@ -64,6 +66,8 @@ class orientation {
         ori_id++;
         bdNext.orientation=ori_id;
         orientation_mod = ori_id + 1;
+        inUse = true; //<>//
+        println("decide_orientation completes.");
         return;
         // }
       }
@@ -72,10 +76,10 @@ class orientation {
   }
   int orientation_greater(int o1, int o2){// if o1>o2 then return 1;
     int differ = (o1-o2+orientation_mod) % orientation_mod;
-    if(0<differ && differ<3){
+    if(0<differ && differ<5){
       return 1;
     }
-    if(orientation_mod-3 < differ && differ < orientation_mod){
+    if(orientation_mod-5 < differ && differ < orientation_mod){
       return -1;
     }
     return 0;

@@ -1,4 +1,4 @@
-import java.awt.*;           //<>// //<>//
+import java.awt.*;           //<>//
 import javax.swing.*;
 
 // usage
@@ -111,7 +111,7 @@ void draw() {
   } else if (Draw._smoothing) {
     //smoothingの関数を呼び出す
     float mX=mouseX, mY=mouseY;
-    do {
+    for (int repeat = 0; repeat<10; repeat++) {
       Nbhd nearNb = data.get_near_nbhd(mX, mY);
       if(nearNb == null){
         println("break;");
@@ -126,10 +126,10 @@ void draw() {
         data.draw_smoothing_region(nearNb);
         break;
       } else {
-        mX = data.nearX+1f; //<>// //<>//
+        mX = data.nearX+1f;
         println(count,int(mX)," ");
       }
-    } while(true);
+    }
     data.draw_smoothing_Nbhds();
     data.draw_smoothing_Points();
     //drawNbhdsを変える
