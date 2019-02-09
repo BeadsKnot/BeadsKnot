@@ -1,4 +1,4 @@
-import java.awt.*;           //<>//
+import java.awt.*;           //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -126,7 +126,7 @@ void draw() {
         data.draw_smoothing_region(nearNb);
         break;
       } else {
-        mX = data.nearX+1f; //<>//
+        mX = data.nearX+1f; //<>// //<>//
         println(count,int(mX)," ");
       }
     } while(true);
@@ -287,7 +287,7 @@ void fileSelected(File selection) {
               edgeNumber = int(pieces[1]);
               graph.edges.clear();
               for (int n=0; n<edgeNumber; n++) {
-                line = reader.readLine();  //<>//
+                line = reader.readLine(); 
                 pieces = split(line, ',');
                 Edge ed = new Edge(int(pieces[0]), int(pieces[1]), int(pieces[2]), int(pieces[3]));
                 graph.edges.add(ed);

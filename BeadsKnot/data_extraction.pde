@@ -204,9 +204,9 @@ class data_extract {     //<>// //<>// //<>//
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
-          text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          //text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
           //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
         }//}
@@ -1194,13 +1194,14 @@ class data_extract {     //<>// //<>// //<>//
         int n2o=bdN2.orientation;
         int u1o=bdU1.orientation;
         int u2o=bdU2.orientation;
-        if ((n1o<n2o)&&(u1o<u2o)) {
+        if ((n1o<n2o)&&(u1o<u2o)) { //<>//
           if (ptA.n1 == b) {
             c = ptA.u2;
           } else if (ptA.u1 == b) {
             c = ptA.n2;
           } else {
             println("smoothingRegionContainsPt 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
+            println("smoothingRegionContainsPt 2: error", n1o, u1o, n2o, u2o);
             return -1;
           }
           b = a;
@@ -1212,7 +1213,8 @@ class data_extract {     //<>// //<>// //<>//
           } else  if (ptA.u2 == b) {
             c = ptA.n2;
           } else {
-            println("smoothingRegionContainsPt 3: error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
+            println("smoothingRegionContainsPt 3: error", ptA.n1, ptA.u2, ptA.n2, ptA.u1, b);
+            println("smoothingRegionContainsPt 3: error", n1o, u2o, n2o, u1o);
             return -1;
           }
           b = a;
@@ -1225,6 +1227,7 @@ class data_extract {     //<>// //<>// //<>//
             c = ptA.n1;
           } else {
             println("smoothingRegionContainsPt 4: error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
+            println("smoothingRegionContainsPt 4: error", n2o, u1o, n1o, u2o);
             return -1;
           }
           b = a;
@@ -1237,6 +1240,7 @@ class data_extract {     //<>// //<>// //<>//
             c = ptA.n1;
           } else {
             println("smoothingRegionContainsPt 5: error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
+            println("smoothingRegionContainsPt 5: error", n2o, u2o, n1o, u1o);
             return -1;
           }
           b = a;

@@ -1,6 +1,8 @@
 class orientation {
   data_extract de;
   data_graph dg;
+  int orientation_mod;
+  
   orientation(data_extract _de, data_graph _dg) {
     de=_de;
     dg=_dg;
@@ -61,12 +63,24 @@ class orientation {
       if (beads_second==beads_next&&beads_first==beads_start) {
         ori_id++;
         bdNext.orientation=ori_id;
+        orientation_mod = ori_id + 1;
         return;
         // }
       }
       
     }
   }
+  int orientation_greater(int o1, int o2){// if o1>o2 then return 1;
+    int differ = (o1-o2+orientation_mod) % orientation_mod;
+    if(0<differ && differ<3){
+      return 1;
+    }
+    if(orientation_mod-3 < differ && differ < orientation_mod){
+      return -1;
+    }
+    return 0;
+  }
+  
   //Nbhd find_next_joint(Nbhd n, int ori) {
   //  int a=n.a;//うしろ
   //  int b=n.b;//まえ
