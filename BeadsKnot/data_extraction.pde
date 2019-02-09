@@ -286,7 +286,7 @@ class data_extract {     //<>// //<>// //<>//
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
           //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          //text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
         }//}
@@ -1151,7 +1151,7 @@ class data_extract {     //<>// //<>// //<>//
         } else if (ptA.n2 == b) {
           c = ptA.n1;
         } else {
-          println("draw_smoothing_region 1: error");
+          println("smoothingRegionContainsPt 1: error");
           return -1;
         }
         b = a;
@@ -1200,7 +1200,7 @@ class data_extract {     //<>// //<>// //<>//
           } else if (ptA.u1 == b) {
             c = ptA.n2;
           } else {
-            println("draw_smoothing_region 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
+            println("smoothingRegionContainsPt 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
             return -1;
           }
           b = a;
@@ -1212,7 +1212,7 @@ class data_extract {     //<>// //<>// //<>//
           } else  if (ptA.u2 == b) {
             c = ptA.n2;
           } else {
-            println("draw_smoothing_region 3: error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
+            println("smoothingRegionContainsPt 3: error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
             return -1;
           }
           b = a;
@@ -1224,7 +1224,7 @@ class data_extract {     //<>// //<>// //<>//
           } else if (ptA.u1 == b) {
             c = ptA.n1;
           } else {
-            println("draw_smoothing_region 4: error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
+            println("smoothingRegionContainsPt 4: error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
             return -1;
           }
           b = a;
@@ -1236,7 +1236,7 @@ class data_extract {     //<>// //<>// //<>//
           } else if (ptA.u2 == b) {
             c = ptA.n1;
           } else {
-            println("draw_smoothing_region 5: error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
+            println("smoothingRegionContainsPt 5: error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
             return -1;
           }
           b = a;
