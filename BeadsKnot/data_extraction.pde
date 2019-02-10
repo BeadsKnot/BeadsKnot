@@ -204,9 +204,9 @@ class data_extract {     //<>// //<>// //<>//
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
-          text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          //text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
           //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          ///////////////text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
         }//}
@@ -239,8 +239,9 @@ class data_extract {     //<>// //<>// //<>//
         if (vecu1==null || vecu2==null) {
           continue;
         }
-        if (vecn1.orientation > vecn2.orientation) {
-          if (vecu1.orientation > vecu2.orientation) {
+        //if (vecn1.orientation > vecn2.orientation) {
+        if (orie.orientation_greater(vecn1.orientation, vecn2.orientation)==1) {
+            if (orie.orientation_greater(vecu1.orientation, vecu2.orientation)==1) {
             //fill(255, 0, 0);//positive
             noStroke();
             fill(255, 0, 0, 25);
@@ -252,7 +253,7 @@ class data_extract {     //<>// //<>// //<>//
             ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), 100, 100);
           }
         } else {
-          if (vecu1.orientation > vecu2.orientation) {
+            if (orie.orientation_greater(vecu1.orientation, vecu2.orientation)==1) {
             //fill(0, 0, 255);//negative
             noStroke();
             fill(0, 0, 255, 25);
@@ -286,7 +287,7 @@ class data_extract {     //<>// //<>// //<>//
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
           //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          //text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
         }//}
@@ -442,8 +443,10 @@ class data_extract {     //<>// //<>// //<>//
         if (pt1==null || pt2==null || pt3==null || pt4==null) {
           continue;
         }
-        if (pt1.orientation < pt3.orientation) {
-          if (pt4.orientation < pt2.orientation) {
+        //if (pt1.orientation < pt3.orientation) {
+        //  if (pt4.orientation < pt2.orientation) {
+        if (orie.orientation_greater(pt1.orientation, pt3.orientation)==-1) {
+          if (orie.orientation_greater(pt4.orientation, pt2.orientation)==-1) {
             float ax=disp.get_winX(pt1.x);
             float ay=disp.get_winY(pt1.y);
             float bx=disp.get_winX(pt2.x);
@@ -481,7 +484,8 @@ class data_extract {     //<>// //<>// //<>//
             line((ax+bx)/2, (ay+by)/2, (cx+dx)/2, (cy+dy)/2);//Hの横棒
           }
         } else {
-          if (pt4.orientation < pt2.orientation) {
+          //if (pt4.orientation < pt2.orientation) {
+          if (orie.orientation_greater(pt4.orientation, pt2.orientation)==-1) {
             //Bead pt1=getBead(n2);
             //Bead pt2=getBead(u2);
             //Bead pt3=getBead(n1);
@@ -1131,7 +1135,8 @@ class data_extract {     //<>// //<>// //<>//
       }
     }
 
-    if (ptA.orientation < ptB.orientation) {
+    //if (ptA.orientation < ptB.orientation) {
+    if (orie.orientation_greater(ptA.orientation, ptB.orientation)==-1) {
       ptA=getBead(b);
       ptB=getBead(a);
       c=a;
@@ -1151,7 +1156,7 @@ class data_extract {     //<>// //<>// //<>//
         } else if (ptA.n2 == b) {
           c = ptA.n1;
         } else {
-          println("draw_smoothing_region 1: error");
+          println("smoothingRegionContainsPt 1: error");
           return -1;
         }
         b = a;
@@ -1189,54 +1194,58 @@ class data_extract {     //<>// //<>// //<>//
         Bead bdN1=getBead(n1), bdN2=getBead(n2), bdU1=getBead(u1), bdU2=getBead(u2);
         if (bdN1==null || bdN2==null || bdU1==null || bdU2==null) {
           break;
-        }
+        } //<>//
         int n1o=bdN1.orientation;
         int n2o=bdN2.orientation;
         int u1o=bdU1.orientation;
         int u2o=bdU2.orientation;
-        if ((n1o<n2o)&&(u1o<u2o)) {
+        if (orie.orientation_greater(n1o,n2o)==-1 && orie.orientation_greater(u1o,u2o)==-1) {
           if (ptA.n1 == b) {
             c = ptA.u2;
           } else if (ptA.u1 == b) {
             c = ptA.n2;
           } else {
-            println("draw_smoothing_region 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
+            println("smoothingRegionContainsPt 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
+            println("smoothingRegionContainsPt 2: error", n1o, u1o, n2o, u2o);
             return -1;
           }
           b = a;
           a = c;
         }
-        else if ((n1o<n2o)&&(u1o>u2o)) {
+        else if (orie.orientation_greater(n1o,n2o)==-1&&orie.orientation_greater(u1o,u2o)==1) {
           if (ptA.n1 == b) {
             c = ptA.u1;
           } else  if (ptA.u2 == b) {
             c = ptA.n2;
           } else {
-            println("draw_smoothing_region 3: error", ptA.n1, ptA.u2, ptA.u1, ptA.n2, b);
+            println("smoothingRegionContainsPt 3: error", ptA.n1, ptA.u2, ptA.n2, ptA.u1, b);
+            println("smoothingRegionContainsPt 3: error", n1o, u2o, n2o, u1o);
             return -1;
           }
           b = a;
           a = c;
         }
-        else if ((n1o>n2o)&&(u1o<u2o)) {
+        else if (orie.orientation_greater(n1o,n2o)==1 && orie.orientation_greater(u1o,u2o)==-1) {
           if (ptA.n2 == b) {
             c = ptA.u2;
           } else if (ptA.u1 == b) {
             c = ptA.n1;
           } else {
-            println("draw_smoothing_region 4: error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
+            println("smoothingRegionContainsPt 4: error", ptA.n2, ptA.u1, ptA.n1, ptA.u2, b);
+            println("smoothingRegionContainsPt 4: error", n2o, u1o, n1o, u2o);
             return -1;
           }
           b = a;
           a = c;
         }
-        else if (n1o > n2o && u1o>u2o ) {
+        else if (orie.orientation_greater(n1o, n2o)==1 && orie.orientation_greater(u1o, u2o)==1 ) {
           if (ptA.n2 == b) {
             c = ptA.u1;
           } else if (ptA.u2 == b) {
             c = ptA.n1;
           } else {
-            println("draw_smoothing_region 5: error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
+            println("smoothingRegionContainsPt 5: error", ptA.n2, ptA.u2, ptA.n1, ptA.u1, b);
+            println("smoothingRegionContainsPt 5: error", n2o, u2o, n1o, u1o);
             return -1;
           }
           b = a;
@@ -1314,13 +1323,14 @@ class data_extract {     //<>// //<>// //<>//
       }
     }
 
-    if (ptA.orientation < ptB.orientation) {
+    if (orie.orientation_greater(ptA.orientation, ptB.orientation)==-1) {
       ptA=getBead(b);
       ptB=getBead(a);
       c=a;
       a=b;
       b=c;
     }
+    int start_a = a;
     fill(120, 120, 255, 50);
     beginShape();
     vertex(disp.get_winX(ptA.x), disp.get_winY(ptA.y));
@@ -1345,7 +1355,7 @@ class data_extract {     //<>// //<>// //<>//
       }
       // if on joint, go left
       else {
-        int n1=ptA.n1;
+        int n1=ptA.n1; //<>//
         int n2=ptA.n2;
         int u1=ptA.u1;
         int u2=ptA.u2;
@@ -1357,7 +1367,7 @@ class data_extract {     //<>// //<>// //<>//
         int n2o=bdN2.orientation;
         int u1o=bdU1.orientation;
         int u2o=bdU2.orientation;
-        if ((n1o<n2o)&&(u1o<u2o)) {
+        if (orie.orientation_greater(n1o, n2o)==-1 && orie.orientation_greater(u1o, u2o)==-1) {
           if (ptA.n1 == b) {
             c = ptA.u2;
           } else if (ptA.u1 == b) {
@@ -1369,7 +1379,7 @@ class data_extract {     //<>// //<>// //<>//
           b = a;
           a = c;
         }
-        if ((n1o<n2o)&&(u1o>u2o)) {
+        if (orie.orientation_greater(n1o,n2o)==-1 && orie.orientation_greater(u1o,u2o)==1) {
           if (ptA.n1 == b) {
             c = ptA.u1;
           } else  if (ptA.u2 == b) {
@@ -1381,7 +1391,7 @@ class data_extract {     //<>// //<>// //<>//
           b = a;
           a = c;
         }
-        if ((n1o>n2o)&&(u1o<u2o)) {
+        if (orie.orientation_greater(n1o,n2o)==1 && orie.orientation_greater(u1o,u2o)==-1) {
           if (ptA.n2 == b) {
             c = ptA.u2;
           } else if (ptA.u1 == b) {
@@ -1393,7 +1403,7 @@ class data_extract {     //<>// //<>// //<>//
           b = a;
           a = c;
         }
-        if (n1o > n2o && u1o>u2o ) {
+        if (orie.orientation_greater(n1o, n2o)==1 && orie.orientation_greater(u1o,u2o)==1 ) {
           if (ptA.n2 == b) {
             c = ptA.u1;
           } else if (ptA.u2 == b) {
@@ -1411,7 +1421,7 @@ class data_extract {     //<>// //<>// //<>//
       if (ptA==null) {
         break;
       }
-      if (nbhd.a == a) {
+      if (start_a == a) {
         break;
       }
     }
