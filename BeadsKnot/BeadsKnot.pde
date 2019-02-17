@@ -113,21 +113,21 @@ void draw() {
     float mX=mouseX, mY=mouseY;
     for (int repeat = 0; repeat<10; repeat++) {
       Nbhd nearNb = data.get_near_nbhd(mX, mY);
-      if(nearNb == null){
+      if (nearNb == null) {
         println("break;");
         break;
       }
       int count = data.smoothingRegionContainsPt(mouseX, mouseY, nearNb, false);
-      if(count<0){
+      if (count<0) {
         println("break;");
         break;
       }
-      if (count%2 == 1){
+      if (count%2 == 1) {
         data.draw_smoothing_region(nearNb);
         break;
       } else {
         mX = data.nearX+1f;
-        println(count,int(mX)," ");
+        println(count, int(mX), " ");
       }
     }
     data.draw_smoothing_Nbhds();
@@ -172,20 +172,19 @@ void keyPressed() {
   //if (keyCode==SHIFT) {
   //  orie.decide_orientation();
   //  Draw.posinega();
+  //} else if (key == 'q') {
+  //  float mX=mouseX, mY=mouseY;
+  //  do {
+  //    Nbhd nearNb = data.get_near_nbhd(mX, mY);
+  //    if (nearNb == null) {
+  //      break;
+  //    }
+  //    int count = data.smoothingRegionContainsPt(mouseX, mouseY, nearNb, true);
+  //    if (count%2 == 1) {
+  //      break;
+  //    }
+  //  } while (true);
   //}
-  else if(key == 'q'){
-    float mX=mouseX, mY=mouseY;
-    do {
-      Nbhd nearNb = data.get_near_nbhd(mX, mY);
-      if(nearNb == null){
-        break;
-      }
-      int count = data.smoothingRegionContainsPt(mouseX, mouseY, nearNb,true);
-      if (count%2 == 1){
-        break;
-      } 
-    } while(true);
-  }
 }
 
 void saveFileSelect(File selection) {
@@ -438,7 +437,7 @@ void mouseDragged() {
       }
       // 図全体のmodify();
       graph.modify();
-      for(int repeat=0; repeat<5; repeat++){
+      for (int repeat=0; repeat<5; repeat++) {
         graph.rotation_shape_modifier(mouse.dragged_nodeID);
       }
       graph.update_points();
@@ -477,7 +476,33 @@ void mouseDragged() {
 }
 
 void mouseReleased() {
-  if (Draw._beads) {
+  if (Draw._menu) {
+    int y=60;
+    if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
+      if (mouseY < y) {// key 'e' と同じ
+        Draw.parts_editing();
+        mouse.trace.clear();
+        edit.beads.clear();
+        return ;
+      }
+      y += 40;
+      if (mouseY < y) {// key 'n' と同じ
+        Draw.free_loop();
+        mouse.trace.clear();// 絵のクリア
+        return;
+      }
+      y += 40;
+      if (mouseY < y) {// key 'o' と同じ
+        selectInput("Select a file to process:", "fileSelected");
+        return ;
+      }      
+      y += 40;
+      if (mouseY < y) {// key 's' と同じ
+        selectInput("Select a file to save", "saveFileSelect");
+        return;
+      }
+    }
+  } else if (Draw._beads) {
     mouse.node_dragging=false;
     mouse.dragged_nodeID=-1;
     mouse.node_next_dragging = false;
