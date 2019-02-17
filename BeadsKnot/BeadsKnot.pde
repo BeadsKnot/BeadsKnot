@@ -136,7 +136,7 @@ void draw() {
   }
 }
 
-void keyPressed() { 
+void keyPressed() {
   // 'n' -> free_loop モード。
   // 'e' -> parts_editingモード
   if ( key=='s' || int(key)==19) {
@@ -146,6 +146,8 @@ void keyPressed() {
   } else if (key == 'm') { // modify
     if (Draw._data_graph) {
       graph.modify();
+    }else {
+      Draw._menu = true;      
     }
   } else if (key == 'n') {
     Draw.free_loop();
