@@ -352,7 +352,7 @@ void mousePressed() {
         mouse.node_dragging = true;
         for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
           Node nd = graph.nodes.get(ndID); 
-          if (nd.inUse && nd.pointID == ptID) {
+          if (nd.inUse && nd.pointID == jointID) {
             mouse.dragged_nodeID = ndID;
             int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
             Bead pt0 = data.getBead(pt0ID);
