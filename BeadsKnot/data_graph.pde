@@ -100,32 +100,40 @@ class data_graph {      //<>// //<>// //<>// //<>// //<>//
           int nextJoint=find_next_Joint_in_points(p, bd.n1);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.n1);
-            int half = get_half_position(p, bd.n1, int(count * 0.5));
-            de.getBead(half).midJoint=true;
+            if(count>9){
+              int half = get_half_position(p, bd.n1, int(count * 0.5));
+              de.getBead(half).midJoint=true;
+            }
           }
         }
         if (0<=bd.u1 && bd.u1<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.u1);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.u1);
-            int half = get_half_position(p, bd.u1, int(count * 0.5));
-            de.getBead(half).midJoint=true;
+            if(count>9){
+              int half = get_half_position(p, bd.u1, int(count * 0.5));
+              de.getBead(half).midJoint=true;
+            }
           }
         }
         if (0<=bd.n2 && bd.n2<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.n2);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.n2);
-            int half = get_half_position(p, bd.n2, int(count * 0.5));
-            de.getBead(half).midJoint=true;
+            if(count>9){
+              int half = get_half_position(p, bd.n2, int(count * 0.5));
+              de.getBead(half).midJoint=true;
+            }
           }
         }
         if (0<=bd.u2 && bd.u2<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.u2);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.u2);
-            int half = get_half_position(p, bd.u2, int(count * 0.5));
-            de.getBead(half).midJoint=true;
+            if(count>9){
+              int half = get_half_position(p, bd.u2, int(count * 0.5));
+              de.getBead(half).midJoint=true;
+            }
           }
         }
       }
