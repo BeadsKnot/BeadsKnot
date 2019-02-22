@@ -352,7 +352,7 @@ void mousePressed() {
         mouse.node_dragging = true;
         for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
           Node nd = graph.nodes.get(ndID); 
-          if (nd.inUse && nd.pointID == ptID) {
+          if (nd.inUse && nd.pointID == jointID) {
             mouse.dragged_nodeID = ndID;
             int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
             Bead pt0 = data.getBead(pt0ID);
@@ -402,7 +402,6 @@ void mouseDragged() {
       float mX = disp.getX_fromWin(mouseX);
       float mY = disp.getY_fromWin(mouseY);
 
-      //println("Check if the Joint "+mouse.dragged_nodeID+" can be dragged.");
       float mouseDragmin_dist = dist(mouse.DragX, mouse.DragY, mX, mY);
       for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
         if (ndID != mouse.dragged_nodeID) {
@@ -437,7 +436,6 @@ void mouseDragged() {
           bd0.x = mX;
           bd0.y = mY;
         }
-        //println("Joint has been dragged.");
       }
       // 図全体のmodify();
       graph.modify();
