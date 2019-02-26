@@ -4,6 +4,7 @@ class drawOption {
   boolean _binarized_image;
   boolean _thinning_image;
   boolean _beads;  
+  boolean _line_without_beads;  
   boolean _data_graph;
   boolean _free_loop;
   boolean _parts_editing;
@@ -20,6 +21,7 @@ class drawOption {
     _binarized_image=false;
     _thinning_image = false;
     _beads=false;
+    _line_without_beads=false;
     _data_graph = false;
     _free_loop = false;
     _parts_editing = false;
@@ -50,6 +52,11 @@ class drawOption {
   void beads() {
     setAllOptionFalse();
     _beads = true;
+  }
+
+  void line_without_beads() {
+    setAllOptionFalse();
+    _line_without_beads = true;
   }
 
   void data_graph() {

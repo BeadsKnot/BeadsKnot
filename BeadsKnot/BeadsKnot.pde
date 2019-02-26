@@ -94,6 +94,11 @@ void draw() {
       mouse.draw_trace();
     }
   } 
+  else if (Draw._line_without_beads) {
+    strokeWeight(5);
+    data.drawNbhds();
+    strokeWeight(1);
+  }
   // 平面グラフのデータを表示
   else if (Draw._data_graph) {
     graph.draw_nodes_edges();
@@ -157,9 +162,14 @@ void keyPressed() {
     mouse.trace.clear();
     edit.beads.clear();
   } 
-  //else if(key == 'r'){
-  // data.draw_region(new Nbhd(4,5));
-  //}
+  else if(key == 'r'){
+    if(Draw._beads){
+      Draw.line_without_beads();
+    }
+    else if(Draw._line_without_beads){
+      Draw.beads();
+    }
+  }
 
   if (keyCode==ENTER) {
     orie.decide_orientation();
@@ -198,7 +208,11 @@ void saveFileSelect(File selection) {
     int file_name_length= file_name.length();
     String extension=file_name.substring(file_name_length-3);
     if (extension.equals("png") || extension.equals("jpg") || extension.equals("gif")) {
+      Draw.line_without_beads();
+      redraw();
+      delay(1000);
       save(file_name);// 画像として保存
+      Draw.beads();
     } else if (extension.equals("lnk")) {
       PLink PL=new PLink(data, disp);
       PL.file_output();
