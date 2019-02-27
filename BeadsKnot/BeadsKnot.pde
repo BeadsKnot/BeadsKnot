@@ -1,4 +1,4 @@
-import java.awt.*;           //<>//
+import java.awt.*;            //<>//
 import javax.swing.*;
 
 // usage
@@ -259,7 +259,7 @@ void fileSelected(File selection) {
       }
       file_name=file_name.substring(0, file_name_length-4);
     } else {// BeadsKnot オリジナルファイル形式の場合
-      BufferedReader reader = createReader(file_name); //<>//
+      BufferedReader reader = createReader(file_name);  //<>//
       String line = null;
       int version = -1;
       // 失敗したときのためにバックアップを取っておくのがよさそうだ。
@@ -279,7 +279,7 @@ void fileSelected(File selection) {
               graph.nodes.clear();
               data.clearAllPoints();
               for (int n=0; n<nodeNumber; n++) {
-                line = reader.readLine(); //<>//
+                line = reader.readLine();  //<>//
                 pieces = split(line, ',');
                 Node nd = new Node(float(pieces[0]), float(pieces[1]));
                 nd.theta = float(pieces[2]);
@@ -296,7 +296,7 @@ void fileSelected(File selection) {
                 bd.n1 = bd.n2 = -1;
                 bd.u1 = bd.u2 = -1;
                 bd.Joint = bd.midJoint = false;
-              } //<>//
+              }  //<>//
             } else return;
           }
           if ((line = reader.readLine()) != null) {

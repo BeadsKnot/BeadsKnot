@@ -1,4 +1,4 @@
-class data_graph {      //<>// //<>// //<>// //<>// //<>// //<>//
+class data_graph {           //<>//
   //データのグラフ構造
   //nodeとedgeからなる
 
@@ -186,7 +186,7 @@ class data_graph {      //<>// //<>// //<>// //<>// //<>// //<>//
   int find_next_Joint_in_points(int j, int c) {
     for (int count = 0; count < de.points.size(); count++) {
       if(c<0 || de.points.size()<=c){
-        return -1;  //<>// //<>// //<>// //<>// //<>// //<>//
+        return -1;       //<>//
       }
       Bead p=de.getBead(c);
       if(p==null){
@@ -202,7 +202,7 @@ class data_graph {      //<>// //<>// //<>// //<>// //<>// //<>//
         d=p.n1;
       } else {
         // println();
-        println("find_next_Joint_in_points : ビーズがつながっていない"+j+":"+c+":"+d);   //<>// //<>// //<>// //<>// //<>// //<>//
+        println("find_next_Joint_in_points : ビーズがつながっていない"+j+":"+c+":"+d);        //<>//
         return -1;
       }
       j = c;
@@ -215,7 +215,7 @@ class data_graph {      //<>// //<>// //<>// //<>// //<>// //<>//
     //print("findNeighborJointInPoints",j,c);
     for (int count = 0; count < de.points.size(); count++) {
       if (c<0 || de.points.size()<=c) {
-        return -1;  //<>// //<>// //<>// //<>// //<>// //<>//
+        return -1;       //<>//
       }
       Bead p=de.getBead(c);
       if(p==null){
@@ -230,7 +230,7 @@ class data_graph {      //<>// //<>// //<>// //<>// //<>// //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d);  //<>// //<>// //<>// //<>// //<>// //<>//
+        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d);       //<>//
         Draw.parts_editing();// Draw はグローバル変数
         return -1;
       }
