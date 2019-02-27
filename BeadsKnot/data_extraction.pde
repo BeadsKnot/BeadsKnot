@@ -204,9 +204,11 @@ class data_extract {       //<>//
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
-          //text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          if(Draw._show_points_nb){
+            text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          } else if(Draw._show_orientation_nb){
+            text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          }
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
         }//}
@@ -286,8 +288,11 @@ class data_extract {       //<>//
         ellipse(disp.get_winX(vec.x), disp.get_winY(vec.y), c*3+1, c*3+1);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
-          //text(pt, disp.get_winX(vec.x), disp.get_winY(vec.y));
-          text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          if(Draw._show_points_nb){
+            text(pt+" "+vec.n1+" "+vec.n2, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          } else if(Draw._show_orientation_nb){
+            text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y)); 
+          }
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
         }//}

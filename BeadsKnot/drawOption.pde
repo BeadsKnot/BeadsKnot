@@ -10,6 +10,10 @@ class drawOption {
   boolean _parts_editing;
   boolean _posinega;
   boolean _smoothing;
+  
+  boolean _show_points_nb;
+  boolean _show_orientation_nb;
+  
 
   drawOption() {
     menu();
@@ -27,6 +31,9 @@ class drawOption {
     _parts_editing = false;
     _posinega=false;
     _smoothing=false;
+    
+    _show_points_nb = false;
+    _show_orientation_nb = false;
   }
 
   void menu() {

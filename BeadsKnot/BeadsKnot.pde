@@ -170,6 +170,12 @@ void keyPressed() {
       Draw.beads();
     }
   }
+  else if(key == 'x'){
+    Draw._show_points_nb = !Draw._show_points_nb;
+  }
+  else if(key == 'y'){
+    Draw._show_orientation_nb = !Draw._show_orientation_nb;
+  }
 
   if (keyCode==ENTER) {
     orie.decide_orientation();
