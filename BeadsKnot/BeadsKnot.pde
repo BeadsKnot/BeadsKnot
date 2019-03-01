@@ -186,6 +186,9 @@ void keyPressed() {
     println("ドーカーコードを表示します");
     orie.decide_orientation();
     orie.dowker_notation();  ///////////////////////////////////////////////ここで関数を呼ぶ
+  } else if(key=='z'){
+    dowker dk = new dowker(graph); 
+    dk.Start();
   }
   //if (keyCode==SHIFT) {
   //  orie.decide_orientation();

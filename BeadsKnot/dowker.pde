@@ -1,20 +1,26 @@
 class dowker { //<>//
   //    未整備
   
-  //
+  //このような感じでドウカーコードを準備しておく．
   //int dowker[]={6, 10, 12, 2, 4, 8};
   //int dowker[]={4,8,14,16,2,18,20,22,10,12,6};
   int dowker[]={4, 10, 12, 14, 22, 2, 18, 20, 8, 6, 16};
   //int dowker[]={6, 8, 16, 14, 4, 18, 20, 2, 22, 12, 10};
   //int dowker[] = {6, 10, 16, 18, 14, 2, 20, 4, 22, 12, 8};
   //int dowker[] = {6, 12, 16, 18, 14, 4, 20, 22, 2, 8, 10};
+
+  data_graph dg;
+  
   ArrayList<DNode> nodes;
   ArrayList<DEdge> edges;
   int outer[];
   int outerCount=0;
 
+  dowker(data_graph _dg){
+    dg = _dg;
+  }
+
   void Start() {
-    size(800, 800);
     nodes = new ArrayList<DNode>();
     edges = new ArrayList<DEdge>();
     int len = dowker.length;
@@ -51,48 +57,14 @@ class dowker { //<>//
       }
     }
     outer= new int[20];
+    //一度，三角形の外周で計算する．
     findTriangle();
-    modify1();
-    // ここで，外周を探しなおす．
+    modify();
+    // 改めて外周を探しなおす．
     findOuter();
-    modify1();
-    outputFile("test.txt");
-  }
-
-  float cX = 400, cY = 400, rate=1.0;
-
-  float dispX(float x) {
-    float xx = x;
-    return (xx-cX)*rate + 400;
-  }
-  float dispY(float y) {
-    float yy = y;
-    return (yy-cY)*rate + 400;
-  }
-
-
-  void Update() {
-    background(200);
-    for (int e=0; e<edges.size(); e++) {
-      DEdge ee = edges.get(e);
-      if (ee.visible) {
-        DNode ees = nodes.get(ee.s);
-        DNode eet = nodes.get(ee.t);
-        line (dispX(ees.x), dispY(ees.y), dispX(eet.x), dispY(eet.y));
-      }
-    }
-    for (int n=0; n<nodes.size(); n++) {
-      DNode nn = nodes.get(n);
-      if (n == draggedDNodeID) {
-        fill(255, 0, 255);
-      } else {
-        fill(0, 0, 255);
-      }
-      stroke(0);
-      ellipse(dispX(nn.x), dispY(nn.y), 5, 5);
-      //text(""+nn.a+","+nn.b, nn.x+10, nn.y+10);
-      text(""+n, dispX(nn.x)+10, dispY(nn.y)+10);
-    }
+    modify();
+    //この点データでdata_graphを構成する．
+    outputData(); //<>//
   }
 
   class DNode {
@@ -116,12 +88,6 @@ class dowker { //<>//
     return nodes.get(_nID*5 + _bID);
   }
 
-  void debugXY(int k) {
-    for (int i=k; i<k+5; i++) {
-      println(i, nodes.get(i).x, nodes.get(i).y);
-    }
-  }
-
   class DEdge {
     int s, t;
     boolean visible;
@@ -129,62 +95,6 @@ class dowker { //<>//
       s=_s;
       t=_t;
       visible = _v;
-    }
-  }
-
-  int draggedDNodeID = -1;
-  boolean isCenter = false;
-
-  void mousePressed() {
-    for (int n=0; n<nodes.size(); n++) {
-      DNode nn = nodes.get(n);
-      if (dist(nn.x, nn.y, mouseX, mouseY)<10) {
-        if ( n%5==0) {
-          isCenter = true;
-        } else {
-          isCenter = false;
-        }
-        draggedDNodeID = n;
-        return ;
-      }
-    }
-  }
-
-  void mouseDragged() {
-    if (draggedDNodeID ==-1) {
-      return ;
-    }
-    DNode draggedDNode = nodes.get(draggedDNodeID);
-    float dx = mouseX - draggedDNode.x;
-    float dy = mouseY - draggedDNode.y;
-    if (isCenter) {
-      draggedDNode.x = mouseX;
-      draggedDNode.y = mouseY;
-      for (int k = 1; k<=4; k++) {
-        draggedDNode = nodes.get(draggedDNodeID+k);
-        draggedDNode.x += dx;
-        draggedDNode.y += dy;
-      }
-    } else {
-      draggedDNode.x = mouseX;
-      draggedDNode.y = mouseY;
-    }
-  }
-
-  void mouseReleased() {
-    draggedDNodeID = -1;
-  }
-
-  void keyPressed() {
-    if (key=='n') {
-      cX=cY=400;
-      rate=1.0;
-    } else if (key=='m') {
-      cX=((mouseX-400)/rate)+cX;
-      cY=((mouseY-400)/rate)+cY;
-      rate *=2.0;
-    } else {
-      modify1();
     }
   }
 
@@ -320,20 +230,7 @@ class dowker { //<>//
     return ;
   }
 
-  int add1(int a, int nSize) {
-    return a%(2*nSize)+1;
-  }
-
-  int findNfromA(int a, int nSize) {
-    for (int n=0; n<nSize; n++) {
-      if (nodes.get(n).a == a || nodes.get(n).b == a) {
-        return n;
-      }
-    }
-    return 0;
-  }  
-
-  void modify1() {
+  void modify() {
     int len = nodes.size();
     //外周は固定する
     for (int a=0; a<outerCount; a++) {
@@ -390,34 +287,45 @@ class dowker { //<>//
   }
 
 
-  void outputFile(String filename) {
-    PrintWriter file;
-    file = createWriter(filename);
-    file.println("BeadsKnot,0");
-    file.println("DNodes,"+nodes.size());
-    for (int n=0; n<nodes.size(); n++) {
+  void outputData() {
+    int nodeNumber=0, edgeNumber=0; //<>//
+    nodeNumber = nodes.size();
+    dg.nodes.clear();
+    dg.de.clearAllPoints();
+    for (int n=0; n<nodeNumber; n++) {
       DNode nn = nodes.get(n);
-      file.print(nn.x+","+nn.y+",");
+      Node nd = new Node(nn.x, nn.y);
       if (n%5 == 0) {
         if (nn.ou) {
-          file.print(-atan2(nodes.get(n+1).y-nodes.get(n).y, nodes.get(n+1).x-nodes.get(n).x)+",");
+          nd.theta = -atan2(nodes.get(n+1).y-nodes.get(n).y, nodes.get(n+1).x-nodes.get(n).x);
         } else {
-          file.print(-atan2(nodes.get(n+2).y-nodes.get(n).y, nodes.get(n+1).x-nodes.get(n).x)+",");
+          nd.theta = -atan2(nodes.get(n+2).y-nodes.get(n).y, nodes.get(n+1).x-nodes.get(n).x);
         }
       } else {
         int n0 = (int(n/5)*5);
-        file.print((-atan2(nodes.get(n0).y-nodes.get(n).y, nodes.get(n0).x-nodes.get(n).x))+",");
+        nd.theta = -atan2(nodes.get(n0).y-nodes.get(n).y, nodes.get(n0).x-nodes.get(n).x);
       }
-      file.println("10.0,10.0,10.0,10.0");
-    }
-    int eCount=0;
+      nd.r[0] = nd.r[1] = nd.r[2] = nd.r[3] = 10.0f;
+      nd.pointID = n;
+      nd.Joint=false;
+      dg.nodes.add(nd);
+      int bdID = dg.de.addBeadToPoint(nn.x, nn.y);
+      Bead bd = data.getBead(bdID); 
+      bd.c = 2;
+      bd.n1 = bd.n2 = -1;
+      bd.u1 = bd.u2 = -1;
+      bd.Joint = bd.midJoint = false;
+    } 
+    // edges
+    edgeNumber=0;
     for (int e=0; e<edges.size(); e++) {
       DEdge ee = edges.get(e);
       if (ee.visible) {
-        eCount ++;
+        edgeNumber ++;
       }
     }
-    file.println("DEdges,"+eCount);
+    dg.edges.clear();
+    int A=-1, AR=-1, B=-1, BR=-1;
     for (int e=0; e<edges.size(); e++) {
       DEdge ee = edges.get(e);
       if (ee.visible) {
@@ -429,7 +337,7 @@ class dowker { //<>//
           float bY = nodes.get(s0+4).y - nodes.get(s0+1).y;
           float orientation = aX*bY - aY*bX;
           int t=ee.t-ee.s;
-          file.print(ee.s+",");
+          A = ee.s;
           if (orientation<0) {
             if (nodes.get(ee.s).ou) {
               t = (t+7)%4;
@@ -443,20 +351,55 @@ class dowker { //<>//
               t = (6-t)%4;
             }
           }
-          file.print(t+",");
-          file.print(ee.t+",0");
+          AR = t;
+          B = ee.t;
+          BR = 0;
         } else {
-          file.print( ee.s+",2,");
-          file.print( ee.t+",2");
+          A = ee.s;
+          AR = 2;
+          B = ee.t;
+          BR = 2;
         }
-        file.println();
+        Edge ed = new Edge(A,AR,B,BR);
+        dg.edges.add(ed);
+        
+        int bdID = dg.de.addBeadToPoint(0f, 0f);
+        Bead bd = dg.de.getBead(bdID);
+        bd.n1 = ed.ANodeID;
+        bd.n2 = ed.BNodeID;
+        bd.c = 2;
+        Bead bdA = dg.de.getBead(ed.ANodeID);
+        if (bdA!=null) {
+          bdA.set_un12(ed.ANodeRID, nodeNumber+e);
+        }
+        Bead bdB = dg.de.getBead(ed.BNodeID);
+        if (bdB!=null) {
+          bdB.set_un12(ed.BNodeRID, nodeNumber+e);
+        }
       }
     }
-    file.println("BeadsKnotEnd");
-    file.flush();
-    file.close();
+    for (int n=0; n<nodeNumber; n++) { //<>//
+      Bead bd = dg.de.getBead(n);
+      if (bd.n1==-1 && bd.n2==-1) {
+        data.removeBeadFromPoint(n);// これはない
+      }
+      if (bd.u1==-1 && bd.u2==-1) {
+        bd.midJoint=true;
+      } else {
+        bd.Joint = true;
+        Node ndN = graph.nodes.get(n);
+        if (ndN.inUse) {
+          ndN.Joint = true;
+        }
+      }
+    }
+    dg.modify(); //<>//
+    dg.update_points();
+    dg.add_close_point_Joint();
+    Draw.beads();// drawモードの変更
   }
 }
+    
 //参考文献
 //https://www2.cs.arizona.edu/~kpavlou/Tutte_Embedding.pdf
 //これはかなりわかりやすい！！
