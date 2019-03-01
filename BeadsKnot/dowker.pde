@@ -326,6 +326,7 @@ class dowker { //<>//
     }
     dg.edges.clear();
     int A=-1, AR=-1, B=-1, BR=-1;
+    int eCount=0;
     for (int e=0; e<edges.size(); e++) {
       DEdge ee = edges.get(e);
       if (ee.visible) {
@@ -370,12 +371,13 @@ class dowker { //<>//
         bd.c = 2;
         Bead bdA = dg.de.getBead(ed.ANodeID);
         if (bdA!=null) {
-          bdA.set_un12(ed.ANodeRID, nodeNumber+e);
+          bdA.set_un12(ed.ANodeRID, nodeNumber+eCount);
         }
         Bead bdB = dg.de.getBead(ed.BNodeID);
         if (bdB!=null) {
-          bdB.set_un12(ed.BNodeRID, nodeNumber+e);
+          bdB.set_un12(ed.BNodeRID, nodeNumber+eCount);
         }
+        eCount++;
       }
     }
     for (int n=0; n<nodeNumber; n++) { //<>//
