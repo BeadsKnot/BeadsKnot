@@ -267,6 +267,24 @@ void fileSelected(File selection) {
         graph.make_data_graph();
       }
       file_name=file_name.substring(0, file_name_length-4);
+    } else if (extension.equals("dwk")==true) {
+      // ドウカー表現による入力
+      BufferedReader reader = createReader(file_name); 
+      String line = null;
+      try {
+        if ((line = reader.readLine()) != null) { //<>//
+          String[] pieces = split(line, ' ' );
+          dowker dk = new dowker(graph);
+          dk.dowkerCount = pieces.length;
+          for(int p=0; p< dk.dowkerCount; p++){
+            dk.dowker[p] = int(pieces[p]);
+          }
+          dk.Start();
+        }
+      }
+      catch (IOException e) {
+        e.printStackTrace();
+      }
     } else {// BeadsKnot オリジナルファイル形式の場合
       BufferedReader reader = createReader(file_name); 
       String line = null;

@@ -4,13 +4,16 @@ class dowker { //<>//
   //このような感じでドウカーコードを準備しておく．
   //int dowker[]={6, 10, 12, 2, 4, 8};
   //int dowker[]={4,8,14,16,2,18,20,22,10,12,6};
-  int dowker[]={4, 10, 12, 14, 22, 2, 18, 20, 8, 6, 16};
+  //int dowker[]={4, 10, -12, 14, 22, 2, 18, 20, 8, 6, 16};
   //int dowker[]={6, 8, 16, 14, 4, 18, 20, 2, 22, 12, 10};
   //int dowker[] = {6, 10, 16, 18, 14, 2, 20, 4, 22, 12, 8};
   //int dowker[] = {6, 12, 16, 18, 14, 4, 20, 22, 2, 8, 10};
+  //int dowker[] = {40, 24, 10, 30, 22, 52, 32, 64, 46, 12, 6 ,42, 60, 2, 8, 50, 66, 16, 62, 58, 28, 4, 54, 34, 14, 20, 68, 36, 72, 26, 70, 56, 48, 18, 44, 38};
 
   data_graph dg;
   
+  int dowker[];
+  int dowkerCount;
   ArrayList<DNode> nodes;
   ArrayList<DEdge> edges;
   int outer[];
@@ -18,18 +21,20 @@ class dowker { //<>//
 
   dowker(data_graph _dg){
     dg = _dg;
+    dowker = new int[100];
+    dowkerCount=0;
   }
 
   void Start() {
     nodes = new ArrayList<DNode>();
     edges = new ArrayList<DEdge>();
-    int len = dowker.length;
+    int len = dowkerCount;
     for (int i=0; i<len; i++) {
-      nodes.add(new DNode(400+200*cos(PI*2*i/len), 400-200*sin(PI*2*i/len), 2*i+1, dowker[i], i, 0, (dowker[i]>0)));// center
-      nodes.add(new DNode(400+200*cos(PI*2*i/len)+30, 400-200*sin(PI*2*i/len), 2*i+1, dowker[i], i, 1, (dowker[i]>0)));// right
-      nodes.add(new DNode(400+200*cos(PI*2*i/len), 400-200*sin(PI*2*i/len)-30, 2*i+1, dowker[i], i, 2, (dowker[i]>0)));// top
-      nodes.add(new DNode(400+200*cos(PI*2*i/len)-30, 400-200*sin(PI*2*i/len), 2*i+1, dowker[i], i, 3, (dowker[i]>0)));// left
-      nodes.add(new DNode(400+200*cos(PI*2*i/len), 400-200*sin(PI*2*i/len)+30, 2*i+1, dowker[i], i, 4, (dowker[i]>0)));// bottom
+      nodes.add(new DNode(400+200*cos(PI*2*i/len), 400-200*sin(PI*2*i/len), 2*i+1, abs(dowker[i]), i, 0, (dowker[i]>0)));// center
+      nodes.add(new DNode(400+200*cos(PI*2*i/len)+30, 400-200*sin(PI*2*i/len), 2*i+1, abs(dowker[i]), i, 1, (dowker[i]>0)));// right
+      nodes.add(new DNode(400+200*cos(PI*2*i/len), 400-200*sin(PI*2*i/len)-30, 2*i+1, abs(dowker[i]), i, 2, (dowker[i]>0)));// top
+      nodes.add(new DNode(400+200*cos(PI*2*i/len)-30, 400-200*sin(PI*2*i/len), 2*i+1, abs(dowker[i]), i, 3, (dowker[i]>0)));// left
+      nodes.add(new DNode(400+200*cos(PI*2*i/len), 400-200*sin(PI*2*i/len)+30, 2*i+1, abs(dowker[i]), i, 4, (dowker[i]>0)));// bottom
       edges.add(new DEdge(5*i, 5*i+1, true)); 
       edges.add(new DEdge(5*i, 5*i+2, true)); 
       edges.add(new DEdge(5*i, 5*i+3, true)); 
