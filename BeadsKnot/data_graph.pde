@@ -912,4 +912,18 @@ class data_graph {           //<>//
       nodes.get(ID).inUse = false;
     }
   }
+  
+  void rotateNodes(float theta){
+    for(int n=0; n<nodes.size(); n++){
+      Node nn = nodes.get(n);
+      float x0 = nn.x - width/2;
+      float y0 = nn.y - height/2;
+      float x = cos(theta) * x0 - sin(theta) * y0;
+      float y = sin(theta) * x0 + cos(theta) * y0;
+      nn.x = x + width/2;
+      nn.y = y + height/2;
+      nn.theta -= theta;
+    }
+    
+  }
 }

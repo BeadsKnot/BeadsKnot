@@ -1895,4 +1895,16 @@ class data_extract {       //<>//
     file.flush();
     file.close();
   }
+  
+  void rotatePoints(float theta){
+    for(int p=0; p<points.size(); p++){
+      Bead pp = points.get(p);
+      float x0 = pp.x - width/2;
+      float y0 = pp.y - height/2;
+      float x = cos(theta) * x0 - sin(theta) * y0; 
+      float y = sin(theta) * x0 + cos(theta) * y0;
+      pp.x = x + width/2;
+      pp.y = y + height/2;
+    }
+  }
 }

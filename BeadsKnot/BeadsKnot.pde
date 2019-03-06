@@ -162,12 +162,26 @@ void keyPressed() {
     mouse.trace.clear();
     edit.beads.clear();
   } 
-  else if(key == 'r'){
+  else if(key == 'w'){
     if(Draw._beads){
       Draw.line_without_beads();
     }
     else if(Draw._line_without_beads){
       Draw.beads();
+    }
+  }
+  else if(key == 'r'){
+    if(Draw._beads){
+      data.rotatePoints(PI/12);
+      graph.rotateNodes(PI/12);
+      disp.modify();
+    }
+  }
+  else if(key == 'R'){
+    if(Draw._beads){
+      data.rotatePoints(-PI/12);
+      graph.rotateNodes(-PI/12);
+      disp.modify();
     }
   }
   else if(key == 'x'){
