@@ -174,14 +174,14 @@ void keyPressed() {
     if(Draw._beads){
       data.rotatePoints(PI/12);
       graph.rotateNodes(PI/12);
-      disp.modify();
+      graph.get_disp() ;
     }
   }
   else if(key == 'R'){
     if(Draw._beads){
       data.rotatePoints(-PI/12);
       graph.rotateNodes(-PI/12);
-      disp.modify();
+      graph.get_disp() ;
     }
   }
   else if(key == 'x'){

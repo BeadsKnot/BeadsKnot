@@ -222,7 +222,7 @@ class dowker { //<>//
             }
           }
         }
-        if (outer_sub_count>outerCount) {
+        if (outer_sub_count>outerCount) {//  マックスの場合がいいとは限らない．
           for (int k=0; k<outer_sub_count; k++) {
             outer[k] = outer_sub[k];
             print(outer_sub[k]+" ");
@@ -293,7 +293,7 @@ class dowker { //<>//
 
 
   void outputData() {
-    int nodeNumber=0, edgeNumber=0; //<>//
+    int nodeNumber=0; //<>//
     nodeNumber = nodes.size();
     dg.nodes.clear();
     dg.de.clearAllPoints();
@@ -322,7 +322,7 @@ class dowker { //<>//
       bd.Joint = bd.midJoint = false;
     } 
     // edges
-    edgeNumber=0;
+    int edgeNumber=0;
     for (int e=0; e<edges.size(); e++) {
       DEdge ee = edges.get(e);
       if (ee.visible) {
