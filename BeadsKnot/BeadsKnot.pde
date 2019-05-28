@@ -1,4 +1,4 @@
-import java.awt.*;            //<>//
+import java.awt.*;            //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -14,6 +14,7 @@ drawOption Draw;// 描画に関するオプション
 mouseDrag mouse;
 parts_editing edit;
 orientation orie;
+region reg;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
@@ -35,6 +36,7 @@ void setup() {
   mouse = new mouseDrag();
   edit = new parts_editing();
   orie=new orientation(data, graph);
+  reg=new region(data, graph);
 }
 
 
@@ -93,8 +95,7 @@ void draw() {
     } else if (mouse.new_curve) {
       mouse.draw_trace();
     }
-  } 
-  else if (Draw._line_without_beads) {
+  } else if (Draw._line_without_beads) {
     strokeWeight(5);
     data.drawNbhds();
     strokeWeight(1);
@@ -151,8 +152,8 @@ void keyPressed() {
   } else if (key == 'm') { // modify
     if (Draw._data_graph) {
       graph.modify();
-    }else {
-      Draw._menu = true;      
+    } else {
+      Draw._menu = true;
     }
   } else if (key == 'n') {
     Draw.free_loop();
@@ -161,33 +162,27 @@ void keyPressed() {
     Draw.parts_editing();
     mouse.trace.clear();
     edit.beads.clear();
-  } 
-  else if(key == 'w'){
-    if(Draw._beads){
+  } else if (key == 'w') {
+    if (Draw._beads) {
       Draw.line_without_beads();
-    }
-    else if(Draw._line_without_beads){
+    } else if (Draw._line_without_beads) {
       Draw.beads();
     }
-  }
-  else if(key == 'r'){
-    if(Draw._beads){
+  } else if (key == 'r') {
+    if (Draw._beads) {
       data.rotatePoints(PI/12);
       graph.rotateNodes(PI/12);
       graph.get_disp() ;
     }
-  }
-  else if(key == 'R'){
-    if(Draw._beads){
+  } else if (key == 'R') {
+    if (Draw._beads) {
       data.rotatePoints(-PI/12);
       graph.rotateNodes(-PI/12);
       graph.get_disp() ;
     }
-  }
-  else if(key == 'x'){
+  } else if (key == 'x') {
     Draw._show_points_nb = !Draw._show_points_nb;
-  }
-  else if(key == 'y'){
+  } else if (key == 'y') {
     Draw._show_orientation_nb = !Draw._show_orientation_nb;
   }
 
@@ -196,11 +191,26 @@ void keyPressed() {
     Draw.smoothing();
   } else if (keyCode==SHIFT) {
     Draw._beads=true;
+
+    ////////////////////////////確認用プログラム
+    float mX=mouseX, mY=mouseY;
+    //for (int repeat = 0; repeat<10; repeat++) {
+    Nbhd nearNb = data.get_near_nbhd(mX, mY);
+    int a = nearNb.a;
+    Bead ptA = data.getBead(a);
+    int b = nearNb.b;
+    Bead ptB = data.getBead(b);
+    println(ptA.n1, ptA.n2);
+    println(ptB.n1, ptB.n2);
+    //for (int b=0; b<reg.get_region_from_Nbhd(nearNb).border.size(); b++) {
+    println("get_region_from_Nbhdは"+reg.get_region_from_Nbhd(nearNb).border.size());
+    //}
+    //}
   } else if (key=='d') {
     println("ドーカーコードを表示します");
     orie.decide_orientation();
     orie.dowker_notation();  ///////////////////////////////////////////////ここで関数を呼ぶ
-  } else if(key=='z'){
+  } else if (key=='z') {
     dowker dk = new dowker(graph); 
     dk.Start();
   }
@@ -227,7 +237,7 @@ void saveFileSelect(File selection) {
     println("Window was closed or the user hit cancel.");
   } else {
     println("User selected " + selection.getAbsolutePath());
-    file_name=selection.getAbsolutePath(); //<>//
+    file_name=selection.getAbsolutePath();
     int file_name_length= file_name.length();
     String extension=file_name.substring(file_name_length-3);
     if (extension.equals("png") || extension.equals("jpg") || extension.equals("gif")) {
@@ -249,7 +259,7 @@ void saveFileSelect(File selection) {
         if (nd.inUse) {
           file.print(nd.x+","+nd.y+","+nd.theta+",");
           file.println(nd.r[0]+","+nd.r[1]+","+nd.r[2]+","+nd.r[3]);
-        }else {
+        } else {
           file.print(0+","+0+","+0+",");
           file.println(10+","+10+","+10+","+10);
         }
@@ -286,11 +296,11 @@ void fileSelected(File selection) {
       BufferedReader reader = createReader(file_name); 
       String line = null;
       try {
-        if ((line = reader.readLine()) != null) { //<>//
+        if ((line = reader.readLine()) != null) {
           String[] pieces = split(line, ' ' );
           dowker dk = new dowker(graph);
           dk.dowkerCount = pieces.length;
-          for(int p=0; p< dk.dowkerCount; p++){
+          for (int p=0; p< dk.dowkerCount; p++) {
             dk.dowker[p] = int(pieces[p]);
           }
           dk.Start();
@@ -337,7 +347,7 @@ void fileSelected(File selection) {
                 bd.n1 = bd.n2 = -1;
                 bd.u1 = bd.u2 = -1;
                 bd.Joint = bd.midJoint = false;
-              } 
+              }
             } else return;
           }
           if ((line = reader.readLine()) != null) {
@@ -380,7 +390,7 @@ void fileSelected(File selection) {
                   }
                 }
               }
-            } //<>//
+            }
             graph.modify();
             graph.update_points();
             graph.add_close_point_Joint();

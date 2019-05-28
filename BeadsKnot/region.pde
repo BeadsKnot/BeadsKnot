@@ -141,16 +141,22 @@ class region {
         int nu12=-1;
         if (b==ptA.n1) {
           c=ptA.u1;
+          //c=ptA.u2;
           nu12=1;
         } else if (b==ptA.u1) {
           c=ptA.n2;
+          //c=ptA.n1;
           nu12=2;
+          //nu12=4;
         } else if (b==ptA.n2) {
           c=ptA.u2;
+          //c=ptA.u1;
           nu12=3;
         } else if (b==ptA.u2) {
           c=ptA.n1;
+          //c=ptA.n2;
           nu12=4;
+          //nu12=2;
         } else {
           println("get_region_from_Nbhd 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
           return null;
