@@ -191,7 +191,7 @@ void keyPressed() {
     Draw.smoothing();
   } else if (keyCode==SHIFT) {
     Draw._beads=true;
-
+    orie.decide_orientation();
     ////////////////////////////確認用プログラム
     float mX=mouseX, mY=mouseY;
     //for (int repeat = 0; repeat<10; repeat++) {
@@ -202,9 +202,20 @@ void keyPressed() {
     Bead ptB = data.getBead(b);
     println(ptA.n1, ptA.n2);
     println(ptB.n1, ptB.n2);
-    //for (int b=0; b<reg.get_region_from_Nbhd(nearNb).border.size(); b++) {
-    println("get_region_from_Nbhdは"+reg.get_region_from_Nbhd(nearNb).border.size());
-    //}
+    for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {
+      Edge ed = graph.edges.get(edgeID);
+      // Bead bead = data.getBead(p);
+      println("edge"+edgeID+"は"+ed.ANodeID+","+ed.ANodeRID+","+ed.BNodeID+","+ed.BNodeRID);
+    }
+    for (int bb=0; bb<reg.get_region_from_Nbhd(nearNb).border.size(); bb++) {
+      Edge e = reg.get_region_from_Nbhd(nearNb).border.get(bb);
+      //int ANodeID;//node
+      //int ANodeRID;//edge
+      //int BNodeID;//node
+      //int BNodeRID;//edge
+      println("get_region_from_Nbhdは"+e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
+      // println("get_region_from_Nbhdは"+reg.border.get(0));
+    }
     //}
   } else if (key=='d') {
     println("ドーカーコードを表示します");

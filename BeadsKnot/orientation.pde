@@ -1,9 +1,9 @@
-class orientation {
+class orientation { //<>//
   data_extract de;
   data_graph dg;
   boolean inUse;
   int orientation_mod;
-  
+
   orientation(data_extract _de, data_graph _dg) {
     de=_de;
     dg=_dg;
@@ -11,16 +11,16 @@ class orientation {
   }
   void decide_orientation() {//orientationを決める
     Node nd = dg.nodes.get(0);
-    for(int ndID=0; ndID<dg.nodes.size(); ndID++){
+    for (int ndID=0; ndID<dg.nodes.size(); ndID++) {
       nd = dg.nodes.get(ndID);
-      if(nd.inUse){
+      if (nd.inUse) {
         break;
       }
     }
     int beads_start=nd.pointID;
     int beads_first=nd.pointID;
     Bead bdStart = de.getBead(beads_start);
-    if(bdStart == null){
+    if (bdStart == null) {
       println("start bead is null!");
       return ;
     }
@@ -33,7 +33,7 @@ class orientation {
     for (int repeat=0; repeat<de.points.size()*2; repeat++) {
       bdStart = de.getBead(beads_start);
       Bead bdNext = de.getBead(beads_next);
-      if(bdStart!=null && bdNext!=null){
+      if (bdStart!=null && bdNext!=null) {
         bdStart.orientation=ori_id;
         //始めは0
         ori_id++;
@@ -45,7 +45,7 @@ class orientation {
         //ori_id++;
         //beads_start=new_joint.b;
         beads_next_next=-1;
-  
+
         if (bdNext.u1==beads_start) {
           beads_next_next=bdNext.u2;
         } else if (bdNext.u2==beads_start) {
@@ -66,25 +66,24 @@ class orientation {
         ori_id++;
         bdNext.orientation=ori_id;
         orientation_mod = ori_id + 1;
-        inUse = true; //<>//
+        inUse = true;
         println("decide_orientation completes.");
         return;
         // }
       }
-      
     }
   }
-  int orientation_greater(int o1, int o2){// if o1>o2 then return 1;
+  int orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
     int differ = (o1-o2+orientation_mod) % orientation_mod;
-    if(0<differ && differ<5){
+    if (0<differ && differ<5) {
       return 1;
     }
-    if(orientation_mod-5 < differ && differ < orientation_mod){
+    if (orientation_mod-5 < differ && differ < orientation_mod) {
       return -1;
     }
     return 0;
   }
-  
+
   //Nbhd find_next_joint(Nbhd n, int ori) {
   //  int a=n.a;//うしろ
   //  int b=n.b;//まえ
@@ -122,7 +121,7 @@ class orientation {
       int dowker_set[]=new int[count];
       boolean wheather_over[]=new boolean[count];
       Bead start=de.getBead(joint_point_ID);
-      if(start == null){
+      if (start == null) {
         println(":failure");
         return ;
       }
@@ -142,7 +141,7 @@ class orientation {
           break;
         } else {
           node=de.getBead(n1);
-          if(node==null){
+          if (node==null) {
             println(":failure");
           }
         }
