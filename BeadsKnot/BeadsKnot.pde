@@ -1,4 +1,4 @@
-import java.awt.*;            //<>// //<>// //<>// //<>//
+import java.awt.*;            //<>// //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -200,23 +200,30 @@ void keyPressed() {
     Bead ptA = data.getBead(a);
     int b = nearNb.b;
     Bead ptB = data.getBead(b);
-    println(ptA.n1, ptA.n2);
-    println(ptB.n1, ptB.n2);
+    // println(ptA.n1, ptA.n2);
+    //println(ptB.n1, ptB.n2);
     for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {
       Edge ed = graph.edges.get(edgeID);
       // Bead bead = data.getBead(p);
       println("edge"+edgeID+"は"+ed.ANodeID+","+ed.ANodeRID+","+ed.BNodeID+","+ed.BNodeRID);
     }
-    for (int bb=0; bb<reg.get_region_from_Nbhd(nearNb).border.size(); bb++) {
-      Edge e = reg.get_region_from_Nbhd(nearNb).border.get(bb);
+    region RG= reg.get_region_from_Nbhd(nearNb);
+    ArrayList <Edge> bd=RG.border;
+    for (int bb=0; bb<bd.size(); bb++) {
+      Edge e = bd.get(bb);
       //int ANodeID;//node
       //int ANodeRID;//edge
       //int BNodeID;//node
       //int BNodeRID;//edge
       println("get_region_from_Nbhdは"+e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
-      // println("get_region_from_Nbhdは"+reg.border.get(0));
+      //println("get_region_from_Nbhdは"+reg.get_region_from_Nbhd(nearNb).border.size());
     }
+    println("get_region_from_Nbhdは"+bd.size());
     //}
+    RG. paintRegion(#FF0000);
+    
+    
+    
   } else if (key=='d') {
     println("ドーカーコードを表示します");
     orie.decide_orientation();

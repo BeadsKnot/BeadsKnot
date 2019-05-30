@@ -8,13 +8,26 @@ class region {
     dg=_dg;
   }
   void paintRegion(color col) {/////////////nulpoint対応はまだ
-    int startID=border.get(0).ANodeID;
-    int startRID=border.get(0).ANodeRID;
-    int endID=border.get(0).BNodeID;
-    // int endRID=border.get(0).BNodeRID;
+    int startID=-1;
+    int startRID=-1;
+    int endID=-1;
+    int endRID=-1;
+    if (border.get(0).ANodeID==border.get(1).ANodeID||border.get(0).ANodeID==border.get(1).BNodeID) {
+      startID= border.get(0).BNodeID;
+      startRID= border.get(0).BNodeRID;
+      endID= border.get(0).ANodeID;
+      endRID= border.get(0).ANodeRID;
+    } else {
+      startID=border.get(0).ANodeID;
+      startRID= border.get(0).ANodeRID;
+      endID=border.get(0).BNodeID;
+      endRID=border.get(0).BNodeRID;
+    }
+
     fill(col);
     beginShape();
     for (int b=0; b<border.size(); b++) {
+      println(startID, startRID, endID, endRID);
       Edge e=border.get(b);
       int pID=dg.nodes.get(startID).pointID;
       Bead p=de.getBead(pID);/////pがnullの可能性あり
@@ -36,13 +49,26 @@ class region {
           break;
         }
       }
+
       //次への処理
-      e=border.get(b+1);
-      startID=e.ANodeID;
-      startRID=e.ANodeRID;
-      endID=e.BNodeID;
-      //  endRID=e.BNodeRID;
+      if (b!=border.size()-1) {
+        e=border.get(b+1);
+        if (endID==e.ANodeID) {
+          startID=e.ANodeID;
+          startRID=e.ANodeRID;
+          endID=e.BNodeID;
+          endRID=e.BNodeRID;
+        } else {
+          startID=e.BNodeID;
+          startRID=e.BNodeRID;
+          endID=e.ANodeID;
+          endRID=e.ANodeRID;
+        }
+        //  endRID=e.BNodeRID;
+      }
     }
+
+    endShape();
   }
 
   region get_region_from_Nbhd(Nbhd nbhd) {
@@ -91,16 +117,24 @@ class region {
       if (ptB==null) {
         return null;
       }
-    }
+    } //<>//
     //orientationが計算されているかなぞ
     //if (ptA.orientation < ptB.orientation) {
-    if (orie.orientation_greater(ptA.orientation, ptB.orientation)==-1) {
+    //if (orie.orientation_greater(ptA.orientation, ptB.orientation)==-1) {
+    //  ptA=de.getBead(b);
+    //  ptB=de.getBead(a);
+    //  c=a;
+    //  a=b;
+    //  b=c;
+    //}
+    if (ptA.y>ptB.y) {
       ptA=de.getBead(b);
       ptB=de.getBead(a);
       c=a;
-      a=b;
+      a=b; //<>//
       b=c;
     }
+
     int start_a = a;
     int count = 0;
     //nearX = mX;
@@ -108,7 +142,8 @@ class region {
     int repeatmax = de.points.size();
     for (int repeat=0; repeat < repeatmax; repeat++) {
       // go straight
-      if ( ! ptA.Joint) {
+      //print(a,b);
+      if ( ! ptA.Joint&&!ptA.midJoint) {
         if (ptA.n1 == b) {
           c = ptA.n2;
         } else if (ptA.n2 == b) {
@@ -127,9 +162,51 @@ class region {
         if (ptB==null) {
           return null;
         }
+      } else if (ptA.midJoint) {
+        int nu12=-1;
+        if (ptA.n1 == b) {
+          c = ptA.n2;
+          nu12=2;
+        } else if (ptA.n2 == b) {
+          c = ptA.n1;
+          nu12=0;
+        } else {
+          println("get_region_from_Nbhd 1: error");
+          return null;
+        }
+        //A,Cから始まるedgeを見つける
+        int nodeID=-1;
+        for (int nID=0; nID<dg.nodes.size(); nID++) {
+          Node n=dg.nodes.get(nID);
+          if (n.pointID==a) {
+            nodeID=nID;
+          }
+        }
+        println("now at", nodeID, nu12);
+        for (int eID=0; eID<dg.edges.size(); eID++) {
+          Edge e=dg.edges.get(eID);
+          //  println("A=",e.ANodeID,e.ANodeRID);
+          //println("B=",e.BNodeID,e.BNodeRID);
+          if (e.ANodeID==nodeID&&e.ANodeRID==nu12) {
+            ret.border.add(e);
+          } else if (e.BNodeID==nodeID&&e.BNodeRID==nu12) {
+            ret.border.add(e);
+          }
+        }
+        b = a;
+        a = c;
+        ptA= de.getBead(a);
+        if (ptA==null) {
+          return null;
+        }
+        ptB = de.getBead(b);
+        if (ptB==null) {
+          return null;
+        }
       }
       // jointのデータからedgeのIDを取得する
-      else {
+      else {     
+        println("is a joint");
         int n1=ptA.n1;
         int n2=ptA.n2;
         int u1=ptA.u1;
@@ -140,18 +217,18 @@ class region {
         }
         int nu12=-1;
         if (b==ptA.n1) {
-          //c=ptA.u1;
+          // c=ptA.u1;
           c=ptA.u2;
-          nu12=1;
+          nu12=3;
         } else if (b==ptA.u1) {
           //c=ptA.n2;
           c=ptA.n1;
-          //nu12=2;
-          nu12=4;
+          nu12=0;
+          //nu12=0;
         } else if (b==ptA.n2) {
           //c=ptA.u2;
           c=ptA.u1;
-          nu12=3;
+          nu12=1;
         } else if (b==ptA.u2) {
           //c=ptA.n1;
           c=ptA.n2;
@@ -169,8 +246,11 @@ class region {
             nodeID=nID;
           }
         }
+        println("now at", nodeID, nu12);
         for (int eID=0; eID<dg.edges.size(); eID++) {
           Edge e=dg.edges.get(eID);
+          //  println("A=",e.ANodeID,e.ANodeRID);
+          //println("B=",e.BNodeID,e.BNodeRID);
           if (e.ANodeID==nodeID&&e.ANodeRID==nu12) {
             ret.border.add(e);
           } else if (e.BNodeID==nodeID&&e.BNodeRID==nu12) {
