@@ -182,7 +182,7 @@ class region { //<>// //<>//
             nodeID=nID;
           }
         }
-        println("now at", nodeID, nu12);
+       // println("now at", nodeID, nu12);
         for (int eID=0; eID<dg.edges.size(); eID++) {
           Edge e=dg.edges.get(eID);
           //  println("A=",e.ANodeID,e.ANodeRID);
@@ -206,7 +206,7 @@ class region { //<>// //<>//
       }
       // jointのデータからedgeのIDを取得する
       else {     
-        println("is a joint");
+       // println("is a joint");
         int n1=ptA.n1;
         int n2=ptA.n2;
         int u1=ptA.u1;
@@ -246,7 +246,7 @@ class region { //<>// //<>//
             nodeID=nID;
           }
         }
-        println("now at", nodeID, nu12);
+        //println("now at", nodeID, nu12);
         for (int eID=0; eID<dg.edges.size(); eID++) {
           Edge e=dg.edges.get(eID);
           //  println("A=",e.ANodeID,e.ANodeRID);
