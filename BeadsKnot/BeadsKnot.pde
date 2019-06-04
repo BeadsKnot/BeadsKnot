@@ -156,80 +156,70 @@ void draw() {
 void keyPressed() {
   // 'n' -> free_loop モード。
   // 'e' -> parts_editingモード
-  if ( key=='s' || int(key)==19) {
+
+  //ファイル関連のキー割り振り
+  if ( key=='s' || int(key)==19) {//////////////////////////////////ファイルをセーブする
     selectInput("Select a file to save", "saveFileSelect");
-  } else if ( key == 'o' || int(key)==15) {// o // ctrl+o
+  } else if ( key == 'o' || int(key)==15) {// o // ctrl+o///////////////////ファイルを開く
     selectInput("Select a file to process:", "fileSelected");
-  } else if (key == 'm') { // modify
-    if (Draw._data_graph) {
-      graph.modify();
-    } else {
-      Draw._menu = true;
-    }
-  } else if (key == 'n') {
+    //} else if (key == 'm') { // modify/////////////////////////////////使っていない変形モード
+    //  if (Draw._data_graph) {
+    //    graph.modify();
+    //  } else {
+    //    Draw._menu = true;
+    //  }
+
+
+    //メニューごとのキーの割り振り
+  } else if (key == 'n') {//////////////////////////////////draw_free_loopモード
     Draw.free_loop();
     mouse.trace.clear();// 絵のクリア
-  } else if (key == 'e') {
+  } else if (key == 'e') {////////////////////////////////マウスクリックにより交点を置くモード
     Draw.parts_editing();
     mouse.trace.clear();
     edit.beads.clear();
-  } else if (key == 'w') {
+  } else if (key == 'w') {////////////////////////////////beadsの描画でなく、実線で描画するモード
     if (Draw._beads) {
       Draw.line_without_beads();
     } else if (Draw._line_without_beads) {
       Draw.beads();
     }
-  } else if (key == 'r') {
+
+    //オプション系のキーの割り振り
+  } else if (keyCode==ENTER) {/////////////////////////////////交点を割いた絵を描画する
+    orie.decide_orientation();
+    Draw.smoothing();
+  } else if (keyCode==SHIFT) {/////////////////////////交点を割いた絵の描画を解除する
+    Draw._beads=true;
+    orie.decide_orientation();
+  } else if (key=='d') {///////////////////////////////ドーカーコードを表示する
+    println("ドーカーコードを表示します");
+    orie.decide_orientation();
+    orie.dowker_notation();  //ここで関数を呼ぶ
+  } else if (key == 'p') {////////////////////////////////pointの番号を表示する
+    Draw._show_points_nb = !Draw._show_points_nb;
+  } else if (key == 'P') {////////////////////////////////orientationの番号を表示する
+    orie.decide_orientation();
+    Draw._show_orientation_nb = !Draw._show_orientation_nb;
+  } else if (key == 'r') {////////////////////////////時計周りに回転
     if (Draw._beads) {
       data.rotatePoints(PI/12);
       graph.rotateNodes(PI/12);
       graph.get_disp() ;
     }
-  } else if (key == 'R') {
+  } else if (key == 'R') {///////////////////////////反時計周りに回転
     if (Draw._beads) {
       data.rotatePoints(-PI/12);
       graph.rotateNodes(-PI/12);
       graph.get_disp() ;
     }
-  } else if (key == 'x') {
-    Draw._show_points_nb = !Draw._show_points_nb;
-  } else if (key == 'y') {
-    Draw._show_orientation_nb = !Draw._show_orientation_nb;
-  }
-
-  if (keyCode==ENTER) {
-    orie.decide_orientation();
-    Draw.smoothing();
-  } else if (keyCode==SHIFT) {
-    Draw._beads=true;
-    orie.decide_orientation();
-    // draw_region_flag=true;
-  } else if (key=='d') {
-    println("ドーカーコードを表示します");
-    orie.decide_orientation();
-    orie.dowker_notation();  ///////////////////////////////////////////////ここで関数を呼ぶ
-  } else if (key=='z') {
-    dowker dk = new dowker(graph); 
-    dk.Start();
-  } else if (key=='S') {//////ザイフェルト膜を貼るモード
+  } else if (key=='S') {//////ザイフェルト膜を貼った絵を描画する
+    println("ザイフェルト膜を貼るモード");
     Draw.beads_with_Seifelt();
+    //} else if (key=='z') {/////////////////////////////////現在使われていない
+    //  dowker dk = new dowker(graph); 
+    //  dk.Start();
   }
-  //if (keyCode==SHIFT) {
-  //  orie.decide_orientation();
-  //  Draw.posinega();
-  //} else if (key == 'q') {
-  //  float mX=mouseX, mY=mouseY;
-  //  do {
-  //    Nbhd nearNb = data.get_near_nbhd(mX, mY);
-  //    if (nearNb == null) {
-  //      break;
-  //    }
-  //    int count = data.smoothingRegionContainsPt(mouseX, mouseY, nearNb, true);
-  //    if (count%2 == 1) {
-  //      break;
-  //    }
-  //  } while (true);
-  //}
 }
 
 void saveFileSelect(File selection) {
