@@ -14,16 +14,12 @@ drawOption Draw;// 描画に関するオプション
 mouseDrag mouse;
 parts_editing edit;
 orientation orie;
-region reg;
+ArrayList <region> reg;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
 int count_for_distinguishing_edge=0;//edgeを消すためのcountの数
-//boolean draw_region_flag=false;
-boolean []draw_region_flag;
-float []mX;
-float []mY;
-int click=0;
+
 
 
 
@@ -42,15 +38,8 @@ void setup() {
   mouse = new mouseDrag();
   edit = new parts_editing();
   orie=new orientation(data, graph);
-  reg=new region(data, graph);
-  draw_region_flag=new boolean[1000];
-  mX=new float[1000];
-  mY=new float[1000];
-  for (int i=0; i<1000; i++) {
-    draw_region_flag[i]=false;
-    mX[i]=-1;
-    mY[i]=-1;
-  }
+  reg=new ArrayList<region>();
+  // draw_region_flag=new boolean[1000];
 }
 
 
@@ -113,7 +102,15 @@ void draw() {
     strokeWeight(5);
     data.drawNbhds();
     strokeWeight(1);
+  } else if (Draw._beads_with_Seifelt) {
+    disp.modify();
+    for (region r : reg) {
+      r.paintRegion();
+    }
+    data.drawNbhds();
+    data.drawPoints();
   }
+
   // 平面グラフのデータを表示
   else if (Draw._data_graph) {
     graph.draw_nodes_edges();
@@ -153,37 +150,6 @@ void draw() {
     data.draw_smoothing_Nbhds();
     data.draw_smoothing_Points();
     //drawNbhdsを変える
-  }
-  //if (draw_region_flag[click]) {
-  if (click>0) {
-    ////////////////////////////確認用プログラム
-    //float mX=mouseX;
-    //float mY=mouseY;
-    //for (int repeat = 0; repeat<10; repeat++) {
-    Nbhd nearNb = data.get_near_nbhd(mX[click], mY[click]);
-    //for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {
-    //  Edge ed = graph.edges.get(edgeID);
-    //  // Bead bead = data.getBead(p);
-    // println("edge"+edgeID+"は"+ed.ANodeID+","+ed.ANodeRID+","+ed.BNodeID+","+ed.BNodeRID);
-    //}
-    region RG= reg.get_region_from_Nbhd(nearNb);
-    // ArrayList <Edge> bd=RG.border;////////////////////////////////////////////////////エラーが出るときがある
-    // for (int bb=0; bb<bd.size(); bb++) {
-    // Edge e = bd.get(bb);
-    //int ANodeID;//node
-    //int ANodeRID;//edge
-    //int BNodeID;//node
-    //int BNodeRID;//edge
-    //println("get_region_from_Nbhdは"+e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
-    //println("get_region_from_Nbhdは"+reg.get_region_from_Nbhd(nearNb).border.size());
-    //}
-    //println("get_region_from_Nbhdは"+bd.size());
-    //}
-    if (click%2==1) {
-      RG. paintRegion(255, 0, 0, 50);
-    } else {
-      RG. paintRegion(255, 255, 0, 50);
-    }
   }
 }
 
@@ -245,6 +211,8 @@ void keyPressed() {
   } else if (key=='z') {
     dowker dk = new dowker(graph); 
     dk.Start();
+  } else if (key=='S') {//////ザイフェルト膜を貼るモード
+    Draw.beads_with_Seifelt();
   }
   //if (keyCode==SHIFT) {
   //  orie.decide_orientation();
@@ -441,6 +409,10 @@ void fileSelected(File selection) {
 
 
 void mousePressed() {
+  boolean doubleClick=false;
+  if (mouse.PressX==mouseX&&mouse.PressY==mouseY) {
+    doubleClick=true;
+  }
   mouse.PressX = mouseX;
   mouse.PressY = mouseY;
   //if (Draw._beads) {
@@ -475,13 +447,6 @@ void mousePressed() {
         }
       }
     }
-    //////////////////////////クリックした場所の領域が塗られる
-    orie.decide_orientation();
-    click++;
-    mX[click]=mouseX;
-    mY[click]=mouseY;
-    draw_region_flag[click]=true;
-    //draw_region_flag=true;
   } else if (Draw._free_loop) {
     mouse.prev = new PVector(mouseX, mouseY);
     mouse.trace.add(mouse.prev);
@@ -499,6 +464,18 @@ void mousePressed() {
         break;
       }
     }
+  } else if (Draw._beads_with_Seifelt) {
+    //////////////////////////クリックした場所の領域が塗られる
+    // orie.decide_orientation();
+    Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
+    region RG;
+    if (doubleClick) {
+      RG=new region(data, graph, 0X30FF0000);
+    } else {
+      RG=new region(data, graph, 0X300000FF);
+    }
+    RG.get_region_from_Nbhd(nearNb);
+    reg.add(RG);
   }
 }
 

@@ -2,12 +2,14 @@ class region { //<>// //<>//
   ArrayList <Edge> border;
   data_extract de;
   data_graph dg;
-  region(data_extract _de, data_graph _dg) {
+  color col;
+  region(data_extract _de, data_graph _dg,color _col) {
     border=new ArrayList <Edge>();
     de=_de;
     dg=_dg;
+    col=_col;
   }
-  void paintRegion(int rd,int grn,int bl,int o) {/////////////nulpoint対応はまだ
+  void paintRegion() {/////////////nulpoint対応はまだ
     int startID=-1;
     int startRID=-1;
     int endID=-1;
@@ -24,7 +26,7 @@ class region { //<>// //<>//
       endRID=border.get(0).BNodeRID;
     }
 
-    fill(rd,grn,bl,o);
+    fill(col);
     beginShape();
     for (int b=0; b<border.size(); b++) {
       // println(startID, startRID, endID, endRID);
@@ -71,13 +73,12 @@ class region { //<>// //<>//
     endShape();
   }
 
-  region get_region_from_Nbhd(Nbhd nbhd) {
-    region ret;
-    ret=new region(de, dg);
+  void get_region_from_Nbhd(Nbhd nbhd) {
+    border=new ArrayList<Edge>();
     // int smoothingRegionContainsPt(float mX, float mY, Nbhd nbhd, boolean debug){
     //BからA
     if (nbhd == null) {
-      return null;
+      return;
     }
     int a = nbhd.a;
     Bead ptA = de.getBead(a);
@@ -85,7 +86,7 @@ class region { //<>// //<>//
     Bead ptB = de.getBead(b);
     int c = -1;
     if (ptA == null || ptB == null) {
-      return null;
+      return;
     }
     //Jointでないペアにする
     if (ptA.Joint) {
@@ -96,11 +97,11 @@ class region { //<>// //<>//
       } else if (n2 == a) {
         a = n1;
       } else {
-        return null;
+        return;
       }
       ptA = de.getBead(a);
       if (ptA==null) {
-        return null;
+        return;
       }
     }
     if (ptB.Joint) {
@@ -111,11 +112,11 @@ class region { //<>// //<>//
       } else if (n2 == b) {
         b = n1;
       } else {
-        return null;
+        return;
       }
       ptB = de.getBead(b);
       if (ptB==null) {
-        return null;
+        return;
       }
     }
     //orientationが計算されているかなぞ
@@ -150,17 +151,17 @@ class region { //<>// //<>//
           c = ptA.n1;
         } else {
           println("get_region_from_Nbhd 1: error");
-          return null;
+          return;
         }
         b = a;
         a = c;
         ptA= de.getBead(a);
         if (ptA==null) {
-          return null;
+          return;
         }
         ptB = de.getBead(b);
         if (ptB==null) {
-          return null;
+          return;
         }
       } else if (ptA.midJoint) {
         int nu12=-1;
@@ -172,7 +173,7 @@ class region { //<>// //<>//
           nu12=0;
         } else {
           println("get_region_from_Nbhd 1: error");
-          return null;
+          return;
         }
         //A,Cから始まるedgeを見つける
         int nodeID=-1;
@@ -182,31 +183,31 @@ class region { //<>// //<>//
             nodeID=nID;
           }
         }
-       // println("now at", nodeID, nu12);
+        // println("now at", nodeID, nu12);
         for (int eID=0; eID<dg.edges.size(); eID++) {
           Edge e=dg.edges.get(eID);
           //  println("A=",e.ANodeID,e.ANodeRID);
           //println("B=",e.BNodeID,e.BNodeRID);
           if (e.ANodeID==nodeID&&e.ANodeRID==nu12) {
-            ret.border.add(e);
+            border.add(e);
           } else if (e.BNodeID==nodeID&&e.BNodeRID==nu12) {
-            ret.border.add(e);
+            border.add(e);
           }
         }
         b = a;
         a = c;
         ptA= de.getBead(a);
         if (ptA==null) {
-          return null;
+          return;
         }
         ptB = de.getBead(b);
         if (ptB==null) {
-          return null;
+          return;
         }
       }
       // jointのデータからedgeのIDを取得する
       else {     
-       // println("is a joint");
+        // println("is a joint");
         int n1=ptA.n1;
         int n2=ptA.n2;
         int u1=ptA.u1;
@@ -236,7 +237,7 @@ class region { //<>// //<>//
           nu12=2;
         } else {
           println("get_region_from_Nbhd 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
-          return null;
+          return ;
         }
         //A,Cから始まるedgeを見つける
         int nodeID=-1;
@@ -252,26 +253,26 @@ class region { //<>// //<>//
           //  println("A=",e.ANodeID,e.ANodeRID);
           //println("B=",e.BNodeID,e.BNodeRID);
           if (e.ANodeID==nodeID&&e.ANodeRID==nu12) {
-            ret.border.add(e);
+            border.add(e);
           } else if (e.BNodeID==nodeID&&e.BNodeRID==nu12) {
-            ret.border.add(e);
+            border.add(e);
           }
         }
         b = a;
         a = c;
         ptA= de.getBead(a);
         if (ptA==null) {
-          return null;
+          return ;
         }
         ptB = de.getBead(b);
         if (ptB==null) {
-          return null;
+          return ;
         }
       }
       if (start_a == a) {
         break;
       }
     }
-    return ret;
+    return;
   }
 }

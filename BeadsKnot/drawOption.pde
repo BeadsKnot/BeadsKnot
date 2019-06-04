@@ -10,10 +10,11 @@ class drawOption {
   boolean _parts_editing;
   boolean _posinega;
   boolean _smoothing;
-  
+  boolean _beads_with_Seifelt;
+
   boolean _show_points_nb;
   boolean _show_orientation_nb;
-  
+
 
   drawOption() {
     menu();
@@ -31,7 +32,8 @@ class drawOption {
     _parts_editing = false;
     _posinega=false;
     _smoothing=false;
-    
+    _beads_with_Seifelt=false;
+
     _show_points_nb = false;
     _show_orientation_nb = false;
   }
@@ -89,5 +91,10 @@ class drawOption {
   void smoothing() {
     setAllOptionFalse();
     _smoothing=true;
+  }
+
+  void beads_with_Seifelt() {
+    setAllOptionFalse();
+    _beads_with_Seifelt=true;
   }
 };
