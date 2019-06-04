@@ -3,7 +3,7 @@ class region { //<>// //<>//
   data_extract de;
   data_graph dg;
   color col;
-  region(data_extract _de, data_graph _dg,color _col) {
+  region(data_extract _de, data_graph _dg, color _col) {
     border=new ArrayList <Edge>();
     de=_de;
     dg=_dg;
@@ -69,7 +69,6 @@ class region { //<>// //<>//
         //  endRID=e.BNodeRID;
       }
     }
-
     endShape();
   }
 
@@ -186,7 +185,7 @@ class region { //<>// //<>//
         // println("now at", nodeID, nu12);
         for (int eID=0; eID<dg.edges.size(); eID++) {
           Edge e=dg.edges.get(eID);
-          //  println("A=",e.ANodeID,e.ANodeRID);
+          //println("A=", e.ANodeID, e.ANodeRID);
           //println("B=",e.BNodeID,e.BNodeRID);
           if (e.ANodeID==nodeID&&e.ANodeRID==nu12) {
             border.add(e);
@@ -250,11 +249,13 @@ class region { //<>// //<>//
         //println("now at", nodeID, nu12);
         for (int eID=0; eID<dg.edges.size(); eID++) {
           Edge e=dg.edges.get(eID);
-          //  println("A=",e.ANodeID,e.ANodeRID);
-          //println("B=",e.BNodeID,e.BNodeRID);
+          //println("A=", e.ANodeID, e.ANodeRID);
+          // println("B=", e.BNodeID, e.BNodeRID);
           if (e.ANodeID==nodeID&&e.ANodeRID==nu12) {
+            println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
             border.add(e);
           } else if (e.BNodeID==nodeID&&e.BNodeRID==nu12) {
+            println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
             border.add(e);
           }
         }
