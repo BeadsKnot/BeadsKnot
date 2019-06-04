@@ -1,4 +1,4 @@
-class region {
+class region { //<>// //<>//
   ArrayList <Edge> border;
   data_extract de;
   data_graph dg;
@@ -7,7 +7,7 @@ class region {
     de=_de;
     dg=_dg;
   }
-  void paintRegion(color col) {/////////////nulpoint対応はまだ
+  void paintRegion(int rd,int grn,int bl,int o) {/////////////nulpoint対応はまだ
     int startID=-1;
     int startRID=-1;
     int endID=-1;
@@ -24,10 +24,10 @@ class region {
       endRID=border.get(0).BNodeRID;
     }
 
-    fill(col);
+    fill(rd,grn,bl,o);
     beginShape();
     for (int b=0; b<border.size(); b++) {
-      println(startID, startRID, endID, endRID);
+      // println(startID, startRID, endID, endRID);
       Edge e=border.get(b);
       int pID=dg.nodes.get(startID).pointID;
       Bead p=de.getBead(pID);/////pがnullの可能性あり
@@ -117,7 +117,7 @@ class region {
       if (ptB==null) {
         return null;
       }
-    } //<>//
+    }
     //orientationが計算されているかなぞ
     //if (ptA.orientation < ptB.orientation) {
     //if (orie.orientation_greater(ptA.orientation, ptB.orientation)==-1) {
@@ -131,7 +131,7 @@ class region {
       ptA=de.getBead(b);
       ptB=de.getBead(a);
       c=a;
-      a=b; //<>//
+      a=b;
       b=c;
     }
 

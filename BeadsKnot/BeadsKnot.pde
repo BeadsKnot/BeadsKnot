@@ -19,7 +19,7 @@ String file_name="test";// 読み込んだファイル名を使って保存フ�
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
 int count_for_distinguishing_edge=0;//edgeを消すためのcountの数
-
+boolean draw_region_flag=false;
 
 // グローバル変数終了
 
@@ -140,6 +140,31 @@ void draw() {
     data.draw_smoothing_Points();
     //drawNbhdsを変える
   }
+  if (draw_region_flag) {
+    ////////////////////////////確認用プログラム
+    float mX=mouseX, mY=mouseY;
+    //for (int repeat = 0; repeat<10; repeat++) {
+    Nbhd nearNb = data.get_near_nbhd(mX, mY);
+    //for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {
+    //  Edge ed = graph.edges.get(edgeID);
+    //  // Bead bead = data.getBead(p);
+    // println("edge"+edgeID+"は"+ed.ANodeID+","+ed.ANodeRID+","+ed.BNodeID+","+ed.BNodeRID);
+    //}
+    region RG= reg.get_region_from_Nbhd(nearNb);
+    ArrayList <Edge> bd=RG.border;////////////////////////////////////////////////////エラーが出るときがある
+    // for (int bb=0; bb<bd.size(); bb++) {
+    // Edge e = bd.get(bb);
+    //int ANodeID;//node
+    //int ANodeRID;//edge
+    //int BNodeID;//node
+    //int BNodeRID;//edge
+    //println("get_region_from_Nbhdは"+e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
+    //println("get_region_from_Nbhdは"+reg.get_region_from_Nbhd(nearNb).border.size());
+    //}
+    //println("get_region_from_Nbhdは"+bd.size());
+    //}
+    RG. paintRegion(255, 0, 0, 50);
+  }
 }
 
 void keyPressed() {
@@ -192,38 +217,7 @@ void keyPressed() {
   } else if (keyCode==SHIFT) {
     Draw._beads=true;
     orie.decide_orientation();
-    ////////////////////////////確認用プログラム
-    float mX=mouseX, mY=mouseY;
-    //for (int repeat = 0; repeat<10; repeat++) {
-    Nbhd nearNb = data.get_near_nbhd(mX, mY);
-    int a = nearNb.a;
-    Bead ptA = data.getBead(a);
-    int b = nearNb.b;
-    Bead ptB = data.getBead(b);
-    // println(ptA.n1, ptA.n2);
-    //println(ptB.n1, ptB.n2);
-    for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {
-      Edge ed = graph.edges.get(edgeID);
-      // Bead bead = data.getBead(p);
-      println("edge"+edgeID+"は"+ed.ANodeID+","+ed.ANodeRID+","+ed.BNodeID+","+ed.BNodeRID);
-    }
-    region RG= reg.get_region_from_Nbhd(nearNb);
-    ArrayList <Edge> bd=RG.border;
-    for (int bb=0; bb<bd.size(); bb++) {
-      Edge e = bd.get(bb);
-      //int ANodeID;//node
-      //int ANodeRID;//edge
-      //int BNodeID;//node
-      //int BNodeRID;//edge
-      println("get_region_from_Nbhdは"+e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
-      //println("get_region_from_Nbhdは"+reg.get_region_from_Nbhd(nearNb).border.size());
-    }
-    println("get_region_from_Nbhdは"+bd.size());
-    //}
-    RG. paintRegion(#FF0000);
-    
-    
-    
+    draw_region_flag=true;
   } else if (key=='d') {
     println("ドーカーコードを表示します");
     orie.decide_orientation();
@@ -461,6 +455,9 @@ void mousePressed() {
         }
       }
     }
+    //////////////////////////クリックした場所の領域が塗られる
+    orie.decide_orientation();
+    draw_region_flag=true;
   } else if (Draw._free_loop) {
     mouse.prev = new PVector(mouseX, mouseY);
     mouse.trace.add(mouse.prev);
