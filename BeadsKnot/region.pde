@@ -28,16 +28,23 @@ class region { //<>// //<>//
 
     fill(col);
     beginShape();
+
     for (int b=0; b<border.size(); b++) {
       // println(startID, startRID, endID, endRID);
       Edge e=border.get(b);
       int pID=dg.nodes.get(startID).pointID;
       Bead p=de.getBead(pID);/////pがnullの可能性あり
       int cID=p.get_un12(startRID);
+      //println("pIDは"+pID, "cIDは"+cID);
       /////edgeをたどる
+
       for (int count=0; count<de.points.size(); count++) {
         int nID=-1;
         Bead c=de.getBead(cID);
+        Bead j=de.getBead(pID);
+        if (j.Joint) {
+          vertex(disp.get_winX(j.x), disp.get_winY(j.y));
+        }
         vertex(disp.get_winX(c.x), disp.get_winY(c.y));
         if (c.n1==pID) {
           nID=c.n2;
@@ -69,6 +76,13 @@ class region { //<>// //<>//
         //  endRID=e.BNodeRID;
       }
     }
+    //for (int count=0; count<de.points.size(); count++) {
+    //  Bead j=de.getBead(count);
+    //  if (j.Joint) {
+    //    vertex(disp.get_winX(j.x), disp.get_winY(j.y));
+    //  }
+    //}
+
     endShape();
   }
 
@@ -136,9 +150,9 @@ class region { //<>// //<>//
     }
 
     int start_a = a;
-    int count = 0;
+    //int count = 0;
     //nearX = mX;
-    float x0, y0, x1, y1, xxx;
+    //float x0, y0, x1, y1, xxx;
     int repeatmax = de.points.size();
     for (int repeat=0; repeat < repeatmax; repeat++) {
       // go straight
@@ -188,8 +202,10 @@ class region { //<>// //<>//
           //println("A=", e.ANodeID, e.ANodeRID);
           //println("B=",e.BNodeID,e.BNodeRID);
           if (e.ANodeID==nodeID&&e.ANodeRID==nu12) {
+            // println("MidJointのe.ANodeIDは"+e.ANodeID, "e.ANodeRIDは"+e.ANodeRID, "e.BNodeIDは"+e.BNodeID, "e.BNodeRIDは"+e.BNodeRID);
             border.add(e);
           } else if (e.BNodeID==nodeID&&e.BNodeRID==nu12) {
+            //println("MidJointのe.ANodeIDは"+e.ANodeID, "e.ANodeRIDは"+e.ANodeRID, "e.BNodeIDは"+e.BNodeID, "e.BNodeRIDは"+e.BNodeRID);
             border.add(e);
           }
         }
@@ -205,7 +221,8 @@ class region { //<>// //<>//
         }
       }
       // jointのデータからedgeのIDを取得する
-      else {     
+      else {  
+        /////////////////////////////////////////ptAがJointのとき
         // println("is a joint");
         int n1=ptA.n1;
         int n2=ptA.n2;
@@ -252,10 +269,10 @@ class region { //<>// //<>//
           //println("A=", e.ANodeID, e.ANodeRID);
           // println("B=", e.BNodeID, e.BNodeRID);
           if (e.ANodeID==nodeID&&e.ANodeRID==nu12) {
-            println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
+            //println("Jointのe.ANodeIDは"+e.ANodeID, "e.ANodeRIDは"+e.ANodeRID, "e.BNodeIDは"+e.BNodeID, "e.BNodeRIDは"+e.BNodeRID);
             border.add(e);
           } else if (e.BNodeID==nodeID&&e.BNodeRID==nu12) {
-            println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
+            //println("Jointのe.ANodeIDは"+e.ANodeID, "e.ANodeRIDは"+e.ANodeRID, "e.BNodeIDは"+e.BNodeID, "e.BNodeRIDは"+e.BNodeRID);
             border.add(e);
           }
         }
