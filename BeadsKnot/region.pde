@@ -42,7 +42,7 @@ class region { //<>// //<>//
         int nID=-1;
         Bead c=de.getBead(cID);
         Bead j=de.getBead(pID);
-        if (j.Joint) {
+        if (j.Joint||j.midJoint) {
           vertex(disp.get_winX(j.x), disp.get_winY(j.y));
         }
         vertex(disp.get_winX(c.x), disp.get_winY(c.y));

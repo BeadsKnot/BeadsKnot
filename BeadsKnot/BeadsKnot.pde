@@ -19,15 +19,10 @@ String file_name="test";// 読み込んだファイル名を使って保存フ�
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
 int count_for_distinguishing_edge=0;//edgeを消すためのcountの数
-
-
-
-
 // グローバル変数終了
 
 void setup() {
   int extractSize=1000;
-
   size(1000, 1000);//初期のサイズ
   //初期化
   disp = new display(1000, 1000);
@@ -39,7 +34,6 @@ void setup() {
   edit = new parts_editing();
   orie=new orientation(data, graph);
   reg=new ArrayList<region>();
-  // draw_region_flag=new boolean[1000];
 }
 
 
@@ -192,6 +186,7 @@ void keyPressed() {
   } else if (keyCode==SHIFT) {/////////////////////////交点を割いた絵の描画を解除する
     Draw._beads=true;
     orie.decide_orientation();
+    
   } else if (key=='d') {///////////////////////////////ドーカーコードを表示する
     println("ドーカーコードを表示します");
     orie.decide_orientation();
@@ -403,6 +398,7 @@ void mousePressed() {
   if (mouse.PressX==mouseX&&mouse.PressY==mouseY) {
     doubleClick=true;
   }
+  //println(doubleClick);
   mouse.PressX = mouseX;
   mouse.PressY = mouseY;
   //if (Draw._beads) {
