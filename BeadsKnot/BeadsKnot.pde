@@ -186,7 +186,6 @@ void keyPressed() {
   } else if (keyCode==SHIFT) {/////////////////////////交点を割いた絵の描画を解除する
     Draw._beads=true;
     orie.decide_orientation();
-    
   } else if (key=='d') {///////////////////////////////ドーカーコードを表示する
     println("ドーカーコードを表示します");
     orie.decide_orientation();
@@ -456,9 +455,9 @@ void mousePressed() {
     Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
     region RG;
     if (doubleClick) {
-      RG=new region(data, graph, 0X30FF0000);
+      RG=new region(data, graph, #FF6347);
     } else {
-      RG=new region(data, graph, 0X300000FF);
+      RG=new region(data, graph, #87ceeb);
     }
     RG.get_region_from_Nbhd(nearNb);
     reg.add(RG);
