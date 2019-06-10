@@ -1,4 +1,4 @@
-class data_graph {           //<>//
+class data_graph {           //<>// //<>// //<>// //<>// //<>//
   //データのグラフ構造
   //nodeとedgeからなる
 
@@ -38,32 +38,32 @@ class data_graph {           //<>//
   void modify_Joint_orientation() {
     for (int i=0; i<de.points.size (); i++) {
       Bead vec=de.getBead(i);
-      if(vec!=null){
+      if (vec!=null) {
         if (vec.Joint) {
           if (vec.u1<0||vec.u1>=de.points.size()||vec.u2<0||vec.u2>=de.points.size()) {
             continue;
           }
           //println(vec.n1, vec.u1, vec.n2, vec.u2);
           Bead vecn1=de.getBead(vec.n1);
-          if(vecn1==null){
+          if (vecn1==null) {
             continue;
           }
           float x0=vecn1.x;
           float y0=vecn1.y;
           Bead vecu1=de.getBead(vec.u1);
-          if(vecu1==null){
+          if (vecu1==null) {
             continue;
           }
           float x1=vecu1.x;
           float y1=vecu1.y;
           Bead vecn2=de.getBead(vec.n2);
-          if(vecn2==null){
+          if (vecn2==null) {
             continue;
           }
           float x2=vecn2.x;
           float y2=vecn2.y;
           Bead vecu2=de.getBead(vec.u2);
-          if(vecu2==null){
+          if (vecu2==null) {
             continue;
           }
           float x3=vecu2.x;
@@ -89,7 +89,7 @@ class data_graph {           //<>//
   void add_half_point_Joint() {
     for (int p = 0; p < de.points.size(); p++) {
       Bead bd = de.getBead(p);
-      if(bd!=null){
+      if (bd!=null) {
         bd.midJoint = false;
       }
     }
@@ -100,7 +100,7 @@ class data_graph {           //<>//
           int nextJoint=find_next_Joint_in_points(p, bd.n1);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.n1);
-            if(count>9){
+            if (count>9) {
               int half = get_half_position(p, bd.n1, int(count * 0.5));
               de.getBead(half).midJoint=true;
             }
@@ -110,7 +110,7 @@ class data_graph {           //<>//
           int nextJoint=find_next_Joint_in_points(p, bd.u1);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.u1);
-            if(count>9){
+            if (count>9) {
               int half = get_half_position(p, bd.u1, int(count * 0.5));
               de.getBead(half).midJoint=true;
             }
@@ -120,7 +120,7 @@ class data_graph {           //<>//
           int nextJoint=find_next_Joint_in_points(p, bd.n2);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.n2);
-            if(count>9){
+            if (count>9) {
               int half = get_half_position(p, bd.n2, int(count * 0.5));
               de.getBead(half).midJoint=true;
             }
@@ -130,7 +130,7 @@ class data_graph {           //<>//
           int nextJoint=find_next_Joint_in_points(p, bd.u2);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.u2);
-            if(count>9){
+            if (count>9) {
               int half = get_half_position(p, bd.u2, int(count * 0.5));
               de.getBead(half).midJoint=true;
             }
@@ -148,7 +148,7 @@ class data_graph {           //<>//
   void add_close_point_Joint() {//Ten Percent Neighborhood point
     for (int p = 0; p < de.points.size(); p++) {
       Bead bd = de.getBead(p);
-      if(bd!=null){
+      if (bd!=null) {
         bd.closeJoint = false;
       }
     }
@@ -158,25 +158,25 @@ class data_graph {           //<>//
         int count = countNeighborJointInPoints(pt, bd.n1);
         int p_close = get_half_position(pt, bd.n1, ceil(count*0.1));
         Bead bdPClose = de.getBead(p_close);
-        if(bdPClose!=null){
+        if (bdPClose!=null) {
           bdPClose.closeJoint=true;
         }
         count = countNeighborJointInPoints(pt, bd.u1);
         p_close = get_half_position(pt, bd.u1, ceil(count*0.1));
         bdPClose = de.getBead(p_close);
-        if(bdPClose!=null){
+        if (bdPClose!=null) {
           bdPClose.closeJoint=true;
         }
         count = countNeighborJointInPoints(pt, bd.n2);
         p_close = get_half_position(pt, bd.n2, ceil(count*0.1));
         bdPClose = de.getBead(p_close);
-        if(bdPClose!=null){
+        if (bdPClose!=null) {
           bdPClose.closeJoint=true;
         }
         count = countNeighborJointInPoints(pt, bd.u2);
         p_close = get_half_position(pt, bd.u2, ceil(count*0.1));
         bdPClose = de.getBead(p_close);
-        if(bdPClose!=null){
+        if (bdPClose!=null) {
           bdPClose.closeJoint=true;
         }
       }
@@ -185,11 +185,11 @@ class data_graph {           //<>//
 
   int find_next_Joint_in_points(int j, int c) {
     for (int count = 0; count < de.points.size(); count++) {
-      if(c<0 || de.points.size()<=c){
-        return -1;       //<>//
+      if (c<0 || de.points.size()<=c) {
+        return -1;
       }
       Bead p=de.getBead(c);
-      if(p==null){
+      if (p==null) {
         return -1;
       }
       if (p.Joint) {
@@ -202,7 +202,7 @@ class data_graph {           //<>//
         d=p.n1;
       } else {
         // println();
-        println("find_next_Joint_in_points : ビーズがつながっていない"+j+":"+c+":"+d);        //<>//
+        println("find_next_Joint_in_points : ビーズがつながっていない"+j+":"+c+":"+d);       
         return -1;
       }
       j = c;
@@ -215,10 +215,10 @@ class data_graph {           //<>//
     //print("findNeighborJointInPoints",j,c);
     for (int count = 0; count < de.points.size(); count++) {
       if (c<0 || de.points.size()<=c) {
-        return -1;       //<>//
+        return -1;
       }
       Bead p=de.getBead(c);
-      if(p==null){
+      if (p==null) {
         return -1;
       }
       if (p.Joint||p.midJoint) {
@@ -230,7 +230,7 @@ class data_graph {           //<>//
       } else if (p.n2==j) {
         d=p.n1;
       } else {
-        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d);       //<>//
+        println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d);      
         Draw.parts_editing();// Draw はグローバル変数
         return -1;
       }
@@ -247,7 +247,7 @@ class data_graph {           //<>//
         return -1;
       }
       Bead p=de.getBead(c);
-      if(p==null){
+      if (p==null) {
         return -1;
       }
       if (p.Joint||p.midJoint) {
@@ -275,7 +275,7 @@ class data_graph {           //<>//
         return 0;
       }
       Bead p=de.getBead(c);
-      if(p==null){
+      if (p==null) {
         return 0;
       }
       if (p.Joint) {
@@ -298,16 +298,16 @@ class data_graph {           //<>//
 
   int get_half_position(int j, int c, int number) {
     if (c<0 || de.points.size()<=c) {
-        println("get_half_position : c の値が不正：エラー");
+      println("get_half_position : c の値が不正：エラー");
       return -1;
     }
     if (number==0) {
-        println("get_half_position : number の値が不正：エラー");
+      println("get_half_position : number の値が不正：エラー");
       return c;
     }
     for (int count=1; count<number; count++) {
       Bead p=de.getBead(c);
-      if(p==null){
+      if (p==null) {
         return -1;
       }
       if (p.Joint) {
@@ -330,7 +330,7 @@ class data_graph {           //<>//
   }
 
   int findk(Bead joint, int j) {
-    if (joint == null){
+    if (joint == null) {
       println("findk : null pointer エラー");
       return -1;
     }
@@ -363,7 +363,7 @@ class data_graph {           //<>//
     int count=0;
     for (int i = 0; i < de.points.size(); i++) {
       Bead vec = de.getBead(i);
-      if(vec==null){
+      if (vec==null) {
         continue;
       }
       if (vec.Joint||vec.midJoint) {
@@ -374,7 +374,7 @@ class data_graph {           //<>//
     count=0;
     for (int i = 0; i < de.points.size(); i++) {
       Bead vec = de.getBead(i);
-      if(vec==null){
+      if (vec==null) {
         continue;
       }
       if (vec.Joint||vec.midJoint) {
@@ -422,18 +422,18 @@ class data_graph {           //<>//
   //Nodeのthetaを最適化する
   void rotation_shape_modifier(int id) {
     Node node = nodes.get(id);
-    if(node.inUse){
+    if (node.inUse) {
       float theta0 = node.theta;
       float totalCurvatureRange = get_curvatureRange_squareSum_at(id);
-  
+
       float thetaP = theta0 + 0.05f;
       node.theta = thetaP;
       float totalCurvatureRangeP = get_curvatureRange_squareSum_at(id);
-  
+
       float thetaM = theta0 + 0.05f;
       node.theta = thetaM;
       float totalCurvatureRangeM = get_curvatureRange_squareSum_at(id);
-  
+
       if (totalCurvatureRange  > totalCurvatureRangeP) {
         node.theta = thetaP;
       } else if (totalCurvatureRange > totalCurvatureRangeM) {
@@ -452,7 +452,7 @@ class data_graph {           //<>//
       Edge ed = edges.get(e);
       Node ANode=nodes.get(ed.ANodeID);
       Node BNode=nodes.get(ed.BNodeID);
-      if(ANode.inUse && BNode.inUse){
+      if (ANode.inUse && BNode.inUse) {
         float V1x = ANode.x;
         float V1y = ANode.y;
         float V2x = ANode.edge_x(ed.ANodeRID);
@@ -528,7 +528,7 @@ class data_graph {           //<>//
     //de.debugLogPoints("get_nodes.csv");
     for (int p = 0; p < de.points.size(); p++) {
       Bead pt = de.getBead(p);
-      if(pt==null){
+      if (pt==null) {
         continue;
       }
       if (pt.Joint || pt.midJoint) {// ここではtable[]を使っていないが・・・
@@ -547,7 +547,7 @@ class data_graph {           //<>//
   void get_edges(ArrayList<Edge> edges) {
     for (int i=0; i<de.points.size(); i++) {
       Bead a=de.getBead(i);
-      if(a==null){
+      if (a==null) {
         continue;
       }
       if (a.Joint||a.midJoint) {
@@ -609,7 +609,7 @@ class data_graph {           //<>//
       Node a0=nodes.get(e.ANodeID);
       Node a1=nodes.get(e.BNodeID);
       // float hx=(a0.x-disp.left)*disp.rate;
-      if(a0.inUse && a1.inUse){
+      if (a0.inUse && a1.inUse) {
         float hx=disp.get_winX(a0.x);
         float hy=disp.get_winY(a0.y);
         if (e.ANodeRID==1 ||e.ANodeRID==3) {
@@ -626,7 +626,7 @@ class data_graph {           //<>//
         }
         float kx=disp.get_winX(a1.edge_x(e.BNodeRID));
         float ky=disp.get_winY(a1.edge_y(e.BNodeRID));
-  
+
         stroke( 0, 0, 0);
         strokeWeight(5);
         noFill();
@@ -634,7 +634,7 @@ class data_graph {           //<>//
       }
     }
     for (Node n : nodes) {
-      if (n.inUse){
+      if (n.inUse) {
         if (n.Joint) {
           fill(255, 255, 0);
         } else {
@@ -657,7 +657,7 @@ class data_graph {           //<>//
   void update_points_on_edge(Edge ed)
   {
     // メモ：ed=NULLの場合を想定しておくべきか？
-    if(ed==null){
+    if (ed==null) {
       return ;
     }
     // ←そのたぐいのエラーが出るようになったら。
@@ -692,7 +692,7 @@ class data_graph {           //<>//
           return ;
         }
         Bead bd2 = de.getBead(bead2);
-        if( bd2==null){
+        if ( bd2==null) {
           return;
         }
         int b = bd2.n1;
@@ -710,7 +710,7 @@ class data_graph {           //<>//
     if (beads_number > beads_count) {// 必要数のほうが多い→ビーズの追加が必要
       bead1 = NodeA.pointID;
       Bead bd1 = de.getBead(bead1);
-      if(bd1==null){
+      if (bd1==null) {
         return;
       }
       bead2 = bd1.get_un12(ed.ANodeRID);// ANodeRIDに応じたビーズの番号;
@@ -760,7 +760,7 @@ class data_graph {           //<>//
     //今一度、エッジに乗っているビーズの座標を計算しなおす。
     Node ANode=nodes.get(ed.ANodeID);
     Node BNode=nodes.get(ed.BNodeID);
-    if(ANode.inUse && BNode.inUse){
+    if (ANode.inUse && BNode.inUse) {
       float V1x = ANode.x;
       float V1y = ANode.y;
       float V2x = ANode.edge_x(ed.ANodeRID);
@@ -808,7 +808,7 @@ class data_graph {           //<>//
   int is_PVector_on_Joint(float vecX, float vecY) {
     for (int ndID=0; ndID<nodes.size(); ndID++) {
       Node nd = nodes.get(ndID);
-      if(nd.inUse){
+      if (nd.inUse) {
         int ndpointID = nd.pointID;
         Bead bd = de.getBead(ndpointID);
         if (dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY)<10) {
@@ -824,7 +824,7 @@ class data_graph {           //<>//
     float minDist = width+height;
     for (int ptID=0; ptID<de.points.size(); ptID++) {
       Bead bd = de.getBead(ptID);
-      if(bd!=null){
+      if (bd!=null) {
         float d = dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY); 
         if (d<10 && d<minDist) {
           retID = ptID;
@@ -839,7 +839,7 @@ class data_graph {           //<>//
     float minDist = width+height;
     for (int ptID=0; ptID<de.points.size(); ptID++) {
       Bead bd = de.getBead(ptID);
-      if(bd!=null){
+      if (bd!=null) {
         float d = dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY); 
         if ((bd.Joint || bd.midJoint) && d<10 && d<minDist) {
           retID = ptID;
@@ -853,7 +853,7 @@ class data_graph {           //<>//
   // クロスチェンジ
   void crosschange(int nodeID) {
     Node node = nodes.get(nodeID);// nodeIDが適正であるかどうかをチェックせよ。
-    if(node.inUse){
+    if (node.inUse) {
       int pt = node.pointID;
       Bead bd = de.getBead(pt);
       int tmp = bd.n1;
@@ -912,9 +912,9 @@ class data_graph {           //<>//
       nodes.get(ID).inUse = false;
     }
   }
-  
-  void rotateNodes(float theta){
-    for(int n=0; n<nodes.size(); n++){
+
+  void rotateNodes(float theta) {
+    for (int n=0; n<nodes.size(); n++) {
       Node nn = nodes.get(n);
       float x0 = nn.x - width/2;
       float y0 = nn.y - height/2;
@@ -924,6 +924,17 @@ class data_graph {           //<>//
       nn.y = y + height/2;
       nn.theta -= theta;
     }
-    
+  }
+
+  void displayMirror() {
+    for (int nodeID=0; nodeID<nodes.size(); nodeID++) {
+      Node node = nodes.get(nodeID);
+      ///////////////全てのJointを調べる
+      if (node.inUse) {
+        if (node.Joint) {
+          crosschange(nodeID);
+        }
+      }
+    }
   }
 }

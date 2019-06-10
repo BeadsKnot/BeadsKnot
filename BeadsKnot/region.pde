@@ -13,19 +13,19 @@ class region { //<>// //<>//
     int startID=-1;
     int startRID=-1;
     int endID=-1;
-    int endRID=-1;
+    //int endRID=-1;
     if (border.get(0).ANodeID==border.get(1).ANodeID||border.get(0).ANodeID==border.get(1).BNodeID) {
       startID= border.get(0).BNodeID;
       startRID= border.get(0).BNodeRID;
       endID= border.get(0).ANodeID;
-      endRID= border.get(0).ANodeRID;
+      // endRID= border.get(0).ANodeRID;
     } else {
       startID=border.get(0).ANodeID;
       startRID= border.get(0).ANodeRID;
       endID=border.get(0).BNodeID;
-      endRID=border.get(0).BNodeRID;
+      //endRID=border.get(0).BNodeRID;
     }
-
+    noStroke();
     fill(col);
     beginShape();
 
@@ -66,12 +66,12 @@ class region { //<>// //<>//
           startID=e.ANodeID;
           startRID=e.ANodeRID;
           endID=e.BNodeID;
-          endRID=e.BNodeRID;
+          //endRID=e.BNodeRID;
         } else {
           startID=e.BNodeID;
           startRID=e.BNodeRID;
           endID=e.ANodeID;
-          endRID=e.ANodeRID;
+          //endRID=e.ANodeRID;
         }
         //  endRID=e.BNodeRID;
       }

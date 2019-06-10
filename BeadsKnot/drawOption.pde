@@ -14,6 +14,7 @@ class drawOption {
 
   boolean _show_points_nb;
   boolean _show_orientation_nb;
+  boolean _mirror;
 
 
   drawOption() {
@@ -36,6 +37,8 @@ class drawOption {
 
     _show_points_nb = false;
     _show_orientation_nb = false;
+    
+    _mirror=false;
   }
 
   void menu() {
@@ -96,5 +99,10 @@ class drawOption {
   void beads_with_Seifelt() {
     setAllOptionFalse();
     _beads_with_Seifelt=true;
+  }
+  
+  void mirror(){
+    setAllOptionFalse();
+    _mirror=true;
   }
 };

@@ -1,4 +1,5 @@
-import java.awt.*;            //<>// //<>// //<>// //<>// //<>//
+//BeadsKnotー結び目エディターのザイフェルト曲面を貼る機能の拡張について //<>//
+import java.awt.*;            //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -155,7 +156,14 @@ void keyPressed() {
   if ( key=='s' || int(key)==19) {//////////////////////////////////ファイルをセーブする
     selectInput("Select a file to save", "saveFileSelect");
   } else if ( key == 'o' || int(key)==15) {// o // ctrl+o///////////////////ファイルを開く
+
     selectInput("Select a file to process:", "fileSelected");
+    if (reg.size()>0) {
+      for (int i=0; i<reg.size(); i++) {
+        reg.get(i).border.clear();
+      }
+      reg.clear();
+    }
     //} else if (key == 'm') { // modify/////////////////////////////////使っていない変形モード
     //  if (Draw._data_graph) {
     //    graph.modify();
@@ -186,10 +194,22 @@ void keyPressed() {
   } else if (keyCode==SHIFT) {/////////////////////////交点を割いた絵の描画を解除する
     Draw._beads=true;
     orie.decide_orientation();
+    if (reg.size()>0) {
+      for (int i=0; i<reg.size(); i++) {
+        reg.get(i).border.clear();
+      }
+      reg.clear();
+    }
   } else if (key=='d') {///////////////////////////////ドーカーコードを表示する
     println("ドーカーコードを表示します");
     orie.decide_orientation();
     orie.dowker_notation();  //ここで関数を呼ぶ
+  } else if (key=='m') {
+    println("鏡像を表示します");
+    Draw.mirror();
+    //////////////////////////////////////鏡像を描くモード
+    Draw._beads=true;
+    graph.displayMirror();
   } else if (key == 'p') {////////////////////////////////pointの番号を表示する
     Draw._show_points_nb = !Draw._show_points_nb;
   } else if (key == 'P') {////////////////////////////////orientationの番号を表示する
