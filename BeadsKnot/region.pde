@@ -1,10 +1,12 @@
 class region { //<>// //<>//
   ArrayList <Edge> border;
+   ArrayList <Edge> save_edge;
   data_extract de;
   data_graph dg;
   color col;
   region(data_extract _de, data_graph _dg, color _col) {
     border=new ArrayList <Edge>();
+    save_edge=new ArrayList<Edge>();
     de=_de;
     dg=_dg;
     col=_col;
@@ -291,6 +293,19 @@ class region { //<>// //<>//
         break;
       }
     }
+    match_region();
     return;
+  }
+
+  void match_region() {
+    for (int b=0; b<border.size(); b++) {
+      Edge e=border.get(b);
+      //save_edge.add(b);
+      
+    }
+    for (int b=0; b<border.size(); b++) {  
+      Edge e=border.get(b);
+      println(e.ANodeID, e.ANodeRID, e.BNodeID,e.BNodeRID);
+    }
   }
 }

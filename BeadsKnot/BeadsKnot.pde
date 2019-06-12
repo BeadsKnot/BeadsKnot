@@ -1,5 +1,4 @@
-//BeadsKnotー結び目エディターのザイフェルト曲面を貼る機能の拡張について //<>//
-import java.awt.*;            //<>// //<>// //<>// //<>//
+import java.awt.*;            //<>// //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
