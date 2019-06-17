@@ -313,7 +313,10 @@ class region { //<>// //<>//
         break;
       }
     }
-    //match_region();
+    for (int bo=0; bo<border.size(); bo++) {
+      Edge e=border.get(bo);
+      println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
+    }
     return;
   }
 

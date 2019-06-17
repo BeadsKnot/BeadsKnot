@@ -272,6 +272,32 @@ void saveFileSelect(File selection) {
         Edge ed = graph.edges.get(edgeID);
         file.println(ed.ANodeID+","+ed.ANodeRID+","+ed.BNodeID+","+ed.BNodeRID);
       }
+      int count=0;
+      for (int i=0; i<data.points.size(); i++) {
+        Bead vec=data.getBead(i);
+        if (vec.Joint) {
+          count++;
+        }
+      }
+      file.println("Region,"+(count+1));
+      file.println(reg.size());
+      for (int b=0; b<reg.size(); b++) {
+        //for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {//////////col_codeが0の部分も描く必要ある？
+        //file.println(reg.get(b).col_code);
+        region r = reg.get(b);
+        for (int bb=0; bb<r.border.size(); bb++) {
+          Edge e=r.border.get(b);
+          file.println(e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
+        }
+        //file.println(reg.get(b).col_code+","+e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
+        //file.println(reg.get(b).col_code+","+r.border.size());
+        //}
+      }
+
+      ////ここにregion関連のデータを入れる
+      ////はじめに色情報、その次にedgeの番号
+      ////色情報はcol_codeでいける?
+
       file.println("BeadsKnotEnd");
       file.flush();
       file.close();
@@ -400,6 +426,7 @@ void fileSelected(File selection) {
             //data.debugLogPoints("0123.csv");
             Draw.beads();// drawモードの変更
           }
+          //////////////ここにregion関連のデータを入れる
         }
         reader.close();
       } 
@@ -412,11 +439,6 @@ void fileSelected(File selection) {
 
 
 void mousePressed() {
-  boolean doubleClick=false;
-  if (mouse.PressX==mouseX&&mouse.PressY==mouseY) {
-    doubleClick=true;
-  }
-  //println(doubleClick);
   mouse.PressX = mouseX;
   mouse.PressY = mouseY;
   //if (Draw._beads) {
