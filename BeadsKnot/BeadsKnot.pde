@@ -473,13 +473,23 @@ void mousePressed() {
     // orie.decide_orientation();
     Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
     region RG;
-    if (doubleClick) {
-      RG=new region(data, graph, #FF6347);
-    } else {
-      RG=new region(data, graph, #87ceeb);
-    }
+    //  if (doubleClick) {
+    RG=new region(data, graph);
+    //} else {
+    //RG=new region(data, graph, #87ceeb);
+    //}
     RG.get_region_from_Nbhd(nearNb);
-    reg.add(RG);
+    boolean painted=false;
+    for (int r=0; r<reg.size(); r++) {
+      if (reg.get(r).match_region(RG)) {
+        reg.get(r).col_code=(reg.get(r).col_code+1)%3;
+        painted=true;
+        //reg.get(r)の色に従って色を変える
+      }
+    }
+    if (!painted) {
+      reg.add(RG);
+    }
   }
 }
 

@@ -1,21 +1,25 @@
 class region { //<>// //<>//
   ArrayList <Edge> border;
-   ArrayList <Edge> save_edge;
   data_extract de;
   data_graph dg;
-  color col;
-  region(data_extract _de, data_graph _dg, color _col) {
+  int col_code;
+  region(data_extract _de, data_graph _dg) {
     border=new ArrayList <Edge>();
-    save_edge=new ArrayList<Edge>();
     de=_de;
     dg=_dg;
-    col=_col;
+    col_code=1;
   }
-  void paintRegion() {/////////////nulpoint対応はまだ
+  void paintRegion() {/////////////nulpoint対応はまだ//get.()みたいなところがまだアブナイ
     int startID=-1;
     int startRID=-1;
     int endID=-1;
     //int endRID=-1;
+    if (border==null) {
+      return;
+    }
+    if (border.size()<2) {
+      return;
+    }
     if (border.get(0).ANodeID==border.get(1).ANodeID||border.get(0).ANodeID==border.get(1).BNodeID) {
       startID= border.get(0).BNodeID;
       startRID= border.get(0).BNodeRID;
@@ -28,7 +32,13 @@ class region { //<>// //<>//
       //endRID=border.get(0).BNodeRID;
     }
     noStroke();
-    fill(col);
+    if (col_code==0) {
+      fill(255);
+    } else if (col_code==1) {
+      fill(#FF6347);
+    } else {
+      fill(#87ceeb);
+    }
     beginShape();
 
     for (int b=0; b<border.size(); b++) {
@@ -36,6 +46,11 @@ class region { //<>// //<>//
       Edge e=border.get(b);
       int pID=dg.nodes.get(startID).pointID;
       Bead p=de.getBead(pID);/////pがnullの可能性あり
+      if (p==null) {
+        fill(255);
+        endShape();
+        return;
+      }
       int cID=p.get_un12(startRID);
       //println("pIDは"+pID, "cIDは"+cID);
       /////edgeをたどる
@@ -44,6 +59,11 @@ class region { //<>// //<>//
         int nID=-1;
         Bead c=de.getBead(cID);
         Bead j=de.getBead(pID);
+        if (c==null||j==null) {
+          fill(255);
+          endShape();
+          return;
+        }
         if (j.Joint||j.midJoint) {
           vertex(disp.get_winX(j.x), disp.get_winY(j.y));
         }
@@ -293,19 +313,28 @@ class region { //<>// //<>//
         break;
       }
     }
-    match_region();
+    //match_region();
     return;
   }
 
-  void match_region() {
-    for (int b=0; b<border.size(); b++) {
-      Edge e=border.get(b);
-      //save_edge.add(b);
-      
+  boolean match_region(region _r) {
+    if (_r==null) {
+      return false;
     }
-    for (int b=0; b<border.size(); b++) {  
-      Edge e=border.get(b);
-      println(e.ANodeID, e.ANodeRID, e.BNodeID,e.BNodeRID);
+    if (_r.border.size()!=border.size()) {
+      return false;
     }
+    int count=0;
+    for (int r=0; r<_r.border.size(); r++) {  
+      for (int b=0; b<border.size(); b++) {  
+        if (_r.border.get(r).matchEdge(border.get(b))) {
+          count++;
+          if (count==_r.border.size()) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 }

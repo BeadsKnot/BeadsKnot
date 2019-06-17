@@ -456,6 +456,17 @@ class Edge {
   String getName() {
     return "("+ANodeID+","+ANodeRID+";"+BNodeID+","+BNodeRID+")";
   }
+  
+  boolean matchEdge(Edge e){
+    //順不同で一致しているか確認
+    if(e.ANodeID==ANodeID&&e.ANodeRID==ANodeRID&&e.BNodeID==BNodeID&&e.BNodeRID==BNodeRID){
+      return true;
+    }
+     if(e.BNodeID==ANodeID&&e.BNodeRID==ANodeRID&&e.ANodeID==BNodeID&&e.ANodeRID==BNodeRID){
+      return true;
+    }
+    return false;
+  }
 }
 
 class EdgeConst {
