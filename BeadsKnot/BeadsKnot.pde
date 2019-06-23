@@ -280,11 +280,12 @@ void saveFileSelect(File selection) {
         }
       }
       file.println("Region,"+(count+1));
-     // file.println(reg.size());
+      // file.println(reg.size());
       for (int b=0; b<reg.size(); b++) {
         //for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {//////////col_codeが0の部分も描く必要ある？
         //file.println(reg.get(b).col_code);
         region r = reg.get(b);
+        file.print(r.col_code+",");
         for (int bb=0; bb<r.border.size(); bb++) {
           Edge e=r.border.get(bb);
           //////col_codeの番号
@@ -430,6 +431,20 @@ void fileSelected(File selection) {
             Draw.beads();// drawモードの変更
           }
           //////////////ここにregion関連のデータを入れる
+          if ((line = reader.readLine()) != null) {
+            String[] pieces = split(line, ',' );
+            if (pieces[0].equals("Region")) {
+              //ここから書く
+              int region_number = int(pieces[1]);
+              for(int i=0;i<region_number;i++){
+                 line = reader.readLine(); 
+                pieces = split(line, ',');
+                //pieces[0]はcol_codeになる
+                //pieces[1]
+                 //Edge ed = new Edge(int(pieces[0]), int(pieces[1]), int(pieces[2]), int(pieces[3]));
+              }
+            }
+          }
         }
         reader.close();
       } 
