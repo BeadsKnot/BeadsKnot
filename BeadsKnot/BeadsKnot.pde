@@ -280,15 +280,18 @@ void saveFileSelect(File selection) {
         }
       }
       file.println("Region,"+(count+1));
-      file.println(reg.size());
+     // file.println(reg.size());
       for (int b=0; b<reg.size(); b++) {
         //for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {//////////col_codeが0の部分も描く必要ある？
         //file.println(reg.get(b).col_code);
         region r = reg.get(b);
         for (int bb=0; bb<r.border.size(); bb++) {
-          Edge e=r.border.get(b);
-          file.println(e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
+          Edge e=r.border.get(bb);
+          //////col_codeの番号
+          file.print(e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
+          file.print(",");
         }
+        file.println();
         //file.println(reg.get(b).col_code+","+e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
         //file.println(reg.get(b).col_code+","+r.border.size());
         //}
