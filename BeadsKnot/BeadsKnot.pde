@@ -283,7 +283,7 @@ void saveFileSelect(File selection) {
       // file.println(reg.size());
       for (int b=0; b<reg.size(); b++) {
         //for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {//////////col_codeが0の部分も描く必要ある？
-        //file.println(reg.get(b).col_code);
+        //file.println(reg.get(b).cFgol_code);
         region r = reg.get(b);
         file.print(r.col_code+",");
         for (int bb=0; bb<r.border.size(); bb++) {
@@ -386,7 +386,7 @@ void fileSelected(File selection) {
           if ((line = reader.readLine()) != null) {
             String[] pieces = split(line, ',' );
             if (pieces[0].equals("Edges")) {
-              edgeNumber = int(pieces[1]);
+              edgeNumber = int(pieces[1]);    
               graph.edges.clear();
               for (int n=0; n<edgeNumber; n++) {
                 line = reader.readLine(); 
@@ -436,13 +436,40 @@ void fileSelected(File selection) {
             if (pieces[0].equals("Region")) {
               //ここから書く
               int region_number = int(pieces[1]);
-              for(int i=0;i<region_number;i++){
-                 line = reader.readLine(); 
+              reg.clear(); 
+              region RG;
+              RG=new region(data, graph);
+              RG.border.clear();
+              for (int i=0; i<region_number; i++) {
+                line = reader.readLine(); 
                 pieces = split(line, ',');
+                //RG.col_code=int(pieces[0]);
+                Edge ed;
+                for (int l=0; l<(pieces.length)/4; l++) {//piecesの長さはいくつか
+                  //println(pieces[l*4+1]);
+                  ed = new Edge(int(pieces[l*4+1]), int(pieces[l*4+2]), int(pieces[l*4+3]), int(pieces[(l+1)*4]));
+                  if (i==0) {
+                    //println(RG.col_code);
+                    //println(ed.ANodeID, ed.ANodeRID, ed.BNodeID, ed.BNodeRID);
+                    RG.col_code=int(pieces[0]);
+                    RG.border.add(ed);
+                  }
+                }
+                //println(pieces[0]);
+
                 //pieces[0]はcol_codeになる
+                //ない行のpieces[0]のcol_codeは0(白)にする
                 //pieces[1]
-                 //Edge ed = new Edge(int(pieces[0]), int(pieces[1]), int(pieces[2]), int(pieces[3]));
+                //Edge ed = new Edge(int(pieces[0]), int(pieces[1]), int(pieces[2]), int(pieces[3]));
               }
+              ///////RG.borderにデータは入っている
+              //このnodeのデータをもとに色を塗ればよい
+              println( RG.border.get(0).ANodeID, RG.border.get(0).ANodeRID, RG.border.get(0).BNodeID, RG.border.get(0).BNodeRID);
+              println( RG.border.get(1).ANodeID, RG.border.get(1).ANodeRID, RG.border.get(1).BNodeID, RG.border.get(1).BNodeRID);
+              println( RG.border.get(2).ANodeID, RG.border.get(2).ANodeRID, RG.border.get(2).BNodeID, RG.border.get(2).BNodeRID);
+              println( RG.border.get(3).ANodeID, RG.border.get(3).ANodeRID, RG.border.get(3).BNodeID, RG.border.get(3).BNodeRID);
+              reg.add(RG);
+              //println(RG.border.size());
             }
           }
         }
