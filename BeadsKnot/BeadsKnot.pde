@@ -277,23 +277,23 @@ void saveFileSelect(File selection) {
       ////色情報はcol_codeでいける?
       ////クリックされていない白い領域の部分のデータも必要？
       ////ただしnbhdがないとたどれないからそのデータを取得できない？
-      int count=0;
-      for (int i=0; i<data.points.size(); i++) {
-        Bead vec=data.getBead(i);
-        if (vec.Joint) {
-          count++;
-        }
-      }
-      file.println("Region,"+(count+1));
-      int col_code_num[]=new int[(count+1)];
-      for (int i=0; i<(count+1); i++) {
-        col_code_num[i]=-1;
-      }
+      //int count=0;
+      //for (int i=0; i<data.points.size(); i++) {
+      //  Bead vec=data.getBead(i);
+      //  if (vec.Joint) {
+      //    count++;
+      //  }
+      //}
+      file.println("Region,"+reg.size());
+      //int col_code_num[]=new int[(count+1)];
+      //for (int i=0; i<(count+1); i++) {
+      //col_code_num[i]=-1;
+      //}
       for (int b=0; b<reg.size(); b++) {
         //////////col_codeが0の部分も描く必要ある？
         region r = reg.get(b);
         file.print(r.col_code+",");
-        col_code_num[b]=int(r.col_code);
+        //col_code_num[b]=int(r.col_code);
         //count+1分の行を作成し、0を入れる  
         for (int bb=0; bb<r.border.size(); bb++) {
           Edge e=r.border.get(bb);
@@ -302,11 +302,11 @@ void saveFileSelect(File selection) {
         }
         file.println();
       }
-      for (int i=0; i<(count+1); i++) {
-        if (col_code_num[i]==-1) {
-          file.println(0);
-        }
-      }
+      //for (int i=0; i<(count+1); i++) {
+      //  if (col_code_num[i]==-1) {
+      //    file.println(0);
+      //  }
+      //}
       file.println("BeadsKnotEnd");
       file.flush();
       file.close();
@@ -443,10 +443,10 @@ void fileSelected(File selection) {
               int region_number = int(pieces[1]);
               reg.clear(); 
               region RG;
-              RG=new region(data, graph);
-              RG.border.clear();
-              RG.border=new ArrayList<Edge>();
+              //RG.border.clear();
+              //RG.border=new ArrayList<Edge>();
               for (int i=0; i<region_number; i++) {
+                RG=new region(data, graph);
                 line = reader.readLine(); 
                 pieces = split(line, ',');
                 Edge ed;
@@ -457,14 +457,16 @@ void fileSelected(File selection) {
                     RG.border.add(ed);
                   }
                 }
+                reg.add(RG);
                 //pieces[0]はcol_codeになる
                 //ない行のpieces[0]のcol_codeは0(白)にする
               }
               ///////RG.borderにデータは入っている
-              //reg.add(RG);
-              //println(reg.size());
+
+              println(reg.size());
               //どこかでregにaddをしなくてはいけない
-              println(RG.border.size());
+              //println(RG.border.size());
+              Draw.beads_with_Seifelt();
             }
           }
         }
@@ -500,7 +502,7 @@ void mousePressed() {
             return;
           }
         }
-      } else {
+      } else {//beadsをドラックし始めたけれどもJointでなき場合
         int jt_ndID =graph.next_to_node(ptID); 
         if (jt_ndID==-1) {//ノードの隣でないところをドラッグした場合
           println("新規パス開始");
@@ -533,20 +535,29 @@ void mousePressed() {
   } else if (Draw._beads_with_Seifelt) {
     //////////////////////////クリックした場所の領域が塗られる
     // orie.decide_orientation();
-    Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
-    region RG;
-    RG=new region(data, graph);
-    RG.get_region_from_Nbhd(nearNb);
-    boolean painted=false;
-    for (int r=0; r<reg.size(); r++) {
-      if (reg.get(r).match_region(RG)) {
-        reg.get(r).col_code=(reg.get(r).col_code+1)%3;
-        painted=true;
-        //reg.get(r)の色に従って色を変える
+    //////JointでないBeadsに近いところをクリックしたら
+    int ptID = graph.is_PVector_on_points(mouseX, mouseY);
+    int jointID = graph.is_PVector_on_Joints(mouseX, mouseY);
+    if (ptID!=-1) {
+      //ptIDが-1でなくてjointIDは-1のときにマウストラックを取りに行く
+      //Jointクリックでは何もしない
+      //ptIDは-1のときには領域を塗る
+    } else {
+      Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
+      region RG;
+      RG=new region(data, graph);
+      RG.get_region_from_Nbhd(nearNb);
+      boolean painted=false;
+      for (int r=0; r<reg.size(); r++) {
+        if (reg.get(r).match_region(RG)) {
+          reg.get(r).col_code=(reg.get(r).col_code+1)%3;
+          painted=true;
+          //reg.get(r)の色に従って色を変える
+        }
       }
-    }
-    if (!painted) {
-      reg.add(RG);
+      if (!painted) {
+        reg.add(RG);
+      }
     }
   }
 }
