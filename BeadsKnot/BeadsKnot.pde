@@ -1,4 +1,4 @@
-import java.awt.*;            //<>// //<>// //<>// //<>// //<>//
+import java.awt.*;            //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -272,6 +272,11 @@ void saveFileSelect(File selection) {
         Edge ed = graph.edges.get(edgeID);
         file.println(ed.ANodeID+","+ed.ANodeRID+","+ed.BNodeID+","+ed.BNodeRID);
       }
+      ////ここにregion関連のデータを入れる
+      ////はじめに色情報、その次にedgeの番号
+      ////色情報はcol_codeでいける?
+      ////クリックされていない白い領域の部分のデータも必要？
+      ////ただしnbhdがないとたどれないからそのデータを取得できない？
       int count=0;
       for (int i=0; i<data.points.size(); i++) {
         Bead vec=data.getBead(i);
@@ -280,28 +285,28 @@ void saveFileSelect(File selection) {
         }
       }
       file.println("Region,"+(count+1));
-      // file.println(reg.size());
+      int col_code_num[]=new int[(count+1)];
+      for (int i=0; i<(count+1); i++) {
+        col_code_num[i]=-1;
+      }
       for (int b=0; b<reg.size(); b++) {
-        //for (int edgeID=0; edgeID<graph.edges.size(); edgeID++) {//////////col_codeが0の部分も描く必要ある？
-        //file.println(reg.get(b).cFgol_code);
+        //////////col_codeが0の部分も描く必要ある？
         region r = reg.get(b);
         file.print(r.col_code+",");
+        col_code_num[b]=int(r.col_code);
+        //count+1分の行を作成し、0を入れる  
         for (int bb=0; bb<r.border.size(); bb++) {
           Edge e=r.border.get(bb);
-          //////col_codeの番号
           file.print(e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
           file.print(",");
         }
         file.println();
-        //file.println(reg.get(b).col_code+","+e.ANodeID+","+e.ANodeRID+","+e.BNodeID+","+e.BNodeRID);
-        //file.println(reg.get(b).col_code+","+r.border.size());
-        //}
       }
-
-      ////ここにregion関連のデータを入れる
-      ////はじめに色情報、その次にedgeの番号
-      ////色情報はcol_codeでいける?
-
+      for (int i=0; i<(count+1); i++) {
+        if (col_code_num[i]==-1) {
+          file.println(0);
+        }
+      }
       file.println("BeadsKnotEnd");
       file.flush();
       file.close();
@@ -440,36 +445,26 @@ void fileSelected(File selection) {
               region RG;
               RG=new region(data, graph);
               RG.border.clear();
+              RG.border=new ArrayList<Edge>();
               for (int i=0; i<region_number; i++) {
                 line = reader.readLine(); 
                 pieces = split(line, ',');
-                //RG.col_code=int(pieces[0]);
                 Edge ed;
                 for (int l=0; l<(pieces.length)/4; l++) {//piecesの長さはいくつか
-                  //println(pieces[l*4+1]);
                   ed = new Edge(int(pieces[l*4+1]), int(pieces[l*4+2]), int(pieces[l*4+3]), int(pieces[(l+1)*4]));
-                  if (i==0) {
-                    //println(RG.col_code);
-                    //println(ed.ANodeID, ed.ANodeRID, ed.BNodeID, ed.BNodeRID);
-                    RG.col_code=int(pieces[0]);
+                  RG.col_code=int(pieces[0]);
+                  if (RG.col_code!=0) {
                     RG.border.add(ed);
                   }
                 }
-                //println(pieces[0]);
-
                 //pieces[0]はcol_codeになる
                 //ない行のpieces[0]のcol_codeは0(白)にする
-                //pieces[1]
-                //Edge ed = new Edge(int(pieces[0]), int(pieces[1]), int(pieces[2]), int(pieces[3]));
               }
               ///////RG.borderにデータは入っている
-              //このnodeのデータをもとに色を塗ればよい
-              println( RG.border.get(0).ANodeID, RG.border.get(0).ANodeRID, RG.border.get(0).BNodeID, RG.border.get(0).BNodeRID);
-              println( RG.border.get(1).ANodeID, RG.border.get(1).ANodeRID, RG.border.get(1).BNodeID, RG.border.get(1).BNodeRID);
-              println( RG.border.get(2).ANodeID, RG.border.get(2).ANodeRID, RG.border.get(2).BNodeID, RG.border.get(2).BNodeRID);
-              println( RG.border.get(3).ANodeID, RG.border.get(3).ANodeRID, RG.border.get(3).BNodeID, RG.border.get(3).BNodeRID);
-              reg.add(RG);
-              //println(RG.border.size());
+              //reg.add(RG);
+              //println(reg.size());
+              //どこかでregにaddをしなくてはいけない
+              println(RG.border.size());
             }
           }
         }
@@ -540,11 +535,7 @@ void mousePressed() {
     // orie.decide_orientation();
     Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
     region RG;
-    //  if (doubleClick) {
     RG=new region(data, graph);
-    //} else {
-    //RG=new region(data, graph, #87ceeb);
-    //}
     RG.get_region_from_Nbhd(nearNb);
     boolean painted=false;
     for (int r=0; r<reg.size(); r++) {
