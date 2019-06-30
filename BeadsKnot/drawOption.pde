@@ -15,6 +15,7 @@ class drawOption {
   boolean _show_points_nb;
   boolean _show_orientation_nb;
   boolean _mirror;
+  boolean _band_film;
 
 
   drawOption() {
@@ -39,6 +40,8 @@ class drawOption {
     _show_orientation_nb = false;
     
     _mirror=false;
+    
+    _band_film=false;
   }
 
   void menu() {
@@ -104,5 +107,10 @@ class drawOption {
   void mirror(){
     setAllOptionFalse();
     _mirror=true;
+  }
+  
+  void band_film(){
+   setAllOptionFalse();
+   _band_film=true;
   }
 };

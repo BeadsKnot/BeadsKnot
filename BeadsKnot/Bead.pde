@@ -12,6 +12,7 @@ class Bead {//点のクラス
   boolean midJoint;//crossingとcrossingの間のBeads
   boolean closeJoint;//crossingのやや隣
   boolean treated;//画像解析のときのみ使用
+  boolean bandJoint;//Jointの中でも膜を貼るときに使い、基本的に三本さんになる
   Bead(float _x, float _y) {
     x=_x;
     y=_y;
@@ -25,6 +26,7 @@ class Bead {//点のクラス
     midJoint=false;
     closeJoint=false;
     //treated=false;
+    bandJoint=false;
   }
 
   //BeadをNodeとみなした時の傾きthetaを計算する。
