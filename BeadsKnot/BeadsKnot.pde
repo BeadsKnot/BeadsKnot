@@ -1,4 +1,4 @@
-import java.awt.*;            //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+import java.awt.*;            //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -166,7 +166,8 @@ void keyPressed() {
   } else if ( key == 'o' || int(key)==15) {// o // ctrl+o///////////////////ファイルを開く
 
     selectInput("Select a file to process:", "fileSelected");
-    if (reg.size()>0) {
+    if (reg.size()>=0) {
+      println("OK");
       for (int i=0; i<reg.size(); i++) {
         reg.get(i).border.clear();
       }
@@ -474,11 +475,13 @@ void fileSelected(File selection) {
                 //pieces[0]はcol_codeになる
                 //ない行のpieces[0]のcol_codeは0(白)にする
               }
+              if (reg.size()!=0) {
+                Draw.beads_with_Seifelt();
+              }
               ///////RG.borderにデータは入っている
               // println(reg.size());
               //どこかでregにaddをしなくてはいけない
               //println(RG.border.size());
-              Draw.beads_with_Seifelt();
             }
           }
         }
@@ -1200,15 +1203,14 @@ void mouseReleased() {
               Bead e=data.getBead(ptID);
               s.bandJoint=true;
               e.bandJoint=true;
-               //bandJointは三本を許すJointっぽい
-              data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
-              data.extinguish(count_for_distinguishing_edge); 
-              data.extinguish_startID_and_endID(i, startID, ptID);
-              mouse.trace_to_parts_editing2(data, startID, ptID);
+              //bandJointは三本を許すJointっぽいものが必要
+              //data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
+              //data.extinguish(count_for_distinguishing_edge); 
+              //data.extinguish_startID_and_endID(i, startID, ptID);
+              mouse.trace_to_parts_editing3(data, startID, ptID);
               //できないときに
               //startIDとptIDをJointみたいにして
               //線を描画できるようにする
-              println("0");
             }
           }
         }

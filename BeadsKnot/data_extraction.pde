@@ -186,7 +186,7 @@ class data_extract {       //<>//
           fill(80, 255, 80);
         }
         c=4;
-      } else if (vec.midJoint) {
+      } else if (vec.midJoint||vec.bandJoint) {
         stroke(0);
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(255, 0, 180);

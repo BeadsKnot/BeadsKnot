@@ -39,9 +39,11 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
     for (int i=0; i<de.points.size (); i++) {
       Bead vec=de.getBead(i);
       if (vec!=null) {
-        if (vec.Joint) {
+        if (vec.Joint||vec.bandJoint) {
           if (vec.u1<0||vec.u1>=de.points.size()||vec.u2<0||vec.u2>=de.points.size()) {
-            continue;
+            if (!vec.bandJoint||(vec.u1!=-1&&vec.u2!=-1)) {
+              continue;
+            }
           }
           //println(vec.n1, vec.u1, vec.n2, vec.u2);
           Bead vecn1=de.getBead(vec.n1);
@@ -52,10 +54,18 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
           float y0=vecn1.y;
           Bead vecu1=de.getBead(vec.u1);
           if (vecu1==null) {
-            continue;
+            if (!vec.bandJoint) {
+              continue;
+            }
           }
-          float x1=vecu1.x;
-          float y1=vecu1.y;
+          float x1, y1;
+          if (vec.bandJoint&&vecu1==null) {
+            x1=vec.x;
+            y1=vec.y;
+          } else {
+            x1=vecu1.x;
+            y1=vecu1.y;
+          }
           Bead vecn2=de.getBead(vec.n2);
           if (vecn2==null) {
             continue;
@@ -64,10 +74,18 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
           float y2=vecn2.y;
           Bead vecu2=de.getBead(vec.u2);
           if (vecu2==null) {
-            continue;
+            if (!vec.bandJoint) {
+              continue;
+            }
           }
-          float x3=vecu2.x;
-          float y3=vecu2.y;
+          float x3, y3;
+          if (vec.bandJoint&&vecu2==null) {
+            x3=vec.x;
+            y3=vec.y;
+          } else {
+            x3=vecu2.x;
+            y3=vecu2.y;
+          }
           float x02=x0-x2;//a
           float y02=y0-y2;//b
           float x13=x1-x3;//c
@@ -221,7 +239,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
       if (p==null) {
         return -1;
       }
-      if (p.Joint||p.midJoint) {
+      if (p.Joint||p.midJoint||p.bandJoint) {
         return j;
       }
       int d=0;
@@ -250,7 +268,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
       if (p==null) {
         return -1;
       }
-      if (p.Joint||p.midJoint) {
+      if (p.Joint||p.midJoint||p.bandJoint) {
         return c;
       }
       int d=0;
@@ -366,7 +384,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
       if (vec==null) {
         continue;
       }
-      if (vec.Joint||vec.midJoint) {
+      if (vec.Joint||vec.midJoint||vec.bandJoint) {
         count++;
       }
     }
@@ -377,7 +395,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
       if (vec==null) {
         continue;
       }
-      if (vec.Joint||vec.midJoint) {
+      if (vec.Joint||vec.midJoint||vec.bandJoint) {
         table[count]=i;
         count++;
       }
@@ -531,7 +549,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
       if (pt==null) {
         continue;
       }
-      if (pt.Joint || pt.midJoint) {// ここではtable[]を使っていないが・・・
+      if (pt.Joint || pt.midJoint||pt.bandJoint) {// ここではtable[]を使っていないが・・・
         Node nd = new Node(pt.x, pt.y);
         nd.theta = pt.getTheta(de.points);
         nd.pointID = p; // これがtableのかわり。
@@ -541,6 +559,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
         nodes.add(nd);
       }
     }
+    println("nodeサイズ"+nodes.size());
   }
 
   //edgesのデータを作る。このとき、edgeに付随するbeadのデータも残しておく。
@@ -550,10 +569,11 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
       if (a==null) {
         continue;
       }
-      if (a.Joint||a.midJoint) {
+      if (a.Joint||a.midJoint||a.bandJoint) {
         // Log.d("getNodesFromPoint(i)は",""+getNodesFromPoint(i));
         // Bead b=getBead(a.n1);
         // Bead c=a.findNextJoint(points,b);
+        ///n1の作業
         int b=findNeighborJointInPoints(i, a.n1);
         int c=findJointInPoints(i, a.n1);
         int j=getNodesFromPoint(c);
@@ -563,18 +583,20 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
         if ((j > h) || (j==h && k>0)) {
           edges.add(new Edge(h, 0, j, k));
         }
-        //b=getBead(a.n2);
-        //c=a.findNextJoint(points,b);
-        if (a.Joint) {
-          b = findNeighborJointInPoints(i, a.u1);
-          c = findJointInPoints(i, a.u1);
-          j = getNodesFromPoint(c);
-          k = findk(de.getBead(c), b);
-          // Log.d("1の行先は",""+getNodesFromPoint(c)+","+k);
-          if ((j > h) || (j==h && k>1)) {
-            edges.add(new Edge(h, 1, j, k));
+        //u1の作業
+        if (a.Joint||a.bandJoint) {
+          if (a.u1!=-1) {
+            b = findNeighborJointInPoints(i, a.u1);
+            c = findJointInPoints(i, a.u1);
+            j = getNodesFromPoint(c);
+            k = findk(de.getBead(c), b);
+            // Log.d("1の行先は",""+getNodesFromPoint(c)+","+k);
+            if ((j > h) || (j==h && k>1)) {
+              edges.add(new Edge(h, 1, j, k));
+            }
           }
         }
+        ///n2の作業
         b=findNeighborJointInPoints(i, a.n2);
         c=findJointInPoints(i, a.n2);
         j=getNodesFromPoint(c);
@@ -583,18 +605,17 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
         if ((j > h) || (j==h && k>2)) {
           edges.add(new Edge(h, 2, j, k));
         }
-        if (a.Joint) {
-          //b=getBead(a.u1);
-          //c=a.findNextJoint(points,b);
-          //b=getBead(a.u2);
-          //c=a.findNextJoint(points,b);
-          b = findNeighborJointInPoints(i, a.u2);
-          c = findJointInPoints(i, a.u2);
-          j = getNodesFromPoint(c);
-          k = findk(de.getBead(c), b);
-          //Log.d("3の行先は",""+getNodesFromPoint(c)+","+k);
-          if (j > h) {
-            edges.add(new Edge(h, 3, j, k));
+        //u2の作業
+        if (a.Joint||a.bandJoint) {
+          if (a.u2!=-1) {
+            b = findNeighborJointInPoints(i, a.u2);
+            c = findJointInPoints(i, a.u2);
+            j = getNodesFromPoint(c);
+            k = findk(de.getBead(c), b);
+            //Log.d("3の行先は",""+getNodesFromPoint(c)+","+k);
+            if (j > h) {
+              edges.add(new Edge(h, 3, j, k));
+            }
           }
         }
       }
@@ -841,7 +862,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>//
       Bead bd = de.getBead(ptID);
       if (bd!=null) {
         float d = dist(disp.get_winX(bd.x), disp.get_winY(bd.y), vecX, vecY); 
-        if ((bd.Joint || bd.midJoint) && d<10 && d<minDist) {
+        if ((bd.Joint || bd.midJoint||bd.bandJoint) && d<10 && d<minDist) {
           retID = ptID;
         }
       }
