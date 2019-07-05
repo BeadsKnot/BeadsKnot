@@ -64,7 +64,7 @@ class region { //<>// //<>//
           endShape();
           return;
         }
-        if (j.Joint||j.midJoint) {
+        if (j.Joint||j.midJoint||j.bandJoint) {
           vertex(disp.get_winX(j.x), disp.get_winY(j.y));
         }
         vertex(disp.get_winX(c.x), disp.get_winY(c.y));
@@ -179,7 +179,7 @@ class region { //<>// //<>//
     for (int repeat=0; repeat < repeatmax; repeat++) {
       // go straight
       //print(a,b);
-      if ( ! ptA.Joint&&!ptA.midJoint) {
+      if ( ! ptA.Joint&&!ptA.midJoint&&!ptA.bandJoint) {
         if (ptA.n1 == b) {
           c = ptA.n2;
         } else if (ptA.n2 == b) {
@@ -241,6 +241,9 @@ class region { //<>// //<>//
         if (ptB==null) {
           return;
         }
+      } else if (ptA.bandJoint) {
+        println(ptA.n1);
+     ///////////////////////////////////////////
       }
       // jointのデータからedgeのIDを取得する
       else {  

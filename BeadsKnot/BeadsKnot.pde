@@ -107,6 +107,7 @@ void draw() {
       mouse.draw_trace();
     }
   } else if (Draw._band_film) {
+    disp.modify();
     data.drawNbhds();
     data.drawPoints();
     if (mouse.new_curve) {
@@ -167,7 +168,6 @@ void keyPressed() {
 
     selectInput("Select a file to process:", "fileSelected");
     if (reg.size()>=0) {
-      println("OK");
       for (int i=0; i<reg.size(); i++) {
         reg.get(i).border.clear();
       }
@@ -211,8 +211,8 @@ void keyPressed() {
     }
   } else if (key=='b') {
     println("バンド膜を貼ります");
-    Draw._band_film=true;
-    Draw._beads=false;
+    Draw.band_film();
+    //Draw._beads=false;
   } else if (key=='d') {///////////////////////////////ドーカーコードを表示する
     println("ドーカーコードを表示します");
     orie.decide_orientation();
@@ -1208,6 +1208,8 @@ void mouseReleased() {
               //data.extinguish(count_for_distinguishing_edge); 
               //data.extinguish_startID_and_endID(i, startID, ptID);
               mouse.trace_to_parts_editing3(data, startID, ptID);
+              //if(){
+              //}
               //できないときに
               //startIDとptIDをJointみたいにして
               //線を描画できるようにする
