@@ -242,8 +242,69 @@ class region { //<>// //<>//
           return;
         }
       } else if (ptA.bandJoint) {
-        println(ptA.n1);
-     ///////////////////////////////////////////
+        //Jointみたいな扱いにして曲げることができるかできないかで分ける
+        int nu12=-1;
+        if (ptA.n1 == b) {
+          if (ptA.u1==-1) {
+            c=ptA.u2;
+            nu12=3;
+            //println("曲げる");
+          } else {
+            c = ptA.n2;
+            nu12=2;
+          }
+        } else if (ptA.n2 == b) {
+          if (ptA.u2==-1) {
+            c=ptA.u1;
+            nu12=1;
+            //println("曲げる");
+          } else {
+            c = ptA.n1;
+            nu12=0;
+          }
+        } else if (ptA.u1 == b) {
+          c=ptA.n1;
+          nu12=0;
+          //println("曲げる");
+        } else if (ptA.u2 == b) {
+          c=ptA.n2;
+          nu12=2;
+          //println("曲げる");
+        } else {
+          println("get_region_from_Nbhd 1: error");
+          return;
+        }
+        //A,Cから始まるedgeを見つける
+        int nodeID=-1;
+        for (int nID=0; nID<dg.nodes.size(); nID++) {
+          Node n=dg.nodes.get(nID);
+          if (n.pointID==a) {
+            nodeID=nID;
+          }
+        }
+        // println("now at", nodeID, nu12);
+        for (int eID=0; eID<dg.edges.size(); eID++) {
+          Edge e=dg.edges.get(eID);
+          //println("A=", e.ANodeID, e.ANodeRID);
+          //println("B=",e.BNodeID,e.BNodeRID);
+          if (e.ANodeID==nodeID&&e.ANodeRID==nu12) {
+            // println("MidJointのe.ANodeIDは"+e.ANodeID, "e.ANodeRIDは"+e.ANodeRID, "e.BNodeIDは"+e.BNodeID, "e.BNodeRIDは"+e.BNodeRID);
+            border.add(e);
+          } else if (e.BNodeID==nodeID&&e.BNodeRID==nu12) {
+            //println("MidJointのe.ANodeIDは"+e.ANodeID, "e.ANodeRIDは"+e.ANodeRID, "e.BNodeIDは"+e.BNodeID, "e.BNodeRIDは"+e.BNodeRID);
+            border.add(e);
+          }
+        }
+        b = a;
+        a = c;
+        ptA= de.getBead(a);
+        if (ptA==null) {
+          return;
+        }
+        ptB = de.getBead(b);
+        if (ptB==null) {
+          return;
+        }
       }
       // jointのデータからedgeのIDを取得する
       else {  
