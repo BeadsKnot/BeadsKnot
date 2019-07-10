@@ -1,10 +1,12 @@
 class region { //<>// //<>//
   ArrayList <Edge> border;
+  ArrayList<Nbhd> atm;
   data_extract de;
   data_graph dg;
   int col_code;
   region(data_extract _de, data_graph _dg) {
     border=new ArrayList <Edge>();
+    atm=new ArrayList<Nbhd>();
     de=_de;
     dg=_dg;
     col_code=1;
@@ -308,6 +310,7 @@ class region { //<>// //<>//
       }
       // jointのデータからedgeのIDを取得する
       else {  
+        println(ptA.n1, ptA.n2, ptA.u1, ptA.u2);
         /////////////////////////////////////////ptAがJointのとき
         // println("is a joint");
         int n1=ptA.n1;
@@ -323,20 +326,53 @@ class region { //<>// //<>//
           // c=ptA.u1;
           c=ptA.u2;
           nu12=3;
+          println("ptA.n2は"+ptA.n2);
+          Bead bn2=de.getBead(ptA.n2);
+          Bead bn2n2=de.getBead(bn2.n2);
+          if (bn2n2.Joint) {
+            atm.add(new Nbhd(ptA.n2, bn2.n1));
+          } else {
+            atm.add(new Nbhd(ptA.n2, bn2.n2));
+          }
+          // cross.add(new Nbhd(i, minJ));
         } else if (b==ptA.u1) {
           //c=ptA.n2;
           c=ptA.n1;
           nu12=0;
           //nu12=0;
+          println("ptA.u2は"+ptA.u2);
+          Bead bu2=de.getBead(ptA.u2);
+          Bead bu2n2=de.getBead(bu2.n2);
+          if (bu2n2.Joint) {
+            atm.add(new Nbhd(ptA.u2, bu2.n1));
+          } else {
+            atm.add(new Nbhd(ptA.u2, bu2.n2));
+          }
         } else if (b==ptA.n2) {
           //c=ptA.u2;
           c=ptA.u1;
           nu12=1;
+          println("ptA.n1は"+ptA.n1);
+          Bead bn1=de.getBead(ptA.n1);
+          Bead bn1n2=de.getBead(bn1.n2);
+          if (bn1n2.Joint) {
+            atm.add(new Nbhd(ptA.n1, bn1.n1));
+          } else {
+            atm.add(new Nbhd(ptA.n1, bn1.n2));
+          }
         } else if (b==ptA.u2) {
           //c=ptA.n1;
           c=ptA.n2;
           //nu12=4;
           nu12=2;
+          println("ptA.u1は"+ptA.u1);
+          Bead bu1=de.getBead(ptA.u1);
+          Bead bu1n2=de.getBead(bu1.n2);
+          if (bu1n2.Joint) {
+            atm.add(new Nbhd(ptA.u1, bu1.n1));
+          } else {
+            atm.add(new Nbhd(ptA.u1, bu1.n2));
+          }
         } else {
           println("get_region_from_Nbhd 2: error", ptA.n1, ptA.u1, ptA.n2, ptA.u2, b);
           return ;
@@ -377,10 +413,14 @@ class region { //<>// //<>//
         break;
       }
     }
-    for (int bo=0; bo<border.size(); bo++) {
-      Edge e=border.get(bo);
-      //println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
+    for (int i=0; i<atm.size(); i++) {
+      println(atm.get(i).a, atm.get(i).b);
     }
+
+    //for (int bo=0; bo<border.size(); bo++) {
+    //  Edge e=border.get(bo);
+    //println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
+    //}
     return;
   }
 

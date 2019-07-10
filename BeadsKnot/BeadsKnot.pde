@@ -135,12 +135,12 @@ void draw() {
     for (int repeat = 0; repeat<10; repeat++) {
       Nbhd nearNb = data.get_near_nbhd(mX, mY);
       if (nearNb == null) {
-        println("break;");
+        //println("break;");
         break;
       }
       int count = data.smoothingRegionContainsPt(mouseX, mouseY, nearNb, false);
       if (count<0) {
-        println("break;");
+        // println("break;");
         break;
       }
       if (count%2 == 1) {
@@ -148,7 +148,7 @@ void draw() {
         break;
       } else {
         mX = data.nearX+1f;
-        println(count, int(mX), " ");
+        //println(count, int(mX), " ");
       }
     }
     data.draw_smoothing_Nbhds();
@@ -569,6 +569,8 @@ void mousePressed() {
       //Jointクリックでは何もしない
       //ptIDは-1のときには領域を塗る
     } else {
+
+      //////////////////////////この辺にほかの領域も自動的に塗れる関数を呼んだりする予定
       Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
       region RG;
       RG=new region(data, graph);
@@ -584,6 +586,7 @@ void mousePressed() {
       if (!painted) {
         reg.add(RG);
       }
+      //RG.get_region_from_Nbhd(RG.atm.get(0));
     }
   }
 }
@@ -860,7 +863,7 @@ void mouseReleased() {
               if (edgeN1 != null) {
                 //そのビーズのmidJointをfalseにする。
                 bd.midJoint = false;
-                //エッジを合流し、一つをedgesから消す。
+                //エッジを合流し、一つをoedgesから消す。
                 edgeN1.ANodeID = ANode;
                 edgeN1.ANodeRID = ANodeR;
                 edgeN1.BNodeID = BNode;
