@@ -1,4 +1,4 @@
-import java.awt.*;            //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+import java.awt.*;            //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -242,6 +242,7 @@ void keyPressed() {
     }
   } else if (key=='S') {//////ザイフェルト膜を貼った絵を描画する
     println("ザイフェルト膜を貼るモード");
+    orie.decide_orientation();
     Draw.beads_with_Seifelt();
     //} else if (key=='z') {/////////////////////////////////現在使われていない
     //  dowker dk = new dowker(graph); 
@@ -460,7 +461,7 @@ void fileSelected(File selection) {
               //RG.border.clear();
               //RG.border=new ArrayList<Edge>();
               for (int i=0; i<region_number; i++) {
-                RG=new region(data, graph);
+                RG=new region(data, graph, orie);
                 line = reader.readLine(); 
                 pieces = split(line, ',');
                 Edge ed;
@@ -569,12 +570,11 @@ void mousePressed() {
       //Jointクリックでは何もしない
       //ptIDは-1のときには領域を塗る
     } else {
-
-      //////////////////////////この辺にほかの領域も自動的に塗れる関数を呼んだりする予定
       Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
       region RG;
-      RG=new region(data, graph);
+      RG=new region(data, graph, orie);
       RG.get_region_from_Nbhd(nearNb);
+      RG.click_orientatio_for_auto(nearNb);
       boolean painted=false;
       for (int r=0; r<reg.size(); r++) {
         if (reg.get(r).match_region(RG)) {
@@ -586,7 +586,6 @@ void mousePressed() {
       if (!painted) {
         reg.add(RG);
       }
-      //RG.get_region_from_Nbhd(RG.atm.get(0));
     }
   }
 }
