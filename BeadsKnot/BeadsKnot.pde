@@ -14,7 +14,8 @@ drawOption Draw;// 描画に関するオプション
 mouseDrag mouse;
 parts_editing edit;
 orientation orie;
-ArrayList <region> reg;
+//ArrayList <region> reg;
+seifert seif;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
 int startID;
@@ -33,7 +34,8 @@ void setup() {
   mouse = new mouseDrag();
   edit = new parts_editing();
   orie=new orientation(data, graph);
-  reg=new ArrayList<region>();
+  //reg=new ArrayList<region>();
+  seif=new seifert();
 }
 
 
@@ -98,7 +100,7 @@ void draw() {
     strokeWeight(1);
   } else if (Draw._beads_with_Seifelt) {
     disp.modify();
-    for (region r : reg) {
+    for (region r : seif.reg) {
       r.paintRegion();
     }
     data.drawNbhds();
@@ -167,11 +169,11 @@ void keyPressed() {
   } else if ( key == 'o' || int(key)==15) {// o // ctrl+o///////////////////ファイルを開く
 
     selectInput("Select a file to process:", "fileSelected");
-    if (reg.size()>=0) {
-      for (int i=0; i<reg.size(); i++) {
-        reg.get(i).border.clear();
+    if (seif.reg.size()>=0) {
+      for (int i=0; i<seif.reg.size(); i++) {
+        seif.reg.get(i).border.clear();
       }
-      reg.clear();
+      seif.reg.clear();
     }
     //} else if (key == 'm') { // modify/////////////////////////////////使っていない変形モード
     //  if (Draw._data_graph) {
@@ -203,11 +205,11 @@ void keyPressed() {
   } else if (keyCode==SHIFT) {/////////////////////////交点を割いた絵の描画を解除する
     Draw._beads=true;
     orie.decide_orientation();
-    if (reg.size()>0) {
-      for (int i=0; i<reg.size(); i++) {
-        reg.get(i).border.clear();
+    if (seif.reg.size()>0) {
+      for (int i=0; i<seif.reg.size(); i++) {
+        seif.reg.get(i).border.clear();
       }
-      reg.clear();
+      seif.reg.clear();
     }
   } else if (key=='b') {
     println("バンド膜を貼ります");
@@ -299,14 +301,14 @@ void saveFileSelect(File selection) {
       //    count++;
       //  }
       //}
-      file.println("Region,"+reg.size());
+      file.println("Region,"+seif.reg.size());
       //int col_code_num[]=new int[(count+1)];
       //for (int i=0; i<(count+1); i++) {
       //col_code_num[i]=-1;
       //}
-      for (int b=0; b<reg.size(); b++) {
+      for (int b=0; b<seif.reg.size(); b++) {
         //////////col_codeが0の部分も描く必要ある？
-        region r = reg.get(b);
+        region r = seif.reg.get(b);
         file.print(r.col_code+",");
         //col_code_num[b]=int(r.col_code);
         //count+1分の行を作成し、0を入れる  
@@ -456,7 +458,7 @@ void fileSelected(File selection) {
             if (pieces[0].equals("Region")) {
               //ここから書く
               int region_number = int(pieces[1]);
-              reg.clear(); 
+              seif.reg.clear(); 
               region RG;
               //RG.border.clear();
               //RG.border=new ArrayList<Edge>();
@@ -472,11 +474,11 @@ void fileSelected(File selection) {
                     RG.border.add(ed);
                   }
                 }
-                reg.add(RG);
+                seif.reg.add(RG);
                 //pieces[0]はcol_codeになる
                 //ない行のpieces[0]のcol_codeは0(白)にする
               }
-              if (reg.size()!=0) {
+              if (seif.reg.size()!=0) {
                 Draw.beads_with_Seifelt();
               }
               ///////RG.borderにデータは入っている
@@ -565,6 +567,20 @@ void mousePressed() {
           mouse.new_curve=true;
           mouse.free_dragging = true;
         }
+      } else {
+        mouse.node_dragging = true;
+        for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
+          Node nd = graph.nodes.get(ndID); 
+          if (nd.inUse && nd.pointID == jointID) {
+            mouse.dragged_nodeID = ndID;
+            int pt0ID = graph.nodes.get(mouse.dragged_nodeID).pointID;
+            Bead pt0 = data.getBead(pt0ID);
+            mouse.DragX = pt0.x;
+            mouse.DragY = pt0.y;
+            println("ノードのドラッグ開始");
+            return;
+          }
+        }
       }
       //ptIDが-1でなくてjointIDは-1のときにマウストラックを取りに行く
       //Jointクリックでは何もしない
@@ -576,15 +592,15 @@ void mousePressed() {
       RG.get_region_from_Nbhd(nearNb);
       RG.click_orientatio_for_auto(nearNb);
       boolean painted=false;
-      for (int r=0; r<reg.size(); r++) {
-        if (reg.get(r).match_region(RG)) {
-          reg.get(r).col_code=(reg.get(r).col_code+1)%3;
+      for (int r=0; r<seif.reg.size(); r++) {
+        if (seif.reg.get(r).match_region(RG)) {
+          seif.reg.get(r).col_code=(seif.reg.get(r).col_code+1)%3;
           painted=true;
           //reg.get(r)の色に従って色を変える
         }
       }
       if (!painted) {
-        reg.add(RG);
+        seif.reg.add(RG);
       }
     }
   }
@@ -593,12 +609,12 @@ void mousePressed() {
 void mouseDragged() {
   //if (Draw._beads) {
   if (Draw._beads||Draw._smoothing||Draw._beads_with_Seifelt||Draw._band_film) {
-    if (mouse.node_dragging && mouse.dragged_nodeID!=-1) {
+    if (mouse.node_dragging && mouse.dragged_nodeID!=-1) {//ドラッグされたらと同じ意味
       float mX = disp.getX_fromWin(mouseX);
       float mY = disp.getY_fromWin(mouseY);
 
       float mouseDragmin_dist = dist(mouse.DragX, mouse.DragY, mX, mY);
-      for (int ndID=0; ndID<graph.nodes.size(); ndID++) {
+      for (int ndID=0; ndID<graph.nodes.size(); ndID++) {//beadsが近づきすぎない
         if (ndID != mouse.dragged_nodeID) {
           Node nd = graph.nodes.get(ndID);
           if (nd.inUse) {

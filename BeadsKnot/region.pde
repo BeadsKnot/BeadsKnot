@@ -1,7 +1,7 @@
 class region { //<>// //<>//
   ArrayList <Edge> border;
   ArrayList<Nbhd> atm;//どのn1もしくはn2もしくはu1もしくはu2が使われていたのかを知るために必要なペア
-  ArrayList<Bead> saveJoint;
+  ArrayList<Bead> saveJoint;//クリックしたときに通過したjointのBeadsの番号を格納する配列
   data_extract de;
   data_graph dg;
   int col_code;
@@ -724,88 +724,26 @@ class region { //<>// //<>//
   }
 
   void auto_get_region(ArrayList <Nbhd> auto, ArrayList <Bead> sj) {
-    //auto.aはn1またはn2
-    //auto.bはu1またはu2
-    //atmとsaveJointを引数にする
-    //atmとsaveJointのsizeは同じ
-    for (int i=0; i<auto.size(); i++) {
-      Bead a=de.getBead(auto.get(i).a);
-      Bead b=de.getBead(auto.get(i).b);
-      Bead j=sj.get(i);
-      //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
-      if (de.getBead(j.n1)==a) {
-        if (de.getBead(j.u1)==b) {
-          //4個の場合分け
-          if (orie.orientation_greater(j.n2, j.n1)==1) {
-            if (orie.orientation_greater(j.u2, j.u1)==1) {
-              //bandも入れると3面貼りたい(band以外同じ色)
-              Bead beadu=de.getBead(j.u2);
-              Bead beadn=de.getBead(j.n2);
-              if (de.getBead(beadu.n2)==j) {
-                get_region_from_Nbhd(j.u2, bead.n1);
-              } else if (de.getBead(beadu.n1)==j) {
-                get_region_from_Nbhd(j.u2, bead.n2);
-              }
-              if (de.getBead(beadn.n2)==j) {
-                get_region_from_Nbhd(j.n2, bead.n1);
-              } else if (de.getBead(beadn.n1)==j) {
-                get_region_from_Nbhd(j.n2, bead.n2);
-              }
-              //bandの分はn1からスタート
-            } else if (orie.orientation_greater(j.u1, j.u2)==1) {
-              //反対の1面だけ違う色を貼りたい
-              Bead bead=de.getBead(j.u2);
-              if (de.getBead(bead.n2)==j) {
-                get_region_from_Nbhd(j.u2, bead.n1);
-              } else if (de.getBead(bead.n1)==j) {
-                get_region_from_Nbhd(j.u2, bead.n2);
-              }
-            }
-          } else if (orie.orientation_greater(j.n1, j.n2)==1) {
-            if (orie.orientation_greater(j.u1, j.u2)==1) {
-              //bandも入れると3面貼りたい(band以外同じ色)
-            } else if (orie.orientation_greater(j.u2, j.u1)==1) {
-              //反対の1面だけ違う色を貼りたい
-              Bead bead=de.getBead(j.u2);
-              if (de.getBead(bead.n2)==j) {
-                get_region_from_Nbhd(j.u2, bead.n1);
-              } else if (de.getBead(bead.n1)==j) {
-                get_region_from_Nbhd(j.u2, bead.n2);
-              }
-            }
-          }
-        } else if (de.getBead(j.u2)==b) {
-          //4個の場合分け
-        }
-      } else if (de.getBead(j.n2)==a) {
-        if (de.getBead(j.u1)==b) {
-          //4個の場合分け
-        } else if (de.getBead(j.u2)==b) {
-          //4個の場合分け
-        }
-      }
-    }
   }
-}
 
-boolean match_region(region _r) {
-  if (_r==null) {
-    return false;
-  }
-  if (_r.border.size()!=border.size()) {
-    return false;
-  }
-  int count=0;
-  for (int r=0; r<_r.border.size(); r++) {  
-    for (int b=0; b<border.size(); b++) {  
-      if (_r.border.get(r).matchEdge(border.get(b))) {
-        count++;
-        if (count==_r.border.size()) {
-          return true;
+  boolean match_region(region _r) {
+    if (_r==null) {
+      return false;
+    }
+    if (_r.border.size()!=border.size()) {
+      return false;
+    }
+    int count=0;
+    for (int r=0; r<_r.border.size(); r++) {  
+      for (int b=0; b<border.size(); b++) {  
+        if (_r.border.get(r).matchEdge(border.get(b))) {
+          count++;
+          if (count==_r.border.size()) {
+            return true;
+          }
         }
       }
     }
+    return false;
   }
-  return false;
-}
 }
