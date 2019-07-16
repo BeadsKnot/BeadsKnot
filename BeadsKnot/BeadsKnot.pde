@@ -590,7 +590,6 @@ void mousePressed() {
       region RG;
       RG=new region(data, graph, orie);
       RG.get_region_from_Nbhd(nearNb);
-      RG.click_orientatio_for_auto(nearNb);
       boolean painted=false;
       for (int r=0; r<seif.reg.size(); r++) {
         if (seif.reg.get(r).match_region(RG)) {
@@ -602,6 +601,7 @@ void mousePressed() {
       if (!painted) {
         seif.reg.add(RG);
       }
+      seif.find_nbhd_region(RG);
     }
   }
 }
