@@ -1,4 +1,4 @@
-class region { //<>// //<>//
+class region { //<>// //<>// //<>//
   ArrayList <Edge> border;
   ArrayList<Nbhd> atm;//どのn1もしくはn2もしくはu1もしくはu2が使われていたのかを知るために必要なペア
   ArrayList<Bead> saveJoint;//クリックしたときに通過したjointのBeadsの番号を格納する配列

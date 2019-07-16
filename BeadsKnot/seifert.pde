@@ -69,7 +69,7 @@ class seifert {
       //anotherRIDは0か2
       if (anotherRID==0) {
         if (oneRID==1) {
-          if (r.orie.orientation_greater(j.n2, j.n1)==1&&r.orie.orientation_greater(j.u1, j.u2)==1) {
+          if ((r.orie.orientation_greater(j.n2, j.n1)==1&&r.orie.orientation_greater(j.u1, j.u2)==1)||(r.orie.orientation_greater(j.n1, j.n2)==1&&r.orie.orientation_greater(j.u2, j.u1)==1)) {
             Bead n2=r.de.getBead(j.n2);
             if (r.de.getBead(n2.n1).Joint) {
               //j.n2とn2.n2をnbhdにして色を塗る
@@ -78,7 +78,7 @@ class seifert {
             }
           }
         } else if (oneRID==3) {
-          if (r.orie.orientation_greater(j.n2, j.n1)==1&&r.orie.orientation_greater(j.u2, j.u1)==1) {
+          if ((r.orie.orientation_greater(j.n2, j.n1)==1&&r.orie.orientation_greater(j.u2, j.u1)==1)||(r.orie.orientation_greater(j.n1, j.n2)==1&&r.orie.orientation_greater(j.u1, j.u2)==1)) {
             Bead n2=r.de.getBead(j.n2);
             if (r.de.getBead(n2.n1).Joint) {
               //j.n2とn2.n2をnbhdにして色を塗る
@@ -89,7 +89,7 @@ class seifert {
         }
       } else if (anotherRID==2) {
         if (oneRID==1) {
-          if (r.orie.orientation_greater(j.n1, j.n2)==1&&r.orie.orientation_greater(j.u1, j.u2)==1) {
+          if ((r.orie.orientation_greater(j.n1, j.n2)==1&&r.orie.orientation_greater(j.u1, j.u2)==1)||(r.orie.orientation_greater(j.n2, j.n1)==1&&r.orie.orientation_greater(j.u2, j.u1)==1)) {
             Bead n1=r.de.getBead(j.n1);
             if (r.de.getBead(n1.n1).Joint) {
               //j.n1とn1.n2をnbhdにして色を塗る
@@ -98,7 +98,7 @@ class seifert {
             }
           }
         } else if (oneRID==3) {
-          if (r.orie.orientation_greater(j.n1, j.n2)==1&&r.orie.orientation_greater(j.u2, j.u1)==1) {
+          if ((r.orie.orientation_greater(j.n1, j.n2)==1&&r.orie.orientation_greater(j.u2, j.u1)==1)||(r.orie.orientation_greater(j.n2, j.n1)==1&&r.orie.orientation_greater(j.u1, j.u2)==1)) {
             Bead n1=r.de.getBead(j.n1);
             if (r.de.getBead(n1.n1).Joint) {
               //j.n1とn1.n2をnbhdにして色を塗る

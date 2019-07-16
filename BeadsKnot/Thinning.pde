@@ -1,4 +1,4 @@
-class Thinning {      //<>//
+class Thinning {      //<>// //<>//
   data_extract DE;
   int w, h;
   int d_new[][];
@@ -59,7 +59,7 @@ class Thinning {      //<>//
       if (pt != null) {
         if (!pt.Joint && pt.c!=2) {
           return false;
-        }     //<>//
+        }     //<>// //<>//
       }
     }
     return true;
