@@ -1903,4 +1903,18 @@ class data_extract {       //<>// //<>// //<>// //<>// //<>//
       pp.y = y + height/2;
     }
   }
+  int getNextBead(int aID, int bID) {
+    Bead b=getBead(bID);
+    if (b==null) {
+      return -1;
+    } else {
+      if (b.n1==aID) {
+        return b.n2;
+      } else if (b.n2==aID) {
+        return b.n1;
+      } else {
+        return -1;
+      }
+    }
+  }
 }

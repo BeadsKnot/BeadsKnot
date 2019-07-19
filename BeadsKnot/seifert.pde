@@ -1,4 +1,4 @@
-class seifert {
+class seifert { //<>//
   ArrayList <region> reg;
   seifert() {
     reg=new ArrayList<region>();
@@ -12,15 +12,19 @@ class seifert {
       int oneRID=-1;
       int anotherRID=-1;
       int nodeID=-1;
-      //edgeの番号のBeadsの番号を知る方法
+      int nodePointID=-1;
       Node ANode=r.dg.nodes.get(AnodeID);
       Node BNode=r.dg.nodes.get(BnodeID);
       Bead j=r.de.getBead(0);
-      ;
+      int nodeRID[]=new int[4];
       if (AnodeRID==1||AnodeRID==3) {
         nodeID=AnodeID;
         println("nodeIDは"+nodeID);
+        nodePointID=ANode.pointID;
         j=r.de.getBead(ANode.pointID);
+        for (int n=0; n<3; n++) {
+          nodeRID[n]=j.get_un12(n);
+        }
         oneRID=AnodeRID;
         println("oneRIDは"+oneRID);
         for (Edge ed : r.border) {
@@ -45,7 +49,11 @@ class seifert {
         oneRID=BnodeRID;
         println("nodeIDは"+nodeID);
         println("oneRIDは"+oneRID);
+        nodePointID=BNode.pointID;
         j=r.de.getBead(BNode.pointID);
+        for (int n=0; n<3; n++) {
+          nodeRID[n]=j.get_un12(n);
+        }
         for (Edge ed : r.border) {
           if (ed.ANodeID==nodeID) {
             if (ed.ANodeRID==0||ed.ANodeRID==2) {
@@ -62,19 +70,25 @@ class seifert {
             }
           }
         }
-        break;
       }
       //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
       //oneRIDは1か3
       //anotherRIDは0か2
+      int n_orie=r.orie.orientation_greater(j.n2, j.n1);
+      int u_orie=r.orie.orientation_greater(j.u2, j.u1);
+      for (int n=0; n<4; n++) {
+        println("findbandJointは"+findBandJoint(r, nodePointID, nodeRID[n]));
+      }
       if (anotherRID==0) {
         if (oneRID==1) {
           if ((r.orie.orientation_greater(j.n2, j.n1)==1&&r.orie.orientation_greater(j.u1, j.u2)==1)||(r.orie.orientation_greater(j.n1, j.n2)==1&&r.orie.orientation_greater(j.u2, j.u1)==1)) {
             Bead n2=r.de.getBead(j.n2);
             if (r.de.getBead(n2.n1).Joint) {
               //j.n2とn2.n2をnbhdにして色を塗る
+              println(j.n2, n2.n2);
             } else if (r.de.getBead(n2.n2).Joint) {
               //j.n2とn2.n1をnbhdにして色を塗る
+              println(j.n2, n2.n1);
             }
           }
         } else if (oneRID==3) {
@@ -82,8 +96,10 @@ class seifert {
             Bead n2=r.de.getBead(j.n2);
             if (r.de.getBead(n2.n1).Joint) {
               //j.n2とn2.n2をnbhdにして色を塗る
+              println(j.n2, n2.n2);
             } else if (r.de.getBead(n2.n2).Joint) {
               //j.n2とn2.n1をnbhdにして色を塗る
+              println(j.n2, n2.n1);
             }
           }
         }
@@ -93,8 +109,10 @@ class seifert {
             Bead n1=r.de.getBead(j.n1);
             if (r.de.getBead(n1.n1).Joint) {
               //j.n1とn1.n2をnbhdにして色を塗る
+              println(j.n1, n1.n2);
             } else if (r.de.getBead(n1.n2).Joint) {
               //j.n1とn1.n1をnbhdにして色を塗る
+              println(j.n1, n1.n1);
             }
           }
         } else if (oneRID==3) {
@@ -102,8 +120,10 @@ class seifert {
             Bead n1=r.de.getBead(j.n1);
             if (r.de.getBead(n1.n1).Joint) {
               //j.n1とn1.n2をnbhdにして色を塗る
+              println(j.n1, n1.n2);
             } else if (r.de.getBead(n1.n2).Joint) {
               //j.n1とn1.n1をnbhdにして色を塗る
+              println(j.n1, n1.n1);
             }
           }
         }
@@ -204,5 +224,29 @@ class seifert {
       //match_regionを使ってチェックして色が違ったら
     }
     return false;
+  }
+
+  int findBandJoint(region r, int p, int c) {
+    int pID=p;
+    int cID=c;
+    int nID=-1;
+    for (int repeat=0; repeat<r.de.points.size(); repeat++) {
+      nID=r.de.getNextBead(pID, cID);
+      if (nID==-1) {
+        return -1;
+      }
+      Bead n=r.de.getBead(nID);
+      if (n==null) {
+        return -1;
+      } else if (n.bandJoint) {
+        return nID;
+      } else if (n.Joint) {
+        return -1;
+      } else {
+        pID=cID;
+        cID=nID;
+      }
+    }
+    return -1;
   }
 }
