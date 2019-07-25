@@ -82,8 +82,79 @@ class seifert { //<>//
           println("findbandJointは"+k);
           println("そのときのnodePointIDは"+nodePointID);
           println("そのときのnodeRID["+n+"]は"+nodeRID[n]);
+          //edge_number(r,);
+          //edge番号を返す関数を呼ぶ
+          //get_edgesでedgeをaddしている
+          //返されたedge番号と一致しているかどうかを判定する関数を呼ぶ
         }
       }
+
+
+      if (anotherRID==0) {
+        if (oneRID==1) {
+          if (n_orie==1) {
+            if (u_orie==1) {
+              /////////////////////bandのやつ
+            } else if (u_orie==-1) {
+              ////////////////////nodePointID,3
+            }
+          } else if (n_orie==-1) {
+            if (u_orie==1) {
+              /////////////////////nodePointID,3
+            } else if (u_orie==-1) {
+              ////////////////////bandのやつ
+            }
+          }
+        } else if (oneRID==3) {
+          if (n_orie==1) {
+            if (u_orie==1) {
+              /////////////////////nodePointID,2
+            } else if (u_orie==-1) {
+              ////////////////////bandのやつ
+            }
+          } else if (n_orie==-1) {
+            if (u_orie==1) {
+              /////////////////////bandのやつ
+            } else if (u_orie==-1) {
+              ////////////////////nodePointID,2
+            }
+          }
+        }
+      } else if (anotherRID==2) {
+        if (oneRID==1) {
+          if (n_orie==1) {
+            if (u_orie==1) {
+              ////////////////////nodePointID,0
+            } else if (u_orie==-1) {
+              ///////////////////bandのやつ
+            }
+          } else if (n_orie==-1) {
+            if (u_orie==1) {
+              /////////////////////bandのやつ
+            } else if (u_orie==-1) {
+              ////////////////////nodePointID,0
+            }
+          }
+        } else if (oneRID==3) {
+          if (n_orie==1) {
+            if (u_orie==1) {
+              ///////////////////////bandのやつ
+            } else if (u_orie==-1) {
+              //////////////////////nodePointID,1
+            }
+          } else if (n_orie==-1) {
+            if (u_orie==1) {
+              /////////////////////nodePointID,1
+            } else if (u_orie==-1) {
+              ////////////////////bandのやつ
+            }
+          }
+        }
+      }
+
+
+
+
       //if (anotherRID==0) {
       //  if (oneRID==1) {
       //    if ((r.orie.orientation_greater(j.n2, j.n1)==1&&r.orie.orientation_greater(j.u1, j.u2)==1)||(r.orie.orientation_greater(j.n1, j.n2)==1&&r.orie.orientation_greater(j.u2, j.u1)==1)) {
@@ -255,7 +326,16 @@ class seifert { //<>//
     return -1;
   }
 
-  boolean match_band(int onepointID, int anotherpointID) {
-  return false;
+  int edge_number(region r, Edge ed) {
+    for (int e=0; e<r.dg.edges.size(); e++) {
+      Edge ee=r.dg.edges.get(e);
+      if (ee.ANodeID==ed.ANodeID&&ee.ANodeRID==ed.ANodeRID&&ee.BNodeID==ed.BNodeID&&ee.BNodeRID==ed.BNodeRID) {
+        return e;
+      }
+      if (ee.BNodeID==ed.ANodeID&&ee.BNodeRID==ed.ANodeRID&&ee.ANodeID==ed.BNodeID&&ee.ANodeRID==ed.BNodeRID) {
+        return e;
+      }//
+    }
+    return -1;
   }
 }
