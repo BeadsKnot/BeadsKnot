@@ -76,19 +76,66 @@ class seifert { //<>//
       //anotherRIDは0か2
       int n_orie=r.orie.orientation_greater(j.n2, j.n1);
       int u_orie=r.orie.orientation_greater(j.u2, j.u1);
+      int findbandJointID[]=new int[5];
       for (int n=0; n<4; n++) {
         int k=findBandJoint(r, nodePointID, nodeRID[n]);
+        findbandJointID[n]=k;
         if (k!=-1) {
           println("findbandJointは"+k);
           println("そのときのnodePointIDは"+nodePointID);
           println("そのときのnodeRID["+n+"]は"+nodeRID[n]);
-          //edge_number(r,);
+          // edge_number(r, );
           //edge番号を返す関数を呼ぶ
           //get_edgesでedgeをaddしている
           //返されたedge番号と一致しているかどうかを判定する関数を呼ぶ
         }
       }
-
+      findbandJointID[4]=findbandJointID[0];
+      boolean discover_bandJoint=false;
+      for (int ed=0; ed<r.dg.edges.size(); ed++) {
+        Edge ee=r.dg.edges.get(ed);
+        Node ndA=r.dg.nodes.get(ee.ANodeID);
+        Node ndB=r.dg.nodes.get(ee.BNodeID);
+        for (int n=0; n<4; n++) {
+          if (findbandJointID[n]==ndA.pointID&&findbandJointID[n+1]==ndB.pointID) {
+            // println("発見");
+            discover_bandJoint=true;
+            Bead beadsA=r.de.getBead(ndA.pointID);
+            int eeANodeRID=ee.ANodeRID;
+            int tmp=0;
+            if (eeANodeRID==1) {
+              tmp=beadsA.n1;
+              beadsA.n1=beadsA.u1;
+              beadsA.u1=beadsA.n2;
+              beadsA.n2=tmp;
+            } else if (eeANodeRID==3) {
+              tmp=beadsA.n1;
+              beadsA.n1=beadsA.n2;
+              beadsA.n2=beadsA.u2;
+              beadsA.u2=tmp;
+            }
+            Bead beadsB=r.de.getBead(ndB.pointID);
+            int eeBNodeRID=ee.BNodeRID;
+            if (eeBNodeRID==1) {
+              tmp=beadsB.n1;
+              beadsB.n1=beadsB.n2;
+              beadsB.n2=beadsB.u1;
+              beadsB.u1=tmp;
+            } else if (eeBNodeRID==3) {
+              tmp=beadsB.n1;
+              beadsB.n1=beadsB.u2;
+              beadsB.u2=beadsB.n2;
+              beadsB.n2=tmp;
+            }
+            r.dg.make_data_graph();
+          }
+          if (findbandJointID[n]==ndB.pointID&&findbandJointID[n+1]==ndA.pointID) {
+            //println("発見");
+            discover_bandJoint=true;
+          }
+          // println(ndA.pointID, ndB.pointID, ee.ANodeRID, ee.BNodeRID);
+        }
+      }
 
       if (anotherRID==0) {
         if (oneRID==1) {
@@ -96,6 +143,7 @@ class seifert { //<>//
             if (u_orie==1) {
               /////////////////////bandのやつ
             } else if (u_orie==-1) {
+              //r.get_region_from_Nbhd()
               ////////////////////nodePointID,3
             }
           } else if (n_orie==-1) {
@@ -329,10 +377,10 @@ class seifert { //<>//
   int edge_number(region r, Edge ed) {
     for (int e=0; e<r.dg.edges.size(); e++) {
       Edge ee=r.dg.edges.get(e);
-      if (ee.ANodeID==ed.ANodeID&&ee.ANodeRID==ed.ANodeRID&&ee.BNodeID==ed.BNodeID&&ee.BNodeRID==ed.BNodeRID) {
+      if (ee.ANodeID==ed.ANodeID&&ee.BNodeID==ed.BNodeID&&ee.ANodeRID==ed.ANodeRID&&ee.BNodeRID==ed.BNodeRID) {
         return e;
       }
-      if (ee.BNodeID==ed.ANodeID&&ee.BNodeRID==ed.ANodeRID&&ee.ANodeID==ed.BNodeID&&ee.ANodeRID==ed.BNodeRID) {
+      if (ee.BNodeID==ed.ANodeID&&ee.ANodeID==ed.BNodeID&&ee.BNodeRID==ed.ANodeRID&&ee.ANodeRID==ed.BNodeRID) {
         return e;
       }//
     }
