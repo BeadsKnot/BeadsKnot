@@ -1,4 +1,4 @@
-class parts_editing {        //<>// //<>//
+class parts_editing {        //<>// //<>// //<>//
 
   ArrayList<Bead> beads;
 

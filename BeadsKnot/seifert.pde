@@ -20,14 +20,14 @@ class seifert { //<>//
       int nodeRID[]=new int[4];
       if (AnodeRID==1||AnodeRID==3) {
         nodeID=AnodeID;
+        oneRID=AnodeRID;
         println("nodeIDは"+nodeID);
+        println("oneRIDは"+oneRID);
         nodePointID=ANode.pointID;
         j=r.de.getBead(ANode.pointID);
         for (int n=0; n<4; n++) {
           nodeRID[n]=j.get_un12(n);
         }
-        oneRID=AnodeRID;
-        println("oneRIDは"+oneRID);
         for (Edge ed : r.border) {
           if (ed.ANodeID==nodeID) {
             if (ed.ANodeRID==0||ed.ANodeRID==2) {
