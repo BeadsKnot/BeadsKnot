@@ -14,7 +14,8 @@ class seifert { //<>//
       int nodeID=-1;
       int nodePointID=-1;
       Node ANode=r.dg.nodes.get(AnodeID);
-      Node BNode=r.dg.nodes.get(BnodeID);
+      Node BNode=r.dg.nodes.get(BnodeID);////////////////////////IndexOutOfBoundsException:Indexエラー
+      //midJointと近いところでbandを作ろうとするとエラーが出る
       Bead j=r.de.getBead(0);
       int nodeRID[]=new int[4];
       if (AnodeRID==1||AnodeRID==3) {
@@ -22,7 +23,7 @@ class seifert { //<>//
         println("nodeIDは"+nodeID);
         nodePointID=ANode.pointID;
         j=r.de.getBead(ANode.pointID);
-        for (int n=0; n<3; n++) {
+        for (int n=0; n<4; n++) {
           nodeRID[n]=j.get_un12(n);
         }
         oneRID=AnodeRID;
@@ -51,7 +52,7 @@ class seifert { //<>//
         println("oneRIDは"+oneRID);
         nodePointID=BNode.pointID;
         j=r.de.getBead(BNode.pointID);
-        for (int n=0; n<3; n++) {
+        for (int n=0; n<4; n++) {
           nodeRID[n]=j.get_un12(n);
         }
         for (Edge ed : r.border) {
@@ -98,7 +99,7 @@ class seifert { //<>//
         Node ndB=r.dg.nodes.get(ee.BNodeID);
         for (int n=0; n<4; n++) {
           if (findbandJointID[n]==ndA.pointID&&findbandJointID[n+1]==ndB.pointID) {
-            // println("発見");
+            println("発見1");
             discover_bandJoint=true;
             Bead beadsA=r.de.getBead(ndA.pointID);
             int eeANodeRID=ee.ANodeRID;
@@ -130,8 +131,48 @@ class seifert { //<>//
             r.dg.make_data_graph();
           }
           if (findbandJointID[n]==ndB.pointID&&findbandJointID[n+1]==ndA.pointID) {
-            //println("発見");
+            println("発見2");
             discover_bandJoint=true;
+            Bead beadsA=r.de.getBead(ndA.pointID);
+            int eeANodeRID=ee.ANodeRID;
+            int tmp=0;
+            if (eeANodeRID==1) {
+              //もともと
+              //tmp=beadsA.n1;
+              //beadsA.n1=beadsA.u1;
+              //beadsA.u1=beadsA.n2;
+              //beadsA.n2=tmp;
+
+              tmp=beadsA.n1;
+              beadsA.n1=beadsA.n2;
+              beadsA.n2=beadsA.u1;
+              beadsA.u1=tmp;
+            } else if (eeANodeRID==3) {
+              //もともと
+              //tmp=beadsA.n1;
+              //beadsA.n1=beadsA.n2;
+              //beadsA.n2=beadsA.u2;
+              //beadsA.u2=tmp;
+
+              tmp=beadsA.n1;
+              beadsA.n1=beadsA.u2;
+              beadsA.u2=beadsA.n2;
+              beadsA.n2=tmp;
+            }
+            Bead beadsB=r.de.getBead(ndB.pointID);
+            int eeBNodeRID=ee.BNodeRID;
+            if (eeBNodeRID==1) {
+              tmp=beadsB.n1;
+              beadsB.n1=beadsB.u1;
+              beadsB.u1=beadsB.n2;
+              beadsB.n2=tmp;
+            } else if (eeBNodeRID==3) {
+              tmp=beadsB.n1;
+              beadsB.n1=beadsB.n2;
+              beadsB.n2=beadsB.u2;
+              beadsB.u2=tmp;
+            }
+            r.dg.make_data_graph();
           }
           // println(ndA.pointID, ndB.pointID, ee.ANodeRID, ee.BNodeRID);
         }
@@ -142,6 +183,9 @@ class seifert { //<>//
           if (n_orie==1) {
             if (u_orie==1) {
               /////////////////////bandのやつ
+              if (discover_bandJoint) {
+              } else {
+              }
             } else if (u_orie==-1) {
               //r.get_region_from_Nbhd()
               ////////////////////nodePointID,3
@@ -151,6 +195,9 @@ class seifert { //<>//
               /////////////////////nodePointID,3
             } else if (u_orie==-1) {
               ////////////////////bandのやつ
+              if (discover_bandJoint) {
+              } else {
+              }
             }
           }
         } else if (oneRID==3) {
@@ -159,10 +206,16 @@ class seifert { //<>//
               /////////////////////nodePointID,2
             } else if (u_orie==-1) {
               ////////////////////bandのやつ
+              if (discover_bandJoint) {
+              } else {
+              }
             }
           } else if (n_orie==-1) {
             if (u_orie==1) {
               /////////////////////bandのやつ
+              if (discover_bandJoint) {
+              } else {
+              }
             } else if (u_orie==-1) {
               ////////////////////nodePointID,2
             }
@@ -175,10 +228,16 @@ class seifert { //<>//
               ////////////////////nodePointID,0
             } else if (u_orie==-1) {
               ///////////////////bandのやつ
+              if (discover_bandJoint) {
+              } else {
+              }
             }
           } else if (n_orie==-1) {
             if (u_orie==1) {
               /////////////////////bandのやつ
+              if (discover_bandJoint) {
+              } else {
+              }
             } else if (u_orie==-1) {
               ////////////////////nodePointID,0
             }
@@ -187,6 +246,9 @@ class seifert { //<>//
           if (n_orie==1) {
             if (u_orie==1) {
               ///////////////////////bandのやつ
+              if (discover_bandJoint) {
+              } else {
+              }
             } else if (u_orie==-1) {
               //////////////////////nodePointID,1
             }
@@ -195,6 +257,9 @@ class seifert { //<>//
               /////////////////////nodePointID,1
             } else if (u_orie==-1) {
               ////////////////////bandのやつ
+              if (discover_bandJoint) {
+              } else {
+              }
             }
           }
         }

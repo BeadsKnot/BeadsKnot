@@ -205,7 +205,7 @@ class data_extract {       //<>// //<>// //<>// //<>// //<>//
         if (dist(mouseX, mouseY, disp.get_winX(vec.x), disp.get_winY(vec.y)) < 10 ) {
           fill(0);
           if (Draw._show_points_nb) {
-            text(pt+" "+vec.n1+" "+vec.n2+" "+vec.u1+" "+vec.u2, disp.get_winX(vec.x), disp.get_winY(vec.y));
+            text(pt+" "+vec.n1+" "+vec.n2+" "+vec.u1+" "+vec.u2+" "+vec.Joint+" "+vec.midJoint+" "+vec.bandJoint, disp.get_winX(vec.x), disp.get_winY(vec.y));
           } else if (Draw._show_orientation_nb) {
             text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y));
           }
