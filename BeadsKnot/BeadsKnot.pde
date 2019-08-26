@@ -18,7 +18,7 @@ orientation orie;
 seifert seif;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
 float beads_interval = 15 ;// ビーズの間隔
-int startID;
+int mousedrag_startID;
 int count_for_distinguishing_edge=0;//edgeを消すためのcountの数
 // グローバル変数終了
 
@@ -524,7 +524,7 @@ void mousePressed() {
         int jt_ndID =graph.next_to_node(ptID); 
         if (jt_ndID==-1) {//ノードの隣でないところをドラッグした場合
           println("新規パス開始");
-          startID=graph.is_PVector_on_points(mouseX, mouseY);
+          mousedrag_startID=graph.is_PVector_on_points(mouseX, mouseY);
           mouse.prev = new PVector(mouseX, mouseY);
           mouse.trace.clear();
           mouse.trace.add(mouse.prev);
@@ -560,7 +560,7 @@ void mousePressed() {
         int jt_ndID =graph.next_to_node(ptID); 
         if (jt_ndID==-1) {//ノードの隣でないところをドラッグした場合
           println("新規パス開始");
-          startID=graph.is_PVector_on_points(mouseX, mouseY);
+          mousedrag_startID=graph.is_PVector_on_points(mouseX, mouseY);
           mouse.prev = new PVector(mouseX, mouseY);
           mouse.trace.clear();
           mouse.trace.add(mouse.prev);
@@ -906,14 +906,14 @@ void mouseReleased() {
           if (pt.Joint) {////////////////////////////////midJointやJointの隣も含むか要検討
             return;
           } else {
-            println(startID, ptID);
-            int i=data.findArcFromPoints(startID, ptID);
+            println(mousedrag_startID, ptID);
+            int i=data.findArcFromPoints(mousedrag_startID, ptID);
             if (i==1||i==2) {
               println(count_for_distinguishing_edge);//間のbeadsの数。ただしstartIDとptIDは含まない
-              data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
+              data.extinguish_points(i, count_for_distinguishing_edge, mousedrag_startID, ptID);
               data.extinguish(count_for_distinguishing_edge); 
-              data.extinguish_startID_and_endID(i, startID, ptID);
-              mouse.trace_to_parts_editing2(data, startID, ptID);//ここで線をビーズにする 
+              data.extinguish_startID_and_endID(i, mousedrag_startID, ptID);
+              mouse.trace_to_parts_editing2(data, mousedrag_startID, ptID);//ここで線をビーズにする 
               //traceからもらってくればよい
             } else {
               println("できませんでした");
@@ -1207,34 +1207,92 @@ void mouseReleased() {
           if (pt.Joint) {////////////////////////////////midJointやJointの隣も含むか要検討
             return;
           } else {
-            println(startID, ptID);
-            int i=data.findArcFromPoints(startID, ptID);
+            println(mousedrag_startID, ptID);
+            int i=data.findArcFromPoints(mousedrag_startID, ptID);
             if (i==1||i==2) {
               println(count_for_distinguishing_edge);//間のbeadsの数。ただしstartIDとptIDは含まない
-              data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
+              data.extinguish_points(i, count_for_distinguishing_edge, mousedrag_startID, ptID);
               data.extinguish(count_for_distinguishing_edge); 
-              data.extinguish_startID_and_endID(i, startID, ptID);
-              mouse.trace_to_parts_editing2(data, startID, ptID);//ここで線をビーズにする 
+              data.extinguish_startID_and_endID(i, mousedrag_startID, ptID);
+              mouse.trace_to_parts_editing2(data, mousedrag_startID, ptID);//ここで線をビーズにする 
               //traceからもらってくればよい
             } else {
-              Bead s=data.getBead(startID);
+              Bead s=data.getBead(mousedrag_startID);
               Bead e=data.getBead(ptID);
-              s.bandJoint=true;
-              e.bandJoint=true;
-              //bandJointは三本を許すJointっぽいものが必要
-              //data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
-              //data.extinguish(count_for_distinguishing_edge); 
-              //data.extinguish_startID_and_endID(i, startID, ptID);
-              mouse.trace_to_parts_editing3(data, startID, ptID);
-              //if(){
-              //}
-              //できないときに
-              //startIDとptIDをJointみたいにして
-              //線を描画できるようにする
+              /////////////////////////////sからでるedgeを探して同じnodeがあったらbandJointをtrueにする
+              // println(data.condition_bandJoint(mousedrag_startID, ptID));
+              pairInt JointID_for_bandJoint=data.condition_bandJoint(mousedrag_startID, ptID);
+              if (JointID_for_bandJoint.a!=-1) {
+                s.bandJoint=true;
+                e.bandJoint=true;
+                //bandJointは三本を許すJointっぽいものが必要
+                //data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
+                //data.extinguish(count_for_distinguishing_edge); 
+                //data.extinguish_startID_and_endID(i, startID, ptID);
+                mouse.trace_to_parts_editing3(data, mousedrag_startID, ptID);
+                int s12=JointID_for_bandJoint.b;
+                int e12=JointID_for_bandJoint.c;
+                int su1=s.u1;
+                int su2=s.u2;
+                int eu1=e.u1;
+                int eu2=e.u2;
+                if (s12==1&&su1!=-1) {
+                  s.u2=s.n1;
+                  s.n1=s.u1;
+                  s.u1=-1;
+                } else if (s12==1&&su2!=-1) {
+                  s.u1=s.n1;
+                  s.n1=s.u2;
+                  s.u2=-1;
+                } else if (s12==2&&su1!=-1) {
+                  s.u2=s.n2;
+                  s.n2=s.u1;
+                  s.u1=-1;
+                } else if (s12==2&&su2!=-1) {
+                  s.u1=s.n2;
+                  s.n2=s.u2;
+                  s.u2=-1;
+                }
+                 if (e12==1&&eu1!=-1) {
+                  e.u2=e.n1;
+                  e.n1=e.u1;
+                  e.u1=-1;
+                } else if (e12==1&&eu2!=-1) {
+                  e.u1=e.n1;
+                  e.n1=e.u2;
+                  e.u2=-1;
+                } else if (e12==2&&eu1!=-1) {
+                  e.u2=e.n2;
+                  e.n2=e.u1;
+                  e.u1=-1;
+                } else if (e12==2&&eu2!=-1) {
+                  e.u1=e.n2;
+                  e.n2=e.u2;
+                  e.u2=-1;
+                }
+                graph.make_data_graph();
+                //枝のすげ替え問題
+                //bandっぽく見えるように
+                //JointID_for_bandJoint
+              }
             }
           }
         }
       }
     }
+  }
+}
+
+class pairInt {
+  int a, b, c;
+  pairInt(int _a, int _b, int _c) {
+    a=_a;
+    b=_b;
+    c=_c;
+  }
+  pairInt(int _a) {
+    a=_a;
+    b=0;
+    c=0;
   }
 }

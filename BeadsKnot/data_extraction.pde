@@ -1917,4 +1917,61 @@ class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>//
       }
     }
   }
+  pairInt condition_bandJoint(int startID, int endID) {
+    ///bandJointにする条件に必要な関数
+    //startIDとendIDについて両方向n1n2調べる
+    //midJointは無視
+    //bandJointだとNGなので-1を返す
+    //Jointのときに番号を返す
+    //共通のJointの番号があればそれを返す
+    Bead startBead=getBead(startID);
+    if (startBead==null) {
+      return new pairInt(-1);
+    }
+    int s1=findJoint_for_bandJoint(startID, startBead.n1);
+    int s2=findJoint_for_bandJoint(startID, startBead.n2);
+    Bead endBead=getBead(endID);
+    if (endBead==null) {
+      return new pairInt(-1);
+    }
+    int e1=findJoint_for_bandJoint(endID, endBead.n1);
+    int e2=findJoint_for_bandJoint(endID, endBead.n2);
+    if (s1!=-1&&(s1==e1)) {
+      return new pairInt(s1,1,1);
+    }
+    if (s1!=-1&&(s1==e2)) {
+      return new pairInt(s1,1,2);
+    }
+    if (s2!=-1&&(s2==e1)) {
+      return new pairInt(s2,2,1);
+    }
+    if (s2!=-1&&(s2==e2)) {
+      return new pairInt(s2,2,2);
+    }
+    return new pairInt(-1);
+  }
+
+  int findJoint_for_bandJoint(int p, int c) {
+    int pID=p;
+    int cID=c;
+    int nID=-1;
+    for (int repeat=0; repeat<points.size(); repeat++) {
+      nID=getNextBead(pID, cID);
+      if (nID==-1) {
+        return -1;
+      }
+      Bead n=getBead(nID);
+      if (n==null) {
+        return -1;
+      } else if (n.bandJoint) {
+        return -1;
+      } else if (n.Joint) {
+        return nID;
+      } else {
+        pID=cID;
+        cID=nID;
+      }
+    }
+    return -1;
+  }
 }

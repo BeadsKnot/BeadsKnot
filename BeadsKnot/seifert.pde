@@ -142,7 +142,6 @@ class seifert { //<>//
               //beadsA.n1=beadsA.u1;
               //beadsA.u1=beadsA.n2;
               //beadsA.n2=tmp;
-
               tmp=beadsA.n1;
               beadsA.n1=beadsA.n2;
               beadsA.n2=beadsA.u1;
@@ -153,7 +152,6 @@ class seifert { //<>//
               //beadsA.n1=beadsA.n2;
               //beadsA.n2=beadsA.u2;
               //beadsA.u2=tmp;
-
               tmp=beadsA.n1;
               beadsA.n1=beadsA.u2;
               beadsA.u2=beadsA.n2;
