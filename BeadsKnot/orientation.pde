@@ -74,6 +74,9 @@ class orientation { //<>// //<>// //<>//
     }
   }
   int orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
+    if (orientation_mod==0) {
+      return 0;
+    }
     int differ = (o1-o2+orientation_mod) % orientation_mod;
     if (0<differ && differ<5) {
       return 1;
@@ -81,6 +84,7 @@ class orientation { //<>// //<>// //<>//
     if (orientation_mod-5 < differ && differ < orientation_mod) {
       return -1;
     }
+   // println(orientation_mod, differ);
     return 0;
   }
 

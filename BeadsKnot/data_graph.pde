@@ -1,4 +1,4 @@
-class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
   //データのグラフ構造
   //nodeとedgeからなる
 
@@ -23,7 +23,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>//
   void make_data_graph() {
     nodes.clear();
     edges.clear();
-    modify_Joint_orientation();
+    modify_Joint_orientation();//u1とu2の向きの正しさチェック
     add_half_point_Joint();
     add_close_point_Joint();// half_pointと合流できないか？
     get_node_table();
@@ -116,6 +116,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>//
       if (bd!=null && bd.Joint) {
         if (0<=bd.n1 && bd.n1<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.n1);
+          println(p, "n1", nextJoint);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.n1);
             if (count>9) {
@@ -126,6 +127,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>//
         }
         if (0<=bd.u1 && bd.u1<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.u1);
+          println(p, "u1", nextJoint);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.u1);
             if (count>9) {
@@ -136,6 +138,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>//
         }
         if (0<=bd.n2 && bd.n2<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.n2);
+          println(p, "n2", nextJoint);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.n2);
             if (count>9) {
@@ -146,6 +149,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>//
         }
         if (0<=bd.u2 && bd.u2<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.u2);
+          println(p, "u2", nextJoint);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.u2);
             if (count>9) {
@@ -210,7 +214,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>//
       if (p==null) {
         return -1;
       }
-      if (p.Joint) {
+      if (p.Joint||p.bandJoint) {
         return c;
       }
       int d=0;
@@ -296,7 +300,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>//
       if (p==null) {
         return 0;
       }
-      if (p.Joint) {
+      if (p.Joint||p.bandJoint) {
         return count;
       }
       int d=0;
@@ -958,5 +962,4 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>//
       }
     }
   }
-
 }
