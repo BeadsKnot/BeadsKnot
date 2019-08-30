@@ -83,6 +83,7 @@ class seifert { //<>//
       Bead ju1=r.de.getBead(j.u1);
       Bead ju2=r.de.getBead(j.u2);
       int n_orie=r.orie.orientation_greater(jn2.orientation, jn1.orientation);
+      //u1もしくはu2がない時にどうするか？
       int u_orie=r.orie.orientation_greater(ju2.orientation, ju1.orientation);
       int findbandJointID[]=new int[5];
       for (int n=0; n<4; n++) {
@@ -107,13 +108,13 @@ class seifert { //<>//
         Node ndB=r.dg.nodes.get(ee.BNodeID);
         for (int n=0; n<4; n++) {
           if (findbandJointID[n]==ndA.pointID&&findbandJointID[n+1]==ndB.pointID) {
-            println("発見1");
+            println("発見1,bandJoint_oneRIDは", bandJoint_oneRID);
             //discover_bandJoint=true;
             bandJoint_oneRID=n;
             bandJoint_anotherRID=n+1;
           }
           if (findbandJointID[n]==ndB.pointID&&findbandJointID[n+1]==ndA.pointID) {
-            println("発見2");
+            println("発見2,bandJoint_oneRIDは", bandJoint_oneRID);
             bandJoint_oneRID=n;
             bandJoint_anotherRID=n+1;
           }
@@ -125,60 +126,75 @@ class seifert { //<>//
         if (oneRID==1) {
           if (n_orie==1) {
             if (u_orie==1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               /////////////////////bandのやつ
             } else if (u_orie==-1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               //r.get_region_from_Nbhd()
               ////////////////////nodePointID,3
             }
           } else if (n_orie==-1) {
             if (u_orie==1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               /////////////////////nodePointID,3
             } else if (u_orie==-1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               ////////////////////bandのやつ
             }
           }
         } else if (oneRID==3) {
           if (n_orie==1) {
             if (u_orie==1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               /////////////////////nodePointID,2
             } else if (u_orie==-1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               ////////////////////bandのやつ
             }
           } else if (n_orie==-1) {
             if (u_orie==1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               /////////////////////bandのやつ
             } else if (u_orie==-1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               ////////////////////nodePointID,2
             }
           }
         }
       } else if (anotherRID==2) {
-
         if (oneRID==1) {
           if (n_orie==1) {
             if (u_orie==1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               ////////////////////nodePointID,0
             } else if (u_orie==-1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               ///////////////////bandのやつ
             }
           } else if (n_orie==-1) {
             if (u_orie==1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               /////////////////////bandのやつ
             } else if (u_orie==-1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               ////////////////////nodePointID,0
             }
           }
         } else if (oneRID==3) {
           if (n_orie==1) {
             if (u_orie==1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               ///////////////////////bandのやつ
             } else if (u_orie==-1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               //////////////////////nodePointID,1
             }
           } else if (n_orie==-1) {
             if (u_orie==1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               /////////////////////nodePointID,1
             } else if (u_orie==-1) {
+              println("bandJoint_oneRID", bandJoint_oneRID);
               if (bandJoint_oneRID==1||bandJoint_oneRID==3) {
                 println("間違えている");
               } else if (bandJoint_oneRID==-1) {
@@ -186,14 +202,7 @@ class seifert { //<>//
                 region newR=new region(r.de, r.dg, r.orie);
                 newR.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1));
                 newR.col_code=col;
-                //newRとregでつじつまがあうかを確認する
-                //reg一つ一つ見てみてnewRと同じregionでcol_codeが一致したら何もしない
-                //reg一つ一つ見てみてnewRと同じregionでcol_codeが一致しなかったらエラーを出す
-                //おなじregionで相手のcol_codeがoならcol_codeをコピー
-                //同じregionがなかったらaddする
-                //1と2が一致しなかったら不一致
-                reg.add(newR);
-                
+                check_color(newR);
               } else if (bandJoint_oneRID==0) {
               } else if (bandJoint_oneRID==2) {
               }
@@ -388,5 +397,28 @@ class seifert { //<>//
       }//
     }
     return -1;
+  }
+
+  void check_color(region r) {
+    //newRとregでつじつまがあうかを確認する
+    //reg一つ一つ見てみてnewRと同じregionでcol_codeが一致したら何もしない
+    //reg一つ一つ見てみてnewRと同じregionでcol_codeが一致しなかったらエラーを出す
+    //おなじregionで相手のcol_codeがoならcol_codeをコピー
+    //同じregionがなかったらaddする
+    //1と2が一致しなかったら不一致
+    for (int re=0; re<reg.size(); re++) {
+      if (reg.get(re).match_region(r)) {
+        if (reg.get(re).col_code==r.col_code) {
+          //何もしない
+        } else {
+          println("塗り方が間違っている");
+        }
+        if (reg.get(re).col_code==0) {
+          r.col_code=reg.get(re).col_code;
+        }
+      } else {
+        reg.add(r);
+      }
+    }
   }
 }
