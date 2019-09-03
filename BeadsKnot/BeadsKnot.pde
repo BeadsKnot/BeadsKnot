@@ -589,7 +589,7 @@ void mousePressed() {
       Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
       region RG;
       RG=new region(data, graph, orie);
-      RG.get_region_from_Nbhd(nearNb);
+      RG.get_region_from_Nbhd(nearNb,false);
       boolean painted=false;
       for (int r=0; r<seif.reg.size(); r++) {
         if (seif.reg.get(r).match_region(RG)) {
@@ -1240,35 +1240,47 @@ void mouseReleased() {
                   s.u2=s.n1;
                   s.n1=s.u1;
                   s.u1=-1;
+                  ///////////////n2が本線なのでfalse
+                  s.bandJoint_flag=false;
                 } else if (s12==1&&su2!=-1) {
                   s.u1=s.n1;
                   s.n1=s.u2;
                   s.u2=-1;
+                  ///////////////n2が本線なのでfalse
+                  s.bandJoint_flag=false;
                 } else if (s12==2&&su1!=-1) {
                   s.u2=s.n2;
                   s.n2=s.u1;
                   s.u1=-1;
+                  ///////////////n1が本線なのでtrue
+                  s.bandJoint_flag=true;
                 } else if (s12==2&&su2!=-1) {
                   s.u1=s.n2;
                   s.n2=s.u2;
                   s.u2=-1;
+                  ///////////////n1が本線なのでtrue
+                  s.bandJoint_flag=true;
                 }
                  if (e12==1&&eu1!=-1) {
                   e.u2=e.n1;
                   e.n1=e.u1;
                   e.u1=-1;
+                  e.bandJoint_flag=false;
                 } else if (e12==1&&eu2!=-1) {
                   e.u1=e.n1;
                   e.n1=e.u2;
                   e.u2=-1;
+                  e.bandJoint_flag=false;
                 } else if (e12==2&&eu1!=-1) {
                   e.u2=e.n2;
                   e.n2=e.u1;
                   e.u1=-1;
+                  e.bandJoint_flag=true;
                 } else if (e12==2&&eu2!=-1) {
                   e.u1=e.n2;
                   e.n2=e.u2;
                   e.u2=-1;
+                  e.bandJoint_flag=true;
                 }
                 graph.make_data_graph();
                 //枝のすげ替え問題

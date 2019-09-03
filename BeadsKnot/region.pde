@@ -114,7 +114,8 @@ class region { //<>// //<>// //<>// //<>//
     endShape();
   }
 
-  void get_region_from_Nbhd(Nbhd nbhd) {
+  void get_region_from_Nbhd(Nbhd nbhd, boolean auto) {
+    ///////////////////////////////////////////////Aが先
     border=new ArrayList<Edge>();
     // int smoothingRegionContainsPt(float mX, float mY, Nbhd nbhd, boolean debug){
     //BからA
@@ -144,6 +145,11 @@ class region { //<>// //<>// //<>// //<>//
       if (ptA==null) {
         return;
       }
+      //ptA=de.getBead(b);
+      //ptB=de.getBead(a);
+      //c=a;
+      //a=b;
+      //b=c;
     }
     if (ptB.Joint) {
       int n1 = ptA.n1;
@@ -159,6 +165,11 @@ class region { //<>// //<>// //<>// //<>//
       if (ptB==null) {
         return;
       }
+      //ptA=de.getBead(b);
+      //ptB=de.getBead(a);
+      //c=a;
+      //a=b;
+      //b=c;
     }
     //orientationが計算されているかなぞ
     //if (ptA.orientation < ptB.orientation) {
@@ -169,12 +180,14 @@ class region { //<>// //<>// //<>// //<>//
     //  a=b;
     //  b=c;
     //}
-    if (ptA.y>ptB.y) {
-      ptA=de.getBead(b);
-      ptB=de.getBead(a);
-      c=a;
-      a=b;
-      b=c;
+    if (!auto) {
+      if (ptA.y>ptB.y) {
+        ptA=de.getBead(b);
+        ptB=de.getBead(a);
+        c=a;
+        a=b;
+        b=c;
+      }
     }
 
     int start_a = a;
@@ -423,7 +436,7 @@ class region { //<>// //<>// //<>// //<>//
 
     for (int bo=0; bo<border.size(); bo++) {
       Edge e=border.get(bo);
-      println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
+      // println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
     }
     return;
   }

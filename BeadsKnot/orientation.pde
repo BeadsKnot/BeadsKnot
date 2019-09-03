@@ -12,7 +12,7 @@ class orientation { //<>// //<>// //<>//
   void decide_orientation() {//orientationを決める
     Node nd = dg.nodes.get(0);
     for (int ndID=0; ndID<dg.nodes.size(); ndID++) {
-      nd = dg.nodes.get(ndID);
+      nd = dg.nodes.get(ndID);//////////使っているnodeを探す
       if (nd.inUse) {
         break;
       }
@@ -45,15 +45,42 @@ class orientation { //<>// //<>// //<>//
         //ori_id++;
         //beads_start=new_joint.b;
         beads_next_next=-1;
-
-        if (bdNext.u1==beads_start) {
-          beads_next_next=bdNext.u2;
-        } else if (bdNext.u2==beads_start) {
-          beads_next_next=bdNext.u1;
-        } else if (bdNext.n1==beads_start) {
-          beads_next_next=bdNext.n2;
-        } else if (bdNext.n2==beads_start) {
-          beads_next_next=bdNext.n1;
+        if (bdNext.bandJoint) {
+          if (bdNext.u1==beads_start) {
+            if (bdNext.bandJoint_flag) {
+              beads_next_next=bdNext.n1;
+            } else {
+              beads_next_next=bdNext.n2;
+            }
+          } else if (bdNext.u2==beads_start) {
+            if (bdNext.bandJoint_flag) {
+              beads_next_next=bdNext.n1;
+            } else {
+              beads_next_next=bdNext.n2;
+            }
+          } else if (bdNext.n1==beads_start) {
+            if (bdNext.u1!=-1) {
+              beads_next_next=bdNext.u1;
+            } else {
+              beads_next_next=bdNext.u2;
+            }
+          } else if (bdNext.n2==beads_start) {
+            if (bdNext.u1!=-1) {
+              beads_next_next=bdNext.u1;
+            } else {
+              beads_next_next=bdNext.u2;
+            }
+          }
+        } else {
+          if (bdNext.u1==beads_start) {
+            beads_next_next=bdNext.u2;
+          } else if (bdNext.u2==beads_start) {
+            beads_next_next=bdNext.u1;
+          } else if (bdNext.n1==beads_start) {
+            beads_next_next=bdNext.n2;
+          } else if (bdNext.n2==beads_start) {
+            beads_next_next=bdNext.n1;
+          }
         }
       }
       beads_start=beads_next;
@@ -84,7 +111,7 @@ class orientation { //<>// //<>// //<>//
     if (orientation_mod-5 < differ && differ < orientation_mod) {
       return -1;
     }
-   // println(orientation_mod, differ);
+    // println(orientation_mod, differ);
     return 0;
   }
 
