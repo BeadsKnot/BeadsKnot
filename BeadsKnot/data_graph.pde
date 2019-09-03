@@ -116,7 +116,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //
       if (bd!=null && bd.Joint) {
         if (0<=bd.n1 && bd.n1<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.n1);
-          println(p, "n1", nextJoint);
+          //println(p, "n1", nextJoint);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.n1);
             if (count>9) {
@@ -127,7 +127,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //
         }
         if (0<=bd.u1 && bd.u1<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.u1);
-          println(p, "u1", nextJoint);
+          //println(p, "u1", nextJoint);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.u1);
             if (count>9) {
@@ -138,7 +138,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //
         }
         if (0<=bd.n2 && bd.n2<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.n2);
-          println(p, "n2", nextJoint);
+          //println(p, "n2", nextJoint);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.n2);
             if (count>9) {
@@ -149,7 +149,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //
         }
         if (0<=bd.u2 && bd.u2<de.points.size()) {
           int nextJoint=find_next_Joint_in_points(p, bd.u2);
-          println(p, "u2", nextJoint);
+          // println(p, "u2", nextJoint);
           if (p<=nextJoint) {
             int count = countNeighborJointInPoints(p, bd.u2);
             if (count>9) {
