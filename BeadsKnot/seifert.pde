@@ -1,4 +1,4 @@
-class seifert { //<>//
+class seifert { //<>// //<>// //<>//
   ArrayList <region> reg;
   seifert() {
     reg=new ArrayList<region>();
@@ -21,8 +21,8 @@ class seifert { //<>//
       if (AnodeRID==1||AnodeRID==3) {
         nodeID=AnodeID;
         oneRID=AnodeRID;
-        println("nodeIDは"+nodeID);
-        println("oneRIDは"+oneRID);
+        //println("nodeIDは"+nodeID);
+        //println("oneRIDは"+oneRID);
         nodePointID=ANode.pointID;
         j=r.de.getBead(ANode.pointID);
         for (int n=0; n<4; n++) {
@@ -32,24 +32,23 @@ class seifert { //<>//
           if (ed.ANodeID==nodeID) {
             if (ed.ANodeRID==0||ed.ANodeRID==2) {
               anotherRID=ed.ANodeRID;
-              println("anotherRIDは"+anotherRID);
+              //println("anotherRIDは"+anotherRID);
               break;
             }
-          }
+          } 
           if (ed.BNodeID==nodeID) {
             if (ed.BNodeRID==0||ed.BNodeRID==2) {
               anotherRID=ed.BNodeRID;
-              println("anotherRIDは"+anotherRID);
+              //println("anotherRIDは"+anotherRID);
               break;
             }
           }
         }
-      }
-      if (BnodeRID==1||BnodeRID==3) {
+      } else if (BnodeRID==1||BnodeRID==3) {
         nodeID=BnodeID;
         oneRID=BnodeRID;
-        println("nodeIDは"+nodeID);
-        println("oneRIDは"+oneRID);
+        // println("nodeIDは"+nodeID);
+        // println("oneRIDは"+oneRID);
         nodePointID=BNode.pointID;
         j=r.de.getBead(BNode.pointID);
         for (int n=0; n<4; n++) {
@@ -59,18 +58,19 @@ class seifert { //<>//
           if (ed.ANodeID==nodeID) {
             if (ed.ANodeRID==0||ed.ANodeRID==2) {
               anotherRID=ed.ANodeRID;
-              println("anotherRIDは"+anotherRID);
+              //println("anotherRIDは"+anotherRID);
               break;
             }
-          }
+          } 
           if (ed.BNodeID==nodeID) {
             if (ed.BNodeRID==0||ed.BNodeRID==2) {
               anotherRID=ed.BNodeRID;
-              println("anotherRIDは"+anotherRID);
+              // println("anotherRIDは"+anotherRID);
               break;
             }
           }
         }
+      } else {
       }
       //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
       //oneRIDは1か3
@@ -83,7 +83,6 @@ class seifert { //<>//
         Bead jn2=r.de.getBead(j.n2);
         Bead ju1=r.de.getBead(j.u1);
         Bead ju2=r.de.getBead(j.u2);
-        //  println("j.n1,j.n2,j.u1,j.u2", j.n1, j.n2, j.u1, j.u2);
         int n_orie=r.orie.orientation_greater(jn2.orientation, jn1.orientation);
         int u_orie=r.orie.orientation_greater(ju2.orientation, ju1.orientation);
         int findbandJointID[]=new int[5];
@@ -91,9 +90,9 @@ class seifert { //<>//
           int k=findBandJoint(r, nodePointID, nodeRID[n]);
           findbandJointID[n]=k;
           if (k!=-1) {
-            println("findbandJointは"+k);
-            println("そのときのnodePointIDは"+nodePointID);
-            println("そのときのnodeRID["+n+"]は"+nodeRID[n]);
+            //println("findbandJointは"+k);
+            //println("そのときのnodePointIDは"+nodePointID);
+            //println("そのときのnodeRID["+n+"]は"+nodeRID[n]);
             // edge_number(r, );
             //edge番号を返す関数を呼ぶ
             //get_edgesでedgeをaddしている
@@ -109,38 +108,35 @@ class seifert { //<>//
           Node ndB=r.dg.nodes.get(ee.BNodeID);
           for (int n=0; n<4; n++) {
             if (findbandJointID[n]==ndA.pointID&&findbandJointID[n+1]==ndB.pointID) {
-              println("発見1,bandJoint_oneRIDは", bandJoint_oneRID);
+              //println("発見1,bandJoint_oneRIDは", bandJoint_oneRID);
               //discover_bandJoint=true;
               bandJoint_oneRID=n;
               //bandJoint_anotherRID=n+1;
             }
             if (findbandJointID[n]==ndB.pointID&&findbandJointID[n+1]==ndA.pointID) {
-              println("発見2,bandJoint_oneRIDは", bandJoint_oneRID);
+              //println("発見2,bandJoint_oneRIDは", bandJoint_oneRID);
               bandJoint_oneRID=n;
               //bandJoint_anotherRID=n+1;
             }
             // println(ndA.pointID, ndB.pointID, ee.ANodeRID, ee.BNodeRID);
           }
         }
-        println(oneRID, anotherRID, n_orie, u_orie);
+        //  println("oneRID"+oneRID, "anotherRID"+anotherRID, "n_orie"+n_orie, "u_orie"+ u_orie);
         if (anotherRID==0) {
           if (oneRID==1) {
             if (n_orie==1) {
               if (u_orie==1) {
                 //1,0,1,1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("1,0,1,1");
+                // println("bandJoint_oneRID", bandJoint_oneRID);
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
                   int col=r.col_code;
-                  region newR1=new region(r.de, r.dg, r.orie);
-                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
-                  newR1.col_code=col;
-                  check_color(newR1);
-                  region newR2=new region(r.de, r.dg, r.orie);
-                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  newR2.col_code=col;
-                  check_color(newR2);
+                  region newR=new region(r.de, r.dg, r.orie);
+                  newR.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR.col_code=col;
+                  check_color(newR);
                 } else if (bandJoint_oneRID==1) {
                   int col=r.col_code;
                   region newR1=new region(r.de, r.dg, r.orie);
@@ -173,7 +169,8 @@ class seifert { //<>//
                 /////////////////////bandのやつ
               } else if (u_orie==-1) {
                 //1,0,1,-1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("1,0,1,-1");
+                //println("bandJoint_oneRID", bandJoint_oneRID);
                 //r.get_region_from_Nbhd()
                 ////////////////////nodePointID,3
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
@@ -217,7 +214,8 @@ class seifert { //<>//
             } else if (n_orie==-1) {
               if (u_orie==1) {
                 //1,0,-1,1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("1,0,-1,1");
+                //println("bandJoint_oneRID", bandJoint_oneRID);
                 /////////////////////nodePointID,3
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
@@ -228,85 +226,78 @@ class seifert { //<>//
                   newR.col_code=3-col;
                   check_color(newR);
                 } else if (bandJoint_oneRID==1) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=3-col;
-                  //check_color(newR3);
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
+                  newR2.col_code=col;
+                  check_color(newR2);
                 } else if (bandJoint_oneRID==3) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=3-col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=col;
-                  //check_color(newR3);
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
+                  newR2.col_code=3-col;
+                  check_color(newR2);
                 }
               } else if (u_orie==-1) {
                 //1,0,-1,-1
-                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("1,0,-1,-1");
+                //println("bandJoint_oneRID", bandJoint_oneRID);
                 ////////////////////bandのやつ
-                //if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
-                // println("間違えている");
-                // }// else if (bandJoint_oneRID==-1) {
-                // int col=r.col_code;
-                // region newR=new region(r.de, r.dg, r.orie);
-                // newR.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                // newR.col_code=col;
-                // check_color(newR);
-                // }// else if (bandJoint_oneRID==1) {
-                // int col=r.col_code;
-                // region newR1=new region(r.de, r.dg, r.orie);
-                // newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                // newR1.col_code=col;
-                // check_color(newR1);
-                // region newR2=new region(r.de, r.dg, r.orie);
-                // newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                // newR2.col_code=col;
-                // check_color(newR2);
-                // region newR3=new region(r.de, r.dg, r.orie);
-                // newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                // newR3.col_code=3-col;
-                // check_color(newR3);
-                // }// else if (bandJoint_oneRID==3) {
-                // int col=r.col_code;
-                // region newR1=new region(r.de, r.dg, r.orie);
-                // newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                // newR1.col_code=col;
-                // check_color(newR1);
-                // region newR2=new region(r.de, r.dg, r.orie);
-                // newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                // newR2.col_code=3-col;
-                // check_color(newR2);
-                // region newR3=new region(r.de, r.dg, r.orie);
-                // newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                // newR3.col_code=col;
-                // check_color(newR3);
-                //}//
+                if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
+                  println("間違えている");
+                } else if (bandJoint_oneRID==-1) {
+                  int col=r.col_code;
+                  region newR=new region(r.de, r.dg, r.orie);
+                  newR.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR.col_code=col;
+                  check_color(newR);
+                } else if (bandJoint_oneRID==1) {
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR1.col_code=col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
+                  newR2.col_code=col;
+                  check_color(newR2);
+                  region newR3=new region(r.de, r.dg, r.orie);
+                  newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
+                  newR3.col_code=3-col;
+                  check_color(newR3);
+                } else if (bandJoint_oneRID==3) {
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR1.col_code=col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
+                  newR2.col_code=3-col;
+                  check_color(newR2);
+                  region newR3=new region(r.de, r.dg, r.orie);
+                  newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
+                  newR3.col_code=col;
+                  check_color(newR3);
+                }
               }
             }
           } else if (oneRID==3) {
             if (n_orie==1) {
               if (u_orie==1) {
                 //3,0,1,1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("3,0,1,1");
+                //println("bandJoint_oneRID", bandJoint_oneRID);
                 /////////////////////nodePointID,2
-                if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
+                if (bandJoint_oneRID==1||bandJoint_oneRID==3) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
                   int col=r.col_code;
@@ -314,49 +305,44 @@ class seifert { //<>//
                   newR.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
                   newR.col_code=3-col;
                   check_color(newR);
-                } else if (bandJoint_oneRID==1) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=3-col;
-                  //check_color(newR3);
-                } else if (bandJoint_oneRID==3) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=3-col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=col;
-                  //check_color(newR3);
+                } else if (bandJoint_oneRID==0) {
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
+                  newR2.col_code=3-col;
+                  check_color(newR2);
+                } else if (bandJoint_oneRID==2) {
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR2.col_code=col;
+                  check_color(newR2);
                 }
               } else if (u_orie==-1) {
                 //3,0,1,-1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("3,0,1,-1");
+                // println("bandJoint_oneRID", bandJoint_oneRID);
                 ////////////////////bandのやつ
               }
             } else if (n_orie==-1) {
               if (u_orie==1) {
                 //3,0,-1,1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("3,0,-1,1");
+                // println("bandJoint_oneRID", bandJoint_oneRID);
                 /////////////////////bandのやつ
               } else if (u_orie==-1) {
                 //3,0,-1,-1
-                println("bandJoint_oneRID", bandJoint_oneRID);
-                if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
+                println("3,0,-1,-1");
+                //println("bandJoint_oneRID", bandJoint_oneRID);
+                if (bandJoint_oneRID==1||bandJoint_oneRID==3) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
                   int col=r.col_code;
@@ -364,34 +350,26 @@ class seifert { //<>//
                   newR.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
                   newR.col_code=3-col;
                   check_color(newR);
-                } else if (bandJoint_oneRID==1) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=3-col;
-                  //check_color(newR3);
-                } else if (bandJoint_oneRID==3) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=3-col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=col;
-                  //check_color(newR3);
+                } else if (bandJoint_oneRID==0) {
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
+                  newR2.col_code=3-col;
+                  check_color(newR2);
+                } else if (bandJoint_oneRID==2) {
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR2.col_code=col;
+                  check_color(newR2);
                 }
                 ////////////////////nodePointID,2
               }
@@ -402,8 +380,8 @@ class seifert { //<>//
             if (n_orie==1) {
               if (u_orie==1) {
                 //1,2,1,1
-                // println("来た3");
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("1,2,1,1");
+                //println("bandJoint_oneRID", bandJoint_oneRID);
                 if (bandJoint_oneRID==1||bandJoint_oneRID==3) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
@@ -413,50 +391,45 @@ class seifert { //<>//
                   newR.col_code=3-col;
                   check_color(newR);
                 } else if (bandJoint_oneRID==0) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=3-col;
-                  //check_color(newR3);
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
+                  newR2.col_code=col;
+                  check_color(newR2);
                 } else if (bandJoint_oneRID==2) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=3-col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=col;
-                  //check_color(newR3);
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR2.col_code=3-col;
+                  check_color(newR2);
                 }
                 ////////////////////nodePointID,0
               } else if (u_orie==-1) {
                 //1,2,1,-1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("1,2,1,-1");
+                // println("bandJoint_oneRID", bandJoint_oneRID);
                 ///////////////////bandのやつ
               }
             } else if (n_orie==-1) {
               if (u_orie==1) {
                 //1,2,-1,1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("1,2,-1,1");
+                // println("bandJoint_oneRID", bandJoint_oneRID);
                 /////////////////////bandのやつ
               } else if (u_orie==-1) {
                 //1,2,-1,-1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("1,2,-1,-1");
+                // println("bandJoint_oneRID", bandJoint_oneRID);
                 ////////////////////nodePointID,0
-                if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
+                if (bandJoint_oneRID==1||bandJoint_oneRID==3) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
                   int col=r.col_code;
@@ -464,43 +437,36 @@ class seifert { //<>//
                   newR.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
                   newR.col_code=3-col;
                   check_color(newR);
-                } else if (bandJoint_oneRID==1) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=3-col;
-                  //check_color(newR3);
-                } else if (bandJoint_oneRID==3) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=3-col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=col;
-                  //check_color(newR3);
+                } else if (bandJoint_oneRID==0) {
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
+                  newR2.col_code=col;
+                  check_color(newR2);
+                } else if (bandJoint_oneRID==2) {
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.n2), true);
+                  newR2.col_code=3-col;
+                  check_color(newR2);
                 }
               }
             }
           } else if (oneRID==3) {
             if (n_orie==1) {
               if (u_orie==1) {
-                println("bandJoint_oneRID", bandJoint_oneRID);
-                ///////////////////////bandのやつ
                 //3,2,1,1
+                println("3,2,1,1");
+                //println("bandJoint_oneRID", bandJoint_oneRID);
+                ///////////////////////bandのやつ
                 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
@@ -541,7 +507,8 @@ class seifert { //<>//
                 }
               } else if (u_orie==-1) {
                 //3,2,1,-1
-                println("bandJoint_oneRID", bandJoint_oneRID);
+                println("3,2,1,-1");
+                //println("bandJoint_oneRID", bandJoint_oneRID);
                 //////////////////////nodePointID,1
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
@@ -584,6 +551,7 @@ class seifert { //<>//
             } else if (n_orie==-1) {
               if (u_orie==1) {
                 /////////////3,2,-1,1
+                println("3,2,-1,1");
                 //println("bandJoint_oneRID", bandJoint_oneRID);
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
@@ -594,36 +562,29 @@ class seifert { //<>//
                   newR.col_code=3-col;
                   check_color(newR);
                 } else if (bandJoint_oneRID==1) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=3-col;
-                  //check_color(newR3);
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
+                  newR2.col_code=3-col;
+                  check_color(newR2);
                 } else if (bandJoint_oneRID==3) {
-                  //int col=r.col_code;
-                  //region newR1=new region(r.de, r.dg, r.orie);
-                  //newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
-                  //newR1.col_code=col;
-                  //check_color(newR1);
-                  //region newR2=new region(r.de, r.dg, r.orie);
-                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  //newR2.col_code=3-col;
-                  //check_color(newR2);
-                  //region newR3=new region(r.de, r.dg, r.orie);
-                  //newR3.get_region_from_Nbhd(new Nbhd(nodePointID, j.u1), true);
-                  //newR3.col_code=col;
-                  //check_color(newR3);
+                  int col=r.col_code;
+                  region newR1=new region(r.de, r.dg, r.orie);
+                  newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
+                  newR1.col_code=3-col;
+                  check_color(newR1);
+                  region newR2=new region(r.de, r.dg, r.orie);
+                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
+                  newR2.col_code=col;
+                  check_color(newR2);
                 }
               } else if (u_orie==-1) {
                 //////////////3,2,-1,-1
+                println("3,2,-1,-1");
                 // println("bandJoint_oneRID", bandJoint_oneRID);
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
