@@ -35,7 +35,7 @@ void setup() {
   edit = new parts_editing();
   orie=new orientation(data, graph);
   //reg=new ArrayList<region>();
-  seif=new seifert(data, graph,orie);
+  seif=new seifert(data, graph, orie);
 }
 
 
@@ -246,6 +246,7 @@ void keyPressed() {
     println("ザイフェルト膜を貼るモード");
     orie.decide_orientation();
     Draw.beads_with_Seifelt();
+    seif.SeifertArgorithm();
     //} else if (key=='z') {/////////////////////////////////現在使われていない
     //  dowker dk = new dowker(graph); 
     //  dk.Start();
@@ -589,7 +590,7 @@ void mousePressed() {
       Nbhd nearNb = data.get_near_nbhd(mouseX, mouseY);
       region RG;
       RG=new region(data, graph, orie);
-      RG.get_region_from_Nbhd(nearNb,false);
+      RG.get_region_from_Nbhd(nearNb, false);
       boolean painted=false;
       for (int r=0; r<seif.reg.size(); r++) {
         if (seif.reg.get(r).match_region(RG)) {
@@ -1261,7 +1262,7 @@ void mouseReleased() {
                   ///////////////n1が本線なのでtrue
                   s.bandJoint_flag=true;
                 }
-                 if (e12==1&&eu1!=-1) {
+                if (e12==1&&eu1!=-1) {
                   e.u2=e.n1;
                   e.n1=e.u1;
                   e.u1=-1;

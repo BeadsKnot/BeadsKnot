@@ -988,11 +988,12 @@ class seifert { //<>// //<>// //<>//
 
   region GetSmoothingRegionFromEdges(Edge startEdge) {
     region result=new region(de, dg, orie);
-     //edgeはintの4つ組
+    //edgeはintの4つ組
     int nodeID=startEdge.ANodeID;
     int nodeRID=startEdge.ANodeRID;
     int nextNodeRID=-1;
     Edge nextEdge=null;
+    //////////////////////////////////////////////ここのdo whileに問題あると思われる
     do {
       Node node=dg.nodes.get(nodeID);
       if (node==null) {
