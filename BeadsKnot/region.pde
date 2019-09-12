@@ -1,15 +1,15 @@
 class region { //<>// //<>// //<>// //<>//
   ArrayList <Edge> border;
-  ArrayList<Nbhd> atm;//どのn1もしくはn2もしくはu1もしくはu2が使われていたのかを知るために必要なペア
-  ArrayList<Bead> saveJoint;//クリックしたときに通過したjointのBeadsの番号を格納する配列
+  //ArrayList<Nbhd> atm;//どのn1もしくはn2もしくはu1もしくはu2が使われていたのかを知るために必要なペア
+  //ArrayList<Bead> saveJoint;//クリックしたときに通過したjointのBeadsの番号を格納する配列
   data_extract de;
   data_graph dg;
   int col_code;
   orientation orie;
   region(data_extract _de, data_graph _dg, orientation _orie) {
     border=new ArrayList <Edge>();
-    atm=new ArrayList<Nbhd>();
-    saveJoint=new ArrayList<Bead>();
+    //atm=new ArrayList<Nbhd>();
+    //saveJoint=new ArrayList<Bead>();
     de=_de;
     dg=_dg;
     orie=_orie;
@@ -435,7 +435,7 @@ class region { //<>// //<>// //<>// //<>//
     //}
 
     for (int bo=0; bo<border.size(); bo++) {
-      Edge e=border.get(bo);
+     // Edge e=border.get(bo);
        //println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
     }
     return;

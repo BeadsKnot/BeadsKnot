@@ -1,7 +1,13 @@
 class seifert { //<>// //<>// //<>//
   ArrayList <region> reg;
-  seifert() {
+  data_extract de;
+  data_graph dg;
+  orientation orie;
+  seifert(data_extract _de, data_graph _dg, orientation _orie) {
     reg=new ArrayList<region>();
+    de=_de;
+    dg=_dg;
+    orie=_orie;
   }
   void find_nbhd_region(region r) {
     for (Edge e : r.border) {
@@ -166,13 +172,10 @@ class seifert { //<>// //<>// //<>//
                   newR3.col_code=col;
                   check_color(newR3);
                 }
-                /////////////////////bandのやつ
               } else if (u_orie==-1) {
                 //1,0,1,-1
                 println("1,0,1,-1");
                 //println("bandJoint_oneRID", bandJoint_oneRID);
-                //r.get_region_from_Nbhd()
-                ////////////////////nodePointID,3
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
@@ -208,7 +211,6 @@ class seifert { //<>// //<>// //<>//
                 //1,0,-1,1
                 println("1,0,-1,1");
                 //println("bandJoint_oneRID", bandJoint_oneRID);
-                /////////////////////nodePointID,3
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
@@ -242,7 +244,6 @@ class seifert { //<>// //<>// //<>//
                 //1,0,-1,-1
                 println("1,0,-1,-1");
                 //println("bandJoint_oneRID", bandJoint_oneRID);
-                ////////////////////bandのやつ
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
@@ -288,7 +289,6 @@ class seifert { //<>// //<>// //<>//
                 //3,0,1,1
                 println("3,0,1,1");
                 //println("bandJoint_oneRID", bandJoint_oneRID);
-                /////////////////////nodePointID,2
                 if (bandJoint_oneRID==1||bandJoint_oneRID==3) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
@@ -359,7 +359,6 @@ class seifert { //<>// //<>// //<>//
                   newR3.col_code=3-col;
                   check_color(newR3);
                 }
-                ////////////////////bandのやつ
               }
             } else if (n_orie==-1) {
               if (u_orie==1) {
@@ -403,11 +402,10 @@ class seifert { //<>// //<>// //<>//
                   newR3.col_code=3-col;
                   check_color(newR3);
                 }
-                /////////////////////bandのやつ
               } else if (u_orie==-1) {
                 //3,0,-1,-1
                 println("3,0,-1,-1");
-                //println("bandJoint_oneRID", bandJoint_oneRID);
+                println("bandJoint_oneRID", bandJoint_oneRID);
                 if (bandJoint_oneRID==1||bandJoint_oneRID==3) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
@@ -437,7 +435,6 @@ class seifert { //<>// //<>// //<>//
                   newR2.col_code=col;
                   check_color(newR2);
                 }
-                ////////////////////nodePointID,2
               }
             }
           }
@@ -477,7 +474,6 @@ class seifert { //<>// //<>// //<>//
                   newR2.col_code=3-col;
                   check_color(newR2);
                 }
-                ////////////////////nodePointID,0
               } else if (u_orie==-1) {
                 //1,2,1,-1
                 println("1,2,1,-1");
@@ -519,7 +515,6 @@ class seifert { //<>// //<>// //<>//
                   newR3.col_code=3-col;
                   check_color(newR3);
                 }
-                ///////////////////bandのやつ
               }
             } else if (n_orie==-1) {
               if (u_orie==1) {
@@ -563,12 +558,10 @@ class seifert { //<>// //<>// //<>//
                   newR3.col_code=3-col;
                   check_color(newR3);
                 }
-                /////////////////////bandのやつ
               } else if (u_orie==-1) {
                 //1,2,-1,-1
                 println("1,2,-1,-1");
                 // println("bandJoint_oneRID", bandJoint_oneRID);
-                ////////////////////nodePointID,0
                 if (bandJoint_oneRID==1||bandJoint_oneRID==3) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
@@ -606,8 +599,6 @@ class seifert { //<>// //<>// //<>//
                 //3,2,1,1
                 println("3,2,1,1");
                 //println("bandJoint_oneRID", bandJoint_oneRID);
-                ///////////////////////bandのやつ
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
@@ -649,7 +640,6 @@ class seifert { //<>// //<>// //<>//
                 //3,2,1,-1
                 println("3,2,1,-1");
                 // println("bandJoint_oneRID", bandJoint_oneRID);
-                //////////////////////nodePointID,1
                 if (bandJoint_oneRID==0||bandJoint_oneRID==2) {
                   println("間違えている");
                 } else if (bandJoint_oneRID==-1) {
@@ -726,10 +716,10 @@ class seifert { //<>// //<>// //<>//
                   newR1.get_region_from_Nbhd(new Nbhd(nodePointID, j.n1), true);
                   newR1.col_code=col;
                   check_color(newR1);
-                  region newR2=new region(r.de, r.dg, r.orie);
-                  newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
-                  newR2.col_code=col;
-                  check_color(newR2);
+                  //region newR2=new region(r.de, r.dg, r.orie);
+                  //newR2.get_region_from_Nbhd(new Nbhd(nodePointID, j.u2), true);
+                  //newR2.col_code=col;
+                  //check_color(newR2);
                 } else if (bandJoint_oneRID==1) {
                   int col=r.col_code;
                   region newR1=new region(r.de, r.dg, r.orie);
@@ -976,5 +966,93 @@ class seifert { //<>// //<>// //<>//
       reg.add(r);
       //println("addした！！！");
     }
+  }
+  void SeifertArgorithm() {
+    ArrayList<region> smoothingRegions=new ArrayList<region>(); 
+    for (Edge e : dg.edges) {
+      region r=GetSmoothingRegionFromEdges(e);
+      boolean match=false;
+      if (r!=null) {
+        for (region r2 : smoothingRegions) {
+          if (r2.match_region(r)) {
+            match=true;
+            break;
+          }
+        }
+        if (!match) {
+          smoothingRegions.add(r);
+        }
+      }
+    }
+  }
+
+  region GetSmoothingRegionFromEdges(Edge startEdge) {
+    region result=new region(de, dg, orie);
+     //edgeはintの4つ組
+    int nodeID=startEdge.ANodeID;
+    int nodeRID=startEdge.ANodeRID;
+    int nextNodeRID=-1;
+    Edge nextEdge=null;
+    do {
+      Node node=dg.nodes.get(nodeID);
+      if (node==null) {
+        return null;
+      }
+      int nodeBeadID=node.pointID;
+      Bead JointBead=de.getBead(nodeBeadID);
+      if (JointBead==null) {
+        return null;
+      }
+      if (JointBead.midJoint) {
+        nextNodeRID=(nodeRID==0)?2:0;
+      } else if (JointBead.Joint) {
+        Bead n1Bead=de.getBead(JointBead.n1);
+        Bead n2Bead=de.getBead(JointBead.n2);
+        Bead u1Bead=de.getBead(JointBead.u1);
+        Bead u2Bead=de.getBead(JointBead.u2);
+        int n_orie=orie.orientation_greater(n2Bead.orientation, n1Bead.orientation);
+        int u_orie=orie.orientation_greater(u2Bead.orientation, u1Bead.orientation);
+        //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
+        if (n_orie*u_orie>0) {
+          if (nodeRID==0) {
+            nextNodeRID=3;
+          } else if (nodeRID==1) {
+            nextNodeRID=2;
+          } else if (nodeRID==2) {
+            nextNodeRID=1;
+          } else if (nodeRID==3) {
+            nextNodeRID=0;
+          }
+        } else {
+          if (nodeRID==0) {
+            nextNodeRID=1;
+          } else if (nodeRID==1) {
+            nextNodeRID=0;
+          } else if (nodeRID==2) {
+            nextNodeRID=3;
+          } else if (nodeRID==3) {
+            nextNodeRID=2;
+          }
+        }
+        nextEdge=null;
+        for (Edge e : dg.edges) {
+          if (e.ANodeID==nodeID&&e.ANodeRID==nextNodeRID) {
+            nextEdge=e;
+            nodeID=e.BNodeID;
+            nodeRID=e.BNodeRID;
+            break;
+          } else if (e.BNodeID==nodeID&&e.BNodeRID==nextNodeRID) {
+            nextEdge=e;
+            nodeID=e.ANodeID;
+            nodeRID=e.ANodeRID;
+            break;
+          }
+        }
+        if (nextEdge!=null) {
+          result.border.add(nextEdge);
+        }
+      }
+    } while (!nextEdge.matchEdge(startEdge));
+    return null;
   }
 }

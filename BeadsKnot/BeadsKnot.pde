@@ -35,7 +35,7 @@ void setup() {
   edit = new parts_editing();
   orie=new orientation(data, graph);
   //reg=new ArrayList<region>();
-  seif=new seifert();
+  seif=new seifert(data, graph,orie);
 }
 
 
