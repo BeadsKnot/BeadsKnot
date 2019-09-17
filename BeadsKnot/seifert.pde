@@ -1,4 +1,4 @@
-class seifert { //<>// //<>// //<>//
+class seifert { //<>// //<>// //<>// //<>//
   ArrayList <region> reg;
   data_extract de;
   data_graph dg;
@@ -981,6 +981,7 @@ class seifert { //<>// //<>// //<>//
         }
         if (!match) {
           smoothingRegions.add(r);
+          println(r.border.get(0).ToString());
         }
       }
     }
@@ -993,7 +994,6 @@ class seifert { //<>// //<>// //<>//
     int nodeRID=startEdge.ANodeRID;
     int nextNodeRID=-1;
     Edge nextEdge=null;
-    //////////////////////////////////////////////ここのdo whileに問題あると思われる
     do {
       Node node=dg.nodes.get(nodeID);
       if (node==null) {
@@ -1016,44 +1016,55 @@ class seifert { //<>// //<>// //<>//
         //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
         if (n_orie*u_orie>0) {
           if (nodeRID==0) {
+            print("left ");
             nextNodeRID=3;
           } else if (nodeRID==1) {
+            print("right ");
             nextNodeRID=2;
           } else if (nodeRID==2) {
             nextNodeRID=1;
+            print("left ");
           } else if (nodeRID==3) {
+            print("right ");
             nextNodeRID=0;
           }
         } else {
           if (nodeRID==0) {
+            print("right ");
             nextNodeRID=1;
           } else if (nodeRID==1) {
+            print("left ");
             nextNodeRID=0;
           } else if (nodeRID==2) {
+            print("right ");
             nextNodeRID=3;
           } else if (nodeRID==3) {
+            print("left ");
             nextNodeRID=2;
           }
         }
-        nextEdge=null;
-        for (Edge e : dg.edges) {
-          if (e.ANodeID==nodeID&&e.ANodeRID==nextNodeRID) {
-            nextEdge=e;
-            nodeID=e.BNodeID;
-            nodeRID=e.BNodeRID;
-            break;
-          } else if (e.BNodeID==nodeID&&e.BNodeRID==nextNodeRID) {
-            nextEdge=e;
-            nodeID=e.ANodeID;
-            nodeRID=e.ANodeRID;
-            break;
-          }
-        }
-        if (nextEdge!=null) {
-          result.border.add(nextEdge);
+      }
+      nextEdge=null;
+      for (Edge e : dg.edges) {
+        if (e.ANodeID==nodeID&&e.ANodeRID==nextNodeRID) {
+          //println("e.ANodeIDは"+e.ANodeID, "e.ANodeRIDは"+e.ANodeRID, nodeID, nextNodeRID);
+          nextEdge=e;
+          nodeID=e.BNodeID;
+          nodeRID=e.BNodeRID;
+          break;
+        } else if (e.BNodeID==nodeID&&e.BNodeRID==nextNodeRID) {
+          //println("e.BNodeIDは"+e.BNodeID, "e.BNodeIDは"+e.BNodeRID, nodeID, nextNodeRID);
+          nextEdge=e;
+          nodeID=e.ANodeID;
+          nodeRID=e.ANodeRID;
+          break;
         }
       }
+      // println(nodeID, nodeRID, nextNodeRID);
+      if (nextEdge!=null) {
+        result.border.add(nextEdge);
+      }
     } while (!nextEdge.matchEdge(startEdge));
-    return null;
+    return result;
   }
 }

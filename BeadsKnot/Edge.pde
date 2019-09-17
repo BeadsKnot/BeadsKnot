@@ -8,6 +8,7 @@ class Edge {
 
   Bezier bezier;
 
+
   Edge(int _ANodeID, int _ANodeRID, int _BNodeID, int _BNodeRID) {
     ANodeID=_ANodeID;
     ANodeRID=_ANodeRID;
@@ -65,6 +66,10 @@ class Edge {
   //  drawCubicBezier(hx, hy, ix, iy, jx, jy, kx, ky);
   //}
 
+  String ToString() {
+    return " "+ANodeID+","+ANodeRID+","+BNodeID+","+BNodeRID;
+  }
+
   float naibun(float p, float q, float t) {
     return (p*(1.0-t)+q*t);
   }
@@ -97,7 +102,7 @@ class Edge {
   void set_bezier(ArrayList<Node> nodes) {
     Node ANode=nodes.get(ANodeID);
     Node BNode=nodes.get(BNodeID);
-    if(ANode.inUse && BNode.inUse){
+    if (ANode.inUse && BNode.inUse) {
       bezier.set_bezier(ANode, BNode, ANodeRID, BNodeRID);
     }
   }
@@ -107,7 +112,7 @@ class Edge {
   void scaling_shape_modifier(ArrayList<Node> nodes) {
     Node nodeA = nodes.get(ANodeID);
     Node nodeB = nodes.get(BNodeID);
-    if(nodeA.inUse && nodeB.inUse){
+    if (nodeA.inUse && nodeB.inUse) {
       //データベースによるrの値の最適近似
       scaling_shape_modifier1(nodes);
       set_bezier(nodes);
@@ -135,7 +140,7 @@ class Edge {
             minMax = bezier.get_curvature_range();
           }
         }
-  
+
         Bezier bezierBP = new Bezier(bezier);
         bezierBP.v3X = nodeB.edge_rx(BNodeRID, nodeB.r[BNodeRID]+1f);
         bezierBP.v3Y = nodeB.edge_ry(BNodeRID, nodeB.r[BNodeRID]+1f);
@@ -358,7 +363,7 @@ class Edge {
     Node a0 = nodes.get(ANodeID);
     Node a1 = nodes.get(BNodeID);
     float ret = 9999.0;
-    if(a0.inUse && a1.inUse){
+    if (a0.inUse && a1.inUse) {
       float hx=a0.x;
       float hy=a0.y;
       float ix=a0.edge_x(ANodeRID);
@@ -456,13 +461,13 @@ class Edge {
   String getName() {
     return "("+ANodeID+","+ANodeRID+";"+BNodeID+","+BNodeRID+")";
   }
-  
-  boolean matchEdge(Edge e){
+
+  boolean matchEdge(Edge e) {
     //順不同で一致しているか確認
-    if(e.ANodeID==ANodeID&&e.ANodeRID==ANodeRID&&e.BNodeID==BNodeID&&e.BNodeRID==BNodeRID){
+    if (e.ANodeID==ANodeID&&e.ANodeRID==ANodeRID&&e.BNodeID==BNodeID&&e.BNodeRID==BNodeRID) {
       return true;
     }
-     if(e.BNodeID==ANodeID&&e.BNodeRID==ANodeRID&&e.ANodeID==BNodeID&&e.ANodeRID==BNodeRID){
+    if (e.BNodeID==ANodeID&&e.BNodeRID==ANodeRID&&e.ANodeID==BNodeID&&e.ANodeRID==BNodeRID) {
       return true;
     }
     return false;

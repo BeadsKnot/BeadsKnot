@@ -244,7 +244,7 @@ void keyPressed() {
     }
   } else if (key=='S') {//////ザイフェルト膜を貼った絵を描画する
     println("ザイフェルト膜を貼るモード");
-    orie.decide_orientation();
+    orie.decide_orientation(); //<>//
     Draw.beads_with_Seifelt();
     seif.SeifertArgorithm();
     //} else if (key=='z') {/////////////////////////////////現在使われていない
