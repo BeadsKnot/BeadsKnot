@@ -969,6 +969,7 @@ class seifert { //<>// //<>// //<>// //<>//
   }
   void SeifertArgorithm() {
     ArrayList<region> smoothingRegions=new ArrayList<region>(); 
+    ArrayList<region> smoothingRegions2=new ArrayList<region>();//色を塗るために必要
     for (Edge e : dg.edges) {
       region r=GetSmoothingRegionFromEdges(e);
       boolean match=false;
@@ -996,16 +997,47 @@ class seifert { //<>// //<>// //<>// //<>//
             r.col_code = (APointROri > BPointROri)? 2 : 1;
           }
           smoothingRegions.add(r);
-          seif.reg.add(r);//試しにアドしてみた。
+          //seif.reg.add(r);//試しにアドしてみた。
           //smoothingRegions.add(r);//ここで色が塗れるようにする
           ///後々色を塗る部分を考える必要あり
-          println(r.border.get(0).ToString());
+          //println(r.border.get(0).ToString());
         }
       }
     }
+
     //smoothingRegionsからseif.regを作る
     //全部書き出して省く
+    /////全てのedgeとsmoothingRegionsのedgeを比べて
+    println(smoothingRegions.size());
+    for (int i=0; i<smoothingRegions.size(); i++) {
+      println("");
+      for (int j=0; j<smoothingRegions.get(i).border.size(); j++) {
+        ///ここのedgeをたどって色を塗っていく
+        println(smoothingRegions.get(i).border.get(j).ANodeID, smoothingRegions.get(i).border.get(j).ANodeRID, smoothingRegions.get(i).border.get(j).BNodeID, smoothingRegions.get(i).border.get(j).BNodeRID);
+      }
+    }
     //そのあとにbandJointをつける
+
+    //ここでsmoothingRegions2にaddする
+    //全てのedgeとsmoothingRegionsのedgeを比べてn1は
+
+    for (region r : smoothingRegions2) {
+      Edge e0 = r.border.get(0);
+      int APointId = dg.nodes.get(e0.ANodeID).pointID;
+      int BPointId = dg.nodes.get(e0.BNodeID).pointID;
+      Bead ANodeBead = de.getBead(APointId);
+      Bead BNodeBead = de.getBead(BPointId);
+      int APointRId = ANodeBead.get_un12(e0.ANodeRID);
+      int BPointRId = BNodeBead.get_un12(e0.BNodeRID);
+      int APointROri = de.getBead(APointRId).orientation;
+      int BPointROri = de.getBead(BPointRId).orientation;
+      if (r.clockwise) {
+        r.col_code = (APointROri > BPointROri)? 1 : 2;
+      } else {
+        r.col_code = (APointROri > BPointROri)? 2 : 1;
+      }
+      seif.reg.add(r);
+    }
   }
 
   region GetSmoothingRegionFromEdges(Edge startEdge) {
@@ -1016,7 +1048,8 @@ class seifert { //<>// //<>// //<>// //<>//
     int nextNodeRID=-1;
     Edge nextEdge=null;
     float totalDecline = 0f;
-    do {
+    // do {
+    for (int repeat=0; repeat<de.points.size(); repeat++) {
       Node node=dg.nodes.get(nodeID);
       if (node==null) {
         return null;
@@ -1047,17 +1080,17 @@ class seifert { //<>// //<>// //<>// //<>//
             nextNodeRID=2;
           } else if (nodeRID==2) {
             totalDecline -= (PI/2);
-            nextNodeRID=1;
             //print("left ");
-            totalDecline += (PI/2);
+            nextNodeRID=1;
           } else if (nodeRID==3) {
+            totalDecline += (PI/2);
             //print("right ");
             nextNodeRID=0;
           }
         } else {
           if (nodeRID==0) {
-            //print("right ");
             totalDecline += (PI/2);
+            //print("right ");
             nextNodeRID=1;
           } else if (nodeRID==1) {
             totalDecline -= (PI/2);
@@ -1096,9 +1129,16 @@ class seifert { //<>// //<>// //<>// //<>//
       if (nextEdge!=null) {
         result.border.add(nextEdge);
       }
-    } while (!nextEdge.matchEdge(startEdge));
-    result.clockwise=(totalDecline>0)?true:false;
-    return result;
+      if (nextEdge.matchEdge(startEdge)) {
+        //println(totalDecline);
+        result.clockwise=(totalDecline>0)?true:false;
+        return result;
+      }
+    } 
+    //while (!nextEdge.matchEdge(startEdge));
+    //result.clockwise=(totalDecline>0)?true:false;
+    //return result;
+    return null;
   }
 
   float getDeclination(Edge e) {

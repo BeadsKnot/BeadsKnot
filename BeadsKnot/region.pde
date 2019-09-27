@@ -7,6 +7,7 @@ class region { //<>// //<>// //<>// //<>//
   int col_code;
   orientation orie;
   boolean clockwise;/////////////////////regionが時計回りか反時計回りかを探すために必要,//時計周りがtrue、反時計周りがfalse
+  boolean bandnecessity;//bandが必要か必要じゃないかを判定するフラグ
   region(data_extract _de, data_graph _dg, orientation _orie) {
     border=new ArrayList <Edge>();
     //atm=new ArrayList<Nbhd>();
@@ -16,6 +17,7 @@ class region { //<>// //<>// //<>// //<>//
     orie=_orie;
     col_code=1;
     clockwise=false;
+    bandnecessity=false;
   }
   void paintRegion() {/////////////nulpoint対応はまだ//get.()みたいなところがまだアブナイ
     int startID=-1;
