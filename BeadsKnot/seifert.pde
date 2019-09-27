@@ -1016,30 +1016,30 @@ class seifert { //<>// //<>// //<>// //<>//
         //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
         if (n_orie*u_orie>0) {
           if (nodeRID==0) {
-            print("left ");
+            //print("light ");
             nextNodeRID=3;
           } else if (nodeRID==1) {
-            print("right ");
+            //print("right ");
             nextNodeRID=2;
           } else if (nodeRID==2) {
             nextNodeRID=1;
-            print("left ");
+            //print("light ");
           } else if (nodeRID==3) {
-            print("right ");
+            //print("right ");
             nextNodeRID=0;
           }
         } else {
           if (nodeRID==0) {
-            print("right ");
+            //print("right ");
             nextNodeRID=1;
           } else if (nodeRID==1) {
-            print("left ");
+            //print("left ");
             nextNodeRID=0;
           } else if (nodeRID==2) {
-            print("right ");
+            //print("right ");
             nextNodeRID=3;
           } else if (nodeRID==3) {
-            print("left ");
+            //print("left ");
             nextNodeRID=2;
           }
         }
@@ -1066,5 +1066,27 @@ class seifert { //<>// //<>// //<>// //<>//
       }
     } while (!nextEdge.matchEdge(startEdge));
     return result;
+  }
+
+  int getRotation(Edge startEdge) {
+    float atan_total=0;
+    int nodeID=startEdge.ANodeID;
+    int nodeRID=startEdge.ANodeRID;
+    Node node=dg.nodes.get(nodeID);
+    int nodeBeadID=node.pointID;
+    Bead nodeBead=de.getBead(nodeBeadID);
+    int nextnodeBeadID=nodeBead.get_un12(nodeRID);
+    Bead nextnodeBead=de.getBead(nextnodeBeadID);
+    for (int repeat=0; repeat<de.points.size(); repeat++) {
+      float atan=atan2((nextnodeBead.y-nodeBead.y), (nextnodeBead.x-nodeBead.x));    
+      atan_total=atan_total+atan;
+    }
+    if (atan_total<0) {
+      return 1;
+    } else if (atan_total>0) {
+      return 2;
+    } else {
+      return -1;
+    }
   }
 }
