@@ -980,11 +980,32 @@ class seifert { //<>// //<>// //<>// //<>//
           }
         }
         if (!match) {
+          //rの色を決める
+          Edge e0 = r.border.get(0);
+          int APointId = dg.nodes.get(e0.ANodeID).pointID;
+          int BPointId = dg.nodes.get(e0.BNodeID).pointID;
+          Bead ANodeBead = de.getBead(APointId);
+          Bead BNodeBead = de.getBead(BPointId);
+          int APointRId = ANodeBead.get_un12(e0.ANodeRID);
+          int BPointRId = BNodeBead.get_un12(e0.BNodeRID);
+          int APointROri = de.getBead(APointRId).orientation;
+          int BPointROri = de.getBead(BPointRId).orientation;
+          if (r.clockwise) {
+            r.col_code = (APointROri > BPointROri)? 1 : 2;
+          } else {
+            r.col_code = (APointROri > BPointROri)? 2 : 1;
+          }
           smoothingRegions.add(r);
+          seif.reg.add(r);//試しにアドしてみた。
+          //smoothingRegions.add(r);//ここで色が塗れるようにする
+          ///後々色を塗る部分を考える必要あり
           println(r.border.get(0).ToString());
         }
       }
     }
+    //smoothingRegionsからseif.regを作る
+    //全部書き出して省く
+    //そのあとにbandJointをつける
   }
 
   region GetSmoothingRegionFromEdges(Edge startEdge) {
@@ -994,6 +1015,7 @@ class seifert { //<>// //<>// //<>// //<>//
     int nodeRID=startEdge.ANodeRID;
     int nextNodeRID=-1;
     Edge nextEdge=null;
+    float totalDecline = 0f;
     do {
       Node node=dg.nodes.get(nodeID);
       if (node==null) {
@@ -1016,14 +1038,18 @@ class seifert { //<>// //<>// //<>// //<>//
         //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
         if (n_orie*u_orie>0) {
           if (nodeRID==0) {
-            //print("light ");
+            totalDecline -= (PI/2);
+            //print("left ");
             nextNodeRID=3;
           } else if (nodeRID==1) {
+            totalDecline += (PI/2);
             //print("right ");
             nextNodeRID=2;
           } else if (nodeRID==2) {
+            totalDecline -= (PI/2);
             nextNodeRID=1;
-            //print("light ");
+            //print("left ");
+            totalDecline += (PI/2);
           } else if (nodeRID==3) {
             //print("right ");
             nextNodeRID=0;
@@ -1031,14 +1057,18 @@ class seifert { //<>// //<>// //<>// //<>//
         } else {
           if (nodeRID==0) {
             //print("right ");
+            totalDecline += (PI/2);
             nextNodeRID=1;
           } else if (nodeRID==1) {
+            totalDecline -= (PI/2);
             //print("left ");
             nextNodeRID=0;
           } else if (nodeRID==2) {
+            totalDecline += (PI/2);
             //print("right ");
             nextNodeRID=3;
           } else if (nodeRID==3) {
+            totalDecline -= (PI/2);
             //print("left ");
             nextNodeRID=2;
           }
@@ -1051,12 +1081,14 @@ class seifert { //<>// //<>// //<>// //<>//
           nextEdge=e;
           nodeID=e.BNodeID;
           nodeRID=e.BNodeRID;
+          totalDecline+=getDeclination(e);
           break;
         } else if (e.BNodeID==nodeID&&e.BNodeRID==nextNodeRID) {
           //println("e.BNodeIDは"+e.BNodeID, "e.BNodeIDは"+e.BNodeRID, nodeID, nextNodeRID);
           nextEdge=e;
           nodeID=e.ANodeID;
           nodeRID=e.ANodeRID;
+          totalDecline-=getDeclination(e);
           break;
         }
       }
@@ -1065,28 +1097,68 @@ class seifert { //<>// //<>// //<>// //<>//
         result.border.add(nextEdge);
       }
     } while (!nextEdge.matchEdge(startEdge));
+    result.clockwise=(totalDecline>0)?true:false;
     return result;
   }
 
-  int getRotation(Edge startEdge) {
-    float atan_total=0;
-    int nodeID=startEdge.ANodeID;
-    int nodeRID=startEdge.ANodeRID;
-    Node node=dg.nodes.get(nodeID);
-    int nodeBeadID=node.pointID;
-    Bead nodeBead=de.getBead(nodeBeadID);
-    int nextnodeBeadID=nodeBead.get_un12(nodeRID);
-    Bead nextnodeBead=de.getBead(nextnodeBeadID);
-    for (int repeat=0; repeat<de.points.size(); repeat++) {
-      float atan=atan2((nextnodeBead.y-nodeBead.y), (nextnodeBead.x-nodeBead.x));    
-      atan_total=atan_total+atan;
+  float getDeclination(Edge e) {
+    Node ANode = dg.nodes.get(e.ANodeID);
+    Node BNode = dg.nodes.get(e.BNodeID);
+    if (ANode ==null || BNode== null ) {
+      return 0f;
     }
-    if (atan_total<0) {
-      return 1;
-    } else if (atan_total>0) {
-      return 2;
-    } else {
-      return -1;
+    Bead ANodeBead = de.getBead(ANode.pointID);
+    if (ANodeBead == null) {
+      return 0f;
     }
+    int prev = ANode.pointID;
+    int now = ANodeBead.get_un12(e.ANodeRID);
+    int next=-1;
+    Bead prevBead = de.getBead(prev);
+    Bead nowBead = de.getBead(now);
+    if (nowBead == null) {
+      return 0f; // error
+    }
+    float prevX = prevBead.x;
+    float prevY = prevBead.y;
+    float nowX  = nowBead.x;
+    float nowY  = nowBead.y;
+    float startDecline = atan2(nowY-prevY, nowX-prevX);
+    float nowDecline = startDecline;
+    float modify = 0f;
+    for (int i=0; i<de.points.size(); i++) {
+      if (nowBead.n1 == prev) {
+        next = nowBead.n2;
+      } else if (nowBead.n2 == prev) {
+        next = nowBead.n1;
+      } else {
+        return 0f;// error
+      }
+      Bead nextBead = de.getBead(next);
+      if (nextBead == null) {
+        return 0f; //error
+      }
+      float nextX = nextBead.x;
+      float nextY = nextBead.y;
+      float nextDecline = atan2(nextY-nowY, nextX-nowX);
+      if (nextDecline < nowDecline - PI ) {
+        modify += (2*PI);
+      }
+      if (nextDecline > nowDecline + PI ) {
+        modify -= (2*PI);
+      }
+      if (next == BNode.pointID) {
+        return nextDecline - startDecline + modify;
+      }
+      // 更新
+      nowDecline = nextDecline;
+      nowX=nextX;
+      nowY=nextY;
+      prev = now;
+      now = next;
+      nowBead = de.getBead(now);// no need to check to be an error
+      // nowBead = nextBead;
+    }
+    return 0f; // error
   }
 }

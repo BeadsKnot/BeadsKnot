@@ -6,7 +6,7 @@ class region { //<>// //<>// //<>// //<>//
   data_graph dg;
   int col_code;
   orientation orie;
-  int rotation;/////////////////////regionが時計回りか反時計回りかを探すために必要,//時計周りが1、反時計周りが2、エラーが-1
+  boolean clockwise;/////////////////////regionが時計回りか反時計回りかを探すために必要,//時計周りがtrue、反時計周りがfalse
   region(data_extract _de, data_graph _dg, orientation _orie) {
     border=new ArrayList <Edge>();
     //atm=new ArrayList<Nbhd>();
@@ -15,7 +15,7 @@ class region { //<>// //<>// //<>// //<>//
     dg=_dg;
     orie=_orie;
     col_code=1;
-    rotation=-1;
+    clockwise=false;
   }
   void paintRegion() {/////////////nulpoint対応はまだ//get.()みたいなところがまだアブナイ
     int startID=-1;
@@ -437,8 +437,8 @@ class region { //<>// //<>// //<>// //<>//
     //}
 
     for (int bo=0; bo<border.size(); bo++) {
-     // Edge e=border.get(bo);
-       //println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
+      // Edge e=border.get(bo);
+      //println(e.ANodeID, e.ANodeRID, e.BNodeID, e.BNodeRID);
     }
     return;
   }
