@@ -969,7 +969,7 @@ class seifert { //<>// //<>// //<>// //<>//
   }
   void SeifertArgorithm() {
     ArrayList<region> smoothingRegions=new ArrayList<region>(); 
-    ArrayList<region> smoothingRegions2=new ArrayList<region>();//色を塗るために必要
+    //ArrayList<region> smoothingRegions2=new ArrayList<region>();//色を塗るために必要
     for (Edge e : dg.edges) {
       region r=GetSmoothingRegionFromEdges(e);
       boolean match=false;
@@ -992,52 +992,55 @@ class seifert { //<>// //<>// //<>// //<>//
           int APointROri = de.getBead(APointRId).orientation;
           int BPointROri = de.getBead(BPointRId).orientation;
           if (r.clockwise) {
-            r.col_code = (APointROri > BPointROri)? 1 : 2;
+            if (APointROri > BPointROri) {
+              r.col_code=1;
+              // r.clockwise2=true;
+            } else {
+              r.col_code=2;
+              // r.clockwise2=false;
+            }
+            //r.col_code = (APointROri > BPointROri)? 1 : 2;
           } else {
-            r.col_code = (APointROri > BPointROri)? 2 : 1;
+            if (APointROri > BPointROri) {
+              r.col_code=2;
+              // r.clockwise2=false;
+            } else {
+              r.col_code=1;
+              // r.clockwise2=true;
+            }
+            // r.col_code = (APointROri > BPointROri)? 2 : 1;
           }
           smoothingRegions.add(r);
-          //seif.reg.add(r);//試しにアドしてみた。
+          seif.reg.add(r);//試しにアドしてみた。
           //smoothingRegions.add(r);//ここで色が塗れるようにする
           ///後々色を塗る部分を考える必要あり
+          boolean matchflag=false;
+          for (Edge edg : r.border) {
+            region re= GetRegionFromEdges(edg, r.clockwise);
+            matchflag=false;
+            for (region r2 : seif.reg) {
+              if (r2.match_region(re)) {
+                matchflag=true;
+                break;
+              }
+            }
+            if (!matchflag) {
+              re.col_code=r.col_code;
+              //if (seif.reg.size()<=3) {
+              ///seif.reg.add(re);
+              //}
+            }
+          }
           //println(r.border.get(0).ToString());
         }
       }
     }
 
-    //smoothingRegionsからseif.regを作る
-    //全部書き出して省く
-    /////全てのedgeとsmoothingRegionsのedgeを比べて
-    println(smoothingRegions.size());
-    for (int i=0; i<smoothingRegions.size(); i++) {
-      println("");
-      for (int j=0; j<smoothingRegions.get(i).border.size(); j++) {
-        ///ここのedgeをたどって色を塗っていく
-        println(smoothingRegions.get(i).border.get(j).ANodeID, smoothingRegions.get(i).border.get(j).ANodeRID, smoothingRegions.get(i).border.get(j).BNodeID, smoothingRegions.get(i).border.get(j).BNodeRID);
-      }
-    }
+
+    ////smoothingRegionsからseif.regを作る
+    ////全部書き出して省く
+
     //そのあとにbandJointをつける
-
-    //ここでsmoothingRegions2にaddする
-    //全てのedgeとsmoothingRegionsのedgeを比べてn1は
-
-    for (region r : smoothingRegions2) {
-      Edge e0 = r.border.get(0);
-      int APointId = dg.nodes.get(e0.ANodeID).pointID;
-      int BPointId = dg.nodes.get(e0.BNodeID).pointID;
-      Bead ANodeBead = de.getBead(APointId);
-      Bead BNodeBead = de.getBead(BPointId);
-      int APointRId = ANodeBead.get_un12(e0.ANodeRID);
-      int BPointRId = BNodeBead.get_un12(e0.BNodeRID);
-      int APointROri = de.getBead(APointRId).orientation;
-      int BPointROri = de.getBead(BPointRId).orientation;
-      if (r.clockwise) {
-        r.col_code = (APointROri > BPointROri)? 1 : 2;
-      } else {
-        r.col_code = (APointROri > BPointROri)? 2 : 1;
-      }
-      seif.reg.add(r);
-    }
   }
 
   region GetSmoothingRegionFromEdges(Edge startEdge) {
@@ -1132,6 +1135,109 @@ class seifert { //<>// //<>// //<>// //<>//
       if (nextEdge.matchEdge(startEdge)) {
         //println(totalDecline);
         result.clockwise=(totalDecline>0)?true:false;
+        return result;
+      }
+    } 
+    //while (!nextEdge.matchEdge(startEdge));
+    //result.clockwise=(totalDecline>0)?true:false;
+    //return result;
+    return null;
+  }
+
+
+  region GetRegionFromEdges(Edge startEdge, boolean clockwise) {
+    //時計回りのときに右に曲がるのが正しい
+    region result=new region(de, dg, orie);
+    //edgeはintの4つ組
+    int nodeID=startEdge.ANodeID;
+    int nodeRID=startEdge.ANodeRID;
+    int nextNodeRID=-1;
+    Edge nextEdge=null;
+    //float totalDecline = 0f;
+    // do {
+    for (int repeat=0; repeat<de.points.size(); repeat++) {
+      Node node=dg.nodes.get(nodeID);
+      if (node==null) {
+        return null;
+      }
+      int nodeBeadID=node.pointID;
+      Bead JointBead=de.getBead(nodeBeadID);
+      if (JointBead==null) {
+        return null;
+      }
+      if (JointBead.midJoint) {
+        nextNodeRID=(nodeRID==0)?2:0;
+      } else if (JointBead.Joint) {
+        //Bead n1Bead=de.getBead(JointBead.n1);
+        //Bead n2Bead=de.getBead(JointBead.n2);
+        //Bead u1Bead=de.getBead(JointBead.u1);
+        //Bead u2Bead=de.getBead(JointBead.u2);
+        ////int n_orie=orie.orientation_greater(n2Bead.orientation, n1Bead.orientation);
+        //int u_orie=orie.orientation_greater(u2Bead.orientation, u1Bead.orientation);
+        //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
+        if (clockwise) {//右折
+          if (nodeRID==0) {
+            //totalDecline -= (PI/2);
+            //print("left ");
+            nextNodeRID=1;
+          } else if (nodeRID==1) {
+            //totalDecline += (PI/2);
+            //print("right ");
+            nextNodeRID=2;
+          } else if (nodeRID==2) {
+            //totalDecline -= (PI/2);
+            //print("left ");
+            nextNodeRID=3;
+          } else if (nodeRID==3) {
+            //totalDecline += (PI/2);
+            //print("right ");
+            nextNodeRID=0;
+          }
+        } else {
+          if (nodeRID==0) {
+            //totalDecline += (PI/2);
+            //print("right ");
+            nextNodeRID=3;
+          } else if (nodeRID==1) {
+            //totalDecline -= (PI/2);
+            //print("left ");
+            nextNodeRID=0;
+          } else if (nodeRID==2) {
+            //totalDecline += (PI/2);
+            //print("right ");
+            nextNodeRID=1;
+          } else if (nodeRID==3) {
+            //totalDecline -= (PI/2);
+            //print("left ");
+            nextNodeRID=2;
+          }
+        }
+      }
+      nextEdge=null;
+      for (Edge e : dg.edges) {
+        if (e.ANodeID==nodeID&&e.ANodeRID==nextNodeRID) {
+          //println("e.ANodeIDは"+e.ANodeID, "e.ANodeRIDは"+e.ANodeRID, nodeID, nextNodeRID);
+          nextEdge=e;
+          nodeID=e.BNodeID;
+          nodeRID=e.BNodeRID;
+          //totalDecline+=getDeclination(e);
+          break;
+        } else if (e.BNodeID==nodeID&&e.BNodeRID==nextNodeRID) {
+          //println("e.BNodeIDは"+e.BNodeID, "e.BNodeIDは"+e.BNodeRID, nodeID, nextNodeRID);
+          nextEdge=e;
+          nodeID=e.ANodeID;
+          nodeRID=e.ANodeRID;
+          //totalDecline-=getDeclination(e);
+          break;
+        }
+      }
+      // println(nodeID, nodeRID, nextNodeRID);
+      if (nextEdge!=null) {
+        result.border.add(nextEdge);
+      }
+      if (nextEdge.matchEdge(startEdge)) {
+        //println(totalDecline);
+        // result.clockwise=(totalDecline>0)?true:false;
         return result;
       }
     } 
