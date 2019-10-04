@@ -969,7 +969,6 @@ class seifert { //<>// //<>// //<>// //<>//
   }
   void SeifertArgorithm() {
     ArrayList<region> smoothingRegions=new ArrayList<region>(); 
-    //ArrayList<region> smoothingRegions2=new ArrayList<region>();//色を塗るために必要
     for (Edge e : dg.edges) {
       region r=GetSmoothingRegionFromEdges(e);
       boolean match=false;
@@ -1011,12 +1010,14 @@ class seifert { //<>// //<>// //<>// //<>//
             // r.col_code = (APointROri > BPointROri)? 2 : 1;
           }
           smoothingRegions.add(r);
-          seif.reg.add(r);//試しにアドしてみた。
+          //seif.reg.add(r);//試しにアドしてみた。
+          // println(seif.reg.size());
           //smoothingRegions.add(r);//ここで色が塗れるようにする
           ///後々色を塗る部分を考える必要あり
           boolean matchflag=false;
           for (Edge edg : r.border) {
             region re= GetRegionFromEdges(edg, r.clockwise);
+            // println(re.border.size());
             matchflag=false;
             for (region r2 : seif.reg) {
               if (r2.match_region(re)) {
@@ -1026,20 +1027,18 @@ class seifert { //<>// //<>// //<>// //<>//
             }
             if (!matchflag) {
               re.col_code=r.col_code;
-              //if (seif.reg.size()<=3) {
-              ///seif.reg.add(re);
-              //}
+              if (seif.reg.size()<=2) {
+                seif.reg.add(re);
+              }
             }
           }
           //println(r.border.get(0).ToString());
         }
       }
     }
-
-
+    // println(seif.reg.size());
     ////smoothingRegionsからseif.regを作る
     ////全部書き出して省く
-
     //そのあとにbandJointをつける
   }
 
@@ -1146,11 +1145,27 @@ class seifert { //<>// //<>// //<>// //<>//
 
 
   region GetRegionFromEdges(Edge startEdge, boolean clockwise) {
+    println("GetRegionFromEdgs start");
+    boolean cw=clockwise;
+    int APointId = dg.nodes.get(startEdge.ANodeID).pointID;
+    int BPointId = dg.nodes.get(startEdge.BNodeID).pointID;
+    Bead ANodeBead = de.getBead(APointId);
+    Bead BNodeBead = de.getBead(BPointId);
+    int APointRId = ANodeBead.get_un12(startEdge.ANodeRID);
+    int BPointRId = BNodeBead.get_un12(startEdge.BNodeRID);
+    int APointROri = de.getBead(APointRId).orientation;
+    int BPointROri = de.getBead(BPointRId).orientation;
+    println(APointROri, BPointROri, clockwise);
     //時計回りのときに右に曲がるのが正しい
     region result=new region(de, dg, orie);
     //edgeはintの4つ組
     int nodeID=startEdge.ANodeID;
     int nodeRID=startEdge.ANodeRID;
+    if (APointROri<BPointROri) {
+      //cw=!clockwise;
+      nodeID=startEdge.BNodeID;
+      nodeRID=startEdge.BNodeRID;
+    }
     int nextNodeRID=-1;
     Edge nextEdge=null;
     //float totalDecline = 0f;
@@ -1160,6 +1175,7 @@ class seifert { //<>// //<>// //<>// //<>//
       if (node==null) {
         return null;
       }
+      println(node.x, node.y);
       int nodeBeadID=node.pointID;
       Bead JointBead=de.getBead(nodeBeadID);
       if (JointBead==null) {
@@ -1168,14 +1184,15 @@ class seifert { //<>// //<>// //<>// //<>//
       if (JointBead.midJoint) {
         nextNodeRID=(nodeRID==0)?2:0;
       } else if (JointBead.Joint) {
-        //Bead n1Bead=de.getBead(JointBead.n1);
-        //Bead n2Bead=de.getBead(JointBead.n2);
-        //Bead u1Bead=de.getBead(JointBead.u1);
-        //Bead u2Bead=de.getBead(JointBead.u2);
-        ////int n_orie=orie.orientation_greater(n2Bead.orientation, n1Bead.orientation);
-        //int u_orie=orie.orientation_greater(u2Bead.orientation, u1Bead.orientation);
+        Bead n1Bead=de.getBead(JointBead.n1);
+        Bead n2Bead=de.getBead(JointBead.n2);
+        Bead u1Bead=de.getBead(JointBead.u1);
+        Bead u2Bead=de.getBead(JointBead.u2);
+        int n_orie=orie.orientation_greater(n2Bead.orientation, n1Bead.orientation);
+        int u_orie=orie.orientation_greater(u2Bead.orientation, u1Bead.orientation);
         //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
-        if (clockwise) {//右折
+        //if (n_orie*u_orie>0) {
+        if (cw) {//右折
           if (nodeRID==0) {
             //totalDecline -= (PI/2);
             //print("left ");
