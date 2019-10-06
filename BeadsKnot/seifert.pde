@@ -981,36 +981,24 @@ class seifert { //<>// //<>// //<>// //<>//
         }
         if (!match) {
           //rの色を決める
-          Edge e0 = r.border.get(0);
-          int APointId = dg.nodes.get(e0.ANodeID).pointID;
-          int BPointId = dg.nodes.get(e0.BNodeID).pointID;
-          Bead ANodeBead = de.getBead(APointId);
-          Bead BNodeBead = de.getBead(BPointId);
-          int APointRId = ANodeBead.get_un12(e0.ANodeRID);
-          int BPointRId = BNodeBead.get_un12(e0.BNodeRID);
-          int APointROri = de.getBead(APointRId).orientation;
-          int BPointROri = de.getBead(BPointRId).orientation;
+          //Edge e0 = r.border.get(0);
+          //int APointId = dg.nodes.get(e0.ANodeID).pointID;
+          //int BPointId = dg.nodes.get(e0.BNodeID).pointID;
+          //Bead ANodeBead = de.getBead(APointId);
+          //Bead BNodeBead = de.getBead(BPointId);
+          //int APointRId = ANodeBead.get_un12(e0.ANodeRID);
+          //int BPointRId = BNodeBead.get_un12(e0.BNodeRID);
+          //int APointROri = de.getBead(APointRId).orientation;
+          //int BPointROri = de.getBead(BPointRId).orientation;
           if (r.clockwise) {
-            if (APointROri > BPointROri) {
-              r.col_code=1;
-              // r.clockwise2=true;
-            } else {
-              r.col_code=2;
-              // r.clockwise2=false;
-            }
             //r.col_code = (APointROri > BPointROri)? 1 : 2;
+            r.col_code=2;
           } else {
-            if (APointROri > BPointROri) {
-              r.col_code=2;
-              // r.clockwise2=false;
-            } else {
-              r.col_code=1;
-              // r.clockwise2=true;
-            }
             // r.col_code = (APointROri > BPointROri)? 2 : 1;
+            r.col_code=1;
           }
           smoothingRegions.add(r);
-          //seif.reg.add(r);//試しにアドしてみた。
+          // seif.reg.add(r);//試しにアドしてみた。
           // println(seif.reg.size());
           //smoothingRegions.add(r);//ここで色が塗れるようにする
           ///後々色を塗る部分を考える必要あり
@@ -1027,9 +1015,7 @@ class seifert { //<>// //<>// //<>// //<>//
             }
             if (!matchflag) {
               re.col_code=r.col_code;
-              if (seif.reg.size()<=2) {
-                seif.reg.add(re);
-              }
+              seif.reg.add(re);
             }
           }
           //println(r.border.get(0).ToString());
@@ -1050,6 +1036,18 @@ class seifert { //<>// //<>// //<>// //<>//
     int nextNodeRID=-1;
     Edge nextEdge=null;
     float totalDecline = 0f;
+    int APointId = dg.nodes.get(startEdge.ANodeID).pointID;
+    int BPointId = dg.nodes.get(startEdge.BNodeID).pointID;
+    Bead ANodeBead = de.getBead(APointId);
+    Bead BNodeBead = de.getBead(BPointId);
+    int APointRId = ANodeBead.get_un12(startEdge.ANodeRID);
+    int BPointRId = BNodeBead.get_un12(startEdge.BNodeRID);
+    int APointROri = de.getBead(APointRId).orientation;
+    int BPointROri = de.getBead(BPointRId).orientation;
+    if (APointROri<BPointROri) {
+      nodeID=startEdge.BNodeID;
+      nodeRID=startEdge.BNodeRID;
+    }
     // do {
     for (int repeat=0; repeat<de.points.size(); repeat++) {
       Node node=dg.nodes.get(nodeID);
@@ -1145,7 +1143,7 @@ class seifert { //<>// //<>// //<>// //<>//
 
 
   region GetRegionFromEdges(Edge startEdge, boolean clockwise) {
-    println("GetRegionFromEdgs start");
+    //println("GetRegionFromEdgs start");
     boolean cw=clockwise;
     int APointId = dg.nodes.get(startEdge.ANodeID).pointID;
     int BPointId = dg.nodes.get(startEdge.BNodeID).pointID;
@@ -1155,7 +1153,7 @@ class seifert { //<>// //<>// //<>// //<>//
     int BPointRId = BNodeBead.get_un12(startEdge.BNodeRID);
     int APointROri = de.getBead(APointRId).orientation;
     int BPointROri = de.getBead(BPointRId).orientation;
-    println(APointROri, BPointROri, clockwise);
+    //println(APointROri, BPointROri, clockwise);
     //時計回りのときに右に曲がるのが正しい
     region result=new region(de, dg, orie);
     //edgeはintの4つ組
@@ -1175,7 +1173,7 @@ class seifert { //<>// //<>// //<>// //<>//
       if (node==null) {
         return null;
       }
-      println(node.x, node.y);
+     // println(node.x, node.y);
       int nodeBeadID=node.pointID;
       Bead JointBead=de.getBead(nodeBeadID);
       if (JointBead==null) {
@@ -1188,8 +1186,8 @@ class seifert { //<>// //<>// //<>// //<>//
         Bead n2Bead=de.getBead(JointBead.n2);
         Bead u1Bead=de.getBead(JointBead.u1);
         Bead u2Bead=de.getBead(JointBead.u2);
-        int n_orie=orie.orientation_greater(n2Bead.orientation, n1Bead.orientation);
-        int u_orie=orie.orientation_greater(u2Bead.orientation, u1Bead.orientation);
+        // int n_orie=orie.orientation_greater(n2Bead.orientation, n1Bead.orientation);
+        // int u_orie=orie.orientation_greater(u2Bead.orientation, u1Bead.orientation);
         //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
         //if (n_orie*u_orie>0) {
         if (cw) {//右折
