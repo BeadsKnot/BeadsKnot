@@ -1019,10 +1019,16 @@ class seifert { //<>// //<>// //<>// //<>//
             }
           }
           //println(r.border.get(0).ToString());
+          //ここからバンドを作る
+          //時計回りで左に曲がる点と反時計周りで右に曲がる点をバンドにする
+          //使うのはr
+          for (Edge ed : r.border) {
+            GetplacebandJoint(ed, r.clockwise);
+          }
         }
       }
     }
-    // println(seif.reg.size());
+    //println(seif.reg.size());
     ////smoothingRegionsからseif.regを作る
     ////全部書き出して省く
     //そのあとにbandJointをつける
@@ -1173,7 +1179,7 @@ class seifert { //<>// //<>// //<>// //<>//
       if (node==null) {
         return null;
       }
-     // println(node.x, node.y);
+      // println(node.x, node.y);
       int nodeBeadID=node.pointID;
       Bead JointBead=de.getBead(nodeBeadID);
       if (JointBead==null) {
@@ -1261,6 +1267,160 @@ class seifert { //<>// //<>// //<>// //<>//
     //return result;
     return null;
   }
+
+  region GetplacebandJoint(Edge startEdge, boolean clockwise) {
+    region result=new region(de, dg, orie);
+    //edgeはintの4つ組
+    int nodeID=startEdge.ANodeID;
+    int nodeRID=startEdge.ANodeRID;
+    int nextNodeRID=-1;
+    Edge nextEdge=null;
+    float totalDecline = 0f;
+    int APointId = dg.nodes.get(startEdge.ANodeID).pointID;
+    int BPointId = dg.nodes.get(startEdge.BNodeID).pointID;
+    Bead ANodeBead = de.getBead(APointId);
+    Bead BNodeBead = de.getBead(BPointId);
+    int APointRId = ANodeBead.get_un12(startEdge.ANodeRID);
+    int BPointRId = BNodeBead.get_un12(startEdge.BNodeRID);
+    int APointROri = de.getBead(APointRId).orientation;
+    int BPointROri = de.getBead(BPointRId).orientation;
+    if (APointROri<BPointROri) {
+      nodeID=startEdge.BNodeID;
+      nodeRID=startEdge.BNodeRID;
+    }
+    // do {
+    for (int repeat=0; repeat<de.points.size(); repeat++) {
+      Node node=dg.nodes.get(nodeID);
+      if (node==null) {
+        return null;
+      }
+      int nodeBeadID=node.pointID;
+      Bead JointBead=de.getBead(nodeBeadID);
+      if (JointBead==null) {
+        return null;
+      }
+      if (JointBead.midJoint) {
+        nextNodeRID=(nodeRID==0)?2:0;
+      } else if (JointBead.Joint) {
+        Bead n1Bead=de.getBead(JointBead.n1);
+        Bead n2Bead=de.getBead(JointBead.n2);
+        Bead u1Bead=de.getBead(JointBead.u1);
+        Bead u2Bead=de.getBead(JointBead.u2);
+        int n_orie=orie.orientation_greater(n2Bead.orientation, n1Bead.orientation);
+        int u_orie=orie.orientation_greater(u2Bead.orientation, u1Bead.orientation);
+        //orientation_greater(int o1, int o2) {// if o1>o2 then return 1;
+        if (n_orie*u_orie>0) {
+          if (nodeRID==0) {
+            totalDecline -= (PI/2);
+            //print("left ");
+            nextNodeRID=3;
+            if (clockwise) {
+              println(JointBead.n1, JointBead.u2);
+              if (n1Bead.n1==nodeBeadID) {
+                Bead b1=de.getBead(n1Bead.n2);
+                if (b1.n1==n1Bead.n1) {
+                  Bead b2=de.getBead(b1.n1);
+                  b2.bandJoint=true;
+                } else {
+                  Bead b3=de.getBead(b1.n2);
+                  b3.bandJoint=true;
+                }
+              } else {
+                Bead b4=de.getBead(n1Bead.n1);
+                if (b4.n1==n1Bead.n1) {
+                  Bead b5=de.getBead(b4.n1);
+                  b5.bandJoint=true;
+                } else {
+                  Bead b6=de.getBead(b4.n2);
+                  b6.bandJoint=true;
+                }
+              }
+            }
+          } else if (nodeRID==1) {
+            totalDecline += (PI/2);
+            //print("right ");
+            nextNodeRID=2;
+            if (!clockwise) {
+              println(JointBead.u1, JointBead.n2);
+            }
+          } else if (nodeRID==2) {
+            totalDecline -= (PI/2);
+            //print("left ");
+            nextNodeRID=1;
+            if (clockwise) {
+              println(JointBead.n2, JointBead.u1);
+            }
+          } else if (nodeRID==3) {
+            totalDecline += (PI/2);
+            //print("right ");
+            nextNodeRID=0;
+            if (!clockwise) {
+              println(JointBead.u2, JointBead.n1);
+            }
+          }
+        } else {
+          if (nodeRID==0) {
+            totalDecline += (PI/2);
+            //print("right ");
+            nextNodeRID=1;
+            if (!clockwise) {
+              println(JointBead.n1, JointBead.u1);
+            }
+          } else if (nodeRID==1) {
+            totalDecline -= (PI/2);
+            //print("left ");
+            nextNodeRID=0;
+            if (clockwise) {
+              println(JointBead.u1, JointBead.n1);
+            }
+          } else if (nodeRID==2) {
+            totalDecline += (PI/2);
+            //print("right ");
+            nextNodeRID=3;
+            if (!clockwise) {
+              println(JointBead.n2, JointBead.u2);
+            }
+          } else if (nodeRID==3) {
+            totalDecline -= (PI/2);
+            //print("left ");
+            nextNodeRID=2;
+            if (clockwise) {
+              println(JointBead.u2, JointBead.n2);
+            }
+          }
+        }
+      }
+      nextEdge=null;
+      for (Edge e : dg.edges) {
+        if (e.ANodeID==nodeID&&e.ANodeRID==nextNodeRID) {
+          //println("e.ANodeIDは"+e.ANodeID, "e.ANodeRIDは"+e.ANodeRID, nodeID, nextNodeRID);
+          nextEdge=e;
+          nodeID=e.BNodeID;
+          nodeRID=e.BNodeRID;
+          totalDecline+=getDeclination(e);
+          break;
+        } else if (e.BNodeID==nodeID&&e.BNodeRID==nextNodeRID) {
+          //println("e.BNodeIDは"+e.BNodeID, "e.BNodeIDは"+e.BNodeRID, nodeID, nextNodeRID);
+          nextEdge=e;
+          nodeID=e.ANodeID;
+          nodeRID=e.ANodeRID;
+          totalDecline-=getDeclination(e);
+          break;
+        }
+      }
+      // println(nodeID, nodeRID, nextNodeRID);
+      if (nextEdge!=null) {
+        result.border.add(nextEdge);
+      }
+      if (nextEdge.matchEdge(startEdge)) {
+        //println(totalDecline);
+        result.clockwise=(totalDecline>0)?true:false;
+        return result;
+      }
+    } 
+    return null;
+  }
+
 
   float getDeclination(Edge e) {
     Node ANode = dg.nodes.get(e.ANodeID);
