@@ -1,4 +1,4 @@
-class seifert { //<>// //<>// //<>// //<>//
+class seifert { //<>// //<>// //<>// //<>// //<>//
   ArrayList <region> reg;
   data_extract de;
   data_graph dg;
@@ -1035,8 +1035,42 @@ class seifert { //<>// //<>// //<>// //<>//
     }
     //println(seif.reg.size());
     ////smoothingRegionsからseif.regを作る
-    ////全部書き出して省く
-    //そのあとにbandJointをつける
+    //smoothingRegionごとに、そこに含まれるregionを計算して色を塗る
+    seif.reg.clear();
+    for (int i = 0; i < smoothingRegions.size(); i++) {
+      region sr = smoothingRegions.get(i);
+      for (int j=0; j< sr.border.size(); j++) {//smoothingRegionに含まれるエッジのそれぞれについて、囲むregionを抽出する。
+        Edge ed = sr.border.get(j);
+        region re= GetRegionFromEdges(ed, sr.clockwise);
+        // 重複をチェック
+        boolean matchflag=false;
+        for (region r2 : seif.reg) {
+          if (r2.match_region(re)) {
+            matchflag=true;
+            break;
+          }
+        }
+        //重複がなければ色をつけて追加。
+        if (!matchflag) {
+          if (re!=null) {
+            re.col_code=sr.col_code;
+            seif.reg.add(re);
+          }
+        }
+      }
+    }
+    // bandEdgeごとに、そこに含まれるregionを計算して色を塗る
+    for (int i = 0; i < dg.edges.size(); i++) {
+      Edge ed = dg.edges.get(i);
+      if (ed.bandEdge) {
+        println("found a band region", ed.bandColCode);
+        region re = GetRegionFromEdges(ed, true);
+        if (re != null) {
+          re.col_code = (ed.bandColCode==1)? 2 : 1;
+          seif.reg.add(re);
+        }
+      }
+    }
   }
 
   region GetSmoothingRegionFromEdges(Edge startEdge) {
@@ -1192,7 +1226,7 @@ class seifert { //<>// //<>// //<>// //<>//
       }
       if (JointBead.midJoint) {
         nextNodeRID=(nodeRID==0)?2:0;
-      } else if (JointBead.Joint) {
+      } else if (JointBead.Joint||JointBead.bandJoint) {
         Bead n1Bead=de.getBead(JointBead.n1);
         Bead n2Bead=de.getBead(JointBead.n2);
         Bead u1Bead=de.getBead(JointBead.u1);
@@ -1261,7 +1295,9 @@ class seifert { //<>// //<>// //<>// //<>//
       if (nextEdge!=null) {
         result.border.add(nextEdge);
       }
-      if (nextEdge.matchEdge(startEdge)) {
+      if (nextEdge==null) {
+        return null;
+      } else if (nextEdge.matchEdge(startEdge)) {
         //println(totalDecline);
         // result.clockwise=(totalDecline>0)?true:false;
         return result;
@@ -1295,14 +1331,6 @@ class seifert { //<>// //<>// //<>// //<>//
     ArrayList<Integer> nodeRIDbox=new ArrayList<Integer>();
     ArrayList<Integer> nextNodeRIDbox=new ArrayList<Integer>();
     ArrayList<Boolean> node_or_next=new ArrayList<Boolean>();//nodeならyes、nextならfalse
-    //int nodeIDbox[]=new int[8];
-    //int nodeRIDbox[]=new int[8];
-    //int nextNodeRIDbox[]=new int[8];
-    //for (int a=0; a<8; a++) {
-    //  nodeIDbox[a]=-1;
-    //  nodeRIDbox[a]=-1;
-    //  nextNodeRIDbox[a]=-1;
-    //}
     if (APointROri<BPointROri) {
       nodeID=startEdge.BNodeID;
       nodeRID=startEdge.BNodeRID;
@@ -1336,12 +1364,12 @@ class seifert { //<>// //<>// //<>// //<>//
             //print("left ");
             nextNodeRID=3;
             if (clockwise) {
-             // println(1);
+              // println(1);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
               node_or_next.add(false);
-              // AddABandEdge(nodeID, nextNodeRID);/////////////////// AddABandEdge(0,3) 
+              // AddABandEdge(nodeID, nextNodeRID, r.col_code);/////////////////// AddABandEdge(0,3) 
               //println(JointBead.n1, JointBead.u2);
               //println(nthree_neighbors(JointBead.n1, nodeBeadID));
               //println(uthree_neighbors(JointBead.u2, nodeBeadID));
@@ -1378,12 +1406,12 @@ class seifert { //<>// //<>// //<>// //<>//
             //print("right ");
             nextNodeRID=2;
             if (!clockwise) {
-             // println(2);
+              // println(2);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
               node_or_next.add(true);
-              // AddABandEdge(nodeID, nodeRID);
+              //AddABandEdge(nodeID, nodeRID, r.col_code);
               //// println(JointBead.n2, JointBead.u1);
               //println(nthree_neighbors(JointBead.n2, nodeBeadID));
               //println(uthree_neighbors(JointBead.u1, nodeBeadID));
@@ -1402,7 +1430,7 @@ class seifert { //<>// //<>// //<>// //<>//
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
               node_or_next.add(false);
-              //AddABandEdge(nodeID, nextNodeRID);
+              // AddABandEdge(nodeID, nextNodeRID, r.col_code);
               //println(JointBead.n2, JointBead.u1);
               //println(nthree_neighbors(JointBead.n2, nodeBeadID));
               //println(uthree_neighbors(JointBead.u1, nodeBeadID));
@@ -1416,12 +1444,12 @@ class seifert { //<>// //<>// //<>// //<>//
             //print("right ");
             nextNodeRID=0;
             if (!clockwise) {
-             // println(4);
+              // println(4);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
               node_or_next.add(true);
-              //AddABandEdge(nodeID, nodeRID);
+              //AddABandEdge(nodeID, nodeRID, r.col_code);
               //println(JointBead.n1, JointBead.u2);
               //println(nthree_neighbors(JointBead.n1, nodeBeadID));
               //println(uthree_neighbors(JointBead.u2, nodeBeadID));
@@ -1437,12 +1465,12 @@ class seifert { //<>// //<>// //<>// //<>//
             //print("right ");
             nextNodeRID=1;
             if (!clockwise) {
-             // println(5);
+              // println(5);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
               node_or_next.add(true);
-              //AddABandEdge(nodeID, nodeRID);
+              //AddABandEdge(nodeID, nodeRID, r.col_code);
               // println(JointBead.n1, JointBead.u1);
               //println(nthree_neighbors(JointBead.n1, nodeBeadID));
               //println(uthree_neighbors(JointBead.u1, nodeBeadID));
@@ -1456,12 +1484,12 @@ class seifert { //<>// //<>// //<>// //<>//
             //print("left ");
             nextNodeRID=0;
             if (clockwise) {
-             // println(6);
+              // println(6);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
               node_or_next.add(false);
-              //AddABandEdge(nodeID, nextNodeRID);
+              //AddABandEdge(nodeID, nextNodeRID, r.col_code);
               // println(JointBead.n1, JointBead.u1);
               //println(nthree_neighbors(JointBead.n1, nodeBeadID));
               //println(uthree_neighbors(JointBead.u2, nodeBeadID));
@@ -1480,7 +1508,7 @@ class seifert { //<>// //<>// //<>// //<>//
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
               node_or_next.add(true);
-              // AddABandEdge(nodeID, nodeRID);
+              // AddABandEdge(nodeID, nodeRID, r.col_code);
               // println(JointBead.n2, JointBead.u2);
               //println(nthree_neighbors(JointBead.n2, nodeBeadID));
               //println(uthree_neighbors(JointBead.u2, nodeBeadID));
@@ -1499,7 +1527,7 @@ class seifert { //<>// //<>// //<>// //<>//
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
               node_or_next.add(false);
-              // AddABandEdge(nodeID, nextNodeRID);
+              // AddABandEdge(nodeID, nextNodeRID, r.col_code);
               // println(JointBead.n2, JointBead.u2);
               //println(nthree_neighbors(JointBead.n2, nodeBeadID));
               //println(uthree_neighbors(JointBead.u2, nodeBeadID));
@@ -1539,15 +1567,13 @@ class seifert { //<>// //<>// //<>// //<>//
       //  return;
       //}
     } 
-    //nodeIDbox[0]=nodeID;
-    //nextNodeRIDbox[0]= nextNodeRID;
-    //nodeRIDbox[0]=nodeRID;
+
     for (int a=0; a<nodeIDbox.size(); a++) {
       if (node_or_next.get(a)) {
-        AddABandEdge(nodeIDbox.get(a), nodeRIDbox.get(a));
+        AddABandEdge(nodeIDbox.get(a), nodeRIDbox.get(a), r.col_code);
       }
       if (!node_or_next.get(a)) {
-        AddABandEdge(nodeIDbox.get(a), nextNodeRIDbox.get(a));
+        AddABandEdge(nodeIDbox.get(a), nextNodeRIDbox.get(a), r.col_code);
       }
     }
     return;
@@ -1615,7 +1641,9 @@ class seifert { //<>// //<>// //<>// //<>//
   //  }
   //}
 
-  void  AddABandEdge(int nodeID, int rightRID) {
+  void  AddABandEdge(int nodeID, int rightRID, int colcode) {
+    boolean rightB3n1_B2 = false;
+    boolean leftB3n1_B2 = false;
     int leftRID=(rightRID+1)%4;
     //ndeID,rigghtRIDを含むエッジをeとする
     Edge e=GetEdgeByNode(nodeID, rightRID);
@@ -1655,12 +1683,14 @@ class seifert { //<>// //<>// //<>// //<>//
       // ただし、ビーズb3からみたb2IDがn1なのかn2なのかに応じて、
       // これらエッジに含まれるRIDの値を調整する必要がある。
       if (b3.n1 == b2ID) {
+        rightB3n1_B2 = true;
         e.ANodeID=newRightBandNodeID;
         e.ANodeRID=2;
         Edge newEdge=new Edge(newRightBandNodeID, 0, nodeID, rightRID);
         // newEdgeをdg.edgesへ追加する。
         dg.edges.add(newEdge);
       } else {
+        rightB3n1_B2 = true;
         e.ANodeID=newRightBandNodeID;
         e.ANodeRID=0;//
         Edge newEdge=new Edge(newRightBandNodeID, 2, nodeID, rightRID);//
@@ -1674,12 +1704,14 @@ class seifert { //<>// //<>// //<>// //<>//
       // ただし、ビーズb3からみたb2IDがn1なのかn2なのかに応じて、
       // これらエッジに含まれるRIDの値を調整する必要がある。
       if (b3.n1 == b2ID) {
+        rightB3n1_B2 = true;
         e.BNodeID=newRightBandNodeID;
         e.BNodeRID=2;
         Edge newEdge=new Edge(newRightBandNodeID, 0, nodeID, rightRID);
         // newEdgeをdg.edgesへ追加する。
         dg.edges.add(newEdge);
       } else {
+        rightB3n1_B2 = true;
         e.BNodeID=newRightBandNodeID;
         e.BNodeRID=0;//
         Edge newEdge=new Edge(newRightBandNodeID, 2, nodeID, rightRID);//
@@ -1730,12 +1762,14 @@ class seifert { //<>// //<>// //<>// //<>//
       // ただし、ビーズb3からみたb2IDがn1なのかn2なのかに応じて、
       // これらエッジに含まれるRIDの値を調整する必要がある。
       if (b31.n1 == b2ID1) {
+        leftB3n1_B2 = true;
         e1.ANodeID=newLeftBandNodeID;
         e1.ANodeRID=2;
         Edge newEdge1=new Edge(newLeftBandNodeID, 0, nodeID, leftRID);
         // newEdgeをdg.edgesへ追加する。
         dg.edges.add(newEdge1);
       } else {
+        leftB3n1_B2 = true;
         e.ANodeID=newLeftBandNodeID;
         e.ANodeRID=0;//
         Edge newEdge1=new Edge(newLeftBandNodeID, 2, nodeID, leftRID);//
@@ -1749,12 +1783,14 @@ class seifert { //<>// //<>// //<>// //<>//
       // ただし、ビーズb3からみたb2IDがn1なのかn2なのかに応じて、
       // これらエッジに含まれるRIDの値を調整する必要がある。
       if (b31.n1 == b2ID1) {
+        leftB3n1_B2 = true;
         e1.BNodeID=newLeftBandNodeID;
         e1.BNodeRID=2;
         Edge newEdge1=new Edge(newLeftBandNodeID, 0, nodeID, leftRID);
         // newEdgeをdg.edgesへ追加する。
         dg.edges.add(newEdge1);
       } else {
+        leftB3n1_B2 = true;
         e1.BNodeID=newLeftBandNodeID;
         e1.BNodeRID=0;//
         Edge newEdge1=new Edge(newLeftBandNodeID, 2, nodeID, leftRID);//
@@ -1764,9 +1800,86 @@ class seifert { //<>// //<>// //<>// //<>//
         dg.edges.add(newEdge1);
       }
     }
+    //bandEdgeの中点に相当するbeadを一つ追加する（一つで十分らしい）場所は二つのノードの中点。
+    Bead rightBandBead = de.getBead(newRightBandNode.pointID);
+    Bead leftBandBead = de.getBead(newLeftBandNode.pointID);
+    Bead newBandEdgeBead = new Bead((rightBandBead.x + leftBandBead.x)*0.5, (rightBandBead.y + leftBandBead.y)*0.5);
+    newBandEdgeBead.n1 = newRightBandNode.pointID;
+    newBandEdgeBead.n2 = newLeftBandNode.pointID;
+    newBandEdgeBead.c = 2;
+    int newBandEdgeBeadID = de.points.size();
+    de.points.add(newBandEdgeBead);
+    Edge newBandEdge = new Edge(newRightBandNodeID, (rightB3n1_B2? 0 : 2), newLeftBandNodeID, (leftB3n1_B2? 0 : 2));
+    newBandEdge.bandEdge = true;//これを追加
+    newBandEdge.bandColCode = colcode;//これを追加
+    dg.edges.add(newBandEdge);
+    // rightBandBeadのビーズつながりを調節する。
+    if (rightB3n1_B2) {
+      rightBandBead.u1 = rightBandBead.n1;
+      rightBandBead.n1 = newBandEdgeBeadID;
+    } else {
+      rightBandBead.u2 = rightBandBead.n2;
+      rightBandBead.n2 = newBandEdgeBeadID;
+    }
+    rightBandBead.c = 3;
+    // leftBandBeadのビーズつながりを調節する。
+    if (leftB3n1_B2) {
+      leftBandBead.u2 = leftBandBead.n1;
+      leftBandBead.n1 = newBandEdgeBeadID;
+    } else {
+      leftBandBead.u1 = leftBandBead.n2;
+      leftBandBead.n2 = newBandEdgeBeadID;
+    }
+    leftBandBead.c = 3;
+    // bandのための短いEdgeの番号を付け替える
+    for (int i=0; i<dg.edges.size(); i++) {
+      Edge ed = dg.edges.get(i);
+      if (rightB3n1_B2) {
+        if (ed.ANodeID==newRightBandNodeID && ed.ANodeRID == 0) {
+          ed.ANodeRID = 1;
+          break;
+        }
+        if (ed.BNodeID==newRightBandNodeID && ed.BNodeRID == 0) {
+          ed.BNodeRID = 1;
+          break;
+        }
+      } else {
+        if (ed.ANodeID==newRightBandNodeID && ed.ANodeRID == 2) {
+          ed.ANodeRID = 3;
+          break;
+        }
+        if (ed.BNodeID==newRightBandNodeID && ed.BNodeRID == 2) {
+          ed.BNodeRID = 3;
+          break;
+        }
+      }
+    }
+    for (int i=0; i<dg.edges.size(); i++) {
+      Edge ed = dg.edges.get(i);
+      if (leftB3n1_B2) {
+        if (ed.ANodeID == newLeftBandNodeID && ed.ANodeRID == 0) {
+          ed.ANodeRID = 3;
+          break;
+        }
+        if (ed.BNodeID == newLeftBandNodeID && ed.BNodeRID == 0) {
+          ed.BNodeRID = 3;
+          break;
+        }
+      } else {
+        if (ed.ANodeID == newLeftBandNodeID && ed.ANodeRID == 2) {
+          ed.ANodeRID = 1;
+          break;
+        }
+        if (ed.BNodeID == newLeftBandNodeID && ed.BNodeRID == 2) {
+          ed.BNodeRID = 1;
+          break;
+        }
+      }
+    }
     // dg.update_points();を実行する
-    graph.update_points();
-    graph.add_close_point_Joint();
+    dg.modify();
+    dg.update_points();
+    dg.add_close_point_Joint();
   }
 
 
