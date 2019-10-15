@@ -45,9 +45,9 @@ class region { //<>// //<>// //<>// //<>//
     if (col_code==0) {
       fill(255);
     } else if (col_code==1) {
-      fill(#FF6347);
+      fill(#FF0000);
     } else {
-      fill(#87ceeb);
+      fill(#008000);
     }
     beginShape();
 

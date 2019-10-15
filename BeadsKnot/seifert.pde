@@ -1174,7 +1174,9 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
       if (nextEdge!=null) {
         result.border.add(nextEdge);
       }
-      if (nextEdge.matchEdge(startEdge)) {
+      if (nextEdge==null) {
+        return null;
+      } else if (nextEdge.matchEdge(startEdge)) {
         //println(totalDecline);
         result.clockwise=(totalDecline>0)?true:false;
         return result;
@@ -1364,7 +1366,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
             //print("left ");
             nextNodeRID=3;
             if (clockwise) {
-              // println(1);
+              println(1);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
@@ -1406,7 +1408,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
             //print("right ");
             nextNodeRID=2;
             if (!clockwise) {
-              // println(2);
+              println(2);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
@@ -1425,7 +1427,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
             //print("left ");
             nextNodeRID=1;
             if (clockwise) {
-              //println(3);
+              println(3);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
@@ -1444,7 +1446,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
             //print("right ");
             nextNodeRID=0;
             if (!clockwise) {
-              // println(4);
+              println(4);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
@@ -1465,7 +1467,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
             //print("right ");
             nextNodeRID=1;
             if (!clockwise) {
-              // println(5);
+              println(5);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
@@ -1484,7 +1486,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
             //print("left ");
             nextNodeRID=0;
             if (clockwise) {
-              // println(6);
+              println(6);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
@@ -1503,7 +1505,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
             //print("right ");
             nextNodeRID=3;
             if (!clockwise) {
-              //println(7);
+              println(7);
               nodeIDbox.add(nodeID);
               nodeRIDbox.add(nodeRID);
               nextNodeRIDbox.add(nextNodeRID);
@@ -1690,7 +1692,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
         // newEdgeをdg.edgesへ追加する。
         dg.edges.add(newEdge);
       } else {
-        rightB3n1_B2 = true;
+        //rightB3n1_B2 = true;
         e.ANodeID=newRightBandNodeID;
         e.ANodeRID=0;//
         Edge newEdge=new Edge(newRightBandNodeID, 2, nodeID, rightRID);//
@@ -1711,7 +1713,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
         // newEdgeをdg.edgesへ追加する。
         dg.edges.add(newEdge);
       } else {
-        rightB3n1_B2 = true;
+        // rightB3n1_B2 = true;
         e.BNodeID=newRightBandNodeID;
         e.BNodeRID=0;//
         Edge newEdge=new Edge(newRightBandNodeID, 2, nodeID, rightRID);//
@@ -1769,7 +1771,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
         // newEdgeをdg.edgesへ追加する。
         dg.edges.add(newEdge1);
       } else {
-        leftB3n1_B2 = true;
+        //leftB3n1_B2 = true;
         e.ANodeID=newLeftBandNodeID;
         e.ANodeRID=0;//
         Edge newEdge1=new Edge(newLeftBandNodeID, 2, nodeID, leftRID);//
@@ -1790,7 +1792,7 @@ class seifert { //<>// //<>// //<>// //<>// //<>//
         // newEdgeをdg.edgesへ追加する。
         dg.edges.add(newEdge1);
       } else {
-        leftB3n1_B2 = true;
+        //leftB3n1_B2 = true;
         e1.BNodeID=newLeftBandNodeID;
         e1.BNodeRID=0;//
         Edge newEdge1=new Edge(newLeftBandNodeID, 2, nodeID, leftRID);//
