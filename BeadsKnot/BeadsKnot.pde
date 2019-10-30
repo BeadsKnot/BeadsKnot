@@ -1,4 +1,4 @@
-import java.awt.*;            //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+import java.awt.*;            //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
 import javax.swing.*;
 
 // usage
@@ -35,7 +35,7 @@ void setup() {
   edit = new parts_editing();
   orie=new orientation(data, graph);
   //reg=new ArrayList<region>();
-  seif=new seifert(data, graph, orie);
+  seif=new seifert(data, graph, orie, mouse);
 }
 
 
@@ -230,6 +230,8 @@ void keyPressed() {
   } else if (key == 'P') {////////////////////////////////orientationの番号を表示する
     orie.decide_orientation();
     Draw._show_orientation_nb = !Draw._show_orientation_nb;
+  } else if (key == 'q') {////////////////////////////////nodeの番号を表示する
+    Draw._show_node_nb = !Draw._show_node_nb;
   } else if (key == 'r') {////////////////////////////時計周りに回転
     if (Draw._beads) {
       data.rotatePoints(PI/12);
@@ -244,12 +246,14 @@ void keyPressed() {
     }
   } else if (key=='S') {//////ザイフェルト膜を貼った絵を描画する
     println("ザイフェルト膜を貼るモード");
-    orie.decide_orientation(); //<>//
+    orie.decide_orientation();
     Draw.beads_with_Seifelt();
-    seif.SeifertArgorithm();
+    seif.SeifertAlgorithm();
     //} else if (key=='z') {/////////////////////////////////現在使われていない
     //  dowker dk = new dowker(graph); 
     //  dk.Start();
+  }
+  else if(key=='v'){
   }
 }
 
