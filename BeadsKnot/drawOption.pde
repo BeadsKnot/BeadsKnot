@@ -13,6 +13,7 @@ class drawOption {
   boolean _beads_with_Seifelt;
 
   boolean _show_points_nb;
+  boolean _show_node_nb;
   boolean _show_orientation_nb;
   boolean _mirror;
   boolean _band_film;
@@ -37,6 +38,7 @@ class drawOption {
     _beads_with_Seifelt=false;
 
     _show_points_nb = false;
+    _show_node_nb = false;
     _show_orientation_nb = false;
     
     _mirror=false;

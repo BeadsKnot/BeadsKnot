@@ -1,4 +1,4 @@
-class dowker { //<>// //<>// //<>//
+class dowker { //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
   //    未整備
   
   //このような感じでドウカーコードを準備しておく．
@@ -69,7 +69,7 @@ class dowker { //<>// //<>// //<>//
     findOuter();
     modify();
     //この点データでdata_graphを構成する．
-    outputData(); //<>// //<>// //<>//
+    outputData(); //<>// //<>// //<>// //<>//
   }
 
   class DNode {
@@ -293,7 +293,7 @@ class dowker { //<>// //<>// //<>//
 
 
   void outputData() {
-    int nodeNumber=0; //<>// //<>// //<>//
+    int nodeNumber=0; //<>// //<>// //<>// //<>//
     nodeNumber = nodes.size();
     dg.nodes.clear();
     dg.de.clearAllPoints();
@@ -385,7 +385,7 @@ class dowker { //<>// //<>// //<>//
         eCount++;
       }
     }
-    for (int n=0; n<nodeNumber; n++) { //<>// //<>// //<>//
+    for (int n=0; n<nodeNumber; n++) { //<>// //<>// //<>// //<>//
       Bead bd = dg.de.getBead(n);
       if (bd.n1==-1 && bd.n2==-1) {
         data.removeBeadFromPoint(n);// これはない
@@ -400,7 +400,7 @@ class dowker { //<>// //<>// //<>//
         }
       }
     }
-    dg.modify(); //<>// //<>// //<>//
+    dg.modify(); //<>// //<>// //<>// //<>//
     dg.update_points();
     dg.add_close_point_Joint();
     Draw.beads();// drawモードの変更

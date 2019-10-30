@@ -1,4 +1,4 @@
-class orientation { //<>// //<>// //<>//
+class orientation { //<>// //<>// //<>// //<>//
   data_extract de;
   data_graph dg;
   boolean inUse;
@@ -33,54 +33,53 @@ class orientation { //<>// //<>// //<>//
     for (int repeat=0; repeat<de.points.size()*2; repeat++) {
       bdStart = de.getBead(beads_start);
       Bead bdNext = de.getBead(beads_next);
-      if (bdStart!=null && bdNext!=null) {
-        bdStart.orientation=ori_id;
-        //始めは0
-        ori_id++;
-        bdNext.orientation=ori_id;
-        //次は1
-        //Nbhd new_joint=find_next_joint(new Nbhd(beads_start, beads_next), ori_id);
-        //自分で描いたプログラム
-        // if (new_joint.a!=0&&new_joint.b!=0) {
-        //ori_id++;
-        //beads_start=new_joint.b;
-        beads_next_next=-1;
-        if (bdNext.bandJoint) {
-          if (bdNext.u1==beads_start) {
-            if (bdNext.bandJoint_flag) {
-              beads_next_next=bdNext.n1;
-            } else {
-              beads_next_next=bdNext.n2;
-            }
-          } else if (bdNext.u2==beads_start) {
-            if (bdNext.bandJoint_flag) {
-              beads_next_next=bdNext.n1;
-            } else {
-              beads_next_next=bdNext.n2;
-            }
-          } else if (bdNext.n1==beads_start) {
-            if (bdNext.u1!=-1) {
-              beads_next_next=bdNext.u1;
-            } else {
-              beads_next_next=bdNext.u2;
-            }
-          } else if (bdNext.n2==beads_start) {
-            if (bdNext.u1!=-1) {
-              beads_next_next=bdNext.u1;
-            } else {
-              beads_next_next=bdNext.u2;
-            }
-          }
-        } else {
-          if (bdNext.u1==beads_start) {
-            beads_next_next=bdNext.u2;
-          } else if (bdNext.u2==beads_start) {
-            beads_next_next=bdNext.u1;
-          } else if (bdNext.n1==beads_start) {
-            beads_next_next=bdNext.n2;
-          } else if (bdNext.n2==beads_start) {
+      if (bdStart==null || bdNext==null) return ;
+      bdStart.orientation=ori_id;
+      //始めは0
+      ori_id++;
+      bdNext.orientation=ori_id;
+      //次は1
+      //Nbhd new_joint=find_next_joint(new Nbhd(beads_start, beads_next), ori_id);
+      //自分で描いたプログラム
+      // if (new_joint.a!=0&&new_joint.b!=0) {
+      //ori_id++;
+      //beads_start=new_joint.b;
+      beads_next_next=-1;
+      if (bdNext.bandJoint) {
+        if (bdNext.u1==beads_start) {
+          if (bdNext.bandJoint_flag) {
             beads_next_next=bdNext.n1;
+          } else {
+            beads_next_next=bdNext.n2;
           }
+        } else if (bdNext.u2==beads_start) {
+          if (bdNext.bandJoint_flag) {
+            beads_next_next=bdNext.n1;
+          } else {
+            beads_next_next=bdNext.n2;
+          }
+        } else if (bdNext.n1==beads_start) {
+          if (bdNext.u1!=-1) {
+            beads_next_next=bdNext.u1;
+          } else {
+            beads_next_next=bdNext.u2;
+          }
+        } else if (bdNext.n2==beads_start) {
+          if (bdNext.u1!=-1) {
+            beads_next_next=bdNext.u1;
+          } else {
+            beads_next_next=bdNext.u2;
+          }
+        }
+      } else {
+        if (bdNext.u1==beads_start) {
+          beads_next_next=bdNext.u2;
+        } else if (bdNext.u2==beads_start) {
+          beads_next_next=bdNext.u1;
+        } else if (bdNext.n1==beads_start) {
+          beads_next_next=bdNext.n2;
+        } else if (bdNext.n2==beads_start) {
+          beads_next_next=bdNext.n1;
         }
       }
       beads_start=beads_next;
@@ -95,6 +94,35 @@ class orientation { //<>// //<>// //<>//
         orientation_mod = ori_id + 1;
         inUse = true;
         println("decide_orientation completes.");
+        //  set edge orientation
+        for(int ee=0; ee<dg.edges.size(); ee++){
+          Edge e = dg.edges.get(ee);
+          int ANodeID = e.ANodeID;
+          int BNodeID = e.BNodeID;
+          Node ANode = dg.nodes.get(ANodeID);
+          Node BNode = dg.nodes.get(BNodeID);
+          if(ANode == null || BNode == null) continue;
+          int ABeadID = ANode.pointID;
+          int BBeadID = BNode.pointID;
+          Bead ABead = de.getBead(ABeadID);
+          Bead BBead = de.getBead(BBeadID);
+          if(ABead == null || BBead == null) continue;
+          int ABeadRID = ABead.get_un12(e.ANodeRID);
+          int BBeadRID = BBead.get_un12(e.BNodeRID);
+          Bead ABeadR = de.getBead(ABeadRID);
+          Bead BBeadR = de.getBead(BBeadRID);
+          if(ABeadR == null || BBeadR == null) continue;
+          int AOri = ABeadR.orientation;
+          int BOri = BBeadR.orientation;
+          if(AOri<BOri){
+            int CNodeID = e.ANodeID;
+            int CNodeRID = e.ANodeRID;
+            e.ANodeID = e.BNodeID;
+            e.ANodeRID = e.BNodeRID;
+            e.BNodeID = CNodeID;
+            e.BNodeRID = CNodeRID;
+          }
+        }
         return;
         // }
       }
