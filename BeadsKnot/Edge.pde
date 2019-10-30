@@ -7,8 +7,8 @@ class Edge {
   int BNodeRID;//edge
 
   Bezier bezier;
-  boolean bandEdge= false;
-  int bandColCode=0;
+  boolean bandEdge = false;
+  int bandColCode = 0;
 
 
   Edge(int _ANodeID, int _ANodeRID, int _BNodeID, int _BNodeRID) {
@@ -17,8 +17,6 @@ class Edge {
     BNodeID=_BNodeID;
     BNodeRID=_BNodeRID;
     bezier = new Bezier();
-    bandEdge=false;
-    bandColCode=0;
   }
 
 

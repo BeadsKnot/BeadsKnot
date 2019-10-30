@@ -1,4 +1,4 @@
-class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
   //データのグラフ構造
   //nodeとedgeからなる
 
@@ -410,9 +410,12 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //
   // ビーズに戻して物理モデルで整形するという考えもある。
   void modify() {
     //Nodeのr[]を最適化する
+    //println("--modify--");
     for (Edge edge : edges) {
+      //println(edge.ToString());
       edge.scaling_shape_modifier(nodes);
     }
+    //println("--modify--");
     //Nodeのthetaを最適化する
     //for (int repeat=0; repeat < 0; repeat ++) {
     //  for (int n=0; n<nodes.size(); n++) {
@@ -686,7 +689,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //
       return ;
     }
     // ←そのたぐいのエラーが出るようになったら。
-    //println(ed.ANodeID, ed.ANodeRID, ":", ed.BNodeID, ed.BNodeRID);
+    //print("update_points_on_edge",ed.ToString()+" ");
     // 理想とするエッジの弧長の概数を計算する。
     float arclength = ed.get_real_arclength(nodes);
     // 理想とするビーズの内個数を計算する。
@@ -731,7 +734,6 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //
         beads_count ++;
       } while (bead3 != NodeB.pointID);
     }
-    //println("必要数,現状数",beads_number, beads_count);
     if (beads_number > beads_count) {// 必要数のほうが多い→ビーズの追加が必要
       bead1 = NodeA.pointID;
       Bead bd1 = de.getBead(bead1);

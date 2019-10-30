@@ -1,4 +1,4 @@
-class Thinning {      //<>// //<>// //<>//
+class Thinning {      //<>// //<>// //<>// //<>// //<>// //<>//
   data_extract DE;
   int w, h;
   int d_new[][];
@@ -30,7 +30,7 @@ class Thinning {      //<>// //<>// //<>//
     remove_dust();
 
     println("find_crossing()");
-    find_crossing();		
+    find_crossing();    
     //DE.debugLogPoints("find_crossing.csv");
 
     println("画面サイズ調整");
@@ -59,7 +59,7 @@ class Thinning {      //<>// //<>// //<>//
       if (pt != null) {
         if (!pt.Joint && pt.c!=2) {
           return false;
-        }     //<>// //<>// //<>//
+        }     //<>// //<>// //<>// //<>//
       }
     }
     return true;
@@ -259,9 +259,9 @@ class Thinning {      //<>// //<>// //<>//
       return -1;
     }
     // for (int i=0; i<DE.points.size (); i++) {
-    // 	if (dist(_x, _y, DE.points.get(i).x, DE.points.get(i).y)<5) {
-    // 		return i;
-    // 	}
+    //   if (dist(_x, _y, DE.points.get(i).x, DE.points.get(i).y)<5) {
+    //     return i;
+    //   }
     // }
     int ret = DE.addBeadToPoint(_x, _y);
     //DE.points.add(new Bead(_x, _y));

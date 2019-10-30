@@ -1,4 +1,4 @@
-class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>//
+class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
   // 画像からの読みとり
   // ビーズとそれをつなぐNbhからなる。
   int w, h;// 解析画面の大きさ
@@ -208,6 +208,13 @@ class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>//
             text(pt+" "+vec.n1+" "+vec.n2+" "+vec.u1+" "+vec.u2+" "+vec.Joint+" "+vec.midJoint+" "+vec.bandJoint, disp.get_winX(vec.x), disp.get_winY(vec.y));
           } else if (Draw._show_orientation_nb) {
             text(vec.orientation, disp.get_winX(vec.x), disp.get_winY(vec.y));
+          } else if (Draw._show_node_nb){
+            for(int nn=0; nn<graph.nodes.size(); nn++){
+              if(graph.nodes.get(nn).pointID == pt){
+                text(nn, disp.get_winX(vec.x), disp.get_winY(vec.y));
+                break;
+              }
+            }
           }
           //if(vec.Joint){
           //  println("n1 = "+vec.n1+":u1 = "+vec.u1+":n2 = "+vec.n2+":u2 = "+vec.u2);
@@ -1937,16 +1944,16 @@ class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>//
     int e1=findJoint_for_bandJoint(endID, endBead.n1);
     int e2=findJoint_for_bandJoint(endID, endBead.n2);
     if (s1!=-1&&(s1==e1)) {
-      return new pairInt(s1,1,1);
+      return new pairInt(s1, 1, 1);
     }
     if (s1!=-1&&(s1==e2)) {
-      return new pairInt(s1,1,2);
+      return new pairInt(s1, 1, 2);
     }
     if (s2!=-1&&(s2==e1)) {
-      return new pairInt(s2,2,1);
+      return new pairInt(s2, 2, 1);
     }
     if (s2!=-1&&(s2==e2)) {
-      return new pairInt(s2,2,2);
+      return new pairInt(s2, 2, 2);
     }
     return new pairInt(-1);
   }
