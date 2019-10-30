@@ -1,4 +1,4 @@
-class region { //<>// //<>// //<>// //<>//
+class region { //<>// //<>// //<>// //<>// //<>// //<>//
   ArrayList <Edge> border;
   //ArrayList<Nbhd> atm;//どのn1もしくはn2もしくはu1もしくはu2が使われていたのかを知るために必要なペア
   //ArrayList<Bead> saveJoint;//クリックしたときに通過したjointのBeadsの番号を格納する配列
@@ -45,9 +45,9 @@ class region { //<>// //<>// //<>// //<>//
     if (col_code==0) {
       fill(255);
     } else if (col_code==1) {
-      fill(#FF0000);
+      fill(#FF6347);
     } else {
-      fill(#008000);
+      fill(#87ceeb);
     }
     beginShape();
 
@@ -466,5 +466,13 @@ class region { //<>// //<>// //<>// //<>//
       }
     }
     return false;
+  }
+  
+  String ToString(){
+    String result = "";
+    for(int i=0; i<border.size(); i++){
+      result += ("(" + border.get(i).ToString() + ")");
+    }
+    return result;
   }
 }
