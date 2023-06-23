@@ -9,8 +9,8 @@ import javax.swing.*;
 // image analysis
 data_extract data;// 画像解析から読み込んだ線のデータ
 data_graph graph;// data_extractから解析した平面グラフのデータ
-displayWorld disp;// 画面表示に関する定数
-displayMessage dispM;
+displayWorld disp;// display.pde
+displayMessage dispM; // utils.pde
 // constants
 EdgeConst ec;// Edgeに関する定数
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
@@ -65,7 +65,7 @@ void setup() {
 }
 
 // utils
-//void message(String msg);
+// class displayMessage;
 
 
 void draw() {
@@ -143,12 +143,10 @@ void draw() {
   else if (Draw._data_graph) {
     graph.draw_nodes_edges();
   } else if (Draw._free_loop) {
-    dispM.msg="Draw a free loop.";
-    dispM.show();
+    dispM.show("Draw a free loop.");
     mouse.draw_trace();
   } else if (Draw._parts_editing) {
-    dispM.msg="A crossing by a click, connecting two crossings by mouse-drag.";
-    dispM.show();
+    dispM.show("A crossing by a click, connecting two crossings by mouse-drag.");
     edit.draw_parts();
     mouse.draw_trace();
     //} else if (Draw._posinega) {

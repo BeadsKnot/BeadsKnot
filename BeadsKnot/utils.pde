@@ -10,9 +10,10 @@ class displayMessage {
     newlineSize= fontSize*1.5f;
     start_column=0;
   }
-  void show() {
+  void show(String newMsg) {
+    this.msg=newMsg;
     textSize(fontSize);
-    fill(80, 200, 80);
+    fill(0, 80, 0);
     text(this.msg, 10, fontSize+2f+newlineSize*start_column);
   }
-}
+};
