@@ -1,40 +1,64 @@
-import java.awt.*;            //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+import java.awt.*;    //<>//
 import javax.swing.*;
 
 // usage
-// o : ファイル読み込み
-// s : 画像を保存
+// o : open image file
+// s : save file (beadsknot file, image file, TeX file)
 
-// グローバル変数はこれだけ
+// globals
+// image analysis
 data_extract data;// 画像解析から読み込んだ線のデータ
 data_graph graph;// data_extractから解析した平面グラフのデータ
 display disp;// 画面表示に関する定数
+// constants
 EdgeConst ec;// Edgeに関する定数
-drawOption Draw;// 描画に関するオプション
-mouseDrag mouse;
-parts_editing edit;
-orientation orie;
-//ArrayList <region> reg;
-seifert seif;
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
-float beads_interval = 15 ;// ビーズの間隔
-int mousedrag_startID;
-int count_for_distinguishing_edge=0;//edgeを消すためのcountの数
-// グローバル変数終了
+float beads_interval = 15 ;// intervals between beads ( world coordinate)
+// configrations and options
+drawOption Draw;// options for drawings
 
+// class of dragging mouse
+mouseDrag mouse;
+int mousedrag_startID;
+
+// class of edting knot fragment
+parts_editing edit;
+
+// class of orientation of links
+orientation orie;
+
+// class of retion of knot diagram
+//ArrayList <region> reg;
+
+// class of seifert surface
+seifert seif;
+
+// ???? TODO check this constants
+int count_for_distinguishing_edge=0;//edgeを消すためのcountの数
+// end of globals
+
+// initializing all things
 void setup() {
   int extractSize=1000;
-  size(1000, 1000);//初期のサイズ
-  //初期化
+  size(1000, 1000);// pane size
+  // initializing
   disp = new display(1000, 1000);
+  // TODO change class name to dataExtract
   data = new data_extract(extractSize, extractSize, disp);
+  // TODO change class name to data_Graph
   graph = new data_graph(data);
+  // TODO: change class name to edgeConst
   ec = new EdgeConst();
   Draw = new drawOption();
   mouse = new mouseDrag();
+  // TODO change class name to partsEditing 
   edit = new parts_editing();
+  // TODO: change variable name orientation and 
+  // change class name orientationKnot
   orie=new orientation(data, graph);
+  // TODO: create a class for this purpose
   //reg=new ArrayList<region>();
+  // TODO: change class name into seifertSurface
   seif=new seifert(data, graph, orie, mouse);
 }
 
