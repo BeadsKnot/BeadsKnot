@@ -6,7 +6,7 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //
   ArrayList<Edge> edges;
   data_extract de; 
   int[] table;
-  display disp;
+  displayWorld disp;
   //boolean data_graph_complete=false;//->いずれdrawOptionへ移動。
 
   // コンストラクタ

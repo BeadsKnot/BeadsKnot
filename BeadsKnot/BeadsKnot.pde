@@ -9,7 +9,8 @@ import javax.swing.*;
 // image analysis
 data_extract data;// 画像解析から読み込んだ線のデータ
 data_graph graph;// data_extractから解析した平面グラフのデータ
-display disp;// 画面表示に関する定数
+displayWorld disp;// 画面表示に関する定数
+displayMessage dispM;
 // constants
 EdgeConst ec;// Edgeに関する定数
 String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
@@ -42,7 +43,8 @@ void setup() {
   int extractSize=1000;
   size(1000, 1000);// pane size
   // initializing
-  disp = new display(1000, 1000);
+  disp = new displayWorld(1000, 1000);
+  dispM = new displayMessage();
   // TODO change class name to dataExtract
   data = new data_extract(extractSize, extractSize, disp);
   // TODO change class name to data_Graph
@@ -62,13 +64,9 @@ void setup() {
   seif=new seifert(data, graph, orie, mouse);
 }
 
+// utils
+//void message(String msg);
 
-
-void message(String msg) {
-  textSize(28);
-  fill(80);
-  text(msg, 0, 30);
-}
 
 void draw() {
   background(255);
@@ -145,10 +143,12 @@ void draw() {
   else if (Draw._data_graph) {
     graph.draw_nodes_edges();
   } else if (Draw._free_loop) {
-    message("Draw a free loop.");
+    dispM.msg="Draw a free loop.";
+    dispM.show();
     mouse.draw_trace();
   } else if (Draw._parts_editing) {
-    message("A crossing by a click, connecting two crossings by mouse-drag.");
+    dispM.msg="A crossing by a click, connecting two crossings by mouse-drag.";
+    dispM.show();
     edit.draw_parts();
     mouse.draw_trace();
     //} else if (Draw._posinega) {

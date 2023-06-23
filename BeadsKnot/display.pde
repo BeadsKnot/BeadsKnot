@@ -1,10 +1,10 @@
-class display {
+class displayWorld {
   float left, top, right, bottom;
   float win_width, win_height, win_offset;
   float rate;
   float Left,Right,Top,Bottom;
   
-  display(float _w, float _h) {
+  displayWorld(float _w, float _h) {
     win_width = _w;
     win_height = _h;
     win_offset = 50;

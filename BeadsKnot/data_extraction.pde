@@ -4,7 +4,7 @@ class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>
   int w, h;// 解析画面の大きさ
   int d[][];// ２値化された画像のデータ
   int s;//解析メッシュのサイズ
-  display disp;
+  displayWorld disp;
   int between_beads[];//消すためのbeadsのpointの番号を入れておく配列
   int pre_endID=0;//消すときにendIDにとってのn1を消すのかn2を消すのかを調べるために使う
   boolean over_crossing=true;//overならtrue,underならfalse
@@ -18,7 +18,7 @@ class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>
   float nearX;
 
   //コンストラクタ
-  data_extract(int _h, int _w, display _disp) {
+  data_extract(int _h, int _w, displayWorld _disp) {
     w = _w;
     h = _h;
     tf=new transform(this);

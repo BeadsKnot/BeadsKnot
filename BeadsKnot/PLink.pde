@@ -1,7 +1,7 @@
 class PLink {
   //data_graph dg;
   data_extract de;
-  display disp;
+  displayWorld disp;
   //ファイル保存
   PrintWriter outfile;
   ArrayList<plinkComponent> pCo;//成分に関する配列
@@ -9,7 +9,7 @@ class PLink {
   ArrayList<plinkEdge> pEd;//辺に関する配列
   ArrayList<crossing_set> crs;//交点の情報
   ArrayList<plinkCrossing> pCr;//交点に関する配列
-  PLink(data_extract _de, display _disp) {
+  PLink(data_extract _de, displayWorld _disp) {
     de=_de;
     disp=_disp;
     makePlinkData();//たどる関数
