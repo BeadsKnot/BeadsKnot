@@ -1,15 +1,14 @@
-class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
-  //データのグラフ構造
-  //nodeとedgeからなる
+class data_graph {    //<>//
+  // graph structure of knot diagram.
+  // it consists of node and edge
 
   ArrayList<Node> nodes;
   ArrayList<Edge> edges;
   data_extract de; 
   int[] table;
   displayWorld disp;
-  //boolean data_graph_complete=false;//->いずれdrawOptionへ移動。
 
-  // コンストラクタ
+  // con'tor
   data_graph(data_extract _de) {
     nodes = new ArrayList<Node>();
     edges = new ArrayList<Edge>();
@@ -17,9 +16,13 @@ class data_graph {           //<>// //<>// //<>// //<>// //<>// //<>// //<>// //
     disp = de.disp;
   }
 
-  // deのデータから
-  //pointsのx,y,n1,n2,u1,u2,Jointのみ
-  //nodesやedgesを決める
+  // if the diagram data completes, return true.
+  boolean complete(){
+    return true;
+  }
+
+  // determin nodes and edges from the data of deta_extract
+  // points has only x,y,n1,n2,u1,u2, and Joint.
   void make_data_graph() {
     nodes.clear();
     edges.clear();

@@ -71,7 +71,7 @@ void setup() {
 void draw() {
   background(255);
   if (Draw._menu) {
-    dispM.showMenu()
+    dispM.showMenu();
   } else if (Draw._binarized_image) {// 二値化したデータを表示
     loadPixels();
     for (int x=0; x<data.w; x++) {
@@ -171,25 +171,42 @@ void draw() {
 
 void keyPressed() {
   // begining
+  print(int(key));
   if ( key=='a' || int(key)==1){ // a 
   }
-  else if ( key=='b' || int(key)==1){ // b 
+  else if ( key=='b' || int(key)==2){ // b 
+    dispM.show("w/o band mode");
+    Draw.band_film();
   }
-  else if ( key=='c' || int(key)==1){ // c 
+  else if ( key=='c' || int(key)==3){ // c 
   }
-  else if ( key=='d' || int(key)==1){ // d 
-  }
-  else if ( key=='e' || int(key)==1){ // e 
+  else if ( key=='d' || int(key)==4){ // d 
+    // console out Dowker code
+    dispM.show("show Dowker code.");
+    orie.decide_orientation(); // 
+    orie.dowker_notation();  //
+  } 
+  else if ( key=='e' || int(key)==5){ // e 
     // parts editing mode begins
     Draw.parts_editing();
     mouse.trace.clear();
     edit.beads.clear();
   }
-  else if ( key=='f' || int(key)==1){ // f 
+  else if ( key=='f' || int(key)==6){ // f 
   }
-  else if ( key=='g' || int(key)==1){ // g 
+  else if ( key=='g' || int(key)==7){ // g 
   }
-  else if (key == 'm') { 
+  else if ( key=='h' || int(key)==8){ // h 
+  }
+  else if ( key=='i' || int(key)==9){ // i
+  }
+  else if ( key=='j' || int(key)==10){ // j 
+  }
+  else if ( key=='k' || int(key)==11){ // k 
+  }
+  else if ( key=='l' || int(key)==12){ // l 
+  }
+  else if ( key=='m' || int(key)==13) { 
     // modify shape mode/
     //if (Draw._data_graph) {
     //  graph.modify();
@@ -197,7 +214,12 @@ void keyPressed() {
     //  Draw._menu = true;
     //}
   }
-  else if ( key=='n') {//
+  else if (key=='M') {
+    println("obtain the mirror image of the knot");
+    Draw.mirror();
+    graph.displayMirror();
+  } 
+  else if ( key=='n' || int(key)==14) {//
     // draw_free_loop mode begins
     Draw.free_loop();// change mode
     mouse.trace.clear();// clear beads data
@@ -217,7 +239,7 @@ void keyPressed() {
     // save file
     selectInput("Select a file to save", "saveFileSelect");
   } 
-  else if (key == 'w') {//
+  else if (key == 'w' || int(key)==23) {//
     // change w/beads and off-beads mode
     if (Draw._beads) {
       Draw.line_without_beads();
@@ -228,7 +250,8 @@ void keyPressed() {
   else if (keyCode==ENTER) {/////////////////////////////////交点を割いた絵を描画する
     orie.decide_orientation();
     Draw.smoothing();
-  } else if (keyCode==SHIFT) {/////////////////////////交点を割いた絵の描画を解除する
+  } 
+  else if (keyCode==SHIFT) {/////////////////////////交点を割いた絵の描画を解除する
     Draw._beads=true;
     orie.decide_orientation();
     if (seif.reg.size()>0) {
@@ -237,40 +260,32 @@ void keyPressed() {
       }
       seif.reg.clear();
     }
-  } else if (key=='b') {
-    println("バンド膜を貼ります");
-    Draw.band_film();
-    //Draw._beads=false;
-  } else if (key=='d') {///////////////////////////////ドーカーコードを表示する
-    println("ドーカーコードを表示します");
-    orie.decide_orientation();
-    orie.dowker_notation();  //ここで関数を呼ぶ
-  } else if (key=='m') {
-    println("鏡像を表示します");
-    Draw.mirror();
-    //////////////////////////////////////鏡像を描くモード
-    Draw._beads=true;
-    graph.displayMirror();
-  } else if (key == 'p') {////////////////////////////////pointの番号を表示する
+  } 
+  else if (key == 'p') {////////////////////////////////pointの番号を表示する
     Draw._show_points_nb = !Draw._show_points_nb;
-  } else if (key == 'P') {////////////////////////////////orientationの番号を表示する
+  } 
+  else if (key == 'P') {////////////////////////////////orientationの番号を表示する
     orie.decide_orientation();
     Draw._show_orientation_nb = !Draw._show_orientation_nb;
-  } else if (key == 'q') {////////////////////////////////nodeの番号を表示する
+  } 
+  else if (key == 'q') {////////////////////////////////nodeの番号を表示する
     Draw._show_node_nb = !Draw._show_node_nb;
-  } else if (key == 'r') {////////////////////////////時計周りに回転
+  } 
+  else if (key == 'r') {////////////////////////////時計周りに回転
     if (Draw._beads) {
       data.rotatePoints(PI/12);
       graph.rotateNodes(PI/12);
       graph.get_disp() ;
     }
-  } else if (key == 'R') {///////////////////////////反時計周りに回転
+  } 
+  else if (key == 'R') {///////////////////////////反時計周りに回転
     if (Draw._beads) {
       data.rotatePoints(-PI/12);
       graph.rotateNodes(-PI/12);
       graph.get_disp() ;
     }
-  } else if (key=='S') {//////ザイフェルト膜を貼った絵を描画する
+  } 
+  else if (key=='S') {//////ザイフェルト膜を貼った絵を描画する
     println("ザイフェルト膜を貼るモード");
     orie.decide_orientation();
     Draw.beads_with_Seifelt();

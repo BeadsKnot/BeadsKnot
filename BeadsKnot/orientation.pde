@@ -10,6 +10,9 @@ class orientation { //<>// //<>// //<>// //<>//
     inUse = false;
   }
   void decide_orientation() {//orientationを決める
+    if (dg.nodes.size()==0 && dg.complete()){
+      return;
+    }
     Node nd = dg.nodes.get(0);
     for (int ndID=0; ndID<dg.nodes.size(); ndID++) {
       nd = dg.nodes.get(ndID);//////////使っているnodeを探す
