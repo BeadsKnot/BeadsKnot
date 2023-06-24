@@ -25,7 +25,7 @@ int mousedragStartID;
 partsEditing edit;
 
 // class of orientation of links
-orientation orie;
+knotOrientation orie;
 
 // class of region of knot diagram
 //ArrayList <region> reg;
@@ -44,19 +44,15 @@ void setup() {
   // initializing
   disp = new displayWorld(1000, 1000);
   dispM = new displayMessage();
-  // TODO change class name to dataExtract
   data = new dataExtract(extractSize, extractSize, disp);
-  // TODO change class name to data_Graph
   graph = new dataGraph(data);
-  // TODO: change class name to edgeConst
   ec = new EdgeConst();
   Draw = new drawOption();
   mouse = new mouseDrag();
-  // TODO change class name to partsEditing 
   edit = new partsEditing();
   // TODO: change variable name orientation and 
-  // change class name orientationKnot
-  orie=new orientation(data, graph);
+  // change class name knotOrientation
+  orie=new knotOrientation(data, graph);
   // TODO: create a class for this purpose
   //reg=new ArrayList<region>();
   // TODO: change class name into seifertSurface

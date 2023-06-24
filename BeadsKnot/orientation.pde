@@ -1,10 +1,10 @@
-class orientation { //<>// //<>// //<>// //<>//
+class knotOrientation { //<>// //<>// //<>// //<>//
   dataExtract de;
   dataGraph dg;
   boolean inUse;
   int orientation_mod;
 
-  orientation(dataExtract _de, dataGraph _dg) {
+  knotOrientation(dataExtract _de, dataGraph _dg) {
     de=_de;
     dg=_dg;
     inUse = false;
