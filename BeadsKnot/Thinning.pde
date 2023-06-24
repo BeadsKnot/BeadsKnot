@@ -1,11 +1,11 @@
 class Thinning {      //<>// //<>// //<>// //<>// //<>// //<>//
-  data_extract DE;
+  dataExtract DE;
   int w, h;
   int d_new[][];
 
   ArrayList<Nbhd> cross;
 
-  Thinning(data_extract _de) {
+  Thinning(dataExtract _de) {
     DE=_de;
     w=DE.w;
     h=DE.h;
@@ -40,7 +40,7 @@ class Thinning {      //<>// //<>// //<>// //<>// //<>// //<>//
     //DE.debugLogPoints("addJointToNbhds.csv");
 
     println(DE.points.size(), DE.nbhds.size());
-    //もし問題なければtrueを返し、問題が残っていれば、parts_editingモードにする。
+    //もし問題なければtrueを返し、問題が残っていれば、partsEditingモードにする。
 
     if (thinning_finish()) {
       Draw.beads();// drawモードの変更

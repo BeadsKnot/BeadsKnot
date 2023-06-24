@@ -1,7 +1,7 @@
 class Reidemeister {
-  data_extract ed;
+  dataExtract ed;
   
-  Reidemeister(data_extract _ed){
+  Reidemeister(dataExtract _ed){
     ed = _ed;
   }
   

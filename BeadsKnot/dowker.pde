@@ -10,7 +10,7 @@ class dowker { //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
   //int dowker[] = {6, 12, 16, 18, 14, 4, 20, 22, 2, 8, 10};
   //int dowker[] = {40, 24, 10, 30, 22, 52, 32, 64, 46, 12, 6 ,42, 60, 2, 8, 50, 66, 16, 62, 58, 28, 4, 54, 34, 14, 20, 68, 36, 72, 26, 70, 56, 48, 18, 44, 38};
 
-  data_graph dg;
+  dataGraph dg;
   
   int dowker[];
   int dowkerCount;
@@ -19,7 +19,7 @@ class dowker { //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
   int outer[];
   int outerCount=0;
 
-  dowker(data_graph _dg){
+  dowker(dataGraph _dg){
     dg = _dg;
     dowker = new int[100];
     dowkerCount=0;
@@ -68,7 +68,7 @@ class dowker { //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
     // 改めて外周を探しなおす．
     findOuter();
     modify();
-    //この点データでdata_graphを構成する．
+    //この点データでdataGraphを構成する．
     outputData(); //<>// //<>// //<>// //<>//
   }
 

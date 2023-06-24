@@ -5,9 +5,9 @@ class drawOption {
   boolean _thinning_image;
   boolean _beads;  
   boolean _line_without_beads;  
-  boolean _data_graph;
+  boolean _dataGraph;
   boolean _free_loop;
-  boolean _parts_editing;
+  boolean _partsEditing;
   boolean _posinega;
   boolean _smoothing;
   boolean _beads_with_Seifelt;
@@ -30,9 +30,9 @@ class drawOption {
     _thinning_image = false;
     _beads=false;
     _line_without_beads=false;
-    _data_graph = false;
+    _dataGraph = false;
     _free_loop = false;
-    _parts_editing = false;
+    _partsEditing = false;
     _posinega=false;
     _smoothing=false;
     _beads_with_Seifelt=false;
@@ -76,9 +76,9 @@ class drawOption {
     _line_without_beads = true;
   }
 
-  void data_graph() {
+  void dataGraph() {
     setAllOptionFalse();
-    _data_graph = true;
+    _dataGraph = true;
   }
 
   void free_loop() {
@@ -86,9 +86,9 @@ class drawOption {
     _free_loop = true;
   }
 
-  void parts_editing() {
+  void partsEditing() {
     setAllOptionFalse();
-    _parts_editing = true;
+    _partsEditing = true;
   }
 
   void posinega() {

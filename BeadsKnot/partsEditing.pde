@@ -1,8 +1,8 @@
-class parts_editing {        //<>// //<>// //<>// //<>// //<>//
+class partsEditing {    //<>//
 
   ArrayList<Bead> beads;
 
-  parts_editing() {
+  partsEditing() {
     beads = new ArrayList<Bead>();
   }
 
@@ -221,7 +221,7 @@ class parts_editing {        //<>// //<>// //<>// //<>// //<>//
     }
   }
 
-  void points_to_beads(data_extract de) {
+  void points_to_beads(dataExtract de) {
     beads.clear();
     int pointslength = de.points.size();
     println("pointslength", pointslength);
@@ -248,6 +248,6 @@ class parts_editing {        //<>// //<>// //<>// //<>// //<>//
     //de.clearAllPoints();
     de.clearAllPoints();
     de.clearAllNbhd();
-    Draw.parts_editing();
+    Draw.partsEditing();
   }
 }

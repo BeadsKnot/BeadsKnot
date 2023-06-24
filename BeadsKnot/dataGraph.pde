@@ -1,15 +1,15 @@
-class data_graph {    //<>//
+class dataGraph {    //<>//
   // graph structure of knot diagram.
   // it consists of node and edge
 
   ArrayList<Node> nodes;
   ArrayList<Edge> edges;
-  data_extract de; 
+  dataExtract de; 
   int[] table;
   displayWorld disp;
 
   // con'tor
-  data_graph(data_extract _de) {
+  dataGraph(dataExtract _de) {
     nodes = new ArrayList<Node>();
     edges = new ArrayList<Edge>();
     de = _de;
@@ -23,7 +23,7 @@ class data_graph {    //<>//
 
   // determin nodes and edges from the data of deta_extract
   // points has only x,y,n1,n2,u1,u2, and Joint.
-  void make_data_graph() {
+  void make_dataGraph() {
     nodes.clear();
     edges.clear();
     modify_Joint_orientation();//u1とu2の向きの正しさチェック
@@ -31,7 +31,7 @@ class data_graph {    //<>//
     add_close_point_Joint();// half_pointと合流できないか？
     get_node_table();
     get_data_nodes_edges();  
-    println("data_graphを完了しました", nodes.size(), edges.size());    
+    println("dataGraphを完了しました", nodes.size(), edges.size());    
     Draw.beads(); // draw option の変更
   }
 
@@ -256,7 +256,7 @@ class data_graph {    //<>//
         d=p.n1;
       } else {
         println("findNeighborJointInPoints : ビーズがつながっていないエラー"+j+":"+c+":"+d);      
-        Draw.parts_editing();// Draw はグローバル変数
+        Draw.partsEditing();// Draw はグローバル変数
         return -1;
       }
       j=c;
@@ -285,7 +285,7 @@ class data_graph {    //<>//
         d=p.n1;
       } else {
         println("findJointInPoints:ビーズがつながっていないエラー"+j+":"+c+":"+d);
-        Draw.parts_editing();// Draw はグローバル変数
+        Draw.partsEditing();// Draw はグローバル変数
         return -1;
       } 
       j=c;
@@ -696,7 +696,7 @@ class data_graph {    //<>//
     // 理想とするエッジの弧長の概数を計算する。
     float arclength = ed.get_real_arclength(nodes);
     // 理想とするビーズの内個数を計算する。
-    int beads_number = int(arclength / beads_interval) - 2;
+    int beads_number = int(arclength / beadsInterval) - 2;
     if (beads_number<5) beads_number=5;
     // edgeの上にある現在のビーズの個数を数える。
     int beads_count = 0;

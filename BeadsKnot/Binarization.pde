@@ -1,8 +1,8 @@
 class Binarization{
-  data_extract de;
+  dataExtract de;
   int threshold;
 
-  Binarization(data_extract _de){
+  Binarization(dataExtract _de){
     de = _de;
     threshold = 150;
   }

@@ -1,10 +1,10 @@
 class Square {
-  data_extract de;
+  dataExtract de;
   int e[][];// 切り取られた画像の2値化データ
   int s;
   int w, h;
 
-  Square(data_extract _de) {
+  Square(dataExtract _de) {
     de = _de;
     w = de.w;
     h = de.h;
@@ -76,7 +76,7 @@ class Square {
         JOptionPane.INFORMATION_MESSAGE   //メッセージタイプをInformationにする
         );
       if (r==0) {
-        // beads を parts_editingのデータにする。
+        // beads を partsEditingのデータにする。
         edit.points_to_beads(data);
         return 2;// 条件付き成功
       } else {

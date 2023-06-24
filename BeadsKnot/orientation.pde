@@ -1,10 +1,10 @@
 class orientation { //<>// //<>// //<>// //<>//
-  data_extract de;
-  data_graph dg;
+  dataExtract de;
+  dataGraph dg;
   boolean inUse;
   int orientation_mod;
 
-  orientation(data_extract _de, data_graph _dg) {
+  orientation(dataExtract _de, dataGraph _dg) {
     de=_de;
     dg=_dg;
     inUse = false;

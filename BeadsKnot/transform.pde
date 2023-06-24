@@ -1,11 +1,11 @@
 class transform {//形を整えるクラス
   float []dx;
   float []dy;
-  data_extract de;
+  dataExtract de;
   float ln;//自然長を定義 longueur naturel
-  transform(data_extract _de){
+  transform(dataExtract _de){
     de=_de;
-    ln = beads_interval;// グローバル変数
+    ln = beadsInterval;// グローバル変数
   }
   
   void spring_setup() {

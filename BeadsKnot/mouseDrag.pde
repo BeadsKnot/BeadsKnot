@@ -41,7 +41,7 @@ class mouseDrag {         //<>// //<>// //<>// //<>// //<>//
     }
   }
 
-  void trace_to_beads(data_extract data, data_graph graph) {
+  void trace_to_beads(dataExtract data, dataGraph graph) {
     ArrayList<PVector> meets = new ArrayList<PVector>();
     data.clearAllPoints();
     int traceNumber = trace.size();
@@ -114,11 +114,11 @@ class mouseDrag {         //<>// //<>// //<>// //<>// //<>//
         }
       }
     }
-    graph.make_data_graph();
+    graph.make_dataGraph();
     println("complete mouse-trace to beads");
   }
 
-  void trace_to_parts_editing(data_extract data, data_graph graph, parts_editing edit, int endBeadID) {
+  void trace_to_partsEditing(dataExtract data, dataGraph graph, partsEditing edit, int endBeadID) {
     //そもそも、traceがJointの近くを通っていたら、作業しない。
     if (trace.size()<6) {
       println("traceの長さが短すぎる");
@@ -299,20 +299,20 @@ class mouseDrag {         //<>// //<>// //<>// //<>// //<>//
           newBd.Joint = false;
         }
       }
-      graph.make_data_graph();
+      graph.make_dataGraph();
       Draw.beads();
     }// OK=falseならば、図が未完成なので、さらなるトレースを待つ。
   }
 
 
-  void trace_to_parts_editing2(data_extract data, int dragged_BeadID, int endBeadID) {
+  void trace_to_partsEditing2(dataExtract data, int dragged_BeadID, int endBeadID) {
     // まず、traceをすべてbeadに置き換える。（両端は除く）
     //println("traceをbeadsに変換");
     int startID = dragged_BeadID;
     int traceStartBeadID = 0;
     Bead startBead = data.getBead(startID);
     if (startBead == null) {
-      println("trace_to_parts_editing2:error:dragged_BeadIDの値が不正");
+      println("trace_to_partsEditing2:error:dragged_BeadIDの値が不正");
       return ;
     }
     if (startBead.c==1) {//スタートビーズのデータを整える
@@ -509,12 +509,12 @@ class mouseDrag {         //<>// //<>// //<>// //<>// //<>//
       //  data.points.add(bd);
       //}
 
-      graph.make_data_graph();
+      graph.make_dataGraph();
       Draw.beads();
     }// OK=falseならば、図が未完成なので、さらなるトレースを待つ。
   }
 
-  void trace_to_parts_editing3(data_extract data, int dragged_BeadID, int endBeadID) {
+  void trace_to_partsEditing3(dataExtract data, int dragged_BeadID, int endBeadID) {
     //band_filmのための関数
     // まず、traceをすべてbeadに置き換える。（両端は除く）
     //println("traceをbeadsに変換");
@@ -522,7 +522,7 @@ class mouseDrag {         //<>// //<>// //<>// //<>// //<>//
     int traceStartBeadID = 0;
     Bead startBead = data.getBead(startID);
     if (startBead == null) {
-      println("trace_to_parts_editing3:error:dragged_BeadIDの値が不正");
+      println("trace_to_partsEditing3:error:dragged_BeadIDの値が不正");
       return ;
     }
     if (startBead.c==2) {//スタートビーズのデータを整える
@@ -722,7 +722,7 @@ class mouseDrag {         //<>// //<>// //<>// //<>// //<>//
       //  data.points.add(bd);
       //}
 
-      //graph.make_data_graph();
+      //graph.make_dataGraph();
       Draw.beads();
     }// OK=falseならば、図が未完成なので、さらなるトレースを待つ。
   }

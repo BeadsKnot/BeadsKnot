@@ -1,4 +1,4 @@
-class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+class dataExtract {   //<>//
   // 画像からの読みとり
   // ビーズとそれをつなぐNbhからなる。
   int w, h;// 解析画面の大きさ
@@ -18,7 +18,7 @@ class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>
   float nearX;
 
   //コンストラクタ
-  data_extract(int _h, int _w, displayWorld _disp) {
+  dataExtract(int _h, int _w, displayWorld _disp) {
     w = _w;
     h = _h;
     tf=new transform(this);
@@ -130,7 +130,7 @@ class data_extract {       //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>
   }
 
   // imageデータの解析
-  boolean make_data_extraction(PImage image) {
+  boolean make_dataExtraction(PImage image) {
     //もと画像が横長の場合，縦長の場合に応じて変える。
     // オフセットを50 に取っている。
     float ratio = 1.0 * image.width / image.height;

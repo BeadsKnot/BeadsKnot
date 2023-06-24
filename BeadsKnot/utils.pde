@@ -19,7 +19,14 @@ class displayMessage {
   void show(String newMsg) {
     showColumn(newMsg,0);
   }
+  void showBelow(String newMsg) {
+    this.msg=newMsg;
+    textSize(fontSize);
+    fill(0, 80, 0);
+    text(this.msg, 10, width-10);
+  }
   void showMenu(){
+    showBelow("Menu mode:");
     int column=0;
     showColumn("e : input by editor", column++);
     showColumn("n : input by free loop", column++);

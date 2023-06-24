@@ -1,10 +1,10 @@
 class seifert { //<>// //<>// //<>// //<>//
   ArrayList <region> reg;
-  data_extract de;
-  data_graph dg;
+  dataExtract de;
+  dataGraph dg;
   orientation orie;
   mouseDrag mouse;
-  seifert(data_extract _de, data_graph _dg, orientation _orie, mouseDrag _mouse) {
+  seifert(dataExtract _de, dataGraph _dg, orientation _orie, mouseDrag _mouse) {
     reg=new ArrayList<region>();
     de=_de;
     dg=_dg;

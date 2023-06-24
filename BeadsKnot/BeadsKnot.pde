@@ -1,34 +1,33 @@
 import java.awt.*;    //<>//
 import javax.swing.*;
 
-// usage
-// o : open image file
-// s : save file (beadsknot file, image file, TeX file)
-
 // globals
 // image analysis
-data_extract data;// 画像解析から読み込んだ線のデータ
-data_graph graph;// data_extractから解析した平面グラフのデータ
-displayWorld disp;// display.pde
-displayMessage dispM; // utils.pde
-// constants
-EdgeConst ec;// Edgeに関する定数
-String file_name="test";// save/open filename
-float beads_interval = 15 ;// intervals between beads ( world coordinate)
-// configrations and options
+dataExtract data;// segment data obtained from an image
+dataGraph graph;// graph data obtained from extraction
+
+// display 
+displayWorld disp;// display mode, in display.pde
+displayMessage dispM; // show massage, in utils.pde
+
+// constants and options
+EdgeConst ec;// constants of edges
+String fileName="test";// save/open filename
+float beadsInterval = 15 ;// intervals between beads ( world coordinate)
 drawOption Draw;// options for drawings
 
 // class of dragging mouse
 mouseDrag mouse;
-int mousedrag_startID;
+// TODO: investigate why this is not the member of mouseDrag
+int mousedragStartID;
 
-// class of edting knot fragment
-parts_editing edit;
+// class of editing knot fragment
+partsEditing edit;
 
 // class of orientation of links
 orientation orie;
 
-// class of retion of knot diagram
+// class of region of knot diagram
 //ArrayList <region> reg;
 
 // class of seifert surface
@@ -46,15 +45,15 @@ void setup() {
   disp = new displayWorld(1000, 1000);
   dispM = new displayMessage();
   // TODO change class name to dataExtract
-  data = new data_extract(extractSize, extractSize, disp);
+  data = new dataExtract(extractSize, extractSize, disp);
   // TODO change class name to data_Graph
-  graph = new data_graph(data);
+  graph = new dataGraph(data);
   // TODO: change class name to edgeConst
   ec = new EdgeConst();
   Draw = new drawOption();
   mouse = new mouseDrag();
   // TODO change class name to partsEditing 
-  edit = new parts_editing();
+  edit = new partsEditing();
   // TODO: change variable name orientation and 
   // change class name orientationKnot
   orie=new orientation(data, graph);
@@ -63,9 +62,6 @@ void setup() {
   // TODO: change class name into seifertSurface
   seif=new seifert(data, graph, orie, mouse);
 }
-
-// utils
-// class displayMessage;
 
 
 void draw() {
@@ -81,7 +77,7 @@ void draw() {
     }
     updatePixels();
   }
-  //data_extractの内容を描画する場合。
+  //dataExtractの内容を描画する場合。
   if (Draw._beads) {
     disp.modify();
     /////////////////////////////////////////////////////Nbhd nh = data.get_near_nbhd();
@@ -128,12 +124,12 @@ void draw() {
   }
 
   // 平面グラフのデータを表示
-  else if (Draw._data_graph) {
+  else if (Draw._dataGraph) {
     graph.draw_nodes_edges();
   } else if (Draw._free_loop) {
     dispM.show("Draw a free loop.");
     mouse.draw_trace();
-  } else if (Draw._parts_editing) {
+  } else if (Draw._partsEditing) {
     dispM.show("A crossing by a click, connecting two crossings by mouse-drag.");
     edit.draw_parts();
     mouse.draw_trace();
@@ -169,141 +165,26 @@ void draw() {
   }
 }
 
-void keyPressed() {
-  if ( key=='a' || int(key)==1) { // a
-  } else if ( key=='b' || int(key)==2) { // b 
-    dispM.show("w/o band mode");
-    Draw.band_film();
-  } else if ( key=='c' || int(key)==3) { // c
-  } else if ( key=='d' || int(key)==4) { // d 
-    // console out Dowker code
-    dispM.show("show Dowker code.");
-    orie.decide_orientation(); // 
-    orie.dowker_notation();  //
-  } else if ( key=='e' || int(key)==5) { // e 
-    // parts editing mode begins
-    Draw.parts_editing();
-    mouse.trace.clear();
-    edit.beads.clear();
-  } else if ( key=='f' || int(key)==6) { // f
-  } else if ( key=='g' || int(key)==7) { // g
-  } else if ( key=='h' || int(key)==8) { // h
-  } else if ( key=='i' || int(key)==9) { // i
-  } else if ( key=='j' || int(key)==10) { // j
-  } else if ( key=='k' || int(key)==11) { // k
-  } else if ( key=='l' || int(key)==12) { // l
-  } else if ( key=='m' || int(key)==13) { 
-    // modify shape mode/
-    //if (Draw._data_graph) {
-    //  graph.modify();
-    //} else {
-    //  Draw._menu = true;
-    //}
-  } else if (key=='M') {
-    println("obtain the mirror image of the knot");
-    Draw.mirror();
-    graph.displayMirror();
-  } else if ( key=='n' || int(key)==14) {//
-    // draw_free_loop mode begins
-    Draw.free_loop();// change mode
-    mouse.trace.clear();// clear beads data
-  } else if ( key=='o' || int(key)==15) {// o // ctrl+o//
-    // open file
-    selectInput("Select a file to process:", "fileSelected");
-    if (seif.reg.size()>=0) {
-      // if seifert surface is here, delete it.
-      for (int i=0; i<seif.reg.size(); i++) {
-        seif.reg.get(i).border.clear();
-      }
-      seif.reg.clear();
-    }
-  } else if ( key=='p' || int(key)==16) {
-    // show/hide beads id 
-    Draw._show_points_nb = !Draw._show_points_nb;
-  } else if ( key=='P') {
-    // show/hide orientation id
-    orie.decide_orientation();
-    Draw._show_orientation_nb = !Draw._show_orientation_nb;
-  } else if ( key=='q' || int(key)==17) {// ctrl+s//
-    // show/hide node id
-    Draw._show_node_nb = !Draw._show_node_nb;
-  } else if ( key=='r' || int(key)==18) {// ctrl+s//
-    // rotate whole clockwise 
-    if (Draw._beads) {
-      data.rotatePoints(PI/12);
-      graph.rotateNodes(PI/12);
-      graph.get_disp() ;
-    }
-  } else if (key == 'R') {
-    // rotate whole unti-clockwise
-    if (Draw._beads) {
-      data.rotatePoints(-PI/12);
-      graph.rotateNodes(-PI/12);
-      graph.get_disp() ;
-    }
-  } else if ( key=='s' || int(key)==19) {// ctrl+s//
-    // save file
-    selectInput("Select a file to save", "saveFileSelect");
-  } else if ( key=='t' || int(key)==20) {// ctrl+s//
-  } else if ( key=='u' || int(key)==21) {// ctrl+s//
-  } else if ( key=='v' || int(key)==22) {// ctrl+v//
-    // paste?
-  } else if ( key=='w' || int(key)==23) {//
-    // change w/beads and off-beads mode
-    if (Draw._beads) {
-      Draw.line_without_beads();
-    } else if (Draw._line_without_beads) {
-      Draw.beads();
-    }
-  } else if ( key=='x' || int(key)==24) {// ctrl+x//
-    // cut?
-  } else if ( key=='y' || int(key)==25) {// ctrl+y//
-  } else if ( key=='z' || int(key)==26) {// ctrl+z//
-    // undo?
-  } else if (keyCode==ENTER) {/////////////////////////////////交点を割いた絵を描画する
-    orie.decide_orientation();
-    Draw.smoothing();
-  } else if (keyCode==SHIFT) {/////////////////////////交点を割いた絵の描画を解除する
-    Draw._beads=true;
-    orie.decide_orientation();
-    if (seif.reg.size()>0) {
-      for (int i=0; i<seif.reg.size(); i++) {
-        seif.reg.get(i).border.clear();
-      }
-      seif.reg.clear();
-    }
-  } else if (key=='S') {//////ザイフェルト膜を貼った絵を描画する
-    println("ザイフェルト膜を貼るモード");
-    orie.decide_orientation();
-    Draw.beads_with_Seifelt();
-    seif.SeifertAlgorithm();
-    //} else if (key=='z') {/////////////////////////////////現在使われていない
-    //  dowker dk = new dowker(graph); 
-    //  dk.Start();
-  } else if (key=='v') {
-  }
-}
-
 void saveFileSelect(File selection) {
   if (selection == null) {
     println("Window was closed or the user hit cancel.");
   } else {
     println("User selected " + selection.getAbsolutePath());
-    file_name=selection.getAbsolutePath();
-    int file_name_length= file_name.length();
-    String extension=file_name.substring(file_name_length-3);
+    fileName=selection.getAbsolutePath();
+    int fileName_length= fileName.length();
+    String extension=fileName.substring(fileName_length-3);
     if (extension.equals("png") || extension.equals("jpg") || extension.equals("gif")) {
       Draw.line_without_beads();
       redraw();
       delay(1000);
-      save(file_name);// 画像として保存
+      save(fileName);// 画像として保存
       Draw.beads();
     } else if (extension.equals("lnk")) {
       PLink PL=new PLink(data, disp);
       PL.file_output();
     } else {
       PrintWriter file; 
-      file = createWriter(file_name);
+      file = createWriter(fileName);
       file.println("BeadsKnot,0");
       file.println("Nodes,"+graph.nodes.size());
       for (int nodeID=0; nodeID<graph.nodes.size(); nodeID++) {
@@ -369,18 +250,20 @@ void fileSelected(File selection) {
     println("Window was closed or the user hit cancel.");
   } else {
     println("User selected " + selection.getAbsolutePath());
-    file_name=selection.getAbsolutePath();
-    int file_name_length= file_name.length();
-    String extension=file_name.substring(file_name_length-3);
+    fileName=selection.getAbsolutePath();
+    int fileName_length= fileName.length();
+    String extension=fileName.substring(fileName_length-3);
     if (extension.equals("png")==true||extension.equals("jpg")==true||extension.equals("gif")==true) {
       PImage image = loadImage(selection.getAbsolutePath());
-      if (data.make_data_extraction(image)) {//一発で成功した場合
-        graph.make_data_graph();
+      if (data.make_dataExtraction(image)) {//一発で成功した場合
+        graph.make_dataGraph();
       }
-      file_name=file_name.substring(0, file_name_length-4);
+      fileName=fileName.substring(0, fileName_length-4);
     } else if (extension.equals("dwk")==true) {
-      // ドウカー表現による入力
-      BufferedReader reader = createReader(file_name); 
+      // read from dowker file
+      // file format: a sequence of even integers separated by spaces
+      // 2 6 4 8
+      BufferedReader reader = createReader(fileName); 
       String line = null;
       try {
         if ((line = reader.readLine()) != null) {
@@ -396,11 +279,11 @@ void fileSelected(File selection) {
       catch (IOException e) {
         e.printStackTrace();
       }
-    } else {// BeadsKnot オリジナルファイル形式の場合
-      BufferedReader reader = createReader(file_name); 
+    } else {// BeadsKnot (original) file
+      BufferedReader reader = createReader(fileName); 
       String line = null;
       int version = -1;
-      // 失敗したときのためにバックアップを取っておくのがよさそうだ。
+      // TODO: make a deepcopy of the contents.
       try {
         if ((line = reader.readLine()) != null) {
           String[] pieces = split(line, ',' );
@@ -484,7 +367,7 @@ void fileSelected(File selection) {
             //data.debugLogPoints("0123.csv");
             Draw.beads();// drawモードの変更
           }
-          //////////////ここにregion関連のデータを入れる
+          // about regions
           if ((line = reader.readLine()) != null) {
             String[] pieces = split(line, ',' );
             if (pieces[0].equals("Region")) {
@@ -556,7 +439,7 @@ void mousePressed() {
         int jt_ndID =graph.next_to_node(ptID); 
         if (jt_ndID==-1) {//ノードの隣でないところをドラッグした場合
           println("新規パス開始");
-          mousedrag_startID=graph.is_PVector_on_points(mouseX, mouseY);
+          mousedragStartID=graph.is_PVector_on_points(mouseX, mouseY);
           mouse.prev = new PVector(mouseX, mouseY);
           mouse.trace.clear();
           mouse.trace.add(mouse.prev);
@@ -569,7 +452,7 @@ void mousePressed() {
     mouse.prev = new PVector(mouseX, mouseY);
     mouse.trace.add(mouse.prev);
     mouse.free_dragging = true;
-  } else if (Draw._parts_editing) {
+  } else if (Draw._partsEditing) {
     for (int bdID=0; bdID < edit.beads.size(); bdID++) {
       Bead bd = edit.beads.get(bdID);
       if (bd.c <2 && dist(bd.x, bd.y, mouseX, mouseY) < 10f) {//もしおひとりさまのノードが近くにある場合は
@@ -592,7 +475,7 @@ void mousePressed() {
         int jt_ndID =graph.next_to_node(ptID); 
         if (jt_ndID==-1) {//ノードの隣でないところをドラッグした場合
           println("新規パス開始");
-          mousedrag_startID=graph.is_PVector_on_points(mouseX, mouseY);
+          mousedragStartID=graph.is_PVector_on_points(mouseX, mouseY);
           mouse.prev = new PVector(mouseX, mouseY);
           mouse.trace.clear();
           mouse.trace.add(mouse.prev);
@@ -700,25 +583,25 @@ void mouseDragged() {
       //  graph.update_points();
       //  graph.add_close_point_Joint();
     } else if (mouse.new_curve) {
-      if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
+      if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beadsInterval-1) {
         mouse.prev = new PVector(mouseX, mouseY);
         mouse.trace.add(mouse.prev);
       }
     }
   } else if (Draw._free_loop) {
-    if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
+    if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beadsInterval-1) {
       mouse.prev = new PVector(mouseX, mouseY);
       mouse.trace.add(mouse.prev);
     }
-  } else if (Draw._parts_editing) {
+  } else if (Draw._partsEditing) {
     if (mouse.node_next_dragging) {
-      if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {
+      if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beadsInterval-1) {
         mouse.prev = new PVector(mouseX, mouseY);
         mouse.trace.add(mouse.prev);
       }
     }
     //} else if (Draw._beads_with_Seifelt) {
-    //  if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beads_interval-1) {//////////////////////////////エラーでる
+    //  if (dist(mouseX, mouseY, mouse.prev.x, mouse.prev.y)>beadsInterval-1) {//////////////////////////////エラーでる
     //    mouse.prev = new PVector(mouseX, mouseY);
     //    mouse.trace.add(mouse.prev);
     //  }
@@ -730,7 +613,7 @@ void mouseReleased() {
     int y=60;
     if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
       if (mouseY < y) {// key 'e' と同じ
-        Draw.parts_editing();
+        Draw.partsEditing();
         mouse.trace.clear();
         edit.beads.clear();
         return ;
@@ -938,14 +821,14 @@ void mouseReleased() {
           if (pt.Joint) {////////////////////////////////midJointやJointの隣も含むか要検討
             return;
           } else {
-            println(mousedrag_startID, ptID);
-            int i=data.findArcFromPoints(mousedrag_startID, ptID);
+            println(mousedragStartID, ptID);
+            int i=data.findArcFromPoints(mousedragStartID, ptID);
             if (i==1||i==2) {
               println(count_for_distinguishing_edge);//間のbeadsの数。ただしstartIDとptIDは含まない
-              data.extinguish_points(i, count_for_distinguishing_edge, mousedrag_startID, ptID);
+              data.extinguish_points(i, count_for_distinguishing_edge, mousedragStartID, ptID);
               data.extinguish(count_for_distinguishing_edge); 
-              data.extinguish_startID_and_endID(i, mousedrag_startID, ptID);
-              mouse.trace_to_parts_editing2(data, mousedrag_startID, ptID);//ここで線をビーズにする 
+              data.extinguish_startID_and_endID(i, mousedragStartID, ptID);
+              mouse.trace_to_partsEditing2(data, mousedragStartID, ptID);//ここで線をビーズにする 
               //traceからもらってくればよい
             } else {
               println("できませんでした");
@@ -978,7 +861,7 @@ void mouseReleased() {
         }
       }
     }
-  } else if (Draw._parts_editing) {
+  } else if (Draw._partsEditing) {
     if (dist(mouseX, mouseY, mouse.PressX, mouse.PressY)<1.0) {// クリック
       boolean hit = false;
       for (int bdID=0; bdID < edit.beads.size(); bdID++) {
@@ -1009,7 +892,7 @@ void mouseReleased() {
             }
           }
           if (OK) {
-            mouse.trace_to_parts_editing(data, graph, edit, endBdID);
+            mouse.trace_to_partsEditing(data, graph, edit, endBdID);
           }
         }
         mouse.node_next_dragging=false; // ドラッグ終了
@@ -1239,21 +1122,21 @@ void mouseReleased() {
           if (pt.Joint) {////////////////////////////////midJointやJointの隣も含むか要検討
             return;
           } else {
-            println(mousedrag_startID, ptID);
-            int i=data.findArcFromPoints(mousedrag_startID, ptID);
+            println(mousedragStartID, ptID);
+            int i=data.findArcFromPoints(mousedragStartID, ptID);
             if (i==1||i==2) {
               println(count_for_distinguishing_edge);//間のbeadsの数。ただしstartIDとptIDは含まない
-              data.extinguish_points(i, count_for_distinguishing_edge, mousedrag_startID, ptID);
+              data.extinguish_points(i, count_for_distinguishing_edge, mousedragStartID, ptID);
               data.extinguish(count_for_distinguishing_edge); 
-              data.extinguish_startID_and_endID(i, mousedrag_startID, ptID);
-              mouse.trace_to_parts_editing2(data, mousedrag_startID, ptID);//ここで線をビーズにする 
+              data.extinguish_startID_and_endID(i, mousedragStartID, ptID);
+              mouse.trace_to_partsEditing2(data, mousedragStartID, ptID);//ここで線をビーズにする 
               //traceからもらってくればよい
             } else {
-              Bead s=data.getBead(mousedrag_startID);
+              Bead s=data.getBead(mousedragStartID);
               Bead e=data.getBead(ptID);
               /////////////////////////////sからでるedgeを探して同じnodeがあったらbandJointをtrueにする
-              // println(data.condition_bandJoint(mousedrag_startID, ptID));
-              pairInt JointID_for_bandJoint=data.condition_bandJoint(mousedrag_startID, ptID);
+              // println(data.condition_bandJoint(mousedragStartID, ptID));
+              pairInt JointID_for_bandJoint=data.condition_bandJoint(mousedragStartID, ptID);
               if (JointID_for_bandJoint.a!=-1) {
                 s.bandJoint=true;
                 e.bandJoint=true;
@@ -1261,7 +1144,7 @@ void mouseReleased() {
                 //data.extinguish_points(i, count_for_distinguishing_edge, startID, ptID);
                 //data.extinguish(count_for_distinguishing_edge); 
                 //data.extinguish_startID_and_endID(i, startID, ptID);
-                mouse.trace_to_parts_editing3(data, mousedrag_startID, ptID);
+                mouse.trace_to_partsEditing3(data, mousedragStartID, ptID);
                 int s12=JointID_for_bandJoint.b;
                 int e12=JointID_for_bandJoint.c;
                 int su1=s.u1;
@@ -1314,7 +1197,7 @@ void mouseReleased() {
                   e.u2=-1;
                   e.bandJoint_flag=true;
                 }
-                graph.make_data_graph();
+                graph.make_dataGraph();
                 //枝のすげ替え問題
                 //bandっぽく見えるように
                 //JointID_for_bandJoint

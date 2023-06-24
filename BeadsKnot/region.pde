@@ -2,13 +2,13 @@ class region { //<>// //<>// //<>// //<>// //<>// //<>//
   ArrayList <Edge> border;
   //ArrayList<Nbhd> atm;//どのn1もしくはn2もしくはu1もしくはu2が使われていたのかを知るために必要なペア
   //ArrayList<Bead> saveJoint;//クリックしたときに通過したjointのBeadsの番号を格納する配列
-  data_extract de;
-  data_graph dg;
+  dataExtract de;
+  dataGraph dg;
   int col_code;
   orientation orie;
   boolean clockwise;/////////////////////regionが時計回りか反時計回りかを探すために必要,//時計周りがtrue、反時計周りがfalse
   boolean bandnecessity;//bandが必要か必要じゃないかを判定するフラグ
-  region(data_extract _de, data_graph _dg, orientation _orie) {
+  region(dataExtract _de, dataGraph _dg, orientation _orie) {
     border=new ArrayList <Edge>();
     //atm=new ArrayList<Nbhd>();
     //saveJoint=new ArrayList<Bead>();

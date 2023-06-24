@@ -1,6 +1,6 @@
 class PLink {
-  //data_graph dg;
-  data_extract de;
+  //dataGraph dg;
+  dataExtract de;
   displayWorld disp;
   //ファイル保存
   PrintWriter outfile;
@@ -9,14 +9,14 @@ class PLink {
   ArrayList<plinkEdge> pEd;//辺に関する配列
   ArrayList<crossing_set> crs;//交点の情報
   ArrayList<plinkCrossing> pCr;//交点に関する配列
-  PLink(data_extract _de, displayWorld _disp) {
+  PLink(dataExtract _de, displayWorld _disp) {
     de=_de;
     disp=_disp;
     makePlinkData();//たどる関数
   }
 
   boolean file_output() {//出力する関数
-    outfile = createWriter(file_name);
+    outfile = createWriter(fileName);
     outfile.println("% Link Projection");
     //成分数
     outfile.println(pCo.size());
