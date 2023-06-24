@@ -13,7 +13,7 @@ displayWorld disp;// display.pde
 displayMessage dispM; // utils.pde
 // constants
 EdgeConst ec;// Edgeに関する定数
-String file_name="test";// 読み込んだファイル名を使って保存ファイル名を生成する
+String file_name="test";// save/open filename
 float beads_interval = 15 ;// intervals between beads ( world coordinate)
 // configrations and options
 drawOption Draw;// options for drawings
@@ -71,19 +71,7 @@ void setup() {
 void draw() {
   background(255);
   if (Draw._menu) {
-    textSize(28);
-    fill(0);
-    int y = 60;
-    text("e : input by editor", 30, y);
-    y += 40;
-    text("n : input by free loop", 30, y);
-    y += 40;
-    text("o : open file (png, jpg, gif, txt)", 30, y);
-    y += 40;
-    text("s : save file (png, txt, lnk)", 30, y);
-    y += 40;
-    text("m : see menu", 30, y);
-    y += 40;
+    dispM.showMenu()
   } else if (Draw._binarized_image) {// 二値化したデータを表示
     loadPixels();
     for (int x=0; x<data.w; x++) {
@@ -182,46 +170,62 @@ void draw() {
 }
 
 void keyPressed() {
-  // 'n' -> free_loop モード。
-  // 'e' -> parts_editingモード
-
-  //ファイル関連のキー割り振り
-  if ( key=='s' || int(key)==19) {//////////////////////////////////ファイルをセーブする
-    selectInput("Select a file to save", "saveFileSelect");
-  } else if ( key == 'o' || int(key)==15) {// o // ctrl+o///////////////////ファイルを開く
-
+  // begining
+  if ( key=='a' || int(key)==1){ // a 
+  }
+  else if ( key=='b' || int(key)==1){ // b 
+  }
+  else if ( key=='c' || int(key)==1){ // c 
+  }
+  else if ( key=='d' || int(key)==1){ // d 
+  }
+  else if ( key=='e' || int(key)==1){ // e 
+    // parts editing mode begins
+    Draw.parts_editing();
+    mouse.trace.clear();
+    edit.beads.clear();
+  }
+  else if ( key=='f' || int(key)==1){ // f 
+  }
+  else if ( key=='g' || int(key)==1){ // g 
+  }
+  else if (key == 'm') { 
+    // modify shape mode/
+    //if (Draw._data_graph) {
+    //  graph.modify();
+    //} else {
+    //  Draw._menu = true;
+    //}
+  }
+  else if ( key=='n') {//
+    // draw_free_loop mode begins
+    Draw.free_loop();// change mode
+    mouse.trace.clear();// clear beads data
+  }  
+  else if ( key=='o' || int(key)==15) {// o // ctrl+o//
+    // open file
     selectInput("Select a file to process:", "fileSelected");
     if (seif.reg.size()>=0) {
+      // if seifert surface is here, delete it.
       for (int i=0; i<seif.reg.size(); i++) {
         seif.reg.get(i).border.clear();
       }
       seif.reg.clear();
     }
-    //} else if (key == 'm') { // modify/////////////////////////////////使っていない変形モード
-    //  if (Draw._data_graph) {
-    //    graph.modify();
-    //  } else {
-    //    Draw._menu = true;
-    //  }
-
-
-    //メニューごとのキーの割り振り
-  } else if (key == 'n') {//////////////////////////////////draw_free_loopモード
-    Draw.free_loop();
-    mouse.trace.clear();// 絵のクリア
-  } else if (key == 'e') {////////////////////////////////マウスクリックにより交点を置くモード
-    Draw.parts_editing();
-    mouse.trace.clear();
-    edit.beads.clear();
-  } else if (key == 'w') {////////////////////////////////beadsの描画でなく、実線で描画するモード
+  } 
+  else if ( key=='s' || int(key)==19) {// ctrl+s//
+    // save file
+    selectInput("Select a file to save", "saveFileSelect");
+  } 
+  else if (key == 'w') {//
+    // change w/beads and off-beads mode
     if (Draw._beads) {
       Draw.line_without_beads();
     } else if (Draw._line_without_beads) {
       Draw.beads();
     }
-
-    //オプション系のキーの割り振り
-  } else if (keyCode==ENTER) {/////////////////////////////////交点を割いた絵を描画する
+  } 
+  else if (keyCode==ENTER) {/////////////////////////////////交点を割いた絵を描画する
     orie.decide_orientation();
     Draw.smoothing();
   } else if (keyCode==SHIFT) {/////////////////////////交点を割いた絵の描画を解除する
